@@ -1,0 +1,59 @@
+[build-system]
+requires = [
+    "setuptools >= 62.3.0",
+    "wheel >= 0.29.0",
+]
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'ccbr_actions'
+dynamic = ['version','readme']
+description = "CCBR GitHub Actions"
+authors = [
+    {name = "Kelly Sovacool", email = "kelly.sovacool@nih.gov"},
+    {name = "Vishal Koparde", email = "vishal.koparde@nih.gov"},
+]
+maintainers = [
+    {name = "CCR Collaborative Bioinformatics Resource", email = "ccbr@mail.nih.gov"},
+]
+license = {file = "LICENSE"}
+classifiers = [
+    "Environment :: Console",
+    "Environment :: MacOS X",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT license",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "Click >= 8.1.3",
+    "PyGithub >= 2"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black >= 22.0.0",
+    "pre-commit"
+]
+test = [
+    "pytest"
+]
+
+[project.scripts]
+ccbr_actions = "ccbr_actions.__main__:main"
+
+[project.urls]
+Repository = "https://github.com/CCBR/actions"
+
+[tool.setuptools.package-data]
+"*" = ["LICENSE", "CHANGELOG.md"]
+
+[tool.setuptools.dynamic]
+version = {file = "src/ccbr_actions/VERSION"}
+readme = {file = "README.md"}
