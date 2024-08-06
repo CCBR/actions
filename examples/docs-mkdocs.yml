@@ -10,7 +10,7 @@ on:
     paths:
       - "docs/**"
       - "**.md"
-      - .github/workflows/docs.yml
+      - .github/workflows/docs-mkdocs.yml
       - mkdocs.yml
 
 env:
@@ -33,7 +33,8 @@ jobs:
             git+https://github.com/CCBR/actions.git@versions \
             mkdocs \
             mike \
-            --upgrade pip
+            --upgrade pip \
+            -r docs/requirements.txt
       - name: git config
         run: |
           git config --local user.email "${actor}@users.noreply.github.com"
@@ -41,7 +42,7 @@ jobs:
       - name: get version tag & alias
         shell: python {0}
         run: |
-          from ccbr_actions.versions import set_docs_version
+          from ccbr_actions.docs import set_docs_version
           set_docs_version() # sets VERSION and ALIAS env vars
 
       - name: deploy docs
