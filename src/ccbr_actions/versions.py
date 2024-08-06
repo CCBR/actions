@@ -18,7 +18,7 @@ def set_docs_version():
         docs_alias = "latest"
         docs_version = get_major_minor_version(release_tag)
     else:
-        if is_ancestor(ancestor=release_hash, descendent=current_hash):
+        if is_ancestor(ancestor=release_hash, descendant=current_hash):
             docs_alias = ""
             docs_version = "dev"
         else:
