@@ -7,7 +7,7 @@ from .util import shell_run
 
 
 def set_docs_version():
-    release_tag = get_latest_release_tag()
+    release_tag = get_latest_release_tag().lstrip("v")
     if not release_tag:
         warnings.warn("No latest release found")
 
@@ -31,20 +31,16 @@ def set_docs_version():
         out_env.write(f"ALIAS={docs_alias}\n")
 
 
-def get_releases(limit=1):
+def get_releases(limit=1, args=""):
     releases = shell_run(
-        f"gh release list --limit {limit} --json name,tagName,isLatest,publishedAt"
+        f"gh release list --limit {limit} --json name,tagName,isLatest,publishedAt {args}"
     )
     return json.loads(releases)
 
 
-def get_latest_release_tag():
-    releases = get_releases(limit=1)
-    return (
-        releases[0]["tagName"].lstrip("v")
-        if releases and releases[0]["isLatest"]
-        else None
-    )
+def get_latest_release_tag(args=""):
+    releases = get_releases(limit=1, args=args)
+    return releases[0]["tagName"] if releases and releases[0]["isLatest"] else None
 
 
 def get_latest_release_hash():
