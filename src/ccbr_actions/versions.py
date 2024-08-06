@@ -6,31 +6,6 @@ import warnings
 from .util import shell_run
 
 
-def set_docs_version():
-    release_tag = get_latest_release_tag().lstrip("v")
-    if not release_tag:
-        warnings.warn("No latest release found")
-
-    release_hash = get_latest_release_hash()
-    current_hash = get_current_hash()
-
-    if release_hash == current_hash:
-        docs_alias = "latest"
-        docs_version = get_major_minor_version(release_tag)
-    else:
-        if is_ancestor(ancestor=release_hash, descendant=current_hash):
-            docs_alias = ""
-            docs_version = "dev"
-        else:
-            raise ValueError(
-                f"The current commit hash {current_hash[:7]} is not a descendent of the latest release {release_tag} {release_hash[:7]}"
-            )
-
-    with open(os.getenv("GITHUB_ENV"), "a") as out_env:
-        out_env.write(f"VERSION={docs_version}\n")
-        out_env.write(f"ALIAS={docs_alias}\n")
-
-
 def get_releases(limit=1, args=""):
     releases = shell_run(
         f"gh release list --limit {limit} --json name,tagName,isLatest,publishedAt {args}"

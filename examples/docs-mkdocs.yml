@@ -18,7 +18,7 @@ env:
   GH_TOKEN: ${{ github.token }}
 
 jobs:
-  deploy:
+  mkdocs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,54 +28,21 @@ jobs:
         with:
           python-version: 3.11
           cache: pip
-      - run: pip install --upgrade pip -r docs/requirements.txt
+      - run: |
+          pip install \
+            git+https://github.com/CCBR/actions.git@versions \
+            mkdocs \
+            mike \
+            --upgrade pip
       - name: git config
         run: |
           git config --local user.email "${actor}@users.noreply.github.com"
           git config --local user.name "$actor"
-          gh release list > releases.tsv
       - name: get version tag & alias
         shell: python {0}
         run: |
-          import os
-          import re
-          import warnings
-
-          release_tag = ''
-          with open('releases.tsv', 'r') as infile:
-            for line in infile:
-              release_name, latest, tag, timestamp = line.strip().split('\t')
-              if latest == "Latest":
-                release_tag = tag.strip('v')
-                break
-          if not release_tag:
-            warnings.warn("No latest release found")
-
-          with open('VERSION', 'r') as infile:
-            current_version = infile.read().strip()
-
-          if current_version == release_tag:
-            docs_alias = 'latest'
-            # set version to just major and minor
-            semver_pattern = '(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?'
-            release_semver = re.match(semver_pattern, release_tag)
-            docs_version = f"{release_semver.group('major')}.{release_semver.group('minor')}"
-          else:
-            semver_pattern = '(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?'
-            release_semver = re.match(semver_pattern, release_tag)
-            current_semver = re.match(semver_pattern, current_version)
-
-            groups = ['major', 'minor', 'patch']
-            if current_semver.group('prerelease') and any([current_semver.group(grp) >= release_semver.group(grp) for grp in groups]):
-              docs_alias = ''
-              docs_version = 'dev'
-            else:
-              raise ValueError(f"current version {current_version} is not greater than latest release {release_tag}")
-
-
-          with open(os.getenv("GITHUB_ENV"), 'a') as out_env:
-            out_env.write(f"VERSION={docs_version}\n")
-            out_env.write(f"ALIAS={docs_alias}\n")
+          from ccbr_actions.versions import set_docs_version
+          set_docs_version() # sets VERSION and ALIAS env vars
 
       - name: deploy docs
         run: |
