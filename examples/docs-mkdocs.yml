@@ -29,12 +29,8 @@ jobs:
           python-version: 3.11
           cache: pip
       - run: |
-          pip install \
-            git+https://github.com/CCBR/actions.git@versions \
-            mkdocs \
-            mike \
-            --upgrade pip \
-            -r docs/requirements.txt
+          pip install git+https://github.com/CCBR/actions.git@main --upgrade pip
+          if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
       - name: git config
         run: |
           git config --local user.email "${actor}@users.noreply.github.com"
@@ -44,7 +40,6 @@ jobs:
         run: |
           from ccbr_actions.docs import set_docs_version
           set_docs_version() # sets VERSION and ALIAS env vars
-
       - name: deploy docs
         run: |
           mike deploy ${{ env.VERSION }} ${{ env.ALIAS }} \
