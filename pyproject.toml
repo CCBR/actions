@@ -52,7 +52,7 @@ ccbr_actions = "ccbr_actions.__main__:main"
 Repository = "https://github.com/CCBR/actions"
 
 [tool.setuptools.package-data]
-"*" = ["LICENSE", "CHANGELOG.md"]
+"*" = ["LICENSE", "CHANGELOG.md", "lib/**", "examples/**"]
 
 [tool.setuptools.dynamic]
 version = {file = "src/ccbr_actions/VERSION"}
