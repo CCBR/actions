@@ -13,10 +13,6 @@ on:
       - .github/workflows/docs-mkdocs.yml
       - mkdocs.yml
 
-env:
-  actor: "41898282+github-actions[bot]"
-  GH_TOKEN: ${{ github.token }}
-
 jobs:
   mkdocs:
     runs-on: ubuntu-latest
@@ -24,25 +20,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: CCBR/actions/mkdocs-mike@versions
         with:
-          python-version: 3.11
-          cache: pip
-      - run: |
-          pip install git+https://github.com/CCBR/actions.git@main --upgrade pip
-          if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
-      - name: git config
-        run: |
-          git config --local user.email "${actor}@users.noreply.github.com"
-          git config --local user.name "$actor"
-      - name: get version tag & alias
-        shell: python {0}
-        run: |
-          from ccbr_actions.docs import set_docs_version
-          set_docs_version() # sets VERSION and ALIAS env vars
-      - name: deploy docs
-        run: |
-          mike deploy ${{ env.VERSION }} ${{ env.ALIAS }} \
-            --push \
-            --update-aliases \
-            --branch gh-pages
+          github-token: ${{ github.token }}

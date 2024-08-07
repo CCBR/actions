@@ -10,11 +10,13 @@ inputs:
     required: true
     default: "main"
   python-version:
+    required: true
     default: "3.11"
   docs-branch:
+    required: true
     default: "gh-pages"
   actor:
-    description: "GitHub Actions actor"
+    description: "Username of GitHub actor for the git commit when the docs branch is deployed"
     required: true
     default: "41898282+github-actions[bot]"
 outputs:
@@ -39,7 +41,7 @@ runs:
     - name: pip install
       shell: bash
       run: |
-        pip install git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }} --upgrade pip
+        pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
         if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
     - name: set version tag & alias for mike
       id: set-version
