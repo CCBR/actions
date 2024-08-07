@@ -1,7 +1,9 @@
 # examples
 
 <!--
-echo "# examples\n"; for f in examples/*.yml; do title=$(echo $f | sed 's|examples/||g' | sed 's|.yml||g'); echo "## $title \n"; echo "\`\`\`yaml"; cat $f; echo "\`\`\`\n"; done > examples/README.md
+```sh
+for f in examples/*.yml; do title=$(echo $f | sed 's|examples/||g' | sed 's|.yml||g'); echo "## $title \n"; echo "\`\`\`yaml"; cat $f; echo "\`\`\`\n"; done > examples/README.md
+```
 -->
 
 ## build-nextflow

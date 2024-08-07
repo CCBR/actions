@@ -8,6 +8,24 @@ See [CCBR/actions/examples](examples) for workflow examples.
 You can copy and paste these into your own repository in `.github/workflows/`
 and modify them for your needs.
 
+<!--
+```sh
+for f in examples/*.yml; do
+    title=$(echo $f | sed 's|examples/||g' | sed 's|.yml||g')
+    echo "- [$title]($f)"
+done | pbcopy
+```
+-->
+
+- [build-nextflow](examples/build-nextflow.yml)
+- [build-snakemake](examples/build-snakemake.yml)
+- [docs-mkdocs](examples/docs-mkdocs.yml)
+- [docs-quarto](examples/docs-quarto.yml)
+- [draft-release](examples/draft-release.yml)
+- [post-release](examples/post-release.yml)
+- [techdev-project](examples/techdev-project.yml)
+- [user-projects](examples/user-projects.yml)
+
 ## Actions
 
 - [mkdocs-mike](mkdocs-mike/README.md): Deploy documentation to github pages using mkdocs + mike.
