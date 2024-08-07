@@ -40,6 +40,6 @@ def set_docs_version():
     Set version and alias in GitHub environment variables for docs website action
     """
     version, alias = get_docs_version()
-    with open(os.getenv("GITHUB_ENV"), "a") as out_env:
+    with open(os.getenv("GITHUB_OUTPUT"), "a") as out_env:
         out_env.write(f"VERSION={version}\n")
         out_env.write(f"ALIAS={alias}\n")
