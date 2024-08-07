@@ -39,7 +39,7 @@ runs:
     - name: pip install
       shell: bash
       run: |
-        pip install git+hhttps://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }} --upgrade pip
+        pip install git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }} --upgrade pip
         if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
     - name: set version tag & alias for mike
       id: set-version
