@@ -3,7 +3,7 @@ description: "Deploy docs website using mkdocs + mike"
 author: "Kelly Sovacool"
 inputs:
   github-token:
-    description: "GitHub Actions token (e.g. ${{ github.token }})"
+    description: "GitHub Actions token (e.g. github.token)"
     required: true
   ccbr-actions-version:
     description: "The version of CCBR/actions to use"
@@ -32,10 +32,12 @@ runs:
         python-version: ${{ inputs.python-version }}
         cache: pip
     - name: git config
+      shell: bash
       run: |
         git config --local user.email "${{ inputs.actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.actor }}"
     - name: pip install
+      shell: bash
       run: |
         pip install git+hhttps://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }} --upgrade pip
         if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
@@ -48,6 +50,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
     - name: deploy docs
+      shell: bash
       run: |
         mike deploy ${{ steps.set-version.outputs.version }} ${{ steps.set-version.outputs.alias }} \
           --push \
