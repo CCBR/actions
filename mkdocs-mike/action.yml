@@ -1,0 +1,46 @@
+name: "mkdocs-mike"
+description: "Deploy docs website using mkdocs + mike"
+author: "Kelly Sovacool"
+inputs:
+  ccbr-actions-version:
+    description: "The version of CCBR/actions to use"
+    required: true
+    default: "main"
+  python-version:
+    default: "3.11"
+  github-token:
+    description: "GitHub Actions token (e.g. ${{ github.token }})"
+    required: true
+  actor:
+    description: "GitHub Actions actor"
+    required: true
+    default: "41898282+github-actions[bot]"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+    - name: git config
+      run: |
+        git config --local user.email "${{ inputs.actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.actor }}"
+    - name: pip install
+      run: |
+        pip install git+hhttps://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }} --upgrade pip
+        if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
+    - name: set version tag & alias for mike
+      shell: python {0}
+      run: |
+        from ccbr_actions.docs import set_docs_version
+        set_docs_version() # sets VERSION and ALIAS env vars
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+    - name: deploy docs
+      run: |
+        mike deploy ${{ env.VERSION }} ${{ env.ALIAS }} \
+          --push \
+          --update-aliases \
+          --branch gh-pages
