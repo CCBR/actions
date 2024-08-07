@@ -1,0 +1,18 @@
+project:
+  type: website
+
+metadata-files:
+  - _sidebar.yml
+
+quartodoc:
+  package: ccbr_actions
+
+  sidebar: _sidebar.yml
+
+  sections:
+    - title: Modules
+      #desc: Functions for CCBR GitHub Actions
+      contents:
+        - actions
+        - docs
+        - versions
