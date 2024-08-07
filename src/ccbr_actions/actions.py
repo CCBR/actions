@@ -18,6 +18,7 @@ Examples
 import os
 import requests
 
+
 from .versions import get_latest_release_tag
 
 
