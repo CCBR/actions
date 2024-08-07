@@ -20,6 +20,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/mkdocs-mike@versions
+      - uses: CCBR/actions/mkdocs-mike@main
         with:
           github-token: ${{ github.token }}

@@ -2,9 +2,13 @@
 
 Deploy documentation to github pages using mkdocs + mike
 
+This action is designed to be used with a repository that uses mkdocs to generate documentation and mike to deploy it to github pages. The action will checkout the repository, install the necessary python packages, build the documentation, and deploy it to the specified branch.
+
 ## Usage
 
-Any python requirements for your docs website should be placed in `docs/requirements.txt`.
+Any python requirements for your docs website (mkdocs, mike, other extensions) should be placed in `docs/requirements.txt`.
+
+You will also need an mkdocs config file `mkdocs.yml` in the root of your repository.
 
 ### Basic example
 
@@ -15,7 +19,7 @@ steps:
     - uses: actions/checkout@v4
     with:
         fetch-depth: 0
-    - uses: CCBR/actions/mkdocs-mike@versions
+    - uses: CCBR/actions/mkdocs-mike@main
     with:
         github-token: ${{ github.token }}
 ```
@@ -27,7 +31,7 @@ steps:
     - uses: actions/checkout@v4
     with:
         fetch-depth: 0
-    - uses: CCBR/actions/mkdocs-mike@versions
+    - uses: CCBR/actions/mkdocs-mike@main
     with:
         github-token: ${{ github.token }}
         ccbr-actions-version: 0.1
@@ -40,7 +44,7 @@ steps:
 
 ## Inputs
 
-- github-token: Github token to use for deployment. Required. Recommend using `${{ github.token }}`. Always required.
+- github-token: Github token to use for deployment. **Required**. Recommend using `${{ github.token }}`.
 - ccbr-actions-version: Version of CCBR/actions to use. Default: `main`.
 - python version: Python version to use. Default: `3.11`.
 - docs-branch: Branch to deploy documentation to. Default: `gh-pages`.
