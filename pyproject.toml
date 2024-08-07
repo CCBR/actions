@@ -52,6 +52,24 @@ ccbr_actions = "ccbr_actions.__main__:main"
 [project.urls]
 Repository = "https://github.com/CCBR/actions"
 
+[tool.numpydoc_validation]
+checks = [
+    "all",   # report on all checks, except the below
+    "EX01",
+    "SA01",
+    "ES01",
+]
+# remember to use single quotes for regex in TOML
+exclude = [  # don't report on objects that match any of these regex
+    '\.undocumented_method$',
+    '\.__repr__$',
+]
+override_SS05 = [  # override SS05 to allow docstrings starting with these words
+    '^Process ',
+    '^Assess ',
+    '^Access ',
+]
+
 [tool.setuptools.package-data]
 "*" = ["LICENSE", "CHANGELOG.md", "lib/**", "examples/**"]
 
