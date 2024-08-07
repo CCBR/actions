@@ -1,0 +1,60 @@
+name: "mkdocs-mike"
+description: "Deploy docs website using mkdocs + mike"
+author: "Kelly Sovacool"
+inputs:
+  github-token:
+    description: "GitHub Actions token (e.g. github.token)"
+    required: true
+  ccbr-actions-version:
+    description: "The version of CCBR/actions to use"
+    required: true
+    default: "main"
+  python-version:
+    required: true
+    default: "3.11"
+  docs-branch:
+    required: true
+    default: "gh-pages"
+  actor:
+    description: "Username of GitHub actor for the git commit when the docs branch is deployed"
+    required: true
+    default: "41898282+github-actions[bot]"
+outputs:
+  version:
+    description: "The version of the docs being deployed."
+    value: ${{ steps.set-version.outputs.version }}
+  alias:
+    description: "The alias of the version being deployed."
+    value: ${{ steps.set-version.outputs.alias }}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+    - name: git config
+      shell: bash
+      run: |
+        git config --local user.email "${{ inputs.actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.actor }}"
+    - name: pip install
+      shell: bash
+      run: |
+        pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+        if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
+    - name: set version tag & alias for mike
+      id: set-version
+      shell: python {0}
+      run: |
+        from ccbr_actions.docs import set_docs_version
+        set_docs_version() # sets VERSION and ALIAS env vars
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+    - name: deploy docs
+      shell: bash
+      run: |
+        mike deploy ${{ steps.set-version.outputs.version }} ${{ steps.set-version.outputs.alias }} \
+          --push \
+          --update-aliases \
+          --branch ${{ inputs.docs-branch }}
