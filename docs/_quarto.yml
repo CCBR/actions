@@ -1,0 +1,37 @@
+# see: https://github.com/rstudio/vetiver-python/blob/main/docs/_quarto.yml
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "CCBR GitHub Actions"
+  sidebar:
+    - id: reference
+      contents: "_sidebar.yml"
+
+quartodoc:
+  package: ccbr_actions
+
+  sidebar: _sidebar.yml
+
+  sections:
+    - title: Modules
+      #desc: Functions for CCBR GitHub Actions
+      contents:
+        - actions
+        - docs
+        - versions
+
+metadata-files:
+  - _sidebar.yml
+
+filters:
+  - interlinks
+
+interlinks:
+  sources: {}
+
+format:
+  html:
+    theme:
+      - flatly

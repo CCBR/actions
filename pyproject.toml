@@ -40,13 +40,15 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "black >= 22.0.0",
-    "pre-commit",
-    "quartodoc"
+    "pre-commit"
 ]
 test = [
     "pytest"
 ]
-
+docs = [
+    "quartodoc",
+    "griffe"
+]
 [project.scripts]
 ccbr_actions = "ccbr_actions.__main__:main"
 
