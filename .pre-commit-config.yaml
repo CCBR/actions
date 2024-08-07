@@ -26,6 +26,10 @@ repos:
     rev: 23.7.0
     hooks:
       - id: black
+  - repo: https://github.com/numpy/numpydoc
+    rev: v1.7.0
+    hooks:
+      - id: numpydoc-validation
   # general linting
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: "v3.1.0"
