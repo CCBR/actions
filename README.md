@@ -5,7 +5,8 @@ GitHub Actions for CCBR repos
 ## Examples
 
 See [CCBR/actions/examples](examples) for workflow examples.
-You can copy and paste these into your own repositories in `.github/workflows/`.
+You can copy and paste these into your own repository in `.github/workflows/`
+and modify them for your needs.
 
 ## Actions
 
@@ -21,12 +22,12 @@ However, you can install the package if you wish to use it outside of GitHub Act
 
 ### Installation
 
-You will need the github CLI installed:
+You will need the GitHub CLI installed:
 https://github.com/cli/cli#installation
 
 (this is pre-installed on all github actions runners)
 
-Then install it with pip:
+Then install the `ccbr_actions` package with pip:
 
 ```bash
 pip install git+https://github.com/CCBR/ccbr_actions
