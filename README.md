@@ -2,6 +2,8 @@
 
 GitHub Actions for CCBR repos
 
+[![build](https://github.com/CCBR/actions/actions/workflows/build.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build.yml)
+
 ## Examples
 
 See [CCBR/actions/examples](examples) for workflow examples.
