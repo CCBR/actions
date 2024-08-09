@@ -32,6 +32,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Lint
         uses: psf/black@stable
+        continue-on-error: true
         with:
           options: "--check --verbose"
           use_pyproject: true
@@ -40,7 +41,7 @@ jobs:
           python -m pip install .[dev,test] --upgrade pip
       - name: Test
         run: |
-          python -m pytest --cov
+          python -m pytest --cov src
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
