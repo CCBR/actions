@@ -2,7 +2,7 @@
 
 GitHub Actions for CCBR repos
 
-[![build](https://github.com/CCBR/actions/actions/workflows/build.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build.yml)
+[![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
 
 ## Examples
