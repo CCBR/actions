@@ -21,6 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.11
       - name: Lint
         uses: psf/black@stable
         with:
@@ -28,6 +32,7 @@ jobs:
           use_pyproject: true
   test:
     runs-on: ubuntu-latest
+    if: always()
     strategy:
       fail-fast: false
       matrix:
@@ -44,7 +49,7 @@ jobs:
           python -m pip install .[dev,test] --upgrade pip
       - name: Test
         run: |
-          python -m pytest --cov ccbr_actions
+          python -m pytest --cov ccbr_tools
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
