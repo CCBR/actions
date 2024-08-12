@@ -1,6 +1,6 @@
-# CCBR Actions
-
 <!-- README.md is generated from README.qmd. Please edit that file -->
+
+# CCBR Actions
 
 GitHub Actions for CCBR repos
 
@@ -13,15 +13,15 @@ See [CCBR/actions/examples](examples) for workflow examples. You can
 copy and paste these into your own repository in `.github/workflows/`
 and modify them for your needs.
 
-- [post-release](examples/post-release.yml)
+- [build-nextflow](examples/build-nextflow.yml)
+- [build-python](examples/build-python.yml)
 - [build-snakemake](examples/build-snakemake.yml)
+- [docs-mkdocs](examples/docs-mkdocs.yml)
 - [docs-quarto](examples/docs-quarto.yml)
 - [draft-release](examples/draft-release.yml)
-- [user-projects](examples/user-projects.yml)
-- [docs-mkdocs](examples/docs-mkdocs.yml)
+- [post-release](examples/post-release.yml)
 - [techdev-project](examples/techdev-project.yml)
-- [build-python](examples/build-python.yml)
-- [build-nextflow](examples/build-nextflow.yml)
+- [user-projects](examples/user-projects.yml)
 
 ## Actions
 
@@ -45,12 +45,12 @@ github actions runners): https://github.com/cli/cli#installation
 
 Then install the `ccbr_actions` package with pip:
 
-``` bash
+```bash
 pip install git+https://github.com/CCBR/ccbr_actions
 ```
 
 Or install it from a specific version or branch with:
 
-``` bash
+```bash
 pip install git+https://github.com/CCBR/ccbr_actions@main
 ```

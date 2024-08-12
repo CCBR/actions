@@ -21,7 +21,7 @@ and modify them for your needs.
 #| output: asis
 #| echo: false
 import pathlib
-for path in pathlib.Path('examples').glob('*.yml'):
+for path in sorted(pathlib.Path('examples').glob('*.yml')):
     print(f"- [{path.stem}]({path})")
 ```
 
@@ -34,7 +34,7 @@ Custom actions used in our github workflows.
 #| output: asis
 #| echo: false
 import yaml
-for action_yml in pathlib.Path().glob("*/action.yml"):
+for action_yml in sorted(pathlib.Path().glob("*/action.yml")):
     with action_yml.open('r') as infile:
         action_meta = yaml.load(infile, Loader = yaml.FullLoader)
     name = action_meta['name']
