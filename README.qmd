@@ -25,6 +25,7 @@ for path in pathlib.Path('examples').glob('*.yml'):
     print(f"- [{path.stem}]({path})")
 ```
 
+
 ## Actions
 
 Custom actions used in our github workflows.
