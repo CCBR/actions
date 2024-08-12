@@ -44,8 +44,8 @@ steps:
 
 ## Inputs
 
-- github-token: Github token to use for deployment. **Required**. Recommend using `${{ github.token }}`.
-- ccbr-actions-version: Version of CCBR/actions to use. Default: `main`.
-- python version: Python version to use. Default: `3.11`.
-- docs-branch: Branch to deploy documentation to. Default: `gh-pages`.
-- actor: Username of GitHub actor for the git commit when the docs branch is deployed. Default: `41898282+github-actions[bot]` (the GitHub Actions bot).
+- `github-token` - Github token to use for deployment. **Required**. Recommend using `${{ github.token }}`.
+- `ccbr-actions-version` - Version of CCBR/actions to use. Default: `main`.
+- `python version` - Python version to use. Default: `3.11`.
+- `docs-branch` - Branch to deploy documentation to. Default: `gh-pages`.
+- `actor` - Username of GitHub actor for the git commit when the docs branch is deployed. Default: `41898282+github-actions[bot]` (the GitHub Actions bot).

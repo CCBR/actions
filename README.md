@@ -1,3 +1,5 @@
+<!-- README.md is generated from README.qmd. Please edit that file -->
+
 # CCBR Actions
 
 GitHub Actions for CCBR repos
@@ -7,46 +9,39 @@ GitHub Actions for CCBR repos
 
 ## Examples
 
-See [CCBR/actions/examples](examples) for workflow examples.
-You can copy and paste these into your own repository in `.github/workflows/`
+See [CCBR/actions/examples](examples) for workflow examples. You can
+copy and paste these into your own repository in `.github/workflows/`
 and modify them for your needs.
 
-<!--
-```sh
-for f in examples/*.yml; do
-    title=$(echo $f | sed 's|examples/||g' | sed 's|.yml||g')
-    echo "- [$title]($f)"
-done | pbcopy
-```
--->
-
-- [build-nextflow](examples/build-nextflow.yml)
-- [build-snakemake](examples/build-snakemake.yml)
-- [docs-mkdocs](examples/docs-mkdocs.yml)
-- [docs-quarto](examples/docs-quarto.yml)
 - [draft-release](examples/draft-release.yml)
-- [post-release](examples/post-release.yml)
-- [techdev-project](examples/techdev-project.yml)
 - [user-projects](examples/user-projects.yml)
+- [post-release](examples/post-release.yml)
+- [build-snakemake](examples/build-snakemake.yml)
+- [techdev-project](examples/techdev-project.yml)
+- [docs-quarto](examples/docs-quarto.yml)
+- [build-nextflow](examples/build-nextflow.yml)
+- [docs-mkdocs](examples/docs-mkdocs.yml)
+- [build-python](examples/build-python.yml)
 
 ## Actions
 
-- [mkdocs-mike](mkdocs-mike/README.md): Deploy documentation to github pages using mkdocs + mike.
+Custom actions used in our github workflows.
+
+- [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
+  using mkdocs + mike
 
 ## Package
 
-This repo contains a python package with helper functions for some of our
-custom actions.
-You do not need to install anything in order to use the example workflows,
-as the actions install their dependencies as needed.
-However, you can install the package if you wish to use it outside of GitHub Actions.
+This repo contains a python package with helper functions for some of
+our custom actions. You do not need to install anything in order to use
+the example workflows, as the actions install their dependencies as
+needed. However, you can install the package if you wish to use it
+outside of GitHub Actions.
 
 ### Installation
 
-You will need the GitHub CLI installed:
-https://github.com/cli/cli#installation
-
-(this is pre-installed on all github actions runners)
+You will need the GitHub CLI installed (this is pre-installed on all
+github actions runners): https://github.com/cli/cli#installation
 
 Then install the `ccbr_actions` package with pip:
 
@@ -57,5 +52,5 @@ pip install git+https://github.com/CCBR/ccbr_actions
 Or install it from a specific version or branch with:
 
 ```bash
-pip install git+https://github.com/CCBR/ccbr_actions
+pip install git+https://github.com/CCBR/ccbr_actions@main
 ```
