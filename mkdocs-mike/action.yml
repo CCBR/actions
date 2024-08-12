@@ -1,5 +1,5 @@
 name: "mkdocs-mike"
-description: "Deploy docs website using mkdocs + mike"
+description: "Deploy documentation to github pages using mkdocs + mike"
 author: "Kelly Sovacool"
 inputs:
   github-token:
