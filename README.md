@@ -1,9 +1,6 @@
-# Actions
-
+# CCBR Actions
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
-
-# CCBR Actions
 
 GitHub Actions for CCBR repos
 
@@ -25,6 +22,8 @@ and modify them for your needs.
 - [techdev-project](examples/techdev-project.yml)
 - [build-python](examples/build-python.yml)
 - [build-nextflow](examples/build-nextflow.yml)
+
+## Actions
 
 Custom actions used in our github workflows.
 
