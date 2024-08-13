@@ -31,16 +31,22 @@ TODO
   **Required.**
 - `ccbr-actions-version`: The version of CCBR/actions to use.
   **Required.** Default: `main`.
-- `python-version`: . **Required.** Default: `3.11`.
-- `pr-branch`: Branch to use for the post-release chores, where a PR
-  will be opened. Recommended to use ‘release/{TAG_NAME}’. **Required.**
-  Default: `release/${{ github.ref_name }}`.
-- `draft-branch`: Branch used for the prior release draft. **Required.**
-  Default: `release-draft`.
-- `version-filepath`: . Default: `VERSION`.
-- `changelog-filepath`: . Default: `CHANGELOG.md`.
-- `citation-filepath`: . Default: `CITATION.cff`.
-- `dev-header`: . Default: `development version`.
+- `python-version`: The version of Python to install. **Required.**
+  Default: `3.11`.
+- `pr-branch`: Branch to use for the post-release chores, from where a
+  PR will be opened. Recommended to use ‘release/{TAG_NAME}’.
+  **Required.** Default: `release/${{ github.ref_name }}`.
+- `draft-branch`: Branch used for the prior release draft (see
+  `draft-release` action). **Required.** Default: `release-draft`.
+- `version-filepath`: Path to the file containing the current version.
+  Default: `VERSION`.
+- `changelog-filepath`: Path to the changelog or news file. Default:
+  `CHANGELOG.md`.
+- `citation-filepath`: Path to the citation file. Default:
+  `CITATION.cff`.
+- `dev-header`: Header string to match to find the development version
+  entry in the changelog, typically of the form ‘\## <software name>
+  development version’. Default: `development version`.
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.

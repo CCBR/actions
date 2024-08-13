@@ -30,15 +30,21 @@ TODO
   v2.5.11 .
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
-- `ccbr-actions-version`: The version of CCBR/actions to use.
+- `ccbr-actions-version`: The version of ccbr_actions to use.
   **Required.** Default: `main`.
-- `python-version`: . **Required.** Default: `3.11`.
-- `draft-branch`: Branch name to push changes to for the release draft..
-  **Required.** Default: `release-draft`.
-- `version-filepath`: . Default: `VERSION`.
-- `changelog-filepath`: . Default: `CHANGELOG.md`.
-- `citation-filepath`: . Default: `CITATION.cff`.
-- `dev-header`: . Default: `development version`.
+- `python-version`: The version of Python to install. **Required.**
+  Default: `3.11`.
+- `draft-branch`: The branch name to push changes to for the release
+  draft.. **Required.** Default: `release-draft`.
+- `version-filepath`: Path to the file containing the current version.
+  Default: `VERSION`.
+- `changelog-filepath`: Path to the changelog or news file. Default:
+  `CHANGELOG.md`.
+- `citation-filepath`: Path to the citation file. Default:
+  `CITATION.cff`.
+- `dev-header`: Header string to match to find the development version
+  entry in the changelog, typically of the form ‘\## <software name>
+  development version’. Default: `development version`.
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.
