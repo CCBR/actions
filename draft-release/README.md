@@ -98,5 +98,3 @@ steps:
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.
-
-## Outputs

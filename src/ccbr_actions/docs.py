@@ -125,16 +125,23 @@ def action_markdown_header(action_dict):
 
 
 def action_markdown_io(action_dict):
-    markdown = ["## Inputs\n\n"]
-    for name, details in action_dict.get("inputs", {}).items():
-        required = " **Required.**" if details.get("required", False) else ""
-        default = (
-            f" Default: `{details['default']}`." if details.get("default", None) else ""
-        )
-        markdown.append(
-            f"  - `{name}`: {details.get('description', '')}.{required}{default}"
-        )
-    markdown.append("\n## Outputs\n\n")
-    for name, details in action_dict.get("outputs", {}).items():
-        markdown.append(f"  - `{name}`: {details.get('description', '')}.")
+    markdown = []
+    inputs = action_dict.get("inputs", {})
+    if inputs:
+        markdown.append("## Inputs\n\n")
+        for name, details in inputs.items():
+            required = " **Required.**" if details.get("required", False) else ""
+            default = (
+                f" Default: `{details['default']}`."
+                if details.get("default", None)
+                else ""
+            )
+            markdown.append(
+                f"  - `{name}`: {details.get('description', '')}.{required}{default}"
+            )
+    outputs = action_dict.get("outputs", {})
+    if outputs:
+        markdown.append("\n## Outputs\n\n")
+        for name, details in outputs.items():
+            markdown.append(f"  - `{name}`: {details.get('description', '')}.")
     return "\n".join(markdown)
