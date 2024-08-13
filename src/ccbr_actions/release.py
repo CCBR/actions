@@ -53,7 +53,7 @@ def prepare_draft_release(
     with open(version_filepath, "w") as outfile:
         outfile.write(f"{next_version_strict}\n")
 
-    update_citation(citation_file=citation_filepath, next_version=next_version)
+    update_citation(citation_file=citation_filepath, version=next_version)
     changed_files = [citation_filepath, changelog_filepath, version_filepath]
     precommit_run(f'--files {" ".join(changed_files)}')
     push_release_draft_branch(
