@@ -219,7 +219,7 @@ def create_release_draft(
     debug=False,
 ):
     version_strict = next_version.lstrip("v")
-    cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{repo} {version_strict}' --target {release_target}"
+    cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{repo} {version_strict}' --repo {repo} --target {release_target}"
     if debug:
         print(cmd)
         release_url = ""
