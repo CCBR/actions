@@ -58,8 +58,6 @@ TODO
 
 ## Inputs
 
-- `version_tag`: Version tag for the release event. Recommended to use
-  “${{ github.ref_name }}" . Default: `${{ github.ref_name }}\`.
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
 - `ccbr-actions-version`: The version of CCBR/actions to use.
