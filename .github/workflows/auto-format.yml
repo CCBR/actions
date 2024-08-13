@@ -46,9 +46,14 @@ jobs:
       - name: format
         uses: pre-commit/action@v3.0.1
         continue-on-error: true
+      - name: black
+        uses: psf/black@stable
+        with:
+          options: "--verbose"
+          use_pyproject: true
       - name: commit & push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "ci: 🤖 render readme & format with pre-commit" && git push || echo "nothing to commit"
+          git commit -m "ci: 🤖 render readme & format everything with pre-commit" && git push || echo "nothing to commit"
