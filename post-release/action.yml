@@ -54,7 +54,7 @@ runs:
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
         git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
-        git switch ${{ github.ref_name }}
+        git switch ${{ github.event.release.tag_name }}
         git switch -c ${{ inputs.pr-branch }}
     - uses: actions/setup-python@v5
       with:
@@ -71,7 +71,7 @@ runs:
         post_release_cleanup(
           changelog_filepath=${{ inputs.changelog-filepath }},
           repo="${{ github.event.repository.name }}",
-          release_tag="${{ github.ref_name }}",
+          release_tag="${{ github.event.release.tag_name }}",
           pr_branch="${{ inputs.pr-branch }}",
           pr_reviewer="${{ github.triggering_actor }}",
           draft_branch="${{ inputs.draft-branch }}",
