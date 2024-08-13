@@ -15,7 +15,7 @@ inputs:
   docs-branch:
     required: true
     default: "gh-pages"
-  actor:
+  github-actor:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed"
     required: true
     default: "41898282+github-actions[bot]"
@@ -36,8 +36,8 @@ runs:
     - name: git config
       shell: bash
       run: |
-        git config --local user.email "${{ inputs.actor }}@users.noreply.github.com"
-        git config --local user.name "${{ inputs.actor }}"
+        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.github-actor }}"
     - name: pip install
       shell: bash
       run: |

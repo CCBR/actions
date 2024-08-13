@@ -7,7 +7,6 @@ This action is designed to be used with a repository that uses mkdocs to generat
 ## Usage
 
 Any python requirements for your docs website (mkdocs, mike, other extensions) should be placed in `docs/requirements.txt`.
-
 You will also need an mkdocs config file `mkdocs.yml` in the root of your repository.
 
 ### Basic example
@@ -37,9 +36,7 @@ steps:
         ccbr-actions-version: 0.1
         python-version: 3.12
         docs-branch: gh-pages
-        actor: "41898282+github-actions[bot]"
-
-
+        github-actor: "41898282+github-actions[bot]"
 ```
 
 ## Inputs
@@ -48,4 +45,4 @@ steps:
 - `ccbr-actions-version` - Version of CCBR/actions to use. Default: `main`.
 - `python version` - Python version to use. Default: `3.11`.
 - `docs-branch` - Branch to deploy documentation to. Default: `gh-pages`.
-- `actor` - Username of GitHub actor for the git commit when the docs branch is deployed. Default: `41898282+github-actions[bot]` (the GitHub Actions bot).
+- `github-actor` - Username of GitHub actor for the git commit when the docs branch is deployed. Default: `41898282+github-actions[bot]` (the GitHub Actions bot).
