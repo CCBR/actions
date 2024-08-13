@@ -18,11 +18,16 @@ def update_citation(
     citation_file="CITATION.cff",
     version="${{ steps.set-version.output.NEXT_VERSION }}",
     date=date_today(),
+    debug=False,
 ):
     citation = create_citation(citation_file, None)
     citation._implementation.cffobj["version"] = version
     citation._implementation.cffobj["date-released"] = date
-    with open(citation_file, "w") as outfile:
-        outfile.write(
-            yaml.dump(citation._implementation.cffobj, sort_keys=False, indent=2)
-        )
+    citation_yaml = yaml.dump(
+        citation._implementation.cffobj, sort_keys=False, indent=2
+    )
+    if debug:
+        print(citation_yaml)
+    else:
+        with open(citation_file, "w") as outfile:
+            outfile.write(citation_yaml)
