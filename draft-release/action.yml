@@ -24,7 +24,7 @@ inputs:
   draft-branch:
     default: "release-draft"
     required: true
-    description: "Branch to use for the release draft"
+    description: "Branch name to push changes to for the release draft."
   version-filepath:
     default: "VERSION"
   changelog-filepath:
@@ -58,7 +58,7 @@ runs:
       id: semver
       uses: ietf-tools/semver-action@v1
       with:
-        token: ${{ input.github-token }}
+        token: ${{ inputs.github-token }}
         branch: ${{ github.ref_name }}
 
     - name: Set version variable & prepare files
