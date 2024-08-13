@@ -38,7 +38,7 @@ inputs:
     required: true
     default: "41898282+github-actions[bot]"
 
-jobs:
+runs:
   using: "composite"
   steps:
     - name: git config
