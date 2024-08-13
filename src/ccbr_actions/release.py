@@ -131,7 +131,7 @@ def get_release_version(
         next_version = next_version_convco
     # assert semantic version pattern
     check_version_increments_by_one(
-        next_version, current_version, with_leading_v=with_leading_v
+        current_version, next_version, with_leading_v=with_leading_v
     )
     return next_version
 
