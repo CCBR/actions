@@ -63,7 +63,7 @@ def prepare_draft_release(
         files=changed_files,
         debug=debug,
     )
-    create_release_draft(
+    release_url = create_release_draft(
         release_branch=release_branch,
         next_version=next_version,
         release_notes_filepath=release_notes_filepath,
@@ -71,6 +71,8 @@ def prepare_draft_release(
         repo=repo,
         debug=debug,
     )
+    set_output("RELEASE_URL", release_url)
+    return release_url
 
 
 def post_release_cleanup(
@@ -214,5 +216,7 @@ def create_release_draft(
     cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{repo} {version_strict}' --target {release_target}"
     if debug:
         print(cmd)
+        release_url = ""
     else:
-        shell_run(cmd)
+        release_url = shell_run(cmd)
+    return release_url
