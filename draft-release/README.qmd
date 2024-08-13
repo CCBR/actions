@@ -13,18 +13,30 @@ print(ccbr_actions.docs.action_markdown_header(action))
 ```
 
 This action helps create a draft release based on the contents of the changelog and commit history.
-It is designed to be used in conjunction with the [`post-release`](/post-release) action.
+It is designed to be used in a manually triggered workflow to draft a release.
+The latest commit in the branch you run the workflow from will be used as the target for the release tag.
 
 ## Usage
 
+Required files:
+
+- `CHANGELOG.md` - a changelog or news file with entries in reverse chronological order. The newest entry should contain "development header".
+- `VERSION` - a single-source version file.
+- `CITATION.cff` - a citation file.
 
 ### Basic example
 
 [draft-release.yml](examples/draft-release.yml)
 
-```yaml
-TODO
+
+```{python}
+yml_file='../examples/draft-release.yml'
+print('```yaml')
+with open(yml_file, 'r') as infile:
+  print(infile.read())
+print('```\n')
 ```
+
 
 ### Customized inputs
 

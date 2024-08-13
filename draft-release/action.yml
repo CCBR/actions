@@ -89,4 +89,4 @@ runs:
     - name: Next steps
       shell: bash
       run: |
-        echo "Next steps: Take a look at the changes in the ${{ inputs.draft-branch }} branch and the release notes on the web. If everything is correct, publish the release. Otherwise, delete the release draft and cut the release manually."
+        echo "Next steps: Take a look at the changes in the ${{ inputs.draft-branch }} branch and the release notes on the web at <https://github.com/${{ github.repository }}/releases>. If everything is correct, publish the release. Otherwise, delete the release draft and cut the release manually."

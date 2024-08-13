@@ -1,20 +1,60 @@
-# Usage
-
 # draft-release
 
 Draft a new release based on conventional commits and prepare release
 notes
 
 This action helps create a draft release based on the contents of the
-changelog and commit history. It is designed to be used in conjunction
-with the [`post-release`](/post-release) action.
+changelog and commit history. It is designed to be used in a manually
+triggered workflow to draft a release. The latest commit in the branch
+you run the workflow from will be used as the target for the release
+tag.
+
+## Usage
+
+Required files:
+
+- `CHANGELOG.md` - a changelog or news file with entries in reverse
+  chronological order. The newest entry should contain “development
+  header”.
+- `VERSION` - a single-source version file.
+- `CITATION.cff` - a citation file.
 
 ### Basic example
 
 [draft-release.yml](examples/draft-release.yml)
 
 ```yaml
-TODO
+name: draft-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version-tag:
+        description: |
+          Semantic version tag for next release.
+          If not provided, it will be determined based on conventional commit history.
+          Example: v2.5.11
+        required: false
+        type: string
+        default: ""
+      draft-branch: release-draft
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required to include tags
+      - uses: actions/CCBR/actions/draft-release@main
+        with:
+          github-token: ${{ github.token }}
+          draft-branch: ${{ github.event.inputs.draft-branch }}
+          version-tag: ${{ github.event.inputs.version-tag }}
+          version-filepath: VERSION
+          changelog-filepath: CHANGELOG.md
+          citation-filepath: CITATION.cff
+          dev-header: "development version"
 ```
 
 ### Customized inputs

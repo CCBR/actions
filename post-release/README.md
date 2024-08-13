@@ -1,20 +1,53 @@
-# Usage
-
 # post-release
 
 Post-release cleanup chores, intended to be triggered by publishing a
 release
 
-This action is designed to be used in conjunction with
+This action is designed to be triggered by publishing a release. On
+completion, it will open a pull request to merge post-release clean up
+chores such as bumping the developemnt version in the version file and
+changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
+
+## Usage
+
+Required files:
+
+- `CHANGELOG.md` - a changelog or news file with entries in reverse
+  chronological order. The newest entry should contain “development
+  header”.
+- `VERSION` - a single-source version file.
+- `CITATION.cff` - a citation file.
 
 ### Basic example
 
 [post-release.yml](post-release.yml)
 
 ```yaml
-TODO
+name: post-release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/CCBR/actions/draft-release@main
+        with:
+          github-token: ${{ github.token }}
+          pr-branch: release/${{ github.ref_name }}
+          draft-branch: release-draft
+          version-filepath: VERSION
+          changelog-filepath: CHANGELOG.md
+          citation-filepath: CITATION.cff
+          dev-header: "development version"
 ```
 
 ### Customized inputs
@@ -26,7 +59,8 @@ TODO
 ## Inputs
 
 - `version_tag`: Version tag for the release event. Recommended to use
-  “${{ github.ref_name }}" . Default: `${{ github.ref_name }}\`.
+  “${{ github.ref_name }}"
+  . Default: `${{ github.ref_name }}\`.
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
 - `ccbr-actions-version`: The version of CCBR/actions to use.
