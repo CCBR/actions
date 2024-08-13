@@ -85,6 +85,7 @@ def post_release_cleanup(
     dev_header="development version",
     version_filepath="VERSION",
     citation_filepath="CITATION.cff",
+    debug=False,
 ):
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
@@ -99,13 +100,18 @@ def post_release_cleanup(
 
     changed_files = " ".join([citation_filepath, changelog_filepath, version_filepath])
     precommit_run(f"--files {changed_files}")
-    shell_run(
-        f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of { release_tag }" && git push --set-upstream origin { pr_branch }'
-    )
-    pr_url = shell_run(f"gh pr create --fill-first --reviewer { pr_reviewer }")
-    shell_run(
-        f'git push origin --delete {draft_branch} || echo "No {draft_branch} branch to delete"'
-    )
+
+    commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of { release_tag }" && git push --set-upstream origin { pr_branch }'
+    pr_cmd = f"gh pr create --fill-first --reviewer { pr_reviewer }"
+    delete_cmd = f'git push origin --delete {draft_branch} || echo "No {draft_branch} branch to delete"'
+    if debug:
+        print(commit_cmd, pr_cmd, delete_cmd)
+        pr_url = ""
+    else:
+        shell_run(commit_cmd)
+        pr_url = shell_run(f"gh pr create --fill-first --reviewer { pr_reviewer }")
+        shell_run(delete_cmd)
+
     set_output("PR_URL", pr_url)
     return pr_url
 
