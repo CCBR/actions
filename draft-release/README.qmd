@@ -1,0 +1,37 @@
+---
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_header(action))
+```
+
+This action helps create a draft release based on the contents of the changelog and commit history.
+It is designed to be used in conjunction with the [`post-release`](/post-release) action.
+
+## Usage
+
+
+### Basic example
+
+[draft-release.yml](examples/draft-release.yml)
+
+```yaml
+TODO
+```
+
+### Customized inputs
+
+```yaml
+TODO
+```
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```

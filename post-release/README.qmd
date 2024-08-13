@@ -1,0 +1,36 @@
+---
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_header(action))
+```
+
+This action is designed to be used in conjunction with [`draft-release`](/draft-release) to help automate parts of the release process.
+
+## Usage
+
+
+### Basic example
+
+[post-release.yml](post-release.yml)
+
+```yaml
+TODO
+```
+
+### Customized inputs
+
+```yaml
+TODO
+```
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```

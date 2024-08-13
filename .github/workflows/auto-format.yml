@@ -42,7 +42,7 @@ jobs:
           version: 1.4.515
       - name: quarto render readme files
         run: |
-          quarto render **/README.qmd
+          for f in **/README.qmd; do quarto render $f; done
       - name: format
         uses: pre-commit/action@v3.0.1
       - name: commit & push

@@ -19,12 +19,12 @@ need an mkdocs config file `mkdocs.yml` in the root of your repository.
 
 ```yaml
 steps:
-    - uses: actions/checkout@v4
+  - uses: actions/checkout@v4
     with:
-        fetch-depth: 0
-    - uses: CCBR/actions/mkdocs-mike@main
+      fetch-depth: 0
+  - uses: CCBR/actions/mkdocs-mike@main
     with:
-        github-token: ${{ github.token }}
+      github-token: ${{ github.token }}
 ```
 
 ### Customized inputs
@@ -59,16 +59,3 @@ steps:
 
 - `version`: The version of the docs being deployed..
 - `alias`: The alias of the version being deployed..
-
-## old
-
-- `github-token` - Github token to use for deployment. **Required**.
-  Recommend using `${{ github.token }}`.
-- `ccbr-actions-version` - Version of CCBR/actions to use. Default:
-  `main`.
-- `python version` - Python version to use. Default: `3.11`.
-- `docs-branch` - Branch to deploy documentation to. Default:
-  `gh-pages`.
-- `github-actor` - Username of GitHub actor for the git commit when the
-  docs branch is deployed. Default: `41898282+github-actions[bot]` (the
-  GitHub Actions bot).

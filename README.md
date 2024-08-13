@@ -1,6 +1,6 @@
-# CCBR Actions
-
 <!-- README.md is generated from README.qmd. Please edit that file -->
+
+# CCBR Actions
 
 GitHub Actions for CCBR repos
 
@@ -49,12 +49,12 @@ github actions runners): https://github.com/cli/cli#installation
 
 Then install the `ccbr_actions` package with pip:
 
-``` bash
+```bash
 pip install git+https://github.com/CCBR/ccbr_actions
 ```
 
 Or install it from a specific version or branch with:
 
-``` bash
+```bash
 pip install git+https://github.com/CCBR/ccbr_actions@main
 ```
