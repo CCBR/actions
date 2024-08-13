@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/post-release@main
+      - uses: CCBR/actions/post-release@v0.1
         with:
           github-token: ${{ github.token }}
 ```

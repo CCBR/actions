@@ -45,11 +45,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # required to include tags
-      - uses: CCBR/actions/draft-release@main
+      - uses: CCBR/actions/draft-release@v0.1
         with:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
-          ccbr-actions-version: main
 ```
 
 ### Customized inputs

@@ -9,9 +9,9 @@ GitHub Actions for CCBR repos
 
 ## Examples
 
-See [CCBR/actions/examples](examples) for workflow examples. You can
-copy and paste these into your own repository in `.github/workflows/`
-and modify them for your needs.
+See [examples/](examples) for workflow examples. You can copy these to
+your own repository in the `.github/workflows/` directory and modify
+them for your needs.
 
 - [build-nextflow](examples/build-nextflow.yml)
 - [build-python](examples/build-python.yml)
