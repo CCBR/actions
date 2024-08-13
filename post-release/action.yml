@@ -64,7 +64,7 @@ runs:
       run: |
         from ccbr_actions.release import post_release_cleanup
         post_release_cleanup(
-          changelog_filepath=${{ inputs.changelog-filepath }},
+          changelog_filepath="${{ inputs.changelog-filepath }}",
           repo="${{ github.event.repository.name }}",
           release_tag="${{ github.event.release.tag_name }}",
           pr_branch="${{ inputs.pr-branch }}",
