@@ -30,7 +30,7 @@ Required files:
 
 ### Basic example
 
-[post-release.yml](post-release.yml)
+[post-release.yml](/examples/post-release.yml)
 
 ```{python}
 yml_file='../examples/post-release.yml'

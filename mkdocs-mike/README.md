@@ -16,7 +16,7 @@ need an mkdocs config file `mkdocs.yml` in the root of your repository.
 
 ### Basic example
 
-[docs-mkdocs.yml](examples/docs-mkdocs.yml)
+[docs-mkdocs.yml](/examples/docs-mkdocs.yml)
 
 ```yaml
 steps:

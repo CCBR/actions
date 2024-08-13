@@ -23,7 +23,7 @@ You will also need an mkdocs config file `mkdocs.yml` in the root of your reposi
 
 ### Basic example
 
-[docs-mkdocs.yml](examples/docs-mkdocs.yml)
+[docs-mkdocs.yml](/examples/docs-mkdocs.yml)
 
 ```yaml
 steps:

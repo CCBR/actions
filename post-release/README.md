@@ -22,7 +22,7 @@ Required files:
 
 ### Basic example
 
-[post-release.yml](post-release.yml)
+[post-release.yml](/examples/post-release.yml)
 
 ```yaml
 name: post-release
