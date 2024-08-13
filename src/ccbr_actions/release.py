@@ -211,12 +211,8 @@ def create_release_draft(
     repo="${{ github.event.repository.name }}",
     debug=False,
 ):
-    cmd = f"""gh release create {next_version} \
---draft \
---notes-file {release_notes_filepath} \
---target {release_target} \
---title "{repo} {next_version.lstrip('v')}"
-"""
+    version_strict = next_version.lstrip("v")
+    cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{repo} {version_strict}' --target {release_target}"
     if debug:
         print(cmd)
     else:
