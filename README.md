@@ -1,6 +1,6 @@
-<!-- README.md is generated from README.qmd. Please edit that file -->
-
 # CCBR Actions
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
 
 GitHub Actions for CCBR repos
 
@@ -31,6 +31,8 @@ Custom actions used in our github workflows.
   conventional commits and prepare release notes
 - [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
   using mkdocs + mike
+- [post-release](post-release) - Post-release cleanup chores, intended
+  to be triggered by publishing a release
 
 ## Package
 
@@ -47,12 +49,12 @@ github actions runners): https://github.com/cli/cli#installation
 
 Then install the `ccbr_actions` package with pip:
 
-```bash
+``` bash
 pip install git+https://github.com/CCBR/ccbr_actions
 ```
 
 Or install it from a specific version or branch with:
 
-```bash
+``` bash
 pip install git+https://github.com/CCBR/ccbr_actions@main
 ```
