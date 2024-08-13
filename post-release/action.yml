@@ -58,8 +58,9 @@ runs:
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
-    - name: Bump changelog & version
+    - name: Bump changelog & version, open PR
       shell: python {0}
+      id: post-release
       run: |
         from ccbr_actions.release import post_release_cleanup
         post_release_cleanup(
@@ -76,4 +77,4 @@ runs:
     - name: Next steps
       shell: bash
       run: |
-        echo "Please review and merge the Pull Request."
+        echo "Please review and merge the Pull Request <${{ steps.post-release.outputs.pr_url }}>"
