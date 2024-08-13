@@ -12,10 +12,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/CCBR/actions/draft-release@main
+      - uses: CCBR/actions/post-release@main
         with:
           github-token: ${{ github.token }}
           pr-branch: release/${{ github.ref_name }}
+          ccbr-actions-version: main
           draft-branch: release-draft
           version-filepath: VERSION
           changelog-filepath: CHANGELOG.md
