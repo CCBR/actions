@@ -1,3 +1,5 @@
+# Usage
+
 # post-release
 
 Post-release cleanup chores, intended to be triggered by publishing a
@@ -9,8 +11,6 @@ chores such as bumping the developemnt version in the version file and
 changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
-
-## Usage
 
 Required files:
 
@@ -59,8 +59,7 @@ TODO
 ## Inputs
 
 - `version_tag`: Version tag for the release event. Recommended to use
-  “${{ github.ref_name }}"
-  . Default: `${{ github.ref_name }}\`.
+  “${{ github.ref_name }}" . Default: `${{ github.ref_name }}\`.
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
 - `ccbr-actions-version`: The version of CCBR/actions to use.
