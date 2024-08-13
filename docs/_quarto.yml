@@ -11,9 +11,8 @@ website:
 
 quartodoc:
   package: ccbr_actions
-
+  parser: google
   sidebar: _sidebar.yml
-
   sections:
     - title: Modules
       #desc: Functions for CCBR GitHub Actions
