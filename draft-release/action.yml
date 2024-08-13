@@ -15,23 +15,28 @@ inputs:
     description: "GitHub Actions token (e.g. github.token)"
     required: true
   ccbr-actions-version:
-    description: "The version of CCBR/actions to use"
+    description: "The version of ccbr_actions to use"
     required: true
     default: "main"
   python-version:
+    description: "The version of Python to install"
     required: true
     default: "3.11"
   draft-branch:
+    description: "The branch name to push changes to for the release draft."
     default: "release-draft"
     required: true
-    description: "Branch name to push changes to for the release draft."
   version-filepath:
+    description: "Path to the file containing the current version"
     default: "VERSION"
   changelog-filepath:
+    description: "Path to the changelog or news file"
     default: "CHANGELOG.md"
   citation-filepath:
+    description: "Path to the citation file"
     default: "CITATION.cff"
   dev-header:
+    description: "Header string to match to find the development version entry in the changelog, typically of the form '## <software name> development version'"
     default: "development version"
   github-actor:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed"
