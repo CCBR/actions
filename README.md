@@ -50,11 +50,11 @@ github actions runners): https://github.com/cli/cli#installation
 Then install the `ccbr_actions` package with pip:
 
 ```bash
-pip install git+https://github.com/CCBR/ccbr_actions
+pip install git+https://github.com/CCBR/actions
 ```
 
 Or install it from a specific version or branch with:
 
 ```bash
-pip install git+https://github.com/CCBR/ccbr_actions@main
+pip install git+https://github.com/CCBR/actions@v0.1
 ```
