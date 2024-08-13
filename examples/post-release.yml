@@ -15,4 +15,3 @@ jobs:
       - uses: CCBR/actions/post-release@main
         with:
           github-token: ${{ github.token }}
-          pr-branch: release/${{ github.ref_name }}
