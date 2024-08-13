@@ -74,6 +74,8 @@ runs:
           version_filepath="${{ inputs.version-filepath }}",
           citation_filepath="${{ inputs.citation-filepath }}",
         )
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
     - name: Next steps
       shell: bash
       run: |
