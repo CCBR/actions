@@ -1,3 +1,5 @@
+# Usage
+
 # draft-release
 
 Draft a new release based on conventional commits and prepare release
@@ -6,8 +8,6 @@ notes
 This action helps create a draft release based on the contents of the
 changelog and commit history. It is designed to be used in conjunction
 with the [`post-release`](/post-release) action.
-
-## Usage
 
 ### Basic example
 
