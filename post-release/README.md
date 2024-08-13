@@ -1,3 +1,5 @@
+# Usage
+
 # post-release
 
 Post-release cleanup chores, intended to be triggered by publishing a
@@ -9,8 +11,6 @@ chores such as bumping the developemnt version in the version file and
 changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
-
-## Usage
 
 Required files:
 
