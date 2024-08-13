@@ -5,8 +5,6 @@ This module provides functions to determine the appropriate version and alias
 for the documentation website based on the latest release tag and the current hash.
 """
 
-import os
-import uuid
 import warnings
 
 from .versions import (
@@ -16,6 +14,7 @@ from .versions import (
     get_major_minor_version,
     is_ancestor,
 )
+from .actions import set_output
 
 
 def get_docs_version():
@@ -104,39 +103,3 @@ def set_docs_version():
     version, alias = get_docs_version()
     set_output("VERSION", version)
     set_output("ALIAS", alias)
-
-
-def set_output(name, value):
-    """
-    Set a GitHub Actions output variable.
-
-    This function writes the given name and value to the GitHub Actions
-    environment file specified by the `GITHUB_OUTPUT` environment variable.
-
-    Parameters
-    ----------
-    name : str
-        The name of the output variable to set.
-    value : str
-        The value of the output variable to set.
-
-    See Also
-    --------
-    set_docs_version : Sets the documentation version and alias.
-
-    Notes
-    -----
-    The function uses a unique delimiter to ensure the value is correctly
-    interpreted by GitHub Actions.
-    See: <https://github.com/orgs/community/discussions/28146#discussioncomment-5638014>
-
-    Examples
-    --------
-    >>> set_output("VERSION", "1.0.0")
-    >>> set_output("ALIAS", "latest")
-    """
-    with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        delimiter = uuid.uuid1()
-        print(f"{name}<<{delimiter}", file=fh)
-        print(value, file=fh)
-        print(delimiter, file=fh)

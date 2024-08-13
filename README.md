@@ -27,6 +27,8 @@ and modify them for your needs.
 
 Custom actions used in our github workflows.
 
+- [draft-release](draft-release) - Draft a new release based on
+  conventional commits and prepare release notes
 - [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
   using mkdocs + mike
 

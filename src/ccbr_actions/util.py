@@ -11,6 +11,7 @@ Examples
 '/bin/sh: invalid_command: command not found\n'
 """
 
+import datetime
 import subprocess
 
 
@@ -43,3 +44,11 @@ def shell_run(cmd_str):
     """
     run = subprocess.run(cmd_str, shell=True, capture_output=True, text=True)
     return "\n".join([run.stdout, run.stderr])
+
+
+def date_today():
+    return datetime.datetime.today().strftime("%Y-%m-%d")
+
+
+def precommit_run(args):
+    return shell_run(f"pre-commit run {args}")
