@@ -65,7 +65,7 @@ runs:
       shell: python {0}
       id: set-version
       run: |
-        from ccbr_actions.releases import prepare_draft_release
+        from ccbr_actions.release import prepare_draft_release
         prepare_draft_release(
           next_version_manual="${{ inputs.version-tag }}",
           next_version_convco="${{ steps.semver.outputs.next }}",

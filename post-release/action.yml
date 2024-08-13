@@ -61,7 +61,7 @@ runs:
     - name: Bump changelog & version
       shell: python {0}
       run: |
-        from ccbr_actions import post_release_cleanup
+        from ccbr_actions.release import post_release_cleanup
         post_release_cleanup(
           changelog_filepath=${{ inputs.changelog-filepath }},
           repo="${{ github.event.repository.name }}",
