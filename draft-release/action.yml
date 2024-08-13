@@ -9,7 +9,6 @@ inputs:
       If not provided, it will be determined based on conventional commit history.
       Example: v2.5.11
     required: false
-    type: string
     default: ""
   github-token:
     description: "GitHub Actions token (e.g. github.token)"

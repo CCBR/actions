@@ -1,5 +1,3 @@
-# Usage
-
 # draft-release
 
 Draft a new release based on conventional commits and prepare release
@@ -10,6 +8,8 @@ changelog and commit history. It is designed to be used in a manually
 triggered workflow to draft a release. The latest commit in the branch
 you run the workflow from will be used as the target for the release
 tag.
+
+## Usage
 
 Required files:
 
@@ -37,7 +37,6 @@ on:
         required: false
         type: string
         default: ""
-      draft-branch: release-draft
 
 jobs:
   draft-release:
@@ -46,21 +45,32 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # required to include tags
-      - uses: actions/CCBR/actions/draft-release@main
+      - uses: CCBR/actions/draft-release@main
         with:
           github-token: ${{ github.token }}
-          draft-branch: ${{ github.event.inputs.draft-branch }}
           version-tag: ${{ github.event.inputs.version-tag }}
-          version-filepath: VERSION
-          changelog-filepath: CHANGELOG.md
-          citation-filepath: CITATION.cff
-          dev-header: "development version"
+          ccbr-actions-version: main
 ```
 
 ### Customized inputs
 
 ```yaml
-TODO
+steps:
+  - uses: actions/checkout@v4
+    with:
+      fetch-depth: 0 # required to include tags
+  - uses: CCBR/actions/draft-release@main
+    with:
+      github-token: ${{ github.token }}
+      version-tag: ${{ github.event.inputs.version-tag }}
+      ccbr-actions-version: main
+      python-verson: 3.11
+      draft-branch: "release-draft"
+      version-filepath: VERSION
+      changelog-filepath: CHANGELOG.md
+      citation-filepath: CITATION.cff
+      dev-header: "development version"
+      github-actor: "41898282+github-actions[bot]"
 ```
 
 ## Inputs

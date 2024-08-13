@@ -16,9 +16,3 @@ jobs:
         with:
           github-token: ${{ github.token }}
           pr-branch: release/${{ github.ref_name }}
-          ccbr-actions-version: main
-          draft-branch: release-draft
-          version-filepath: VERSION
-          changelog-filepath: CHANGELOG.md
-          citation-filepath: CITATION.cff
-          dev-header: "development version"

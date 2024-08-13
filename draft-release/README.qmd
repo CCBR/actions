@@ -41,7 +41,22 @@ print('```\n')
 ### Customized inputs
 
 ```yaml
-TODO
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required to include tags
+      - uses: CCBR/actions/draft-release@main
+        with:
+          github-token: ${{ github.token }}
+          version-tag: ${{ github.event.inputs.version-tag }}
+          ccbr-actions-version: main
+          python-verson: 3.11
+          draft-branch: "release-draft"
+          version-filepath: VERSION
+          changelog-filepath: CHANGELOG.md
+          citation-filepath: CITATION.cff
+          dev-header: "development version"
+          github-actor: "41898282+github-actions[bot]"
 ```
 
 ```{python}

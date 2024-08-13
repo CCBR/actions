@@ -1,5 +1,3 @@
-# Usage
-
 # post-release
 
 Post-release cleanup chores, intended to be triggered by publishing a
@@ -11,6 +9,8 @@ chores such as bumping the developemnt version in the version file and
 changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
+
+## Usage
 
 Required files:
 
@@ -39,21 +39,31 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/CCBR/actions/draft-release@main
+      - uses: CCBR/actions/post-release@main
         with:
           github-token: ${{ github.token }}
           pr-branch: release/${{ github.ref_name }}
-          draft-branch: release-draft
-          version-filepath: VERSION
-          changelog-filepath: CHANGELOG.md
-          citation-filepath: CITATION.cff
-          dev-header: "development version"
 ```
 
 ### Customized inputs
 
 ```yaml
-TODO
+steps:
+  - uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+  - uses: CCBR/actions/post-release@main
+    with:
+      github-token: ${{ github.token }}
+      ccbr-actions-version: main
+      python-version: 3.11
+      pr-branch: release/${{ github.ref_name }}
+      draft-branch: release-draft
+      version-filepath: VERSION
+      changelog-filepath: CHANGELOG.md
+      citation-filepath: CITATION.cff
+      dev-header: "development version"
+      github-actor: "41898282+github-actions[bot]"
 ```
 
 ## Inputs

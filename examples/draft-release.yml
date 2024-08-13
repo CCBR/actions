@@ -24,8 +24,3 @@ jobs:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
           ccbr-actions-version: main
-          draft-branch: "release-draft"
-          version-filepath: VERSION
-          changelog-filepath: CHANGELOG.md
-          citation-filepath: CITATION.cff
-          dev-header: "development version"
