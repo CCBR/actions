@@ -3,7 +3,7 @@ name: draft-release
 on:
   workflow_dispatch:
     inputs:
-      version_tag:
+      version-tag:
         description: |
           Semantic version tag for next release.
           If not provided, it will be determined based on conventional commit history.
@@ -11,7 +11,7 @@ on:
         required: false
         type: string
         default: ""
-      branch: release-draft
+      draft-branch: release-draft
 
 jobs:
   draft-release:
@@ -23,3 +23,9 @@ jobs:
       - uses: actions/CCBR/actions/draft-release@main
         with:
           github-token: ${{ github.token }}
+          draft-branch: ${{ github.event.inputs.draft-branch }}
+          version-tag: ${{ github.event.inputs.version-tag }}
+          version-filepath: VERSION
+          changelog-filepath: CHANGELOG.md
+          citation-filepath: CITATION.cff
+          dev-header: "development version"

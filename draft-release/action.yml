@@ -3,7 +3,7 @@ description: "Draft a new release based on conventional commits and prepare rele
 author: "Kelly Sovacool"
 
 inputs:
-  version_tag:
+  version-tag:
     description: |
       Semantic version tag for next release.
       If not provided, it will be determined based on conventional commit history.
@@ -21,17 +21,17 @@ inputs:
   python-version:
     required: true
     default: "3.11"
-  release-branch:
+  draft-branch:
     default: "release-draft"
     required: true
     description: "Branch to use for the release draft"
-  version_filepath:
+  version-filepath:
     default: "VERSION"
-  changelog_filepath:
+  changelog-filepath:
     default: "CHANGELOG.md"
-  citation_filepath:
+  citation-filepath:
     default: "CITATION.cff"
-  dev_header:
+  dev-header:
     default: "development version"
   github-actor:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed"
@@ -41,9 +41,6 @@ inputs:
 jobs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # required to include tags
     - name: git config
       shell: bash
       run: |
@@ -70,15 +67,15 @@ jobs:
       run: |
         from ccbr_actions.releases import prepare_draft_release
         prepare_draft_release(
-          next_version_manual="${{ inputs.version_tag }}",
+          next_version_manual="${{ inputs.version-tag }}",
           next_version_convco="${{ steps.semver.outputs.next }}",
           current_version="${{ steps.semver.outputs.current }}",
-          version_filepath="${{ inputs.version_filepath }}",
-          dev_header="${{ inputs.dev_header }}",
-          changelog_filepath="${{ inputs.changelog_filepath }}",
-          citation_filepath = "${{ inputs.citation_filepath }}",
+          version_filepath="${{ inputs.version-filepath }}",
+          dev_header="${{ inputs.dev-header }}",
+          changelog_filepath="${{ inputs.changelog-filepath }}",
+          citation_filepath = "${{ inputs.citation-filepath }}",
           gh_event_name="${{ github.event_name }}",
-          release_branch="${{ inputs.release-branch }}",
+          release_branch="${{ inputs.draft-branch }}",
           pr_ref_name="${{ github.ref_name }}",
           repo = "${{ github.event.repository.name }}",
         )
@@ -87,4 +84,4 @@ jobs:
     - name: Next steps
       shell: bash
       run: |
-        echo "Next steps: Take a look at the changes in the ${{ env.BRANCH }} branch and the release notes on the web. If everything is correct, publish the release. Otherwise, delete the release draft and cut the release manually."
+        echo "Next steps: Take a look at the changes in the ${{ inputs.draft-branch }} branch and the release notes on the web. If everything is correct, publish the release. Otherwise, delete the release draft and cut the release manually."

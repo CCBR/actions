@@ -1,0 +1,75 @@
+name: post-release
+description: "Post-release cleanup chores, intended to be triggered by publishing a release"
+author: "Kelly Sovacool"
+
+inputs:
+  version_tag:
+    description: |
+      Version tag for the release event. Recommended to use "${{ github.ref_name }}"
+    required: false
+    type: string
+    default: "${{ github.ref_name }}"
+  github-token:
+    description: "GitHub Actions token (e.g. github.token)"
+    required: true
+  ccbr-actions-version:
+    description: "The version of CCBR/actions to use"
+    required: true
+    default: "main"
+  python-version:
+    required: true
+    default: "3.11"
+  pr-branch:
+    default: "release/${{ github.ref_name }}"
+    required: true
+    description: "Branch to use for the post-release chores, where a PR will be opened. Recommended to use 'release/{TAG_NAME}'"
+  draft-branch:
+    default: "release-draft"
+    required: true
+    description: "Branch used for the prior release draft"
+  version-filepath:
+    default: "VERSION"
+  changelog-filepath:
+    default: "CHANGELOG.md"
+  citation-filepath:
+    default: "CITATION.cff"
+  dev-header:
+    default: "development version"
+  github-actor:
+    description: "Username of GitHub actor for the git commit when the docs branch is deployed"
+    required: true
+    default: "41898282+github-actions[bot]"
+
+jobs:
+  using: "composite"
+  steps:
+    - name: git config
+      shell: bash
+      run: |
+        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.github-actor }}"
+        git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
+        git switch -c ${{ inputs.pr-branch }}
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "pip"
+    - name: Install
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - name: Bump changelog & version
+      shell: python {0}
+      run: |
+        from ccbr_actions import post_release_cleanup
+        post_release_cleanup(
+          changelog_filepath=${{ inputs.changelog-filepath }},
+          repo="${{ github.event.repository.name }}",
+          release_tag="${{ github.ref_name }}",
+          pr_branch="${{ inputs.pr-branch }}",
+          pr_reviewer="${{ github.triggering_actor }}",
+          draft_branch="${{ inputs.draft-branch }}",
+          dev_header="${{ inputs.dev-header }}",
+          version_filepath="${{ inputs.version-filepath }}",
+          citation_filepath="${{ inputs.citation-filepath }}",
+        )
