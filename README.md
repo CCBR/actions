@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
-# CCBR Actions
+# CCBR Actions 🤖
 
 GitHub Actions for CCBR repos
 
