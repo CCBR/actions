@@ -1,23 +1,9 @@
 """
-Module for interacting with GitHub releases and tags.
+Module for getting information from git tags, commit hashes, and GitHub releases.
 
 This module provides functions to retrieve and process release information from GitHub using the GitHub CLI.
-
-Examples
---------
->>> get_current_hash()
-'def456ghi789'
-
->>> match_semver("1.0.0")
-<re.Match object; span=(0, 5), match='1.0.0'>
-
->>> get_major_minor_version("1.2.3")
-'1.2'
-
->>> is_ancestor("abc123def456", "def456ghi789")
-True
 """
-
+import json
 import re
 
 from .util import shell_run
@@ -182,3 +168,106 @@ def is_ancestor(ancestor, descendant):
             f"git merge-base --is-ancestor {ancestor} {descendant}  && echo True || echo False"
         ).strip()
     )
+
+
+def get_releases(limit=1, args="", json_fields="name,tagName,isLatest,publishedAt"):
+    """
+    Get a list of releases from GitHub.
+
+    Uses the GitHub CLI to retrieve a list of releases from a repository.
+
+    Parameters
+    ----------
+    limit : int, optional
+        The maximum number of releases to retrieve (default is 1).
+    args : str, optional
+        Additional arguments to pass to the GitHub CLI command (default is "").
+    json_fields : str, optional
+        The JSON fields to include in the output (default is "name,tagName,isLatest,publishedAt").
+
+    Returns
+    -------
+    list
+        A list of dictionaries containing release information.
+
+    See Also
+    --------
+    get_latest_release_tag : Get the tag name of the latest release.
+    get_latest_release_hash : Get the commit hash of the latest release.
+
+    Notes
+    -----
+    gh cli docs: <https://cli.github.com/manual/gh_release_list>
+
+    Examples
+    --------
+    >>> get_releases(limit=2)
+    [{'name': 'v1.0.0', 'tagName': 'v1.0.0', 'isLatest': True, 'publishedAt': '2021-01-01T00:00:00Z'},
+     {'name': 'v0.9.0', 'tagName': 'v0.9.0', 'isLatest': False, 'publishedAt': '2020-12-01T00:00:00Z'}]
+    >>> get_releases(limit=2, args="--repo CCBR/RENEE")
+    [{'isLatest': True, 'name': 'RENEE 2.5.12', 'publishedAt': '2024-04-12T14:49:11Z', 'tagName': 'v2.5.12'},
+     {'isLatest': False, 'name': 'RENEE 2.5.11', 'publishedAt': '2024-01-22T21:02:30Z', 'tagName': 'v2.5.11'}]
+    """
+    releases = shell_run(f"gh release list --limit {limit} --json {json_fields} {args}")
+    return json.loads(releases)
+
+
+def get_latest_release_tag(args=""):
+    """
+    Get the tag name of the latest release.
+
+    Uses the GitHub CLI to retrieve the latest release tag from a repository.
+
+    Parameters
+    ----------
+    args : str, optional
+        Additional arguments to pass to the GitHub CLI command (default is "").
+
+    Returns
+    -------
+    str or None
+        The tag name of the latest release, or None if no latest release is found.
+
+    See Also
+    --------
+    get_releases : Get a list of releases from GitHub.
+
+    Examples
+    --------
+    >>> get_latest_release_tag()
+    'v1.0.0'
+    """
+    releases = get_releases(limit=1, args=args)
+    return releases[0]["tagName"] if releases and releases[0]["isLatest"] else None
+
+
+def get_latest_release_hash():
+    """
+    Get the commit hash of the latest release.
+
+    Uses git rev-list to get the commit hash of the latest release tag.
+
+    Returns
+    -------
+    str
+        The commit hash of the latest release.
+
+    Raises
+    ------
+    ValueError
+        If the tag is not found in the repository commit history.
+
+    See Also
+    --------
+    get_latest_release_tag : Get the tag name of the latest release.
+
+    Examples
+    --------
+    >>> get_latest_release_hash()
+    'abc123def4567890abcdef1234567890abcdef12'
+    """
+    tag_name = get_latest_release_tag()
+    tag_hash = shell_run(f"git rev-list -n 1 {tag_name}")
+    if "fatal: ambiguous argument" in tag_hash:
+        raise ValueError(f"Tag {tag_name} not found in repository commit history")
+    return tag_hash

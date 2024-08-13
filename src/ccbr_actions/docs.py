@@ -4,8 +4,8 @@ Module for managing documentation versions.
 This module provides functions to determine the appropriate version and alias
 for the documentation website based on the latest release tag and the current hash.
 """
-
 import warnings
+import yaml
 
 from .versions import (
     get_latest_release_tag,
@@ -103,3 +103,31 @@ def set_docs_version():
     version, alias = get_docs_version()
     set_output("VERSION", version)
     set_output("ALIAS", alias)
+
+
+def parse_action_yaml(filename):
+    with open(filename, "r") as infile:
+        action = yaml.load(infile, Loader=yaml.FullLoader)
+    return action
+
+
+def action_markdown_header(action_dict):
+    name = action_dict.get("name", "")
+    description = action_dict.get("description", "")
+    return f"# {name}\n\n{description}\n\n"
+
+
+def action_markdown_io(action_dict):
+    markdown = ["## Inputs\n\n"]
+    for name, details in action_dict.get("inputs", {}).items():
+        required = " **Required.**" if details.get("required", False) else ""
+        default = (
+            f" Default: `{details['default']}`." if details.get("default", None) else ""
+        )
+        markdown.append(
+            f"  - `{name}`: {details.get('description', '')}.{required}{default}"
+        )
+    markdown.append("\n## Outputs\n\n")
+    for name, details in action_dict.get("outputs", {}).items():
+        markdown.append(f"  - `{name}`: {details.get('description', '')}.")
+    return "\n".join(markdown)

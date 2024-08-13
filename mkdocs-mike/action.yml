@@ -3,7 +3,7 @@ description: "Deploy documentation to github pages using mkdocs + mike"
 author: "Kelly Sovacool"
 inputs:
   github-token:
-    description: "GitHub Actions token (e.g. github.token)"
+    description: "GitHub Actions token (e.g. { github.token })"
     required: true
   ccbr-actions-version:
     description: "The version of CCBR/actions to use"
