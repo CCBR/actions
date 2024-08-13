@@ -4,6 +4,7 @@ Module for managing documentation versions.
 This module provides functions to determine the appropriate version and alias
 for the documentation website based on the latest release tag and the current hash.
 """
+
 import warnings
 import yaml
 
