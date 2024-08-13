@@ -58,3 +58,18 @@ Or install it from a specific version or branch with:
 ```bash
 pip install git+https://github.com/CCBR/actions@v0.1
 ```
+
+## Citation
+
+Please cite this software if you use it in a publication:
+
+> Sovacool K., Koparde V. CCBR actions: GitHub Actions for CCBR repos
+> URL: https://ccbr.github.io/actions/
+
+### Bibtex entry
+
+    @misc{YourReferenceHere,
+    author = {Sovacool, Kelly and Koparde, Vishal},
+    title = {CCBR actions: GitHub Actions for CCBR repos},
+    url = {https://ccbr.github.io/actions/}
+    }
