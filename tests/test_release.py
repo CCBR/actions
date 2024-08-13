@@ -1,4 +1,12 @@
-from ccbr_actions.release import create_release_draft, push_release_draft_branch
+import pytest
+import warnings
+
+from ccbr_actions.release import (
+    create_release_draft,
+    push_release_draft_branch,
+    get_changelog_lines,
+    get_release_version,
+)
 from ccbr_actions.util import exec_in_context
 
 
@@ -36,4 +44,57 @@ git commit -m 'chore: 🤖 prepare release v1'
 git push --set-upstream origin release-draft
 
 """
+    )
+
+
+def test_get_changelog_lines():
+    new_changelog, release_notes = get_changelog_lines(
+        "0.1.0", "0.2.0", changelog_filepath="tests/data/example_changelog.md"
+    )
+    assert all(
+        [
+            new_changelog[0] == "## actions 0.2.0\n",
+            release_notes == ["\n", "development version notes go here\n", "\n"],
+        ]
+    )
+
+
+def test_get_release_version():
+    get_release_version(
+        next_version_manual=None,
+        next_version_convco="v1.10.0",
+        current_version="v1.9.10",
+    ) == "v1.10.0"
+
+
+def test_get_release_version_warning():
+    warnings.filterwarnings("error")
+    with pytest.raises(UserWarning) as exc_info1:
+        get_release_version(
+            next_version_manual="v2.0.0",
+            next_version_convco="v1.10.0",
+            current_version="v1.9.10",
+        )
+    warnings.resetwarnings()
+    with pytest.raises(ValueError) as exc_info2:
+        get_release_version(
+            next_version_manual="v3.0.0",
+            next_version_convco="v1.10.0",
+            current_version="v1.9.10",
+        )
+    assert all(
+        [
+            "Manual version (v2.0.0) not equal to version determined by conventional commit history (v1.10.0)"
+            in str(exc_info1.value),
+            "Next version must only increment one number at a time. Current version: v1.9.10. Proposed next version: v3.0.0."
+            in str(exc_info2.value),
+        ]
+    )
+
+
+def test_get_release_version_semver_error():
+    with pytest.raises(Exception) as exc_info:
+        get_release_version(next_version_manual="v2", current_version="v1")
+    assert "Tag v2 does not match semantic versioning guidelines." in str(
+        exc_info.value
     )

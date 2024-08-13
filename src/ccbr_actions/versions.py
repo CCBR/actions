@@ -108,8 +108,14 @@ def get_major_minor_version(version_str):
 
 
 def check_version_increments_by_one(
-    current_version, next_version, with_leading_v=False
+    current_version,
+    next_version,
+    with_leading_v=False,
+    error_on_false=True,
+    debug=False,
 ):
+    is_valid = True
+    error_msg = f"Next version must only increment one number at a time. Current version: {current_version}. Proposed next version: {next_version}."
     # assert semantic version pattern
     next_semver = match_semver(next_version, with_leading_v=with_leading_v)
     if not next_semver:
@@ -122,16 +128,41 @@ def check_version_increments_by_one(
 
     # assert next version is only 1 greater than current
     current_semver = match_semver(current_version, with_leading_v=with_leading_v)
-    greater = sum(
-        [
-            next_semver.group(grp) > current_semver.group(grp)
-            for grp in ["major", "minor", "patch"]
-        ]
-    )
-    if not (greater == 1):
-        raise ValueError(
-            f"Next version must only increment one number at a time. Current version: {current_version}. Proposed next version: {next_version}"
-        )
+
+    groups = ["major", "minor", "patch"]
+
+    groups_by_one = {
+        grp: (int(next_semver.group(grp)) == 1 + int(current_semver.group(grp)))
+        for grp in groups
+    }
+    groups_equal = {
+        grp: (int(next_semver.group(grp)) == int(current_semver.group(grp)))
+        for grp in groups
+    }
+    num_greater = sum(groups_by_one.values())
+    if debug:
+        print("group_increments: ", groups_by_one)
+        print("group_equals: ", groups_equal)
+    # if a digit is not incremented, it must be equal
+    bigger_digit_increments = False
+    for grp in groups:
+        increments = groups_by_one[grp]
+        equals = groups_equal[grp]
+        if not increments and not (
+            equals or (int(next_semver.group(grp)) == 0) and bigger_digit_increments
+        ):
+            is_valid = False
+            if error_on_false:
+                raise ValueError(error_msg)
+        if increments:
+            bigger_digit_increments = True
+    # must increment by exactly one
+    if not (num_greater == 1):
+        is_valid = False
+        if error_on_false:
+            raise ValueError(error_msg)
+
+    return is_valid
 
 
 def is_ancestor(ancestor, descendant):

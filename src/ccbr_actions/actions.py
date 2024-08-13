@@ -82,7 +82,7 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
         )
 
 
-def set_output(name, value):
+def set_output(name, value, environ="GITHUB_OUTPUT"):
     """
     Set a GitHub Actions output variable.
 
@@ -111,8 +111,11 @@ def set_output(name, value):
     >>> set_output("VERSION", "1.0.0")
     >>> set_output("ALIAS", "latest")
     """
-    with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        delimiter = uuid.uuid1()
-        print(f"{name}<<{delimiter}", file=fh)
-        print(value, file=fh)
-        print(delimiter, file=fh)
+    if os.environ.get(environ):
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            delimiter = uuid.uuid1()
+            print(f"{name}<<{delimiter}", file=fh)
+            print(value, file=fh)
+            print(delimiter, file=fh)
+    else:
+        print(f"::set-output name={name}::{value}")
