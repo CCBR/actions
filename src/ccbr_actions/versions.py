@@ -3,6 +3,7 @@ Module for getting information from git tags, commit hashes, and GitHub releases
 
 This module provides functions to retrieve and process release information from GitHub using the GitHub CLI.
 """
+
 import json
 import re
 
