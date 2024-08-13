@@ -48,7 +48,7 @@ runs:
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
         git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
-        git switch ${{ github.event.release.tag_name }}
+        git checkout ${{ github.event.release.tag_name }}
         git switch -c ${{ inputs.pr-branch }}
     - uses: actions/setup-python@v5
       with:
