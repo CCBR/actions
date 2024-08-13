@@ -47,10 +47,12 @@ steps:
 
 - `github-token`: GitHub Actions token (e.g. { github.token }).
   **Required.**
-- `ccbr-actions-version`: The version of CCBR/actions to use.
+- `ccbr-actions-version`: The version of ccbr_actions to install.
   **Required.** Default: `main`.
-- `python-version`: . **Required.** Default: `3.11`.
-- `docs-branch`: . **Required.** Default: `gh-pages`.
+- `python-version`: The version of Python to install. **Required.**
+  Default: `3.11`.
+- `docs-branch`: The branch to deploy the docs website to. **Required.**
+  Default: `gh-pages`.
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.
