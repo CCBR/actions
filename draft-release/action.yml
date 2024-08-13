@@ -1,0 +1,91 @@
+name: draft-release
+description: "Draft a new release based on conventional commits and prepare release notes"
+author: "Kelly Sovacool"
+
+inputs:
+  version-tag:
+    description: |
+      Semantic version tag for next release.
+      If not provided, it will be determined based on conventional commit history.
+      Example: v2.5.11
+    required: false
+    default: ""
+  github-token:
+    description: "GitHub Actions token (e.g. github.token)"
+    required: true
+  ccbr-actions-version:
+    description: "The version of ccbr_actions to use"
+    required: true
+    default: "main"
+  python-version:
+    description: "The version of Python to install"
+    required: true
+    default: "3.11"
+  draft-branch:
+    description: "The branch name to push changes to for the release draft."
+    default: "release-draft"
+    required: true
+  version-filepath:
+    description: "Path to the file containing the current version"
+    default: "VERSION"
+  changelog-filepath:
+    description: "Path to the changelog or news file"
+    default: "CHANGELOG.md"
+  citation-filepath:
+    description: "Path to the citation file"
+    default: "CITATION.cff"
+  dev-header:
+    description: "Header string to match to find the development version entry in the changelog, typically of the form '## <software name> development version'"
+    default: "development version"
+  github-actor:
+    description: "Username of GitHub actor for the git commit when the docs branch is deployed"
+    required: true
+    default: "41898282+github-actions[bot]"
+
+runs:
+  using: "composite"
+  steps:
+    - name: git config
+      shell: bash
+      run: |
+        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.github-actor }}"
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "pip"
+    - name: Install
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - name: Get current and next versions
+      id: semver
+      uses: ietf-tools/semver-action@v1
+      with:
+        token: ${{ inputs.github-token }}
+        branch: ${{ github.ref_name }}
+
+    - name: Set version variable & prepare files
+      shell: python {0}
+      id: set-version
+      run: |
+        from ccbr_actions.release import prepare_draft_release
+        prepare_draft_release(
+          next_version_manual="${{ inputs.version-tag }}",
+          next_version_convco="${{ steps.semver.outputs.next }}",
+          current_version="${{ steps.semver.outputs.current }}",
+          version_filepath="${{ inputs.version-filepath }}",
+          dev_header="${{ inputs.dev-header }}",
+          changelog_filepath="${{ inputs.changelog-filepath }}",
+          citation_filepath = "${{ inputs.citation-filepath }}",
+          gh_event_name="${{ github.event_name }}",
+          release_branch="${{ inputs.draft-branch }}",
+          pr_ref_name="${{ github.ref_name }}",
+          repo = "${{ github.event.repository.name }}",
+        )
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+    - name: Next steps
+      shell: bash
+      run: |
+        echo "Next steps: Take a look at the changes in the ${{ inputs.draft-branch }} branch and the release notes on the web <${{ steps.set-version.outputs.RELEASE_URL }}>. If everything is correct, publish the release. Otherwise, delete the release draft and cut the release manually."

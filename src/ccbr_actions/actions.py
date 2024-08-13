@@ -17,7 +17,7 @@ Examples
 
 import os
 import requests
-
+import uuid
 
 from .versions import get_latest_release_tag
 
@@ -80,3 +80,39 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
         raise ValueError(
             f"Failed to download {url}. Are you sure {name} is a valid GitHub Action in {repo}?"
         )
+
+
+def set_output(name, value):
+    """
+    Set a GitHub Actions output variable.
+
+    This function writes the given name and value to the GitHub Actions
+    environment file specified by the `GITHUB_OUTPUT` environment variable.
+
+    Parameters
+    ----------
+    name : str
+        The name of the output variable to set.
+    value : str
+        The value of the output variable to set.
+
+    See Also
+    --------
+    set_docs_version : Sets the documentation version and alias.
+
+    Notes
+    -----
+    The function uses a unique delimiter to ensure the value is correctly
+    interpreted by GitHub Actions.
+    See: <https://github.com/orgs/community/discussions/28146#discussioncomment-5638014>
+
+    Examples
+    --------
+    >>> set_output("VERSION", "1.0.0")
+    >>> set_output("ALIAS", "latest")
+    """
+    with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+        delimiter = uuid.uuid1()
+        print(f"{name}<<{delimiter}", file=fh)
+        print(value, file=fh)
+        print(delimiter, file=fh)

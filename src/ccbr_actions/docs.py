@@ -5,9 +5,8 @@ This module provides functions to determine the appropriate version and alias
 for the documentation website based on the latest release tag and the current hash.
 """
 
-import os
-import uuid
 import warnings
+import yaml
 
 from .versions import (
     get_latest_release_tag,
@@ -16,6 +15,7 @@ from .versions import (
     get_major_minor_version,
     is_ancestor,
 )
+from .actions import set_output
 
 
 def get_docs_version():
@@ -106,37 +106,35 @@ def set_docs_version():
     set_output("ALIAS", alias)
 
 
-def set_output(name, value):
-    """
-    Set a GitHub Actions output variable.
+def parse_action_yaml(filename):
+    with open(filename, "r") as infile:
+        action = yaml.load(infile, Loader=yaml.FullLoader)
+    return action
 
-    This function writes the given name and value to the GitHub Actions
-    environment file specified by the `GITHUB_OUTPUT` environment variable.
 
-    Parameters
-    ----------
-    name : str
-        The name of the output variable to set.
-    value : str
-        The value of the output variable to set.
+def action_markdown_desc(action_dict):
+    name = action_dict.get("name", "")
+    description = action_dict.get("description", "")
+    return f"**`{name}`** - {description}\n\n"
 
-    See Also
-    --------
-    set_docs_version : Sets the documentation version and alias.
 
-    Notes
-    -----
-    The function uses a unique delimiter to ensure the value is correctly
-    interpreted by GitHub Actions.
-    See: <https://github.com/orgs/community/discussions/28146#discussioncomment-5638014>
+def action_markdown_header(action_dict):
+    name = action_dict.get("name", "")
+    description = action_dict.get("description", "")
+    return f"# {name}\n\n{description}\n\n"
 
-    Examples
-    --------
-    >>> set_output("VERSION", "1.0.0")
-    >>> set_output("ALIAS", "latest")
-    """
-    with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        delimiter = uuid.uuid1()
-        print(f"{name}<<{delimiter}", file=fh)
-        print(value, file=fh)
-        print(delimiter, file=fh)
+
+def action_markdown_io(action_dict):
+    markdown = ["## Inputs\n\n"]
+    for name, details in action_dict.get("inputs", {}).items():
+        required = " **Required.**" if details.get("required", False) else ""
+        default = (
+            f" Default: `{details['default']}`." if details.get("default", None) else ""
+        )
+        markdown.append(
+            f"  - `{name}`: {details.get('description', '')}.{required}{default}"
+        )
+    markdown.append("\n## Outputs\n\n")
+    for name, details in action_dict.get("outputs", {}).items():
+        markdown.append(f"  - `{name}`: {details.get('description', '')}.")
+    return "\n".join(markdown)

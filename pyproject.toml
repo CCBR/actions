@@ -34,8 +34,11 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "Click >= 8.1.3",
+    "cffconvert>=2.0.0",
     "mkdocs",
     "mike",
+    "pre-commit",
+    "pyyaml",
     "requests"
 ]
 
@@ -43,7 +46,6 @@ dependencies = [
 dev = [
     "black >= 23.10.0",
     "jupyter",
-    "pre-commit",
     "pyyaml"
 ]
 test = [

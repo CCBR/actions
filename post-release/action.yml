@@ -1,0 +1,82 @@
+name: post-release
+description: "Post-release cleanup chores, intended to be triggered by publishing a release"
+author: "Kelly Sovacool"
+
+inputs:
+  github-token:
+    description: "GitHub Actions token (e.g. github.token)"
+    required: true
+  ccbr-actions-version:
+    description: "The version of CCBR/actions to use"
+    required: true
+    default: "main"
+  python-version:
+    description: "The version of Python to install"
+    required: true
+    default: "3.11"
+  pr-branch:
+    description: "Branch to use for the post-release chores, from where a PR will be opened. Recommended to use 'release/{TAG_NAME}'"
+    default: "release/${{ github.ref_name }}"
+    required: true
+  draft-branch:
+    description: "Branch used for the prior release draft (see `draft-release` action)"
+    default: "release-draft"
+    required: true
+  version-filepath:
+    description: "Path to the file containing the current version"
+    default: "VERSION"
+  changelog-filepath:
+    description: "Path to the changelog or news file"
+    default: "CHANGELOG.md"
+  citation-filepath:
+    description: "Path to the citation file"
+    default: "CITATION.cff"
+  dev-header:
+    description: "Header string to match to find the development version entry in the changelog, typically of the form '## <software name> development version'"
+    default: "development version"
+  github-actor:
+    description: "Username of GitHub actor for the git commit when the docs branch is deployed"
+    required: true
+    default: "41898282+github-actions[bot]"
+
+runs:
+  using: "composite"
+  steps:
+    - name: git config
+      shell: bash
+      run: |
+        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.github-actor }}"
+        git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
+        git checkout ${{ github.event.release.tag_name }}
+        git switch -c ${{ inputs.pr-branch }}
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "pip"
+    - name: Install
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - name: Bump changelog & version, open PR
+      shell: python {0}
+      id: post-release
+      run: |
+        from ccbr_actions.release import post_release_cleanup
+        post_release_cleanup(
+          changelog_filepath="${{ inputs.changelog-filepath }}",
+          repo="${{ github.event.repository.name }}",
+          release_tag="${{ github.event.release.tag_name }}",
+          pr_branch="${{ inputs.pr-branch }}",
+          pr_reviewer="${{ github.triggering_actor }}",
+          draft_branch="${{ inputs.draft-branch }}",
+          dev_header="${{ inputs.dev-header }}",
+          version_filepath="${{ inputs.version-filepath }}",
+          citation_filepath="${{ inputs.citation-filepath }}",
+        )
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+    - name: Next steps
+      shell: bash
+      run: |
+        echo "Please review and merge the Pull Request <${{ steps.post-release.outputs.pr_url }}>"
