@@ -1,15 +1,15 @@
-# Usage
-
 # draft-release
 
-Draft a new release based on conventional commits and prepare release
-notes
+**`draft-release`** - Draft a new release based on conventional commits
+and prepare release notes
 
 This action helps create a draft release based on the contents of the
 changelog and commit history. It is designed to be used in a manually
 triggered workflow to draft a release. The latest commit in the branch
 you run the workflow from will be used as the target for the release
 tag.
+
+## Usage
 
 Required files:
 

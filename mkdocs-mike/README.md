@@ -1,13 +1,14 @@
-# Usage
-
 # mkdocs-mike
 
-Deploy documentation to github pages using mkdocs + mike
+**`mkdocs-mike`** - Deploy documentation to github pages using mkdocs +
+mike
 
 This action is designed to be used with a repository that uses mkdocs to
 generate documentation and mike to deploy it to github pages. The action
 will checkout the repository, install the necessary python packages,
 build the documentation, and deploy it to the specified branch.
+
+## Usage
 
 Any python requirements for your docs website (mkdocs, mike, other
 extensions) should be placed in `docs/requirements.txt`. You will also

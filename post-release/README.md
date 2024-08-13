@@ -1,9 +1,7 @@
-# Usage
-
 # post-release
 
-Post-release cleanup chores, intended to be triggered by publishing a
-release
+**`post-release`** - Post-release cleanup chores, intended to be
+triggered by publishing a release
 
 This action is designed to be triggered by publishing a release. On
 completion, it will open a pull request to merge post-release clean up
@@ -11,6 +9,8 @@ chores such as bumping the developemnt version in the version file and
 changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
+
+## Usage
 
 Required files:
 
@@ -42,7 +42,6 @@ jobs:
       - uses: CCBR/actions/post-release@main
         with:
           github-token: ${{ github.token }}
-          pr-branch: release/${{ github.ref_name }}
 ```
 
 ### Customized inputs

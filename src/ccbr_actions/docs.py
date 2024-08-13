@@ -112,6 +112,12 @@ def parse_action_yaml(filename):
     return action
 
 
+def action_markdown_desc(action_dict):
+    name = action_dict.get("name", "")
+    description = action_dict.get("description", "")
+    return f"**`{name}`** - {description}\n\n"
+
+
 def action_markdown_header(action_dict):
     name = action_dict.get("name", "")
     description = action_dict.get("description", "")

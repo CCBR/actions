@@ -5,11 +5,13 @@ execute:
   output: asis
 ---
 
+# mkdocs-mike
+
 ```{python}
 import ccbr_actions.docs
 
 action = ccbr_actions.docs.parse_action_yaml('action.yml')
-print(ccbr_actions.docs.action_markdown_header(action))
+print(ccbr_actions.docs.action_markdown_desc(action))
 ```
 
 This action is designed to be used with a repository that uses mkdocs to generate documentation and mike to deploy it to github pages. The action will checkout the repository, install the necessary python packages, build the documentation, and deploy it to the specified branch.

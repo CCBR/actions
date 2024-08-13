@@ -5,11 +5,13 @@ execute:
   output: asis
 ---
 
+# draft-release
+
 ```{python}
 import ccbr_actions.docs
 
 action = ccbr_actions.docs.parse_action_yaml('action.yml')
-print(ccbr_actions.docs.action_markdown_header(action))
+print(ccbr_actions.docs.action_markdown_desc(action))
 ```
 
 This action helps create a draft release based on the contents of the changelog and commit history.
