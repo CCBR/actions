@@ -86,3 +86,9 @@ Please cite this software if you use it in a publication:
 #| echo: false
 !ccbr_tools cite CITATION.cff -f bibtex
 ```
+
+## Inspiration
+
+This project was inspired by [r-lib/actions](https://github.com/r-lib/actions/)
+and [{usethis}](https://usethis.r-lib.org/reference/github_actions.html).
+Check them out for actions, workflows, and helper functions for R packages!
