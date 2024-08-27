@@ -21,8 +21,21 @@ def test_create_release_draft():
             repo="CCBR/actions",
             debug=True,
         )
-        == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'CCBR/actions 1' --repo CCBR/actions --target HEAD\n\n"
+        == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'actions 1' --repo CCBR/actions --target HEAD\n\n"
     )
+
+
+print(
+    exec_in_context(
+        create_release_draft,
+        release_branch="release-draft",
+        next_version="v1",
+        release_notes_filepath="CHANGELOG.md",
+        release_target="HEAD",
+        repo="CCBR/actions",
+        debug=True,
+    )
+)
 
 
 def test_push_release_draft_branch():

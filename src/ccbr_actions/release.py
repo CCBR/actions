@@ -1,7 +1,7 @@
 """
 Helpers for drafting releases and cleaning up after releases are published.
 """
-
+import os
 import warnings
 from ccbr_tools.shell import shell_run
 
@@ -28,7 +28,7 @@ def prepare_draft_release(
     citation_filepath="CITATION.cff",
     release_branch="release-draft",
     pr_ref_name="${{ github.ref_name }}",
-    repo="${{ github.event.repository.name }}",
+    repo="${{ github.repository }}",
     debug=False,
 ):
     next_version = get_release_version(
@@ -78,7 +78,7 @@ def prepare_draft_release(
 
 def post_release_cleanup(
     changelog_filepath="CHANGELOG.md",
-    repo="${{ github.event.repository.name }}",
+    repo="${{ github.repository }}",
     release_tag="${{ github.ref_name }}",
     pr_branch="${{ inputs.branch }}",
     pr_reviewer="${{ github.triggering_actor }}",
@@ -90,7 +90,7 @@ def post_release_cleanup(
 ):
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
-    lines.insert(0, f"## { repo } {dev_header}\n\n")
+    lines.insert(0, f"## { os.path.basename(repo) } {dev_header}\n\n")
     with open(changelog_filepath, "w") as outfile:
         outfile.writelines(lines)
 
@@ -216,11 +216,11 @@ def create_release_draft(
     next_version="${{ steps.release.outputs.NEXT_VERSION }}",
     release_notes_filepath=".github/latest-release.md",
     release_target=get_current_hash(),
-    repo="${{ github.event.repository.name }}",
+    repo="${{ github.repository }}",
     debug=False,
 ):
     version_strict = next_version.lstrip("v")
-    cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{repo} {version_strict}' --repo {repo} --target {release_target}"
+    cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{os.path.basename(repo)} {version_strict}' --repo {repo} --target {release_target}"
     if debug:
         print(cmd)
         release_url = ""
