@@ -128,7 +128,7 @@ def get_release_version(
 
     If a manual version is provided, it is used regardless of the conventional commit history.
     """
-    if gh_event_name == "workflow_dispatch" or next_version_manual:
+    if next_version_manual:
         next_version = next_version_manual
         if next_version_convco and next_version_manual != next_version_convco:
             warnings.warn(
