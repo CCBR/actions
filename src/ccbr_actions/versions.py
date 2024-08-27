@@ -6,8 +6,7 @@ This module provides functions to retrieve and process release information from 
 
 import json
 import re
-
-from .util import shell_run
+from ccbr_tools.shell import shell_run
 
 
 def get_current_hash():

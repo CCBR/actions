@@ -7,7 +7,7 @@ from ccbr_actions.release import (
     get_changelog_lines,
     get_release_version,
 )
-from ccbr_actions.util import exec_in_context
+from ccbr_tools.shell import exec_in_context
 
 
 def test_create_release_draft():
@@ -21,7 +21,7 @@ def test_create_release_draft():
             repo="CCBR/actions",
             debug=True,
         )
-        == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'CCBR/actions 1' --repo CCBR/actions --target HEAD\n"
+        == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'CCBR/actions 1' --repo CCBR/actions --target HEAD\n\n"
     )
 
 
@@ -42,6 +42,7 @@ git merge --ff-only v1
 git add CHANGELOG.md
 git commit -m 'chore: 🤖 prepare release v1'
 git push --set-upstream origin release-draft
+
 
 """
     )

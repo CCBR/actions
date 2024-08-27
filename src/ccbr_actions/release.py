@@ -3,6 +3,7 @@ Helpers for drafting releases and cleaning up after releases are published.
 """
 
 import warnings
+from ccbr_tools.shell import shell_run
 
 from .actions import set_output
 from .citation import update_citation
