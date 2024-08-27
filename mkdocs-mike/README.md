@@ -13,6 +13,39 @@ build the documentation, and deploy it to the specified branch.
 Any python requirements for your docs website (mkdocs, mike, other
 extensions) should be placed in `docs/requirements.txt`. You will also
 need an mkdocs config file `mkdocs.yml` in the root of your repository.
+To properly configure mike for your website, you will also need to
+complete these one-time steps:
+
+- delete all files in `gh-pages` if the branch exists already
+
+  ```sh
+  git switch gh-pages
+  git rm -rf $(git ls-files)
+  git commit -m 'docs: delete gh-pages files to prepare for mike'
+  ```
+
+- check out the previous release tag and deploy it
+
+  ```sh
+  git checkout v1.0.0
+  mike deploy 1.0 latest --push --update-aliases --branch gh-pages
+  ```
+
+  We recommend using just the major and minor components of the version
+  without the leading v.
+
+- set the default landing page:
+
+  ```sh
+  mike set-default latest
+  ```
+
+- deploy the dev version from main
+
+  ```sh
+  git switch main
+  mike deploy dev --push --update-aliases --branch gh-pages
+  ```
 
 ### Basic example
 
