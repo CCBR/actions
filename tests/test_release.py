@@ -60,11 +60,22 @@ def test_get_changelog_lines():
 
 
 def test_get_release_version():
-    get_release_version(
-        next_version_manual=None,
-        next_version_convco="v1.10.0",
-        current_version="v1.9.10",
-    ) == "v1.10.0"
+    assert all(
+        [
+            get_release_version(
+                next_version_manual="",
+                next_version_convco="v1.10.0",
+                current_version="v1.9.10",
+            )
+            == "v1.10.0",
+            get_release_version(
+                next_version_manual="v1.10.0",
+                next_version_convco="v1.9.11",
+                current_version="v1.9.10",
+            )
+            == "v1.10.0",
+        ]
+    )
 
 
 def test_get_release_version_warning():
