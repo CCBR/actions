@@ -88,6 +88,7 @@ def set_output(name, value, environ="GITHUB_OUTPUT"):
 
     This function writes the given name and value to the GitHub Actions
     environment file specified by the `GITHUB_OUTPUT` environment variable.
+    You can then access the variable in GitHub Actions using `${{ steps.<step_id>.outputs.<name> }}`.
 
     Parameters
     ----------
