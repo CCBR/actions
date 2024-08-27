@@ -11,4 +11,4 @@ def date_today():
 
 
 def precommit_run(args):
-    return shell_run(f"pre-commit run {args}")
+    return shell_run(f"pre-commit run {args}", check=False)
