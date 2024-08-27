@@ -83,7 +83,7 @@ runs:
       id: sliding-version
       shell: python {0}
       run: |
-        from ccbr_actions.release import get_major_minor_version
+        from ccbr_actions.versions import get_major_minor_version
         from ccbr_actions.actions import set_output
         maj_min_version = get_major_minor_version("${{ github.event.release.tag_name }}")
         set_output("SLIDING_VERSION", maj_min_version)
