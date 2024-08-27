@@ -1,6 +1,7 @@
 ## actions development version
 
 - fix `draft-release` action to only use a manual version if it is provided, otherwise default to automatically determine it based on conventional commits. (#10, @kelly-sovacool)
+- document one-time setup steps for `mkdocs-mike` action. (#11, @kelly-sovacool)
 
 ## actions 0.1.0
 
