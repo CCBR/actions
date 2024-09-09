@@ -1,3 +1,4 @@
+import os
 import pytest
 import warnings
 
@@ -7,6 +8,8 @@ from ccbr_actions.release import (
     push_release_draft_branch,
     get_changelog_lines,
     get_release_version,
+    post_release_cleanup,
+    set_release_version,
 )
 from ccbr_tools.shell import exec_in_context
 
@@ -155,3 +158,43 @@ def test_get_release_version_semver_error():
     assert "Tag v2 does not match semantic versioning guidelines." in str(
         exc_info.value
     )
+
+
+def test_post_release_cleanup():
+    output = exec_in_context(
+        post_release_cleanup,
+        changelog_filepath="tests/data/example_changelog.md",
+        version_filepath="tests/data/VERSION",
+        citation_filepath="tests/data/CITATION.cff",
+        debug=True,
+    )
+    assert all(
+        [
+            "git add tests/data/CITATION.cff tests/data/example_changelog.md tests/data/VERSION && git commit"
+            in output,
+            "gh pr create --fill-first --reviewer ${{ github.triggering_actor }}"
+            in output,
+            "git push origin --delete release-draft || echo" in output,
+        ]
+    )
+
+
+def test_set_release_version():
+    output = exec_in_context(
+        set_release_version,
+        next_version_manual="v1.0.0",
+        next_version_convco="v1.0.0",
+        current_version="v0.9.10",
+        gh_event_name="push",
+    )
+    assertions = []
+    if os.environ.get("GITHUB_ACTIONS"):
+        with open(os.environ["GITHUB_OUTPUT"], "r") as fh:
+            output = fh.read()
+    assertions.extend(
+        [
+            "::set-output name=NEXT_VERSION::v1.0.0" in output,
+            "::set-output name=NEXT_STRICT::1.0.0" in output,
+        ]
+    )
+    assert all(assertions)

@@ -93,24 +93,25 @@ def post_release_cleanup(
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
     lines.insert(0, f"## { os.path.basename(repo) } {dev_header}\n\n")
-    with open(changelog_filepath, "w") as outfile:
-        outfile.writelines(lines)
 
     with open(version_filepath, "r") as infile:
         version = infile.read().strip()
-    with open(version_filepath, "w") as outfile:
-        outfile.write(f"{version}-dev\n")
 
     changed_files = " ".join([citation_filepath, changelog_filepath, version_filepath])
-    precommit_run(f"--files {changed_files}")
 
     commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of { release_tag }" && git push --set-upstream origin { pr_branch }'
     pr_cmd = f"gh pr create --fill-first --reviewer { pr_reviewer }"
     delete_cmd = f'git push origin --delete {draft_branch} || echo "No {draft_branch} branch to delete"'
+
     if debug:
-        print(commit_cmd, pr_cmd, delete_cmd)
+        print(commit_cmd, pr_cmd, delete_cmd, sep="\n", end="")
         pr_url = ""
     else:
+        with open(changelog_filepath, "w") as outfile:
+            outfile.writelines(lines)
+        with open(version_filepath, "w") as outfile:
+            outfile.write(f"{version}-dev\n")
+        precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)
         pr_url = shell_run(f"gh pr create --fill-first --reviewer { pr_reviewer }")
         shell_run(delete_cmd)
