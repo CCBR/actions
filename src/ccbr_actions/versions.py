@@ -6,8 +6,7 @@ This module provides functions to retrieve and process release information from 
 
 import json
 import re
-
-from .util import shell_run
+from ccbr_tools.shell import shell_run
 
 
 def get_current_hash():
@@ -70,7 +69,7 @@ def match_semver(version_str, with_leading_v=False):
     return re.match(semver_pattern, version_str)
 
 
-def get_major_minor_version(version_str):
+def get_major_minor_version(version_str, with_leading_v=False):
     """
     Extract the major and minor version from a semantic versioning string.
 
@@ -99,9 +98,10 @@ def get_major_minor_version(version_str):
     >>> get_major_minor_version("invalid_version")
     None
     """
-    semver_match = match_semver(version_str)
+    semver_match = match_semver(version_str, with_leading_v=with_leading_v)
+    prefix = "v" if with_leading_v else ""
     return (
-        f"{semver_match.group('major')}.{semver_match.group('minor')}"
+        f"{prefix}{semver_match.group('major')}.{semver_match.group('minor')}"
         if semver_match
         else None
     )

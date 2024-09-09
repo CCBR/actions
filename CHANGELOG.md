@@ -1,5 +1,8 @@
 ## actions development version
 
+- fix the `draft-release` action to properly use the full owner & repo name when creating a draft release. (#13, @kelly-sovacool)
+- new option in `post-release` to update a sliding branch (typically named `major.minor`) with new patch releases. (#13, @kelly-sovacool)
+
 ## actions 0.1.1
 
 - fix `draft-release` action to only use a manual version if it is provided, otherwise default to automatically determine it based on conventional commits. (#10, @kelly-sovacool)

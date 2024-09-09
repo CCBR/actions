@@ -1,5 +1,5 @@
 from ccbr_actions.citation import print_citation, update_citation
-from ccbr_actions.util import exec_in_context, date_today
+from ccbr_tools.shell import exec_in_context
 
 
 def test_print_citation():

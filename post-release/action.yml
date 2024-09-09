@@ -38,6 +38,9 @@ inputs:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed"
     required: true
     default: "41898282+github-actions[bot]"
+  update-sliding-branch:
+    description: "Whether to update the sliding branch to the new major.minor version"
+    default: "true"
 
 runs:
   using: "composite"
@@ -76,6 +79,20 @@ runs:
         )
       env:
         GH_TOKEN: ${{ inputs.github-token }}
+    - name: get major-minor version
+      id: sliding-version
+      shell: python {0}
+      run: |
+        from ccbr_actions.versions import get_major_minor_version
+        from ccbr_actions.actions import set_output
+        maj_min_version = get_major_minor_version("${{ github.event.release.tag_name }}")
+        set_output("SLIDING_VERSION", maj_min_version)
+    - name: fast forward sliding branch
+      shell: bash
+      if: ${{ inputs.update-sliding-branch == 'true' }}
+      run: |
+        git switch ${{ steps.sliding-version.output.SLIDING_VERSION }} 2>/dev/null || git switch -c ${{ steps.sliding-version.output.SLIDING_VERSION }}
+        git merge ${{ github.event.release.tag_name }} --ff-only && git push
     - name: Next steps
       shell: bash
       run: |

@@ -2,11 +2,13 @@
 Helpers for drafting releases and cleaning up after releases are published.
 """
 
+import os
 import warnings
+from ccbr_tools.shell import shell_run
 
 from .actions import set_output
 from .citation import update_citation
-from .util import shell_run, precommit_run
+from .util import precommit_run
 from .versions import (
     check_version_increments_by_one,
     match_semver,
@@ -27,7 +29,7 @@ def prepare_draft_release(
     citation_filepath="CITATION.cff",
     release_branch="release-draft",
     pr_ref_name="${{ github.ref_name }}",
-    repo="${{ github.event.repository.name }}",
+    repo="${{ github.repository }}",
     debug=False,
 ):
     next_version = get_release_version(
@@ -46,14 +48,15 @@ def prepare_draft_release(
         dev_header=dev_header,
     )
 
-    with open(release_notes_filepath, "w") as outfile:
-        outfile.writelines(next_release_lines)
-    with open(changelog_filepath, "w") as outfile:
-        outfile.writelines(changelog_lines)
-    with open(version_filepath, "w") as outfile:
-        outfile.write(f"{next_version_strict}\n")
+    if not debug:
+        with open(release_notes_filepath, "w") as outfile:
+            outfile.writelines(next_release_lines)
+        with open(changelog_filepath, "w") as outfile:
+            outfile.writelines(changelog_lines)
+        with open(version_filepath, "w") as outfile:
+            outfile.write(f"{next_version_strict}\n")
+        update_citation(citation_file=citation_filepath, version=next_version)
 
-    update_citation(citation_file=citation_filepath, version=next_version)
     changed_files = [citation_filepath, changelog_filepath, version_filepath]
     precommit_run(f'--files {" ".join(changed_files)}')
     push_release_draft_branch(
@@ -77,7 +80,7 @@ def prepare_draft_release(
 
 def post_release_cleanup(
     changelog_filepath="CHANGELOG.md",
-    repo="${{ github.event.repository.name }}",
+    repo="${{ github.repository }}",
     release_tag="${{ github.ref_name }}",
     pr_branch="${{ inputs.branch }}",
     pr_reviewer="${{ github.triggering_actor }}",
@@ -89,25 +92,26 @@ def post_release_cleanup(
 ):
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
-    lines.insert(0, f"## { repo } {dev_header}\n\n")
-    with open(changelog_filepath, "w") as outfile:
-        outfile.writelines(lines)
+    lines.insert(0, f"## { os.path.basename(repo) } {dev_header}\n\n")
 
     with open(version_filepath, "r") as infile:
         version = infile.read().strip()
-    with open(version_filepath, "w") as outfile:
-        outfile.write(f"{version}-dev\n")
 
     changed_files = " ".join([citation_filepath, changelog_filepath, version_filepath])
-    precommit_run(f"--files {changed_files}")
 
     commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of { release_tag }" && git push --set-upstream origin { pr_branch }'
     pr_cmd = f"gh pr create --fill-first --reviewer { pr_reviewer }"
     delete_cmd = f'git push origin --delete {draft_branch} || echo "No {draft_branch} branch to delete"'
+
     if debug:
-        print(commit_cmd, pr_cmd, delete_cmd)
+        print(commit_cmd, pr_cmd, delete_cmd, sep="\n", end="")
         pr_url = ""
     else:
+        with open(changelog_filepath, "w") as outfile:
+            outfile.writelines(lines)
+        with open(version_filepath, "w") as outfile:
+            outfile.write(f"{version}-dev\n")
+        precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)
         pr_url = shell_run(f"gh pr create --fill-first --reviewer { pr_reviewer }")
         shell_run(delete_cmd)
@@ -215,11 +219,11 @@ def create_release_draft(
     next_version="${{ steps.release.outputs.NEXT_VERSION }}",
     release_notes_filepath=".github/latest-release.md",
     release_target=get_current_hash(),
-    repo="${{ github.event.repository.name }}",
+    repo="${{ github.repository }}",
     debug=False,
 ):
     version_strict = next_version.lstrip("v")
-    cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{repo} {version_strict}' --repo {repo} --target {release_target}"
+    cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{os.path.basename(repo)} {version_strict}' --repo {repo} --target {release_target}"
     if debug:
         print(cmd)
         release_url = ""

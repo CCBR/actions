@@ -1,13 +1,42 @@
+import os
 import pytest
 import warnings
 
 from ccbr_actions.release import (
+    prepare_draft_release,
     create_release_draft,
     push_release_draft_branch,
     get_changelog_lines,
     get_release_version,
+    post_release_cleanup,
+    set_release_version,
 )
-from ccbr_actions.util import exec_in_context
+from ccbr_tools.shell import exec_in_context
+
+
+def test_prepare_draft_release():
+    output = exec_in_context(
+        prepare_draft_release,
+        next_version_manual="v1.0.0",
+        next_version_convco="v1.0.0",
+        current_version="v0.9.10",
+        gh_event_name="push",
+        changelog_filepath="CHANGELOG.md",
+        dev_header="development version",
+        release_notes_filepath=".github/latest-release.md",
+        version_filepath="VERSION",
+        citation_filepath="CITATION.cff",
+        release_branch="release-draft",
+        pr_ref_name="PR_BRANCH_NAME",
+        repo="CCBR/actions",
+        debug=True,
+    )
+    assert all(
+        [
+            "gh release create v1.0.0 --draft --notes-file .github/latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
+            in output,
+        ]
+    )
 
 
 def test_create_release_draft():
@@ -21,7 +50,7 @@ def test_create_release_draft():
             repo="CCBR/actions",
             debug=True,
         )
-        == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'CCBR/actions 1' --repo CCBR/actions --target HEAD\n"
+        == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'actions 1' --repo CCBR/actions --target HEAD\n\n"
     )
 
 
@@ -43,6 +72,7 @@ git add CHANGELOG.md
 git commit -m 'chore: 🤖 prepare release v1'
 git push --set-upstream origin release-draft
 
+
 """
     )
 
@@ -55,6 +85,25 @@ def test_get_changelog_lines():
         [
             new_changelog[0] == "## actions 0.2.0\n",
             release_notes == ["\n", "development version notes go here\n", "\n"],
+        ]
+    )
+
+
+def test_get_changelog_lines_error():
+    with pytest.raises(ValueError) as exc_info1:
+        get_changelog_lines(
+            "0.1..9000", "0.2.0", changelog_filepath="tests/data/example_changelog.md"
+        )
+    with pytest.raises(ValueError) as exc_info2:
+        get_changelog_lines(
+            "0.1.0", "alpha-0.2.0", changelog_filepath="tests/data/example_changelog.md"
+        )
+    assert all(
+        [
+            "Version 0.1..9000 does not match semantic versioning pattern"
+            in str(exc_info1.value),
+            "Version alpha-0.2.0 does not match semantic versioning pattern"
+            in str(exc_info2.value),
         ]
     )
 
@@ -109,3 +158,52 @@ def test_get_release_version_semver_error():
     assert "Tag v2 does not match semantic versioning guidelines." in str(
         exc_info.value
     )
+
+
+def test_post_release_cleanup():
+    output = exec_in_context(
+        post_release_cleanup,
+        changelog_filepath="tests/data/example_changelog.md",
+        version_filepath="tests/data/VERSION",
+        citation_filepath="tests/data/CITATION.cff",
+        debug=True,
+    )
+    assert all(
+        [
+            "git add tests/data/CITATION.cff tests/data/example_changelog.md tests/data/VERSION && git commit"
+            in output,
+            "gh pr create --fill-first --reviewer ${{ github.triggering_actor }}"
+            in output,
+            "git push origin --delete release-draft || echo" in output,
+        ]
+    )
+
+
+def test_set_release_version():
+    output = exec_in_context(
+        set_release_version,
+        next_version_manual="v1.0.0",
+        next_version_convco="v1.0.0",
+        current_version="v0.9.10",
+        gh_event_name="push",
+    )
+    assertions = []
+    if os.environ.get("GITHUB_ACTIONS"):
+        with open(os.environ["GITHUB_OUTPUT"], "r") as fh:
+            output = fh.read()
+        assertions.extend(
+            [
+                "NEXT_VERSION" in output,
+                "v1.0.0" in output,
+                "NEXT_STRICT" in output,
+                "1.0.0" in output,
+            ]
+        )
+    else:
+        assertions.extend(
+            [
+                "::set-output name=NEXT_VERSION::v1.0.0" in output,
+                "::set-output name=NEXT_STRICT::1.0.0" in output,
+            ]
+        )
+    assert all(assertions)

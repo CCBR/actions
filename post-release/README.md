@@ -63,6 +63,7 @@ steps:
       citation-filepath: CITATION.cff
       dev-header: "development version"
       github-actor: "41898282+github-actions[bot]"
+      update-sliding-branch: false
 ```
 
 ## Inputs
@@ -90,3 +91,5 @@ steps:
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.
+- `update-sliding-branch`: Whether to update the sliding branch to the
+  new major.minor version. Default: `true`.

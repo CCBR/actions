@@ -5,6 +5,7 @@ from ccbr_actions.versions import (
     get_latest_release_tag,
     match_semver,
     check_version_increments_by_one,
+    get_major_minor_version,
 )
 
 
@@ -51,3 +52,14 @@ def test_version_increment_error():
         "Tag v10 does not match semantic versioning guidelines." in str(exc_info.value)
     )
     assert all(messages)
+
+
+def test_get_major_minor():
+    assert all(
+        [
+            get_major_minor_version("1.0.0") == "1.0",
+            get_major_minor_version("2.1.3-alpha") == "2.1",
+            get_major_minor_version("v1.0.0", with_leading_v=True) == "v1.0",
+            get_major_minor_version("invalid_version") == None,
+        ]
+    )

@@ -81,7 +81,7 @@ runs:
           gh_event_name="${{ github.event_name }}",
           release_branch="${{ inputs.draft-branch }}",
           pr_ref_name="${{ github.ref_name }}",
-          repo = "${{ github.event.repository.name }}",
+          repo = "${{ github.repository }}",
         )
       env:
         GH_TOKEN: ${{ inputs.github-token }}
