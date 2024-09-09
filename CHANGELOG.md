@@ -1,7 +1,10 @@
 ## actions development version
 
-- fix `draft-release` action to only use a manual version if it is provided, otherwise default to automatically determine it based on conventional commits. (#10, @kelly-sovacool)
+- fixes to the `draft-release` action:
+  - only use a manual version if it is provided, otherwise default to automatically determine it based on conventional commits. (#10, @kelly-sovacool)
+  - properly use the full owner & repo name when creating a draft release. (#13, @kelly-sovacool)
 - document one-time setup steps for `mkdocs-mike` action. (#11, @kelly-sovacool)
+- new option in `post-release` to update a sliding branch (typcally named `major.minor`) with new patch releases. (#13, @kelly-sovacool)
 
 ## actions 0.1.0
 
