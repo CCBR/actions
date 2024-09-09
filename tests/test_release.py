@@ -191,10 +191,19 @@ def test_set_release_version():
     if os.environ.get("GITHUB_ACTIONS"):
         with open(os.environ["GITHUB_OUTPUT"], "r") as fh:
             output = fh.read()
-    assertions.extend(
-        [
-            "::set-output name=NEXT_VERSION::v1.0.0" in output,
-            "::set-output name=NEXT_STRICT::1.0.0" in output,
-        ]
-    )
+        assertions.extend(
+            [
+                "NEXT_VERSION" in output,
+                "v1.0.0" in output,
+                "NEXT_STRICT" in output,
+                "1.0.0" in output,
+            ]
+        )
+    else:
+        assertions.extend(
+            [
+                "::set-output name=NEXT_VERSION::v1.0.0" in output,
+                "::set-output name=NEXT_STRICT::1.0.0" in output,
+            ]
+        )
     assert all(assertions)
