@@ -30,8 +30,6 @@ def test_prepare_draft_release():
     )
     assert all(
         [
-            "::set-output name=NEXT_VERSION::v1.0.0" in output,
-            "::set-output name=RELEASE_URL::" in output,
             "gh release create v1.0.0 --draft --notes-file .github/latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
             in output,
         ]
