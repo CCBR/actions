@@ -8,7 +8,7 @@ from ccbr_tools.shell import shell_run
 
 from .actions import set_output
 from .citation import update_citation
-from .util import shell_run, precommit_run
+from .util import precommit_run
 from .versions import (
     check_version_increments_by_one,
     match_semver,
