@@ -2,12 +2,40 @@ import pytest
 import warnings
 
 from ccbr_actions.release import (
+    prepare_draft_release,
     create_release_draft,
     push_release_draft_branch,
     get_changelog_lines,
     get_release_version,
 )
 from ccbr_tools.shell import exec_in_context
+
+
+def test_prepare_draft_release():
+    output = exec_in_context(
+        prepare_draft_release,
+        next_version_manual="v1.0.0",
+        next_version_convco="v1.0.0",
+        current_version="v0.9.10",
+        gh_event_name="push",
+        changelog_filepath="CHANGELOG.md",
+        dev_header="development version",
+        release_notes_filepath=".github/latest-release.md",
+        version_filepath="VERSION",
+        citation_filepath="CITATION.cff",
+        release_branch="release-draft",
+        pr_ref_name="PR_BRANCH_NAME",
+        repo="CCBR/actions",
+        debug=True,
+    )
+    assert all(
+        [
+            "::set-output name=NEXT_VERSION::v1.0.0" in output,
+            "::set-output name=RELEASE_URL::" in output,
+            "gh release create v1.0.0 --draft --notes-file .github/latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
+            in output,
+        ]
+    )
 
 
 def test_create_release_draft():
@@ -23,19 +51,6 @@ def test_create_release_draft():
         )
         == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'actions 1' --repo CCBR/actions --target HEAD\n\n"
     )
-
-
-print(
-    exec_in_context(
-        create_release_draft,
-        release_branch="release-draft",
-        next_version="v1",
-        release_notes_filepath="CHANGELOG.md",
-        release_target="HEAD",
-        repo="CCBR/actions",
-        debug=True,
-    )
-)
 
 
 def test_push_release_draft_branch():
@@ -69,6 +84,25 @@ def test_get_changelog_lines():
         [
             new_changelog[0] == "## actions 0.2.0\n",
             release_notes == ["\n", "development version notes go here\n", "\n"],
+        ]
+    )
+
+
+def test_get_changelog_lines_error():
+    with pytest.raises(ValueError) as exc_info1:
+        get_changelog_lines(
+            "0.1..9000", "0.2.0", changelog_filepath="tests/data/example_changelog.md"
+        )
+    with pytest.raises(ValueError) as exc_info2:
+        get_changelog_lines(
+            "0.1.0", "alpha-0.2.0", changelog_filepath="tests/data/example_changelog.md"
+        )
+    assert all(
+        [
+            "Version 0.1..9000 does not match semantic versioning pattern"
+            in str(exc_info1.value),
+            "Version alpha-0.2.0 does not match semantic versioning pattern"
+            in str(exc_info2.value),
         ]
     )
 
