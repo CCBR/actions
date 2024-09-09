@@ -48,14 +48,15 @@ def prepare_draft_release(
         dev_header=dev_header,
     )
 
-    with open(release_notes_filepath, "w") as outfile:
-        outfile.writelines(next_release_lines)
-    with open(changelog_filepath, "w") as outfile:
-        outfile.writelines(changelog_lines)
-    with open(version_filepath, "w") as outfile:
-        outfile.write(f"{next_version_strict}\n")
+    if not debug:
+        with open(release_notes_filepath, "w") as outfile:
+            outfile.writelines(next_release_lines)
+        with open(changelog_filepath, "w") as outfile:
+            outfile.writelines(changelog_lines)
+        with open(version_filepath, "w") as outfile:
+            outfile.write(f"{next_version_strict}\n")
+        update_citation(citation_file=citation_filepath, version=next_version)
 
-    update_citation(citation_file=citation_filepath, version=next_version)
     changed_files = [citation_filepath, changelog_filepath, version_filepath]
     precommit_run(f'--files {" ".join(changed_files)}')
     push_release_draft_branch(
