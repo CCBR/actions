@@ -63,6 +63,7 @@ steps:
       citation-filepath: CITATION.cff
       dev-header: "development version"
       github-actor: "41898282+github-actions[bot]"
+      update-sliding-branch: false
 ```
 
 ## Inputs
