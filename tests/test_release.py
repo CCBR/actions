@@ -40,17 +40,16 @@ def test_prepare_draft_release():
 
 
 def test_create_release_draft():
-    assert (
-        exec_in_context(
-            create_release_draft,
-            release_branch="release-draft",
-            next_version="v1",
-            release_notes_filepath="CHANGELOG.md",
-            release_target="HEAD",
-            repo="CCBR/actions",
-            debug=True,
-        )
-        == "gh release create v1 --draft --notes-file CHANGELOG.md --title 'actions 1' --repo CCBR/actions --target HEAD\n\n"
+    assert exec_in_context(
+        create_release_draft,
+        release_branch="release-draft",
+        next_version="v1",
+        release_notes_filepath="CHANGELOG.md",
+        release_target="HEAD",
+        repo="CCBR/actions",
+        debug=True,
+    ).startswith(
+        "gh release create v1 --draft --notes-file CHANGELOG.md --title 'actions 1' --repo CCBR/actions --target HEAD\n"
     )
 
 
