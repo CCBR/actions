@@ -197,7 +197,7 @@ def is_ancestor(ancestor, descendant):
     """
     return bool(
         shell_run(
-            f"git merge-base --is-ancestor {ancestor} {descendant}  && echo True || echo False"
+            f"git merge-base --is-ancestor {ancestor} {descendant} && echo True || echo False"
         ).strip()
     )
 
