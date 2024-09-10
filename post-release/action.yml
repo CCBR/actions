@@ -91,7 +91,7 @@ runs:
       shell: bash
       if: ${{ inputs.update-sliding-branch == 'true' }}
       run: |
-        git switch ${{ steps.sliding-version.output.SLIDING_VERSION }} 2>/dev/null || git switch -c ${{ steps.sliding-version.output.SLIDING_VERSION }}
+        git switch ${{ steps.sliding-version.outputs.SLIDING_VERSION }} 2>/dev/null || git switch -c ${{ steps.sliding-version.outputs.SLIDING_VERSION }}
         git merge ${{ github.event.release.tag_name }} --ff-only && git push
     - name: Next steps
       shell: bash
