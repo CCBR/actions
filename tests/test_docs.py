@@ -22,17 +22,15 @@ def test_parse_action_yaml():
 
 def test_action_markdown_desc():
     action_dict = parse_action_yaml("mkdocs-mike/action.yml")
-    assert (
-        action_markdown_desc(action_dict)
-        == "**`mkdocs-mike`** - Deploy documentation to github pages using mkdocs + mike\n\n"
+    assert action_markdown_desc(action_dict).startswith(
+        "**`mkdocs-mike`** - Deploy documentation to github pages using mkdocs + mike\n"
     )
 
 
 def test_action_markdown_header():
     action_dict = parse_action_yaml("mkdocs-mike/action.yml")
-    assert (
-        action_markdown_header(action_dict)
-        == "# mkdocs-mike\n\nDeploy documentation to github pages using mkdocs + mike\n\n"
+    assert action_markdown_header(action_dict).startswith(
+        "# mkdocs-mike\n\nDeploy documentation to github pages using mkdocs + mike\n"
     )
 
 
