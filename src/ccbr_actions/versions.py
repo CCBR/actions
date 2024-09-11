@@ -269,8 +269,11 @@ def get_latest_release_tag(args=""):
     >>> get_latest_release_tag()
     'v1.0.0'
     """
-    releases = get_releases(limit=1, args=args)
-    return releases[0]["tagName"] if releases and releases[0]["isLatest"] else None
+    releases = get_releases(limit=100, args=args)
+    latest_release = next(
+        (release for release in releases if release["isLatest"]), None
+    )
+    return latest_release["tagName"]
 
 
 def get_latest_release_hash():
