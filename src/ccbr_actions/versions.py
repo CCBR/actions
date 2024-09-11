@@ -29,7 +29,7 @@ def get_current_hash():
     >>> get_current_hash()
     'abc123def4567890abcdef1234567890abcdef12'
     """
-    return shell_run("git rev-parse HEAD")
+    return shell_run("git rev-parse HEAD").strip()
 
 
 def match_semver(version_str, with_leading_v=False):
@@ -305,4 +305,4 @@ def get_latest_release_hash():
     tag_hash = shell_run(f"git rev-list -n 1 {tag_name}")
     if "fatal: ambiguous argument" in tag_hash:
         raise ValueError(f"Tag {tag_name} not found in repository commit history")
-    return tag_hash
+    return tag_hash.strip()
