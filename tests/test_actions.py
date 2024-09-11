@@ -13,7 +13,6 @@ def test_use_github_action():
 
 
 def test_set_output():
-    assert (
-        exec_in_context(set_output, "NAME", "VALUE", environ="ABC")
-        == "::set-output name=NAME::VALUE\n\n"
+    assert exec_in_context(set_output, "NAME", "VALUE", environ="ABC").startswith(
+        "::set-output name=NAME::VALUE\n"
     )

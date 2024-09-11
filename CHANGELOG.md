@@ -2,6 +2,8 @@
 
 - fix the `draft-release` action to properly use the full owner & repo name when creating a draft release. (#13, @kelly-sovacool)
 - new option in `post-release` to update a sliding branch (typically named `v<major>.<minor>`) with new patch releases. (#13, #16, @kelly-sovacool)
+- fix logic for `get_latest_release_tag()` to ignore draft releases. (#14, @kelly-sovacool)
+
 
 ## actions 0.1.1
 
