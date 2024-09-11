@@ -50,6 +50,7 @@ runs:
       run: |
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
+        git config --global --add --bool push.autoSetupRemote true
         git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
         git checkout ${{ github.event.release.tag_name }}
         git switch -c ${{ inputs.pr-branch }}
@@ -85,13 +86,16 @@ runs:
       run: |
         from ccbr_actions.versions import get_major_minor_version
         from ccbr_actions.actions import set_output
-        maj_min_version = get_major_minor_version("${{ github.event.release.tag_name }}")
+        maj_min_version = get_major_minor_version("${{ github.event.release.tag_name }}", with_leading_v = True)
+        if not maj_min_version:
+          raise ValueError(f"Could not determine major.minor version from tag: ${{ github.event.release.tag_name }}")
         set_output("SLIDING_VERSION", maj_min_version)
     - name: fast forward sliding branch
       shell: bash
       if: ${{ inputs.update-sliding-branch == 'true' }}
       run: |
-        git switch ${{ steps.sliding-version.outputs.SLIDING_VERSION }} 2>/dev/null || git switch -c ${{ steps.sliding-version.outputs.SLIDING_VERSION }}
+        SLIDING_VERSION=${{ steps.sliding-version.outputs.SLIDING_VERSION }}
+        git switch $SLIDING_VERSION 2>/dev/null || git switch -c $SLIDING_VERSION
         git merge ${{ github.event.release.tag_name }} --ff-only && git push
     - name: Next steps
       shell: bash
