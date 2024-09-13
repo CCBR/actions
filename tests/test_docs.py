@@ -1,5 +1,7 @@
 import os
+import pytest
 import tempfile
+import warnings
 
 from ccbr_actions.docs import (
     get_docs_version,
@@ -41,5 +43,16 @@ def test_action_markdown_io():
             "## Inputs\n" in action_md,
             "## Outputs\n" in action_md,
             "The version of the docs being deployed." in action_md,
+        ]
+    )
+
+
+def test_get_docs_version():
+    with pytest.warns(UserWarning) as record:
+        result = get_docs_version(release_args="--repo CCBR/CCBR_NextflowTemplate")
+    assert all(
+        [
+            result == ("dev", ""),
+            "No latest release found" in str(record[0].message.args[0]),
         ]
     )

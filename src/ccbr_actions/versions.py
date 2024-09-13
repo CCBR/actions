@@ -273,14 +273,19 @@ def get_latest_release_tag(args=""):
     latest_release = next(
         (release for release in releases if release["isLatest"]), None
     )
-    return latest_release["tagName"]
+    return latest_release["tagName"] if latest_release else ""
 
 
-def get_latest_release_hash():
+def get_latest_release_hash(args=""):
     """
     Get the commit hash of the latest release.
 
     Uses git rev-list to get the commit hash of the latest release tag.
+
+    Parameters
+    ----------
+    args : str, optional
+        Additional arguments to pass to the GitHub CLI command (default is "").
 
     Returns
     -------
@@ -301,8 +306,10 @@ def get_latest_release_hash():
     >>> get_latest_release_hash()
     'abc123def4567890abcdef1234567890abcdef12'
     """
-    tag_name = get_latest_release_tag()
-    tag_hash = shell_run(f"git rev-list -n 1 {tag_name}")
-    if "fatal: ambiguous argument" in tag_hash:
-        raise ValueError(f"Tag {tag_name} not found in repository commit history")
+    tag_name = get_latest_release_tag(args=args)
+    tag_hash = ""
+    if tag_name:
+        tag_hash = shell_run(f"git rev-list -n 1 {tag_name}")
+        if "fatal: ambiguous argument" in tag_hash:
+            raise ValueError(f"Tag {tag_name} not found in repository commit history")
     return tag_hash.strip()

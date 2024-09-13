@@ -3,6 +3,7 @@ import pytest
 from ccbr_actions.versions import (
     get_releases,
     get_latest_release_tag,
+    get_latest_release_hash,
     match_semver,
     check_version_increments_by_one,
     get_major_minor_version,
@@ -16,6 +17,15 @@ def test_get_releases():
 
 def test_get_latest_release_tag():
     assert match_semver(get_latest_release_tag(), with_leading_v=True)
+
+
+def test_get_latest_release_hash():
+    assert all(
+        [
+            len(get_latest_release_hash()) > 7,
+            get_latest_release_hash(args="--repo CCBR/CCBR_NextflowTemplate") == "",
+        ]
+    )
 
 
 def test_version_increment():
@@ -52,6 +62,9 @@ def test_version_increment_error():
     messages.append(
         "Tag v10 does not match semantic versioning guidelines." in str(exc_info.value)
     )
+    with pytest.raises(ValueError) as exc_info:
+        check_version_increments_by_one("v1", "10", with_leading_v=True)
+    messages.append("The tag does not start with 'v'." in str(exc_info.value))
     assert all(messages)
 
 
