@@ -39,8 +39,8 @@ inputs:
     required: true
     default: "41898282+github-actions[bot]"
   update-sliding-branch:
-    description: "Whether to update the sliding branch to the new major.minor version"
-    default: "true"
+    description: "Whether to update the sliding branch (major.minor) to the new patch version"
+    default: "false"
 
 runs:
   using: "composite"
