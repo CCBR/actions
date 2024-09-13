@@ -1,5 +1,7 @@
 import os
+import pathlib
 import pytest
+import tempfile
 import warnings
 
 from ccbr_actions.release import (
@@ -16,9 +18,11 @@ from ccbr_tools.shell import exec_in_context
 
 
 def test_write_lines():
-    write_lines("tests/data/tmp.txt", ["hello\n", "world"], debug=False)
-    with open("tests/data/tmp.txt", "r") as fh:
-        assert fh.read() == "hello\nworld"
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_file = pathlib.Path(tmp_dir) / "tmp.txt"
+        write_lines(tmp_file, ["hello\n", "world"], debug=False)
+        with open(tmp_file, "r") as fh:
+            assert fh.read() == "hello\nworld"
 
 
 def test_prepare_draft_release():
