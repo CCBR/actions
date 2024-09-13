@@ -1,7 +1,5 @@
 ## actions development version
 
-## actions 0.1.3
-
 - fix: make sure `get_latest_release_hash()` and `get_current_hash()` strip newlines in hash strings. (@kelly-sovacool)
   - this bug caused a malformed command string in `is_ancestor()`, which caused `mkdocs-mike` to fail.
 - set `update-sliding-branch` to false by default in `post-release` action. (#18, @kelly-sovacool)
