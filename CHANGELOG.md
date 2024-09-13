@@ -1,3 +1,5 @@
+## actions development version
+
 ## actions 0.1.3
 
 - fix: make sure `get_latest_release_hash()` and `get_current_hash()` strip newlines in hash strings. (@kelly-sovacool)
