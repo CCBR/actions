@@ -1,11 +1,12 @@
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
-# CCBR Actions 🤖
+# CCBR actions 🤖
 
 GitHub Actions for CCBR repos
 
 [![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13761059.svg)](https://doi.org/10.5281/zenodo.13761059)
 
 ## Examples
 
@@ -61,23 +62,31 @@ pip install git+https://github.com/CCBR/actions@v0.1
 
 ## Help & Contributing
 
-Come across a **bug**? Open an [issue](https://github.com/CCBR/actions/issues) and include a minimal reproducible example.
+Come across a **bug**? Open an
+[issue](https://github.com/CCBR/actions/issues) and include a minimal
+reproducible example.
 
-Have a **question**? Ask it in [discussions](https://github.com/CCBR/actions/discussions).
+Have a **question**? Ask it in
+[discussions](https://github.com/CCBR/actions/discussions).
 
-Want to **contribute** to this project? Check out the [contributing guidelines](.github/CONTRIBUTING.md).
+Want to **contribute** to this project? Check out the [contributing
+guidelines](.github/CONTRIBUTING.md).
 
 ## Citation
 
 Please cite this software if you use it in a publication:
 
-> Sovacool K., Koparde V. CCBR actions: GitHub Actions for CCBR repos
-> URL: https://ccbr.github.io/actions/
+> Sovacool K., Koparde V. (2024). CCBR actions: GitHub Actions for CCBR
+> repos (version v0.1.3). DOI: 10.5281/zenodo.13761059 URL:
+> https://ccbr.github.io/actions/
 
 ### Bibtex entry
 
     @misc{YourReferenceHere,
     author = {Sovacool, Kelly and Koparde, Vishal},
+    doi = {10.5281/zenodo.13761059},
+    month = {9},
     title = {CCBR actions: GitHub Actions for CCBR repos},
-    url = {https://ccbr.github.io/actions/}
+    url = {https://ccbr.github.io/actions/},
+    year = {2024}
     }
