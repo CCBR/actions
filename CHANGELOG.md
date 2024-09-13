@@ -1,10 +1,10 @@
-## actions 1.0.0
+## actions development version
 
 - fix: make sure `get_latest_release_hash()` and `get_current_hash()` strip newlines in hash strings. (@kelly-sovacool)
   - this bug caused a malformed command string in `is_ancestor()`, which caused `mkdocs-mike` to fail.
 - set `update-sliding-branch` to false by default in `post-release` action. (#18, @kelly-sovacool)
 - fix bug that prevented `mkdocs-mike` from working on repos with no release. (#20, @kelly-sovacool)
-- fix: resolve symlinks when writing files. (#23, @kelly-sovacool)
+- fix: resolve symlinks when writing files. (#23, #24, @kelly-sovacool)
 
 ## actions 0.1.2
 
