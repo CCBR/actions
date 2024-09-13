@@ -1,4 +1,4 @@
-## actions 1.0.0
+## actions development version
 
 development version notes go here
 

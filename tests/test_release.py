@@ -4,6 +4,7 @@ import warnings
 
 from ccbr_actions.release import (
     prepare_draft_release,
+    write_lines,
     create_release_draft,
     push_release_draft_branch,
     get_changelog_lines,
@@ -12,6 +13,12 @@ from ccbr_actions.release import (
     set_release_version,
 )
 from ccbr_tools.shell import exec_in_context
+
+
+def test_write_lines():
+    write_lines("tests/data/tmp.txt", ["hello\n", "world"], debug=False)
+    with open("tests/data/tmp.txt", "r") as fh:
+        assert fh.read() == "hello\nworld"
 
 
 def test_prepare_draft_release():
@@ -23,7 +30,7 @@ def test_prepare_draft_release():
         gh_event_name="push",
         changelog_filepath="tests/data/example_changelog.md",
         dev_header="development version",
-        release_notes_filepath="tests/data/.github/latest-release.md",
+        release_notes_filepath="tests/data/latest-release.md",
         version_filepath="tests/data/VERSION",
         citation_filepath="tests/data/CITATION.cff",
         release_branch="release-draft",
@@ -34,7 +41,7 @@ def test_prepare_draft_release():
     assert all(
         [
             "gh release create v1.0.0 --draft --notes-file " in output,
-            ".github/latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
+            "latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
             in output,
         ]
     )

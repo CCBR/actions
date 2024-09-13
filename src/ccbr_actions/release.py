@@ -53,14 +53,10 @@ def prepare_draft_release(
         dev_header=dev_header,
     )
 
-    if not debug:
-        with open(release_notes_filepath, "w") as outfile:
-            outfile.writelines(next_release_lines)
-        with open(changelog_filepath, "w") as outfile:
-            outfile.writelines(changelog_lines)
-        with open(version_filepath, "w") as outfile:
-            outfile.write(f"{next_version_strict}\n")
-        update_citation(citation_file=citation_filepath, version=next_version)
+    write_lines(release_notes_filepath, next_release_lines, debug=debug)
+    write_lines(changelog_filepath, changelog_lines, debug=debug)
+    write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
+    update_citation(citation_file=citation_filepath, version=next_version, debug=debug)
 
     changed_files = [
         str(f) for f in (citation_filepath, changelog_filepath, version_filepath)
@@ -83,6 +79,14 @@ def prepare_draft_release(
     )
     set_output("RELEASE_URL", release_url)
     return release_url
+
+
+def write_lines(filepath, lines, debug=False):
+    if not debug:
+        with open(path_resolve(filepath), "w") as outfile:
+            outfile.writelines(lines)
+    else:
+        return "\n".join(lines)
 
 
 def post_release_cleanup(
