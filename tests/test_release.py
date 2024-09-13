@@ -1,9 +1,12 @@
 import os
+import pathlib
 import pytest
+import tempfile
 import warnings
 
 from ccbr_actions.release import (
     prepare_draft_release,
+    write_lines,
     create_release_draft,
     push_release_draft_branch,
     get_changelog_lines,
@@ -14,6 +17,14 @@ from ccbr_actions.release import (
 from ccbr_tools.shell import exec_in_context
 
 
+def test_write_lines():
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp_file = pathlib.Path(tmp_dir) / "tmp.txt"
+        write_lines(tmp_file, ["hello\n", "world"], debug=False)
+        with open(tmp_file, "r") as fh:
+            assert fh.read() == "hello\nworld"
+
+
 def test_prepare_draft_release():
     output = exec_in_context(
         prepare_draft_release,
@@ -21,11 +32,11 @@ def test_prepare_draft_release():
         next_version_convco="v1.0.0",
         current_version="v0.9.10",
         gh_event_name="push",
-        changelog_filepath="CHANGELOG.md",
+        changelog_filepath="tests/data/example_changelog.md",
         dev_header="development version",
-        release_notes_filepath=".github/latest-release.md",
-        version_filepath="VERSION",
-        citation_filepath="CITATION.cff",
+        release_notes_filepath="tests/data/latest-release.md",
+        version_filepath="tests/data/VERSION",
+        citation_filepath="tests/data/CITATION.cff",
         release_branch="release-draft",
         pr_ref_name="PR_BRANCH_NAME",
         repo="CCBR/actions",
@@ -33,7 +44,8 @@ def test_prepare_draft_release():
     )
     assert all(
         [
-            "gh release create v1.0.0 --draft --notes-file .github/latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
+            "gh release create v1.0.0 --draft --notes-file " in output,
+            "latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
             in output,
         ]
     )
@@ -44,12 +56,12 @@ def test_create_release_draft():
         create_release_draft,
         release_branch="release-draft",
         next_version="v1",
-        release_notes_filepath="CHANGELOG.md",
+        release_notes_filepath="tests/data/example_changelog.md",
         release_target="HEAD",
         repo="CCBR/actions",
         debug=True,
     ).startswith(
-        "gh release create v1 --draft --notes-file CHANGELOG.md --title 'actions 1' --repo CCBR/actions --target HEAD\n"
+        "gh release create v1 --draft --notes-file tests/data/example_changelog.md --title 'actions 1' --repo CCBR/actions --target HEAD\n"
     )
 
 
@@ -59,14 +71,14 @@ def test_push_release_draft_branch():
         release_branch="release-draft",
         pr_ref_name="v1",
         next_version="v1",
-        files=["CHANGELOG.md"],
+        files=["tests/data/example_changelog.md"],
         debug=True,
     ).startswith(
         """git push origin --delete release-draft || echo "No release-draft branch to delete"
 git switch -c release-draft || git switch release-draft
 git merge --ff-only v1
 
-git add CHANGELOG.md
+git add tests/data/example_changelog.md
 git commit -m 'chore: 🤖 prepare release v1'
 git push --set-upstream origin release-draft
 

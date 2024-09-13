@@ -32,6 +32,11 @@ def prepare_draft_release(
     repo="${{ github.repository }}",
     debug=False,
 ):
+    release_notes_filepath = path_resolve(release_notes_filepath)
+    changelog_filepath = path_resolve(changelog_filepath)
+    citation_filepath = path_resolve(citation_filepath)
+    version_filepath = path_resolve(version_filepath)
+
     next_version = get_release_version(
         next_version_manual=next_version_manual,
         next_version_convco=next_version_convco,
@@ -48,16 +53,14 @@ def prepare_draft_release(
         dev_header=dev_header,
     )
 
-    if not debug:
-        with open(path_resolve(release_notes_filepath), "w") as outfile:
-            outfile.writelines(next_release_lines)
-        with open(path_resolve(changelog_filepath), "w") as outfile:
-            outfile.writelines(changelog_lines)
-        with open(path_resolve(version_filepath), "w") as outfile:
-            outfile.write(f"{next_version_strict}\n")
-        update_citation(citation_file=citation_filepath, version=next_version)
+    write_lines(release_notes_filepath, next_release_lines, debug=debug)
+    write_lines(changelog_filepath, changelog_lines, debug=debug)
+    write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
+    update_citation(citation_file=citation_filepath, version=next_version, debug=debug)
 
-    changed_files = [citation_filepath, changelog_filepath, version_filepath]
+    changed_files = [
+        str(f) for f in (citation_filepath, changelog_filepath, version_filepath)
+    ]
     precommit_run(f'--files {" ".join(changed_files)}')
     push_release_draft_branch(
         release_branch=release_branch,
@@ -76,6 +79,14 @@ def prepare_draft_release(
     )
     set_output("RELEASE_URL", release_url)
     return release_url
+
+
+def write_lines(filepath, lines, debug=False):
+    if not debug:
+        with open(path_resolve(filepath), "w") as outfile:
+            outfile.writelines(lines)
+    else:
+        return "\n".join(lines)
 
 
 def post_release_cleanup(
