@@ -8,7 +8,7 @@ from ccbr_tools.shell import shell_run
 
 from .actions import set_output
 from .citation import update_citation
-from .util import precommit_run
+from .util import precommit_run, path_resolve
 from .versions import (
     check_version_increments_by_one,
     match_semver,
@@ -49,11 +49,11 @@ def prepare_draft_release(
     )
 
     if not debug:
-        with open(release_notes_filepath, "w") as outfile:
+        with open(path_resolve(release_notes_filepath), "w") as outfile:
             outfile.writelines(next_release_lines)
-        with open(changelog_filepath, "w") as outfile:
+        with open(path_resolve(changelog_filepath), "w") as outfile:
             outfile.writelines(changelog_lines)
-        with open(version_filepath, "w") as outfile:
+        with open(path_resolve(version_filepath), "w") as outfile:
             outfile.write(f"{next_version_strict}\n")
         update_citation(citation_file=citation_filepath, version=next_version)
 
@@ -97,7 +97,12 @@ def post_release_cleanup(
     with open(version_filepath, "r") as infile:
         version = infile.read().strip()
 
-    changed_files = " ".join([citation_filepath, changelog_filepath, version_filepath])
+    changed_files = " ".join(
+        [
+            str(filepath)
+            for filepath in (citation_filepath, changelog_filepath, version_filepath)
+        ]
+    )
 
     commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of { release_tag }" && git push --set-upstream origin { pr_branch }'
     pr_cmd = f"gh pr create --fill-first --reviewer { pr_reviewer }"
@@ -107,9 +112,9 @@ def post_release_cleanup(
         print(commit_cmd, pr_cmd, delete_cmd, sep="\n", end="")
         pr_url = ""
     else:
-        with open(changelog_filepath, "w") as outfile:
+        with open(path_resolve(changelog_filepath), "w") as outfile:
             outfile.writelines(lines)
-        with open(version_filepath, "w") as outfile:
+        with open(path_resolve(version_filepath), "w") as outfile:
             outfile.write(f"{version}-dev\n")
         precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)
