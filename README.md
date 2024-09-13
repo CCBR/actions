@@ -14,6 +14,7 @@ See [examples/](examples) for workflow examples. You can copy these to
 your own repository in the `.github/workflows/` directory and modify
 them for your needs.
 
+- [auto-format](examples/auto-format.yml)
 - [build-nextflow](examples/build-nextflow.yml)
 - [build-python](examples/build-python.yml)
 - [build-snakemake](examples/build-snakemake.yml)
