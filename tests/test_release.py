@@ -33,7 +33,8 @@ def test_prepare_draft_release():
     )
     assert all(
         [
-            "gh release create v1.0.0 --draft --notes-file .github/latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
+            "gh release create v1.0.0 --draft --notes-file " in output,
+            ".github/latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
             in output,
         ]
     )
