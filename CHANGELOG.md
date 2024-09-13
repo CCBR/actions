@@ -1,4 +1,4 @@
-## actions development version
+## actions 1.0.0
 
 - fix: make sure `get_latest_release_hash()` and `get_current_hash()` strip newlines in hash strings. (@kelly-sovacool)
   - this bug caused a malformed command string in `is_ancestor()`, which caused `mkdocs-mike` to fail.
