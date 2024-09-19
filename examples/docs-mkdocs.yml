@@ -1,4 +1,7 @@
 name: docs
+# this workflow requires:
+#  - an mkdocs config file (`mkdocs.yml`) 
+#  - website dependencies in `docs/requirements.txt`
 on:
   workflow_dispatch:
   release:
