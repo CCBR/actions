@@ -14,10 +14,13 @@ tag.
 Required files:
 
 - `CHANGELOG.md` - a changelog or news file with entries in reverse
-  chronological order. The newest entry should contain “development
-  header”.
+  chronological order. The newest entry should contain a header with the
+  phrase “development version”.
 - `VERSION` - a single-source version file.
 - `CITATION.cff` - a citation file.
+
+When you’re ready to draft a new release, [run the workflow
+manually](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
 
 ### Basic example
 
