@@ -13,7 +13,7 @@ repos.
 
 [label-issues-reponame.yml](/examples/label-issues-repo-name.yml)
 
-``` yaml
+```yaml
 name: label-issues-repo-name
 
 on:
@@ -33,4 +33,5 @@ jobs:
 
 ## Inputs
 
-- `github-token`: GitHub Actions token with project scope. **Required.**
+- `github-token`: GitHub Actions token (e.g. { github.token }).
+  **Required.**
