@@ -9,7 +9,7 @@ issues of a given label
 
 [add-issue-label-list.yml](/examples/add-issue-label-list.yml)
 
-``` yaml
+```yaml
 name: add-issue-label-list
 
 on:
