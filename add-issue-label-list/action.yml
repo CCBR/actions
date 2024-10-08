@@ -17,7 +17,8 @@ runs:
   steps:
     - name: Add labeled issues to list
       env:
-        GH_TOKEN: ${{ secrets.ADD_TO_PROJECT_PAT }}
+        GH_TOKEN: ${{ inputs.github-token }}
+      shell: bash
       run: |
         gh issue list --repo "$GITHUB_REPOSITORY" --label "${{ github.event.inputs.label-name }}" \
             --json number --jq 'map("- #\(.number)")[]' \
