@@ -1,6 +1,6 @@
-<!-- README.md is generated from README.qmd. Please edit that file -->
-
 # CCBR actions 🤖
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
 
 GitHub Actions for CCBR repos
 
@@ -25,6 +25,7 @@ them for your needs.
 - [label-issues-repo-name](examples/label-issues-repo-name.yml)
 - [post-release](examples/post-release.yml)
 - [techdev-project](examples/techdev-project.yml)
+- [update-cff-R](examples/update-cff-R.yml)
 - [user-projects](examples/user-projects.yml)
 
 ## Actions
@@ -97,3 +98,11 @@ Please cite this software if you use it in a publication:
     url = {https://ccbr.github.io/actions/},
     year = {2024}
     }
+
+## Inspiration
+
+This project was inspired by
+[r-lib/actions](https://github.com/r-lib/actions/) and
+[{usethis}](https://usethis.r-lib.org/reference/github_actions.html).
+Check them out for actions, workflows, and helper functions for R
+packages!

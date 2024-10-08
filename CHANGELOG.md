@@ -1,8 +1,9 @@
 ## actions development version
 
-- new actions:
+- new actions & example workflows:
   - `label-issue-repo-name` - Label issues & PRs with the repository name
   - `add-issue-label-list` - Update issue description with a list of issues of a given label
+  - `update-cff-R` - For R packages: update the CITATION.cff file based on the DESCRIPTION file.
 - minor documentation improvements.
 
 ## actions 0.1.3
