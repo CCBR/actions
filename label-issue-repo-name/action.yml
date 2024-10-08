@@ -4,7 +4,7 @@ author: "Vishal Koparde"
 
 inputs:
   github-token:
-    description: "GitHub Actions token with project scope"
+    description: "GitHub Actions token (e.g. { github.token })"
     required: true
 
 runs:
