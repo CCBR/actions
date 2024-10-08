@@ -13,7 +13,7 @@ issues of a given label
 name: add-issue-label-list
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       issue-num:
         required: true
@@ -25,12 +25,14 @@ on:
         description: "Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)"
 
 jobs:
-  add-label:
-    uses: CCBR/actions/add-issue-label-list
-    with:
-      github-token: ${{ github.token }}
-      issue-num: ${{ inputs.issue-num }}
-      label-name: ${{ inputs.label-name }}
+  add-list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/add-issue-label-list
+        with:
+          github-token: ${{ github.token }}
+          issue-num: ${{ inputs.issue-num }}
+          label-name: ${{ inputs.label-name }}
 ```
 
 ## Inputs
