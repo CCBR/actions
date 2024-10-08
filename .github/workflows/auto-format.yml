@@ -6,6 +6,8 @@ on:
     paths:
       - "src/**"
       - "**/README.qmd"
+      - "**.yml"
+      - "**.cff"
 
 env:
   GH_TOKEN: ${{ github.token }}

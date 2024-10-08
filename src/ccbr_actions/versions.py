@@ -6,8 +6,7 @@ This module provides functions to retrieve and process release information from 
 
 import json
 import re
-
-from .util import shell_run
+from ccbr_tools.shell import shell_run
 
 
 def get_current_hash():
@@ -30,7 +29,7 @@ def get_current_hash():
     >>> get_current_hash()
     'abc123def4567890abcdef1234567890abcdef12'
     """
-    return shell_run("git rev-parse HEAD")
+    return shell_run("git rev-parse HEAD").strip()
 
 
 def match_semver(version_str, with_leading_v=False):
@@ -70,7 +69,7 @@ def match_semver(version_str, with_leading_v=False):
     return re.match(semver_pattern, version_str)
 
 
-def get_major_minor_version(version_str):
+def get_major_minor_version(version_str, with_leading_v=False):
     """
     Extract the major and minor version from a semantic versioning string.
 
@@ -99,9 +98,10 @@ def get_major_minor_version(version_str):
     >>> get_major_minor_version("invalid_version")
     None
     """
-    semver_match = match_semver(version_str)
+    semver_match = match_semver(version_str, with_leading_v=with_leading_v)
+    prefix = "v" if with_leading_v else ""
     return (
-        f"{semver_match.group('major')}.{semver_match.group('minor')}"
+        f"{prefix}{semver_match.group('major')}.{semver_match.group('minor')}"
         if semver_match
         else None
     )
@@ -197,7 +197,7 @@ def is_ancestor(ancestor, descendant):
     """
     return bool(
         shell_run(
-            f"git merge-base --is-ancestor {ancestor} {descendant}  && echo True || echo False"
+            f"git merge-base --is-ancestor {ancestor} {descendant} && echo True || echo False"
         ).strip()
     )
 
@@ -269,15 +269,23 @@ def get_latest_release_tag(args=""):
     >>> get_latest_release_tag()
     'v1.0.0'
     """
-    releases = get_releases(limit=1, args=args)
-    return releases[0]["tagName"] if releases and releases[0]["isLatest"] else None
+    releases = get_releases(limit=100, args=args)
+    latest_release = next(
+        (release for release in releases if release["isLatest"]), None
+    )
+    return latest_release["tagName"] if latest_release else ""
 
 
-def get_latest_release_hash():
+def get_latest_release_hash(args=""):
     """
     Get the commit hash of the latest release.
 
     Uses git rev-list to get the commit hash of the latest release tag.
+
+    Parameters
+    ----------
+    args : str, optional
+        Additional arguments to pass to the GitHub CLI command (default is "").
 
     Returns
     -------
@@ -298,8 +306,10 @@ def get_latest_release_hash():
     >>> get_latest_release_hash()
     'abc123def4567890abcdef1234567890abcdef12'
     """
-    tag_name = get_latest_release_tag()
-    tag_hash = shell_run(f"git rev-list -n 1 {tag_name}")
-    if "fatal: ambiguous argument" in tag_hash:
-        raise ValueError(f"Tag {tag_name} not found in repository commit history")
-    return tag_hash
+    tag_name = get_latest_release_tag(args=args)
+    tag_hash = ""
+    if tag_name:
+        tag_hash = shell_run(f"git rev-list -n 1 {tag_name}")
+        if "fatal: ambiguous argument" in tag_hash:
+            raise ValueError(f"Tag {tag_name} not found in repository commit history")
+    return tag_hash.strip()
