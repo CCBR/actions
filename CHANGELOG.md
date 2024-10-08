@@ -1,5 +1,8 @@
 ## actions development version
 
+- new actions:
+  - `label-issue-repo-name` - Label issues & PRs with the repository name
+  - `add-issue-label-list` - Update issue description with a list of issues of a given label
 - minor documentation improvements.
 
 ## actions 0.1.3

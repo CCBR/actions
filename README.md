@@ -14,6 +14,7 @@ See [examples/](examples) for workflow examples. You can copy these to
 your own repository in the `.github/workflows/` directory and modify
 them for your needs.
 
+- [add-issue-label-list](examples/add-issue-label-list.yml)
 - [auto-format](examples/auto-format.yml)
 - [build-nextflow](examples/build-nextflow.yml)
 - [build-python](examples/build-python.yml)
@@ -21,6 +22,7 @@ them for your needs.
 - [docs-mkdocs](examples/docs-mkdocs.yml)
 - [docs-quarto](examples/docs-quarto.yml)
 - [draft-release](examples/draft-release.yml)
+- [label-issues-repo-name](examples/label-issues-repo-name.yml)
 - [post-release](examples/post-release.yml)
 - [techdev-project](examples/techdev-project.yml)
 - [user-projects](examples/user-projects.yml)
@@ -29,8 +31,12 @@ them for your needs.
 
 Custom actions used in our github workflows.
 
+- [add-issue-label-list](add-issue-label-list) - Update issue
+  description with a list of issues of a given label
 - [draft-release](draft-release) - Draft a new release based on
   conventional commits and prepare release notes
+- [label-issue-repo-name](label-issue-repo-name) - Label issues & PRs
+  with the repository name
 - [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
