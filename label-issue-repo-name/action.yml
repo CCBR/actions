@@ -1,0 +1,36 @@
+name: label-issue-repo-name
+description: "Label issues & PRs with the repository name"
+author: "Vishal Koparde"
+
+inputs:
+  github-token:
+    description: "GitHub Actions token with project scope"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: add label
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          try {
+            const response = await github.rest.issues.createLabel({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              name: context.repo.repo,
+                              color: 'B60205',
+                              description: 'RepoName'
+                              });
+            console.log('LABEL ' + context.repo.repo + ' CREATED SUCCESSFULLY');
+          } catch (createLabelError) {
+            console.log('FAILED TO CREATE LABEL ' + context.repo.repo + ' ... MAY BE IT ALREADY EXISTS.');
+            console.log('FAILURE MSG: ' + createLabelError.message);
+          }
+          github.rest.issues.addLabels({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: [context.repo.repo]
+          })

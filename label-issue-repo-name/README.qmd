@@ -1,0 +1,37 @@
+---
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+# label-issue-repo-name
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+This action labels issues & PRs with the name of the repository.
+It is useful for organizing GitHub Project boards with issues from multiple repos.
+
+## Usage
+
+### Basic example
+
+[label-issues-reponame.yml](/examples/label-issues-repo-name.yml)
+
+```{python}
+yml_file='../examples/label-issues-repo-name.yml'
+print('```yaml')
+with open(yml_file, 'r') as infile:
+  print(infile.read())
+print('```\n')
+```
+
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```

@@ -1,0 +1,25 @@
+name: add-issue-label-list
+description: Update issue description with a list of issues of a given label
+author: "Vishal Koparde"
+inputs:
+  issue-num:
+    required: true
+    description: "Number of the issue to update (issue should already exist!)"
+  label-name:
+    required: true
+    description: "Name of the label to create a task list for (eg. RENEE or ccbr1310, etc.)"
+  github-token:
+    description: "GitHub Actions token (e.g. { github.token })"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Add labeled issues to list
+      env:
+        GH_TOKEN: ${{ secrets.ADD_TO_PROJECT_PAT }}
+      run: |
+        gh issue list --repo "$GITHUB_REPOSITORY" --label "${{ github.event.inputs.label-name }}" \
+            --json number --jq 'map("- #\(.number)")[]' \
+        | gh issue edit "${{ github.event.inputs.issue-num }}" \
+            --repo "$GITHUB_REPOSITORY" --body-file -
