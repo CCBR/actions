@@ -10,6 +10,8 @@ on:
 
 jobs:
   add-label:
-    uses: CCBR/actions/label-issue-repo-name
-    with:
-      github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/label-issue-repo-name
+        with:
+          github-token: ${{ github.token }}
