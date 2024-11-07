@@ -1,0 +1,67 @@
+# This GitHub Actions workflow is designed to manually build and optionally push a Docker image to DockerHub.
+#
+# Workflow Name: build-docker-manual
+#
+# Inputs:
+# - dockerfile: Path to the Dockerfile in the repository (e.g., common/ccbr_bwa/Dockerfile). This input is required.
+# - dockerhub_namespace: DockerHub namespace or organization name (e.g., nciccbr). This input is required and defaults to 'nciccbr'.
+# - push: Boolean flag to determine whether to push the built image to DockerHub. This input is required and defaults to 'false'.
+#
+# Jobs:
+# - build-docker: This job runs on an Ubuntu latest runner and performs the following steps:
+#   - Checks out the repository.
+#   - Logs in to DockerHub if the 'push' input is set to 'true'.
+#   - Prepares build-time variables by running a custom script.
+#   - Checks variables and creates a temporary README file with build details.
+#   - Builds and optionally pushes the Docker image using the docker/build-push-action.
+#   - Lists Docker images on the runner.
+#   - Updates the DockerHub description with the contents of the temporary README file if the image was successfully pushed.
+
+name: build-docker-manual
+run-name: build-docker-manual ${{ inputs.dockerfile }}-${{ inputs.suffix }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      dockerfile:
+        type: string
+        description: path to the Dockerfile in the repo (e.g. common/ccbr_bwa/Dockerfile)
+        required: true
+      dockerhub-namespace:
+        type: string
+        description: dockerhub namespace or org name (e.g. nciccbr)
+        required: true
+        default: nciccbr
+      suffix:
+        type: string
+        description: Suffix to add to image tag eg. "dev" to add "-dev"
+        required: true
+        default: feat
+      push:
+        type: boolean
+        description: Push to DockerHub (leave unchecked to just build the container without pushing)
+        required: true
+        default: false
+      ccbr-actions-version:
+        description: "The version of ccbr_actions to use"
+        required: true
+        default: "dockers2" # TODO switch to main after this is merged
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        id: checkout
+        uses: actions/checkout@v4
+
+      - users: CCBR/actions/build-docker@${{ github.event.inputs.ccbr-actions-version }}
+        with:
+          dockerfile: ${{ github.event.inputs.dockerfile }}
+          dockerhub-namespace: ${{ github.event.inputs.dockerhub-namespace }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}
+          dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}
+          suffix: ${{ github.event.inputs.suffix }}
+          push: ${{ github.event.inputs.push }}
+          ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}
+          github-token: ${{ github.token }}

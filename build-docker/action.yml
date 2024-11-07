@@ -1,0 +1,139 @@
+name: build-docker
+run-name: build-docker ${{ inputs.dockerfile }}-${{ inputs.suffix }}
+description: "Build a docker container using CCBR guidelines"
+author: "Vishal Koparde & Kelly Sovacool"
+
+inputs:
+  dockerfile:
+    type: string
+    description: path to the Dockerfile in the repo (e.g. common/ccbr_bwa/Dockerfile)
+    required: true
+  dockerhub-namespace:
+    type: string
+    description: dockerhub namespace or org name (e.g. nciccbr)
+    required: true
+    default: nciccbr
+  dockerhub-username:
+    type: string
+    description: dockerhub username of a user with admin permissions for `dockerhub-namespace`. Recommend using secrets, e.g. secrets.DOCKERHUB_USERNAME
+    required: true
+  dockerhub-token:
+    type: string
+    description: dockerhub token with read & write permissions. Strongly recommend using secrets, e.g. secrets.DOCKERHUB_TOKEN
+  suffix:
+    type: string
+    description: Suffix to add to image tag eg. "dev" to add "-dev"
+    required: true
+    default: feat
+  push:
+    type: boolean
+    description: Push to DockerHub (leave unchecked to just build the container without pushing)
+    required: true
+    default: false
+  ccbr-actions-version:
+    description: "The version of ccbr_actions to use"
+    required: true
+    default: "main"
+  python-version:
+    description: "The version of Python to install"
+    required: true
+    default: "3.11"
+  github-actor:
+    description: "Username of GitHub actor for the git commit when the README is updated"
+    required: true
+    default: "41898282+github-actions[bot]"
+  github-token:
+    description: "GitHub Actions token (e.g. github.token)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: git config
+      shell: bash
+      run: |
+        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.github-actor }}"
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "pip"
+
+    - name: Install
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - name: Login to DockerHub
+      id: login_dockerhub
+      if: ${{ inputs.push == 'true' }}
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.dockerhub-username }}
+        password: ${{ inputs.dockerhub-token }}
+
+    - name: Prepare build-time variables
+      id: prepare_vars
+      run: |
+        prepare_docker_build_variables.sh ${{ inputs.dockerfile }} ${{ inputs.suffix }}
+
+    - name: Check variables and create README
+      id: check_and_create_readme
+      run: |
+        echo "DOCKERFILE: $DOCKERFILE"
+        echo "IMAGENAME: $IMAGENAME"
+        echo "BASEIMAGENAME: $BASEIMAGENAME"
+        echo "BUILD_DATE: $BUILD_DATE"
+        echo "BUILD_TAG: $BUILD_TAG"
+        echo "REPONAME: $REPONAME"
+        echo "MDFILE: $MDFILE"
+        echo -ne "## ${{ github.repository }} $IMAGENAME\n\n" > $MDFILE
+        echo "Dockerfile source: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/${{ inputs.dockerfile }}" >> $MDFILE
+        echo -ne "\n\n" >> $MDFILE
+        echo -ne "Built on: $BUILD_DATE \n\n" >> $MDFILE
+        echo -ne "Build tag: $BUILD_TAG \n\n" >> $MDFILE
+        echo -ne "Base image: $BASEIMAGENAME \n\n" >> $MDFILE
+        echo -ne "Dockerfile path in repo: $DOCKERFILE \n\n" >> $MDFILE
+
+    - name: Build and push Docker image
+      id: build_and_push
+      uses: docker/build-push-action@v5
+      with:
+        file: ${{ env.DOCKERFILE }}
+        push: ${{ inputs.push }}
+        tags: ${{ env.IMAGENAME }}
+        build-args: |
+          DOCKERFILE=${{ env.DOCKERFILE }}
+          BUILD_DATE=${{ env.BUILD_DATE }}
+          BUILD_TAG=${{ env.BUILD_TAG }}
+          REPONAME=${{ env.REPONAME }}
+          IMAGENAME=${{ env.IMAGENAME }}
+          BASEIMAGENAME=${{ env.BASEIMAGENAME }}
+
+    - name: List Docker images
+      id: list_docker_images
+      run: docker images
+
+    - name: Run print_versions.py inside Docker container
+      id: run_script_in_container
+      run: |
+        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 /ws/scripts/print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
+      shell: bash
+
+    - name: Update Docker Hub Description
+      id: update_dockerhub_description
+      if: ${{ (github.event.inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
+      uses: peter-evans/dockerhub-description@v4
+      with:
+        username: ${{ inputs.dockerhub-username }}
+        password: ${{ inputs.dockerhub-token }}
+        repository: ${{ inputs.dockerhub-namespace }}/${{ env.REPONAME }}
+        readme-filepath: ${{ env.MDFILE }}
+
+    - name: Commit and Push Markdown File
+      run: |
+        git add ${{ env.MDFILE }}
+        git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}

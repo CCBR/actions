@@ -1,0 +1,48 @@
+---
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+# build-docker
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+This action is designed to be used to build Docker containers according to
+the CCBR format as used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
+
+This action:
+
+  - Logs in to DockerHub if the 'push' input is set to 'true'.
+  - Prepares build-time variables by running a custom script.
+  - Checks variables and creates a temporary README file with build details.
+  - Builds and optionally pushes the Docker image using the docker/build-push-action.
+  - Lists Docker images on the runner.
+  - Updates the DockerHub description with the contents of the temporary README file if the image was successfully pushed.
+
+## Usage
+
+### Basic example
+
+[docs-mkdocs.yml](/examples/build-docker-manual.yml)
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+    with:
+        fetch-depth: 0
+  - uses: CCBR/actions/build-docker@main
+    with:
+        github-token: ${{ github.token }}
+```
+
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```
