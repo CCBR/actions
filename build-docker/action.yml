@@ -73,11 +73,13 @@ runs:
         password: ${{ inputs.dockerhub-token }}
 
     - name: Prepare build-time variables
+      shell: bash
       id: prepare_vars
       run: |
         prepare_docker_build_variables.sh ${{ inputs.dockerfile }} ${{ inputs.suffix }}
 
     - name: Check variables and create README
+      shell: bash
       id: check_and_create_readme
       run: |
         echo "DOCKERFILE: $DOCKERFILE"
@@ -96,6 +98,7 @@ runs:
         echo -ne "Dockerfile path in repo: $DOCKERFILE \n\n" >> $MDFILE
 
     - name: Build and push Docker image
+      shell: bash
       id: build_and_push
       uses: docker/build-push-action@v5
       with:
@@ -111,16 +114,18 @@ runs:
           BASEIMAGENAME=${{ env.BASEIMAGENAME }}
 
     - name: List Docker images
+      shell: bash
       id: list_docker_images
       run: docker images
 
     - name: Run print_versions.py inside Docker container
+      shell: bash
       id: run_script_in_container
       run: |
         docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 /ws/scripts/print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
-      shell: bash
 
     - name: Update Docker Hub Description
+      shell: bash
       id: update_dockerhub_description
       if: ${{ (github.event.inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
       uses: peter-evans/dockerhub-description@v4
@@ -131,6 +136,7 @@ runs:
         readme-filepath: ${{ env.MDFILE }}
 
     - name: Commit and Push Markdown File
+      shell: bash
       run: |
         git add ${{ env.MDFILE }}
         git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
