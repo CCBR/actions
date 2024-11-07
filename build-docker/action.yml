@@ -143,6 +143,7 @@ runs:
 
     - name: Commit and Push Markdown File
       shell: bash
+      if: ${{ (github.event.inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
       run: |
         git add ${{ env.MDFILE }}
         git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
