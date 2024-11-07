@@ -22,17 +22,29 @@ This action:
 
 ### Basic example
 
-[docs-mkdocs.yml](/examples/build-docker-manual.yml)
+[build-docker-manual.yml](/examples/build-docker-manual.yml)
 
-``` yaml
+```yaml
 steps:
   - uses: actions/checkout@v4
     with:
-        fetch-depth: 0
+      fetch-depth: 0
   - uses: CCBR/actions/build-docker@main
     with:
-        github-token: ${{ github.token }}
+      dockerfile: ${{ github.event.inputs.dockerfile }}
+      dockerhub-namespace: ${{ github.event.inputs.dockerhub-namespace }}
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}
+      dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}
+      suffix: ${{ github.event.inputs.suffix }}
+      push: ${{ github.event.inputs.push }}
+      ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}
+      github-token: ${{ github.token }}
+      github-actor: ${{ github.actor }}
 ```
+
+For an advanced example to automatically build docker containers when
+files change, see
+[build-docker-auto.yml](/examples/build-docker-auto.yml).
 
 ## Inputs
 
