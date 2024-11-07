@@ -4,7 +4,7 @@
 #
 # Inputs:
 # - dockerfile: Path to the Dockerfile in the repository (e.g., common/ccbr_bwa/Dockerfile). This input is required.
-# - dockerhub_namespace: DockerHub namespace or organization name (e.g., nciccbr). This input is required and defaults to 'nciccbr'.
+# - dockerhub-namespace: DockerHub namespace or organization name (e.g., nciccbr). This input is required and defaults to 'nciccbr'.
 # - push: Boolean flag to determine whether to push the built image to DockerHub. This input is required and defaults to 'false'.
 #
 # Jobs:
@@ -55,7 +55,7 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - users: CCBR/actions/build-docker@${{ github.event.inputs.ccbr-actions-version }}
+      - uses: CCBR/actions/build-docker@dockers2 # TODO switch to main after merged
         with:
           dockerfile: ${{ github.event.inputs.dockerfile }}
           dockerhub-namespace: ${{ github.event.inputs.dockerhub-namespace }}
@@ -65,3 +65,4 @@ jobs:
           push: ${{ github.event.inputs.push }}
           ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}
           github-token: ${{ github.token }}
+          github-actor: ${{ github.actor }}
