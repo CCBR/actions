@@ -1,5 +1,4 @@
 name: build-docker
-run-name: build-docker ${{ inputs.dockerfile }}-${{ inputs.suffix }}
 description: "Build a docker container using CCBR guidelines"
 author: "Vishal Koparde & Kelly Sovacool"
 
