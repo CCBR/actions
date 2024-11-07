@@ -17,19 +17,20 @@
 # - Sets environment variables for Dockerfile, image name, base image name, build date, build tag, and repository name.
 # - Prints the extracted and constructed variables for debugging.
 
+set -euo pipefail
+
 # Get the Dockerfile path from the first argument
 dockerfile=$1
 # Get the suffix name from the second argument
 suffix=$2
+# Docker Hub account name (namespace)
+dockerhub_account=$3
 
 echo "Dockerfile: $dockerfile"
 echo "suffix: $suffix" # remember .. no suffix is added if suffix is "main"
 
-# Docker Hub account name ... this is fixed to "nciccbr" our org account!
-dockerhub_account="nciccbr"
-
 # Get the current date and time in the format yymmdd_HHMMSS
-dt=$(date +"%y%m%d_%H%M%S")
+dt=$(date +"%Y-%m-%d_%H:%M:%S")
 
 # Extract the basename of the Dockerfile (e.g., Dockerfile.v2)
 bn_dockerfile=$(basename $dockerfile)

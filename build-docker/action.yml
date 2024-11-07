@@ -84,7 +84,7 @@ runs:
       shell: bash
       id: prepare_vars
       run: |
-        prepare_docker_build_variables.sh ${{ inputs.dockerfile }} ${{ inputs.suffix }}
+        prepare_docker_build_variables.sh ${{ inputs.dockerfile }} ${{ inputs.suffix }} ${{ inputs.dockerhub-namespace }}
 
     - name: Check variables and create README
       shell: bash
