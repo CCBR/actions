@@ -147,6 +147,6 @@ runs:
       run: |
         git add ${{ env.MDFILE }}
         git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
-        git push
+        git push https://x-access-token:${{ inputs.github-token }}@github.com/${{ github.repository }}.git HEAD:dev
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
