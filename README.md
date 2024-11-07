@@ -16,6 +16,8 @@ them for your needs.
 
 - [add-issue-label-list](examples/add-issue-label-list.yml)
 - [auto-format](examples/auto-format.yml)
+- [build-docker-auto](examples/build-docker-auto.yml)
+- [build-docker-manual](examples/build-docker-manual.yml)
 - [build-nextflow](examples/build-nextflow.yml)
 - [build-python](examples/build-python.yml)
 - [build-snakemake](examples/build-snakemake.yml)
@@ -34,6 +36,8 @@ Custom actions used in our github workflows.
 
 - [add-issue-label-list](add-issue-label-list) - Update issue
   description with a list of issues of a given label
+- [build-docker](build-docker) - Build a docker container using CCBR
+  guidelines
 - [draft-release](draft-release) - Draft a new release based on
   conventional commits and prepare release notes
 - [label-issue-repo-name](label-issue-repo-name) - Label issues & PRs

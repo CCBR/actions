@@ -84,3 +84,8 @@ override_SS05 = [  # override SS05 to allow docstrings starting with these words
 [tool.setuptools.dynamic]
 version = {file = "src/ccbr_actions/VERSION"}
 readme = {file = "README.md"}
+
+[tool.setuptools]
+script-files = [
+    "scripts/prepare_docker_build_variables.sh"
+]
