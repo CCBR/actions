@@ -107,7 +107,6 @@ runs:
         echo -ne "Dockerfile path in repo: $DOCKERFILE \n\n" >> $MDFILE
 
     - name: Build and push Docker image
-      shell: bash
       id: build_and_push
       uses: docker/build-push-action@v5
       with:
@@ -134,7 +133,6 @@ runs:
         docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 /ws/scripts/print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
 
     - name: Update Docker Hub Description
-      shell: bash
       id: update_dockerhub_description
       if: ${{ (github.event.inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
       uses: peter-evans/dockerhub-description@v4
