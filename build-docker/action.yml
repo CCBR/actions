@@ -58,7 +58,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-
     - name: Confirm Actor
       shell: bash
       run: |
@@ -154,9 +153,9 @@ runs:
       shell: bash
       if: ${{ (inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
       run: |
-        echo " actor: ${{ inputs.github-actor }}"
+        git pull --ff-only
         git add ${{ env.MDFILE }}
         git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
-        git push https://x-access-token:${{ env.PAT }}@github.com/${{ github.repository }}.git HEAD:dev
+        git push https://x-access-token:${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:dev
       env:
-        PAT: ${{ inputs.github-token }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
