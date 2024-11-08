@@ -155,6 +155,7 @@ runs:
         title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
 
     - name: Approve PR
+      shell: bash
       run: |
         gh pr merge -r --admin ${PR}
       env:
