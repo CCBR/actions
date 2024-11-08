@@ -61,7 +61,7 @@ inputs:
   gh-merge-args:
     description: |
       arguments for `gh pr merge`
-    default: "-s --admin"
+    default: "-ds --admin"
 
 runs:
   using: "composite"
@@ -160,6 +160,7 @@ runs:
 
     - name: Approve PR
       shell: bash
+      if: ${{ (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
       run: |
         gh pr merge ${args} ${PR}
       env:
