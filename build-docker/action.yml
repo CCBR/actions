@@ -58,7 +58,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-
     - name: Confirm Actor
       shell: bash
       run: |
