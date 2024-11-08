@@ -60,6 +60,7 @@ runs:
   steps:
 
     - name: Confirm Actor
+      shell: bash
       run: |
         echo "This action was triggered by the actor: ${{ github.actor }}"
         echo "Original actor passed from primary workflow: ${{ inputs.github-actor }}"
