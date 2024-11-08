@@ -58,12 +58,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Confirm Actor
-      shell: bash
-      run: |
-        echo "This action was triggered by the actor: XX${{ github.actor }}XX"
-        echo "Original actor passed from primary workflow: XX${{ inputs.github-actor }}XX"
-
     - name: git config
       shell: bash
       run: |
@@ -155,7 +149,7 @@ runs:
       run: |
         git pull --ff-only
         git add ${{ env.MDFILE }}
-        git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
+        git commit -m "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
         git push
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
