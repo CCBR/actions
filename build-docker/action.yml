@@ -58,6 +58,10 @@ inputs:
     description: |
       path to JSON file for printing tool versions
     default: "scripts/tool_version_commands.json"
+  gh-merge-args:
+    description: |
+      arguments for `gh pr merge`
+    default: "-s --admin"
 
 runs:
   using: "composite"
@@ -157,7 +161,8 @@ runs:
     - name: Approve PR
       shell: bash
       run: |
-        gh pr merge -r --admin ${PR}
+        gh pr merge ${args} ${PR}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        args: ${{ inputs.gh-merge-args }}
         PR: ${{ steps.create-pr.outputs.pull-request-number }}
