@@ -160,10 +160,9 @@ runs:
 
     - name: Approve PR
       shell: bash
-      if: ${{ (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
+      if: ${{ (steps.create-pr.outputs.pull-request-number != '') && (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
       run: |
-        echo $PR
-        gh pr --approve ${PR}
+        gh pr merge ${args} ${PR}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         args: ${{ inputs.gh-merge-args }}
