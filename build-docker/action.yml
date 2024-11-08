@@ -131,7 +131,7 @@ runs:
       shell: bash
       id: run_script_in_container
       run: |
-        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 /ws/scripts/print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
+        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
