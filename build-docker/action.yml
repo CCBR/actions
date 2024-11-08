@@ -54,6 +54,10 @@ inputs:
     description: |
       GitHub Actions token (e.g. github.token)
     required: true
+  json-file:
+    description: |
+      path to JSON file for printing tool versions
+    default: "scripts/tool_version_commands.json"
 
 runs:
   using: "composite"
@@ -131,7 +135,9 @@ runs:
       shell: bash
       id: run_script_in_container
       run: |
-        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
+        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
+          bash -c "python3 print_versions.py --json /ws/${{ inputs.json-file }}" \
+          >> ${{ env.MDFILE }}
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
