@@ -151,7 +151,7 @@ runs:
         commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
         author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
         committer: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
-        branch: "pr/${{ env.IMAGENAME }}"
+        branch: "pr/${{ env.DOCKERFILE }}"
         title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
 
     - name: Approve PR
