@@ -156,6 +156,6 @@ runs:
         git pull --ff-only
         git add ${{ env.MDFILE }}
         git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
-        git push https://x-access-token:${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:dev
+        git push
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
