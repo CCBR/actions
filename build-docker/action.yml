@@ -146,7 +146,7 @@ runs:
       id: create-pr
       uses: peter-evans/create-pull-request@v7
       with:
-        token: ${{ inputs.github-token }} #${{ secrets.PAT_PROTECTEDBRANCH }}
+        token: ${{ github.token }} #${{ secrets.PAT_PROTECTEDBRANCH }}
         add-paths: ${{ env.MDFILE }}
         commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
         author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
