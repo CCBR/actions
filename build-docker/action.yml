@@ -135,9 +135,10 @@ runs:
       shell: bash
       id: run_script_in_container
       run: |
+        print_versions=$(which print_versions.py)
         docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
-          bash -c "python3 print_versions.py --json /ws/${{ inputs.json-file }}" \
-          >> ${{ env.MDFILE }}
+          python3 /ws/scripts/print_versions.py --json /ws/${{ inputs.json-file }} --output /ws/${{ env.MDFILE }}
+      # TODO move print versions script
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
