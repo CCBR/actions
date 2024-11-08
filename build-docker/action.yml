@@ -157,6 +157,6 @@ runs:
         echo " actor: ${{ inputs.github-actor }}"
         git add ${{ env.MDFILE }}
         git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
-        git push https://x-access-token:${{ inputs.github-token }}@github.com/${{ github.repository }}.git HEAD:dev
+        git push https://x-access-token:${{ env.PAT }}@github.com/${{ github.repository }}.git HEAD:dev
       env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
+        PAT: ${{ inputs.github-token }}
