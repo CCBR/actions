@@ -58,11 +58,19 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Confirm Actor
+      shell: bash
+      run: |
+        echo "This action was triggered by the actor: XX${{ github.actor }}XX"
+        echo "Original actor passed from primary workflow: XX${{ inputs.github-actor }}XX"
+
     - name: git config
       shell: bash
       run: |
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
 
     - uses: actions/setup-python@v5
       with:
@@ -145,8 +153,9 @@ runs:
       shell: bash
       if: ${{ (inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
       run: |
+        git pull --ff-only
         git add ${{ env.MDFILE }}
         git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
-        git push
+        git push https://x-access-token:${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:dev
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
