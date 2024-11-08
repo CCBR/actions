@@ -155,7 +155,7 @@ runs:
         commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
         author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
         committer: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
-        branch: "pr/${{ env.DOCKERFILE }}"
+        branch: "auto-pr/${{ env.DOCKERFILE }}"
         title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
 
     - name: Approve PR
@@ -163,7 +163,7 @@ runs:
       if: ${{ (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
       run: |
         echo $PR
-        gh pr approve ${PR}
+        gh pr --approve ${PR}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         args: ${{ inputs.gh-merge-args }}
