@@ -47,6 +47,10 @@ on:
         required: true
         default: "main"
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build-docker:
     runs-on: ubuntu-latest
@@ -64,5 +68,5 @@ jobs:
           suffix: ${{ github.event.inputs.suffix }}
           push: ${{ github.event.inputs.push }}
           ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}
-          github-token: ${{ github.token }}
-          github-actor: ${{ github.actor }}
+          github-token: ${{ secrets.PAT_PROTECTEDBRANCH }}
+          json-file: "scripts/tool_version_commands.json"
