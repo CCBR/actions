@@ -35,6 +35,11 @@ on:
 
 env:
   suffix: ${{ github.base_ref == 'main' && github.event_name == 'pull_request' && 'main' || github.base_ref == 'dev' && github.event_name == 'pull_request' && 'dev' || 'feat' }}
+  GITHUB_TOKEN: ${{ secrets.PAT_PROTECTEDBRANCH }}
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   get-files:
@@ -45,12 +50,14 @@ jobs:
       - name: Checkout repository
         id: checkout
         uses: actions/checkout@v4
+
       - id: changed-files
         name: Check changed files
         uses: knu/changed-files@v1
         with:
           paths: |
             **/Dockerfile.*
+
       - name: Show changed files
         id: matrix
         run: |
@@ -62,11 +69,22 @@ jobs:
     strategy:
       matrix:
         file: "${{ fromJson(needs.get-files.outputs.json) }}"
+      max-parallel: 1
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        id: checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        name: "checkout PR ${{ github.head_ref }}"
+        if: github.event_name == 'pull_request'
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }} # branch name of PR
+
+      - uses: actions/checkout@v4
+        name: "checkout push ${{ github.ref_name }}"
+        if: github.event_name == 'push'
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }} # branch name of push
 
       - uses: CCBR/actions/build-docker@main
         with:
@@ -76,5 +94,6 @@ jobs:
           dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}
           suffix: ${{ env.suffix }}
           push: true
-          github-token: ${{ github.token }}
-          github-actor: ${{ github.actor }}
+          github-token: ${{ secrets.PAT_PROTECTEDBRANCH }}
+          ccbr-actions-version: main
+          json-file: "scripts/tool_version_commands.json"

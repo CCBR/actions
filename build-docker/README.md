@@ -70,3 +70,6 @@ files change, see
   `41898282+github-actions[bot]`.
 - `github-token`: GitHub Actions token (e.g. github.token) .
   **Required.**
+- `json-file`: path to JSON file for printing tool versions . Default:
+  `scripts/tool_version_commands.json`.
+- `gh-merge-args`: arguments for `gh pr merge` . Default: `-ds --admin`.

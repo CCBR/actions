@@ -54,16 +54,18 @@ inputs:
     description: |
       GitHub Actions token (e.g. github.token)
     required: true
+  json-file:
+    description: |
+      path to JSON file for printing tool versions
+    default: "scripts/tool_version_commands.json"
+  gh-merge-args:
+    description: |
+      arguments for `gh pr merge`
+    default: "-ds --admin"
 
 runs:
   using: "composite"
   steps:
-    - name: git config
-      shell: bash
-      run: |
-        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
-        git config --local user.name "${{ inputs.github-actor }}"
-
     - uses: actions/setup-python@v5
       with:
         python-version: "${{ inputs.python-version }}"
@@ -129,7 +131,10 @@ runs:
       shell: bash
       id: run_script_in_container
       run: |
-        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 /ws/scripts/print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
+        print_versions=$(which print_versions.py)
+        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
+          python3 /ws/scripts/print_versions.py --json /ws/${{ inputs.json-file }} --output /ws/${{ env.MDFILE }}
+      # TODO move print versions script
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
@@ -141,12 +146,24 @@ runs:
         repository: ${{ inputs.dockerhub-namespace }}/${{ env.REPONAME }}
         readme-filepath: ${{ env.MDFILE }}
 
-    - name: Commit and Push Markdown File
+    - name: Create Pull Request
+      id: create-pr
+      uses: peter-evans/create-pull-request@v7
+      with:
+        token: ${{ github.token }} #${{ secrets.PAT_PROTECTEDBRANCH }}
+        add-paths: ${{ env.MDFILE }}
+        commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
+        author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
+        committer: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
+        branch: "auto-pr/${{ env.DOCKERFILE }}"
+        title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
+
+    - name: Approve PR
       shell: bash
-      if: ${{ (inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
+      if: ${{ (steps.create-pr.outputs.pull-request-number != '') && (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
       run: |
-        git add ${{ env.MDFILE }}
-        git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
-        git push
+        gh pr merge ${args} ${PR}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        args: ${{ inputs.gh-merge-args }}
+        PR: ${{ steps.create-pr.outputs.pull-request-number }}
