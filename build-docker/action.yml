@@ -181,3 +181,9 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         args: ${{ inputs.gh-merge-args }}
         PR: ${{ steps.create-pr.outputs.pull-request-number }}
+
+    - name: upload readme file on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        path: ${{ env.MDFILE }}
