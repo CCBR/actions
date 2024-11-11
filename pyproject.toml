@@ -80,6 +80,7 @@ override_SS05 = [  # override SS05 to allow docstrings starting with these words
 
 [tool.setuptools.package-data]
 "*" = ["LICENSE", "CHANGELOG.md", "lib/**", "examples/**"]
+"ccbr_actions.data" = ["src/ccbr_actions/data/*"]
 
 [tool.setuptools.dynamic]
 version = {file = "src/ccbr_actions/VERSION"}
