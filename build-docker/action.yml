@@ -36,34 +36,41 @@ inputs:
     required: true
     default: false
   ccbr-actions-version:
+    type: string
     description: |
       The version of ccbr_actions to use
     required: true
     default: "main"
   python-version:
+    type: string
     description: |
       The version of Python to install
     required: true
     default: "3.11"
   github-actor:
+    type: string
     description: |
       Username of GitHub actor for the git commit when the README is updated
     required: true
     default: "41898282+github-actions[bot]"
   github-token:
+    type: string
     description: |
       GitHub Actions token (e.g. github.token)
     required: true
   print-versions:
+    type: boolean
     description: |
       Whether to print tool versions in the container for the README file using `json-file`
     default: true
   json-file:
+    type: string
     description: |
       Relative path to JSON file for printing tool versions.
       If not provided and print-versions is true, a default JSON file in ccbr_actions will be used.
     default: "scripts/tool_version_commands.json"
   gh-merge-args:
+    type: string
     description: |
       arguments for `gh pr merge`
     default: "-ds --admin"
