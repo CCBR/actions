@@ -162,8 +162,9 @@ runs:
     - name: Create Pull Request
       id: create-pr
       uses: peter-evans/create-pull-request@v7
+      if: ${{ steps.update_dockerhub_description.outcome == 'success' }}
       with:
-        token: ${{ github.token }} #${{ secrets.PAT_PROTECTEDBRANCH }}
+        token: ${{ github.token }}
         add-paths: ${{ env.MDFILE }}
         commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
         author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
