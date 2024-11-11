@@ -4,7 +4,7 @@
   - `label-issue-repo-name` - Label issues & PRs with the repository name
   - `add-issue-label-list` - Update issue description with a list of issues of a given label
   - `update-cff-R` - For R packages: update the CITATION.cff file based on the DESCRIPTION file.
-  - `build-docker` - Build docker containers for [CCBR/Dockers2](https://github.com/CCBR/dockers2). (#31, @kelly-sovacool)
+  - `build-docker` - Build docker containers for [CCBR/Dockers2](https://github.com/CCBR/dockers2). (#31, #33, @kelly-sovacool)
 - minor documentation improvements.
 
 ## actions 0.1.3

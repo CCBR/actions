@@ -2,27 +2,25 @@
 
 **`build-docker`** - Build a docker container using CCBR guidelines
 
-This action is designed to be used to build Docker containers according
-to the CCBR format as used in
-[CCBR/dockers2](https://github.com/CCBR/Dockers2).
+This action is designed to build Docker containers according to the
+format used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
 
 This action:
 
 - Logs in to DockerHub if the ‘push’ input is set to ‘true’.
 - Prepares build-time variables by running a custom script.
-- Checks variables and creates a temporary README file with build
-  details.
+- Checks variables and creates a README file with build details in the
+  same directory as the dockerfile.
 - Builds and optionally pushes the Docker image using the
   docker/build-push-action.
 - Lists Docker images on the runner.
-- Updates the DockerHub description with the contents of the temporary
-  README file if the image was successfully pushed.
+- Updates the DockerHub description with the contents of the README file
+  if the image was successfully pushed.
+- Opens and merges a PR with the updates to the README file.
 
 ## Usage
 
 ### Basic example
-
-[build-docker-manual.yml](/examples/build-docker-manual.yml)
 
 ```yaml
 steps:
@@ -31,16 +29,20 @@ steps:
       fetch-depth: 0
   - uses: CCBR/actions/build-docker@main
     with:
-      dockerfile: ${{ github.event.inputs.dockerfile }}
-      dockerhub-namespace: ${{ github.event.inputs.dockerhub-namespace }}
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}
-      dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}
-      suffix: ${{ github.event.inputs.suffix }}
-      push: ${{ github.event.inputs.push }}
-      ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}
+      dockerfile: Dockerfile.v1
+      dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+      suffix: dev
+      push: true
+      ccbr-actions-version: v0.2
       github-token: ${{ github.token }}
       github-actor: ${{ github.actor }}
 ```
+
+For an example to manually trigger the workflow for a single docker
+container, see
+[build-docker-manual.yml](/examples/build-docker-manual.yml).
 
 For an advanced example to automatically build docker containers when
 files change, see
@@ -70,3 +72,10 @@ files change, see
   `41898282+github-actions[bot]`.
 - `github-token`: GitHub Actions token (e.g. github.token) .
   **Required.**
+- `print-versions`: Whether to print tool versions in the container for
+  the README file using `json-file` . Default: `True`.
+- `json-file`: Relative path to JSON file for printing tool versions. If
+  not provided and print-versions is true, a default JSON file in
+  ccbr_actions will be used. . Default:
+  `scripts/tool_version_commands.json`.
+- `gh-merge-args`: arguments for `gh pr merge` . Default: `-ds --admin`.

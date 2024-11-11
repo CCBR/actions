@@ -36,39 +36,53 @@ inputs:
     required: true
     default: false
   ccbr-actions-version:
+    type: string
     description: |
       The version of ccbr_actions to use
     required: true
     default: "main"
   python-version:
+    type: string
     description: |
       The version of Python to install
     required: true
     default: "3.11"
   github-actor:
+    type: string
     description: |
       Username of GitHub actor for the git commit when the README is updated
     required: true
     default: "41898282+github-actions[bot]"
   github-token:
+    type: string
     description: |
       GitHub Actions token (e.g. github.token)
     required: true
+  print-versions:
+    type: boolean
+    description: |
+      Whether to print tool versions in the container for the README file using `json-file`
+    default: true
+  json-file:
+    type: string
+    description: |
+      Relative path to JSON file for printing tool versions.
+      If not provided and print-versions is true, a default JSON file in ccbr_actions will be used.
+    default: "scripts/tool_version_commands.json"
+  gh-merge-args:
+    type: string
+    description: |
+      arguments for `gh pr merge`
+    default: "-ds --admin"
 
 runs:
   using: "composite"
   steps:
-    - name: git config
-      shell: bash
-      run: |
-        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
-        git config --local user.name "${{ inputs.github-actor }}"
-
     - uses: actions/setup-python@v5
       with:
         python-version: "${{ inputs.python-version }}"
 
-    - name: Install
+    - name: Install CCBR/actions
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
@@ -128,8 +142,24 @@ runs:
     - name: Run print_versions.py inside Docker container
       shell: bash
       id: run_script_in_container
+      if: ${{ inputs.print-versions == 'true' }}
       run: |
-        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} bash -c "python3 /ws/scripts/print_versions.py --json /ws/scripts/tool_version_commands.json" >> ${{ env.MDFILE }}
+        set -euo pipefail
+        SCRIPT=$(which print_versions.py)
+        echo $SCRIPT
+        cp $SCRIPT ${{ github.workspace }}
+
+        if [ -f ${{ inputs.json-file }} ]; then
+          JSON=${{ inputs.json-file }}
+        else
+          json_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.json"))')
+          cp $json_src ${{ github.workspace }}
+          JSON=tool_version_commands.json
+        fi
+        echo $JSON
+
+        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
+          python3 /ws/print_versions.py --json /ws/${JSON} --output /ws/${{ env.MDFILE }}
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
@@ -141,12 +171,33 @@ runs:
         repository: ${{ inputs.dockerhub-namespace }}/${{ env.REPONAME }}
         readme-filepath: ${{ env.MDFILE }}
 
-    - name: Commit and Push Markdown File
+    - name: Create Pull Request
+      id: create-pr
+      uses: peter-evans/create-pull-request@v7
+      if: ${{ steps.update_dockerhub_description.outcome == 'success' }}
+      with:
+        token: ${{ github.token }}
+        add-paths: ${{ env.MDFILE }}
+        commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
+        author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
+        committer: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
+        branch: "auto-pr/${{ env.DOCKERFILE }}"
+        title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
+
+    - name: Approve PR
       shell: bash
-      if: ${{ (inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
+      id: approve-pr
+      if: ${{ (steps.create-pr.outputs.pull-request-number != '') && (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
       run: |
-        git add ${{ env.MDFILE }}
-        git commit -m "docs: update readme for ${{ env.DOCKERFILE }}"
-        git push
+        gh pr merge ${args} ${PR}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        args: ${{ inputs.gh-merge-args }}
+        PR: ${{ steps.create-pr.outputs.pull-request-number }}
+
+    - name: upload readme file
+      uses: actions/upload-artifact@v4
+      if: failure() || ${{ steps.approve-pr.outcome != 'success'}}
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.MDFILE }}
