@@ -138,13 +138,17 @@ runs:
       if: ${{ inputs.print-versions == 'true' }}
       run: |
         SCRIPT=$(which print_versions.py)
+        echo $SCRIPT
         cp $SCRIPT ${{ github.workspace }}
+
         if [ -f ${{ inputs.json-file }} ]; then
           JSON=${{ inputs.json-file }}
         else
-          cp $(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.json"))') ${{ github.workspace }}
+          json_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.json"))')
+          cp $json_src ${{ github.workspace }}
           JSON=tool_version_commands.json
         fi
+        echo $JSON
 
         docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
           python3 /ws/print_versions.py --json /ws/${JSON} --output /ws/${{ env.MDFILE }}
