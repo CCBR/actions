@@ -66,6 +66,8 @@ jobs:
       matrix:
         file: "${{ fromJson(needs.get-files.outputs.json) }}"
       max-parallel: 1
+      fail-fast: false
+    continue-on-error: true
     runs-on: ubuntu-latest
     permissions:
       contents: write
