@@ -179,6 +179,7 @@ runs:
 
     - name: Approve PR
       shell: bash
+      id: approve-pr
       if: ${{ (steps.create-pr.outputs.pull-request-number != '') && (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
       run: |
         gh pr merge ${args} ${PR}
@@ -187,8 +188,8 @@ runs:
         args: ${{ inputs.gh-merge-args }}
         PR: ${{ steps.create-pr.outputs.pull-request-number }}
 
-    - name: upload readme file on failure
+    - name: upload readme file
       uses: actions/upload-artifact@v4
-      if: failure()
+      if: failure() || ${{ steps.approve-pr.outcome != 'success'}}
       with:
         path: ${{ env.MDFILE }}
