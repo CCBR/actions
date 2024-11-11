@@ -75,7 +75,7 @@ runs:
       with:
         python-version: "${{ inputs.python-version }}"
 
-    - name: Install
+    - name: Install CCBR/actions
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
@@ -137,6 +137,7 @@ runs:
       id: run_script_in_container
       if: ${{ inputs.print-versions == 'true' }}
       run: |
+        set -euo pipefail
         SCRIPT=$(which print_versions.py)
         echo $SCRIPT
         cp $SCRIPT ${{ github.workspace }}
