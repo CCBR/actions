@@ -29,7 +29,7 @@ def test_print_versions_outfile():
         )
         with open(filename, "r") as md_file:
             out_file = md_file.read()
-        assert out_print == f"{out_file}\n"
+        assert out_print == f"{out_file}"
 
 
 print(shell_run("print_versions.py --json tests/data/tool_version_commands.json"))
