@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions 0.2.1
+
 - fix bug in `build-docker`, where version information was overwriting the docker container information in the README file & dockerhub description. (#35, @kelly-sovacool)
 
 ## actions 0.2.0
