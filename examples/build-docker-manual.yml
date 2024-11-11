@@ -47,13 +47,12 @@ on:
         required: true
         default: "main"
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   build-docker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         id: checkout
@@ -68,5 +67,5 @@ jobs:
           suffix: ${{ github.event.inputs.suffix }}
           push: ${{ github.event.inputs.push }}
           ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}
-          github-token: ${{ secrets.PAT_PROTECTEDBRANCH }}
+          github-token: ${{ github.token }}
           json-file: "scripts/tool_version_commands.json"
