@@ -74,6 +74,8 @@ files change, see
   **Required.**
 - `print-versions`: Whether to print tool versions in the container for
   the README file using `json-file` . Default: `True`.
-- `json-file`: path to JSON file for printing tool versions . Default:
+- `json-file`: Relative path to JSON file for printing tool versions. If
+  not provided and print-versions is true, a default JSON file in
+  ccbr_actions will be used. . Default:
   `scripts/tool_version_commands.json`.
 - `gh-merge-args`: arguments for `gh pr merge` . Default: `-ds --admin`.

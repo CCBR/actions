@@ -60,7 +60,8 @@ inputs:
     default: true
   json-file:
     description: |
-      path to JSON file for printing tool versions
+      Relative path to JSON file for printing tool versions.
+      If not provided and print-versions is true, a default JSON file in ccbr_actions will be used.
     default: "scripts/tool_version_commands.json"
   gh-merge-args:
     description: |
@@ -138,8 +139,15 @@ runs:
       run: |
         SCRIPT=$(which print_versions.py)
         cp $SCRIPT ${{ github.workspace }}
+        if [ -f ${{ inputs.json-file }} ]; then
+          JSON=${{ inputs.json-file }}
+        else
+          cp $(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.json"))') ${{ github.workspace }}
+          JSON=tool_version_commands.json
+        fi
+
         docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
-          python3 /ws/print_versions.py --json /ws/${{ inputs.json-file }} --output /ws/${{ env.MDFILE }}
+          python3 /ws/print_versions.py --json /ws/${JSON} --output /ws/${{ env.MDFILE }}
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
