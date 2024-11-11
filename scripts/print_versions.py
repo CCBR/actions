@@ -69,7 +69,7 @@ def main(args):
     output_str = "\n".join(output_list)
 
     if args.output:
-        with open(args.output, "w") as outfile:
+        with open(args.output, "a") as outfile:
             outfile.write(output_str)
     else:
         print(output_str, end="")
