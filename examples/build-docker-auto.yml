@@ -35,7 +35,6 @@ on:
 
 env:
   suffix: ${{ github.base_ref == 'main' && github.event_name == 'pull_request' && 'main' || github.base_ref == 'dev' && github.event_name == 'pull_request' && 'dev' || 'feat' }}
-  GITHUB_TOKEN: ${{ secrets.PAT_PROTECTEDBRANCH }}
 
 jobs:
   get-files:
@@ -96,5 +95,5 @@ jobs:
           suffix: ${{ env.suffix }}
           push: true
           ccbr-actions-version: v0.2
-          github-token: ${{ secrets.PAT_PROTECTEDBRANCH }}
+          github-token: ${{ github.token }}
           json-file: "scripts/tool_version_commands.json"
