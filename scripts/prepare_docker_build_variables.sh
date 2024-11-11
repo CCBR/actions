@@ -57,6 +57,7 @@ else
 fi
 imagename="${dockerhub_account}/${reponame}:${tag}"
 mdfile="${dn_dockerfile}/${tag}.README.md"
+artifact_name=$(echo $mdfile | sed 's|/|_|g')
 
 # Output each variable to $GITHUB_ENV to pass it to the next steps
 echo "DOCKERFILE=$dockerfile" >> $GITHUB_ENV
@@ -66,3 +67,4 @@ echo "BUILD_DATE=$dt" >> $GITHUB_ENV
 echo "BUILD_TAG=$tag" >> $GITHUB_ENV
 echo "REPONAME=$reponame" >> $GITHUB_ENV
 echo "MDFILE=$mdfile" >> $GITHUB_ENV
+echo "ARTIFACT_NAME=$artifact_name" >> $GITHUB_ENV
