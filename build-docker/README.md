@@ -32,7 +32,7 @@ steps:
       dockerfile: Dockerfile.v1
       dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-      dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
       suffix: dev
       push: true
       ccbr-actions-version: v0.2
@@ -72,6 +72,8 @@ files change, see
   `41898282+github-actions[bot]`.
 - `github-token`: GitHub Actions token (e.g. github.token) .
   **Required.**
+- `print-versions`: Whether to print tool versions in the container for
+  the README file using `json-file` . Default: `True`.
 - `json-file`: path to JSON file for printing tool versions . Default:
   `scripts/tool_version_commands.json`.
 - `gh-merge-args`: arguments for `gh pr merge` . Default: `-ds --admin`.

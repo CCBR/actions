@@ -54,6 +54,10 @@ inputs:
     description: |
       GitHub Actions token (e.g. github.token)
     required: true
+  print-versions:
+    description: |
+      Whether to print tool versions in the container for the README file using `json-file`
+    default: true
   json-file:
     description: |
       path to JSON file for printing tool versions
@@ -130,11 +134,12 @@ runs:
     - name: Run print_versions.py inside Docker container
       shell: bash
       id: run_script_in_container
+      if: ${{ inputs.print-versions == 'true' }}
       run: |
-        print_versions=$(which print_versions.py)
+        SCRIPT=$(which print_versions.py)
+        cp $SCRIPT ${{ github.workspace }}
         docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
-          python3 /ws/scripts/print_versions.py --json /ws/${{ inputs.json-file }} --output /ws/${{ env.MDFILE }}
-      # TODO move print versions script
+          python3 /ws/print_versions.py --json /ws/${{ inputs.json-file }} --output /ws/${{ env.MDFILE }}
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description

@@ -41,7 +41,7 @@ steps:
       dockerfile: Dockerfile.v1
       dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-      dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
       suffix: dev
       push: true
       ccbr-actions-version: v0.2
