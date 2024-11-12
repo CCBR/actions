@@ -115,7 +115,6 @@ def check_version_increments_by_one(
     debug=False,
 ):
     is_valid = True
-    error_msg = f"Next version must only increment one number at a time. Current version: {current_version}. Proposed next version: {next_version}."
     # assert semantic version pattern
     next_semver = match_semver(next_version, with_leading_v=with_leading_v)
     if not next_semver:
@@ -125,6 +124,12 @@ def check_version_increments_by_one(
         raise ValueError(
             f"Tag {next_version} does not match semantic versioning guidelines. {extra_msg}\nView the guidelines here: https://semver.org/"
         )
+
+    # handle first release, i.e. current version is blank
+    if not current_version:
+        current_version = "0.0.0"
+        if with_leading_v:
+            current_version = f"v{current_version}"
 
     # assert next version is only 1 greater than current
     current_semver = match_semver(current_version, with_leading_v=with_leading_v)
@@ -145,6 +150,7 @@ def check_version_increments_by_one(
         print("group_equals: ", groups_equal)
     # if a digit is not incremented, it must be equal
     bigger_digit_increments = False
+    error_msg = f"Next version must only increment one number at a time. Current version: {current_version}. Proposed next version: {next_version}."
     for grp in groups:
         increments = groups_by_one[grp]
         equals = groups_equal[grp]

@@ -58,8 +58,17 @@ runs:
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
-    - name: Get current and next versions
+    - name: Get latest release tag
+      id: get-tag
+      shell: python {0}
+      run: |
+        from ccbr_actions.release import get_latest_release_tag
+        from ccbr_actions.actions import set_output
+        set_output('current_version', get_latest_release_tag())
+
+    - name: Get next version by conventional commit history
       id: semver
+      if: ${{ steps.get-tag.outputs.current_version != '' }}
       uses: ietf-tools/semver-action@v1
       with:
         token: ${{ inputs.github-token }}
@@ -70,10 +79,18 @@ runs:
       id: set-version
       run: |
         from ccbr_actions.release import prepare_draft_release
+
+        current_version = "${{ steps.get-tag.outputs.current_version }}"
+        if "${{ steps.get-tag.outputs.current_version }}" == "":
+            next_version_convco = ""
+        else:
+            next_version_convco = "${{ steps.semver.outputs.next }}"
+            assert "${{ steps.get-tag.outputs.current_version }}" == "${{ steps.semver.outputs.current }}"
+
         prepare_draft_release(
           next_version_manual="${{ inputs.version-tag }}",
-          next_version_convco="${{ steps.semver.outputs.next }}",
-          current_version="${{ steps.semver.outputs.current }}",
+          next_version_convco=next_version_convco,
+          current_version=current_version,
           version_filepath="${{ inputs.version-filepath }}",
           dev_header="${{ inputs.dev-header }}",
           changelog_filepath="${{ inputs.changelog-filepath }}",

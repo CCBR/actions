@@ -40,6 +40,15 @@ def test_version_increment():
     )
 
 
+def test_version_increment_first_release():
+    assert all(
+        [
+            check_version_increments_by_one("", "0.1.0", with_leading_v=False),
+            check_version_increments_by_one("", "v0.1.0", with_leading_v=True),
+        ]
+    )
+
+
 def test_version_increment_error():
     messages = []
     with pytest.raises(ValueError) as exc_info:
