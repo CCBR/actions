@@ -34,7 +34,6 @@ def prepare_draft_release(
 ):
     release_notes_filepath = path_resolve(release_notes_filepath)
     changelog_filepath = path_resolve(changelog_filepath)
-    citation_filepath = path_resolve(citation_filepath)
     version_filepath = path_resolve(version_filepath)
 
     next_version = get_release_version(
@@ -56,10 +55,15 @@ def prepare_draft_release(
     write_lines(release_notes_filepath, next_release_lines, debug=debug)
     write_lines(changelog_filepath, changelog_lines, debug=debug)
     write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
-    update_citation(citation_file=citation_filepath, version=next_version, debug=debug)
+
+    if citation_filepath:
+        citation_filepath = path_resolve(citation_filepath)
+        update_citation(
+            citation_file=citation_filepath, version=next_version, debug=debug
+        )
 
     changed_files = [
-        str(f) for f in (citation_filepath, changelog_filepath, version_filepath)
+        str(f) for f in (citation_filepath, changelog_filepath, version_filepath) if f
     ]
     precommit_run(f'--files {" ".join(changed_files)}')
     push_release_draft_branch(
