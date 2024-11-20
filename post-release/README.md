@@ -18,7 +18,7 @@ Required files:
   chronological order. The newest entry should contain “development
   header”.
 - `VERSION` - a single-source version file.
-- `CITATION.cff` - a citation file.
+- `CITATION.cff` - a citation file. (optional)
 
 ### Basic example
 

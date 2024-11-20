@@ -51,6 +51,26 @@ def test_prepare_draft_release():
     )
 
 
+def test_prepare_draft_release_no_citation():
+    output = exec_in_context(
+        prepare_draft_release,
+        next_version_manual="v1.0.0",
+        next_version_convco="v1.0.0",
+        current_version="v0.9.10",
+        gh_event_name="push",
+        changelog_filepath="tests/data/example_changelog.md",
+        dev_header="development version",
+        release_notes_filepath="tests/data/latest-release.md",
+        version_filepath="tests/data/VERSION",
+        citation_filepath="not/a/file.cff",
+        release_branch="release-draft",
+        pr_ref_name="PR_BRANCH_NAME",
+        repo="CCBR/actions",
+        debug=True,
+    )
+    assert all(["git add" in output, ".cff" not in output])
+
+
 def test_create_release_draft():
     assert exec_in_context(
         create_release_draft,
@@ -179,8 +199,29 @@ def test_post_release_cleanup():
     )
     assert all(
         [
-            "git add tests/data/CITATION.cff tests/data/example_changelog.md tests/data/VERSION && git commit"
+            "tests/data/CITATION.cff" in output,
+            "tests/data/example_changelog.md" in output,
+            "tests/data/VERSION" in output,
+            "gh pr create --fill-first --reviewer ${{ github.triggering_actor }}"
             in output,
+            "git push origin --delete release-draft || echo" in output,
+        ]
+    )
+
+
+def test_post_release_cleanup_no_citation():
+    output = exec_in_context(
+        post_release_cleanup,
+        changelog_filepath="tests/data/example_changelog.md",
+        version_filepath="tests/data/VERSION",
+        citation_filepath="not/a/file/CITATION.cff",
+        debug=True,
+    )
+    assert all(
+        [
+            "CITATION.cff" not in output,
+            "tests/data/example_changelog.md" in output,
+            "tests/data/VERSION" in output,
             "gh pr create --fill-first --reviewer ${{ github.triggering_actor }}"
             in output,
             "git push origin --delete release-draft || echo" in output,
