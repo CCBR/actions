@@ -1,6 +1,6 @@
 ## actions development version
 
-- fix `print_versions.py` script to work with new JSON version proposed [here](https://github.com/CCBR/Dockers2/issues/150)
+- fix `print_versions.py` script to work with new JSON version proposed [here](https://github.com/CCBR/Dockers2/issues/150). (#39, @kopardev)
 
 ## actions 0.2.1
 
