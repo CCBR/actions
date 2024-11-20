@@ -108,6 +108,10 @@ def post_release_cleanup(
     citation_filepath="CITATION.cff",
     debug=False,
 ):
+    changelog_filepath = path_resolve(changelog_filepath)
+    version_filepath = path_resolve(version_filepath)
+    citation_filepath = path_resolve(citation_filepath)
+
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
     lines.insert(0, f"## { os.path.basename(repo) } {dev_header}\n\n")
@@ -119,6 +123,7 @@ def post_release_cleanup(
         [
             str(filepath)
             for filepath in (citation_filepath, changelog_filepath, version_filepath)
+            if filepath.is_file()
         ]
     )
 
