@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.2.2
 
 ## actions 0.2.2
 
