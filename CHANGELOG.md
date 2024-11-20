@@ -2,6 +2,10 @@
 
 - make citation files optional for `draft-release` and `post-release`. (#44, @kelly-sovacool)
 
+## actions 0.2.2
+
+- fix `print_versions.py` script to work with new JSON version proposed [here](https://github.com/CCBR/Dockers2/issues/150). (#39, @kopardev)
+
 ## actions 0.2.1
 
 - fix bug in `build-docker`, where version information was overwriting the docker container information in the README file & dockerhub description. (#35, @kelly-sovacool)

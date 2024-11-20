@@ -89,7 +89,7 @@ guidelines](.github/CONTRIBUTING.md).
 Please cite this software if you use it in a publication:
 
 > Sovacool K., Koparde V. (2024). CCBR actions: GitHub Actions for CCBR
-> repos (version v0.2.1). DOI: 10.5281/zenodo.13761059 URL:
+> repos (version v0.2.2). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
