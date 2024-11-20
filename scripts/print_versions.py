@@ -45,14 +45,14 @@ def create_table(args):
     version_info = ""
     for tool, details in commands.items():
         # Extract command name, version text file path, and version command from details
-        command_name    = details.get("command_in_path","")
-        version_txt     = details.get("version_txt","")
-        version_command = details.get("version_command","")
-        
+        command_name = details.get("command_in_path", "")
+        version_txt = details.get("version_txt", "")
+        version_command = details.get("version_command", "")
+
         # Determine version information based on the available details
         if command_name == "" and version_txt == "":
             version_info = "NOTINDOCKER"
-        elif not version_txt == "": # version is saved in this txt file
+        elif not version_txt == "":  # version is saved in this txt file
             if os.path.exists(version_txt):
                 # Open the file and read the first line
                 with open(version_txt, "r") as file:
@@ -72,7 +72,9 @@ def create_table(args):
                     )
                     # Extract and clean the version information from the command output
                     version_info = (
-                        result.stdout.strip() if result.stdout else result.stderr.strip()
+                        result.stdout.strip()
+                        if result.stdout
+                        else result.stderr.strip()
                     )
                     version_info = (
                         version_info.strip()
@@ -87,14 +89,14 @@ def create_table(args):
                     version_info = "NOTINDOCKER"
             else:
                 version_info = "NOTINDOCKER"
-        
+
         # Print in Markdown table format
         output_list.append(f"| {tool} | {version_info} |")
-    
+
     # Add empty lines to the output list
     output_list.append("")
     output_list.append("")
-    
+
     return output_list
 
 
