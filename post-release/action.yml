@@ -95,8 +95,9 @@ runs:
       if: ${{ inputs.update-sliding-branch == 'true' }}
       run: |
         SLIDING_VERSION=${{ steps.sliding-version.outputs.SLIDING_VERSION }}
-        git switch $SLIDING_VERSION 2>/dev/null || git switch -c $SLIDING_VERSION
-        git merge ${{ github.event.release.tag_name }} --ff-only && git push
+        git branch -D $SLIDING_VERSION || echo "No $SLIDING_VERSION branch to delete"
+        git checkout -b $SLIDING_VERSION
+        git push
     - name: Next steps
       shell: bash
       run: |
