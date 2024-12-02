@@ -1,6 +1,7 @@
 ## actions development version
 
 - make citation files optional for `draft-release` and `post-release`. (#44, @kelly-sovacool)
+- fix `post-release` action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)
 
 ## actions 0.2.2
 
