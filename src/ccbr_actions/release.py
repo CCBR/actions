@@ -8,7 +8,7 @@ from ccbr_tools.shell import shell_run
 
 from .actions import set_output
 from .citation import update_citation
-from .util import precommit_run
+from .util import precommit_run, path_resolve
 from .versions import (
     check_version_increments_by_one,
     match_semver,
@@ -32,6 +32,12 @@ def prepare_draft_release(
     repo="${{ github.repository }}",
     debug=False,
 ):
+    release_notes_filepath = path_resolve(release_notes_filepath)
+    changelog_filepath = path_resolve(changelog_filepath)
+    version_filepath = path_resolve(version_filepath)
+    citation_filepath = path_resolve(citation_filepath)
+    assert all([f.is_file() for f in (changelog_filepath, version_filepath)])
+
     next_version = get_release_version(
         next_version_manual=next_version_manual,
         next_version_convco=next_version_convco,
@@ -48,16 +54,20 @@ def prepare_draft_release(
         dev_header=dev_header,
     )
 
-    if not debug:
-        with open(release_notes_filepath, "w") as outfile:
-            outfile.writelines(next_release_lines)
-        with open(changelog_filepath, "w") as outfile:
-            outfile.writelines(changelog_lines)
-        with open(version_filepath, "w") as outfile:
-            outfile.write(f"{next_version_strict}\n")
-        update_citation(citation_file=citation_filepath, version=next_version)
+    write_lines(release_notes_filepath, next_release_lines, debug=debug)
+    write_lines(changelog_filepath, changelog_lines, debug=debug)
+    write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
 
-    changed_files = [citation_filepath, changelog_filepath, version_filepath]
+    if citation_filepath.is_file():
+        update_citation(
+            citation_file=citation_filepath, version=next_version, debug=debug
+        )
+    else:
+        citation_filepath = ""
+
+    changed_files = [
+        str(f) for f in (citation_filepath, changelog_filepath, version_filepath) if f
+    ]
     precommit_run(f'--files {" ".join(changed_files)}')
     push_release_draft_branch(
         release_branch=release_branch,
@@ -78,6 +88,14 @@ def prepare_draft_release(
     return release_url
 
 
+def write_lines(filepath, lines, debug=False):
+    if not debug:
+        with open(path_resolve(filepath), "w") as outfile:
+            outfile.writelines(lines)
+    else:
+        return "\n".join(lines)
+
+
 def post_release_cleanup(
     changelog_filepath="CHANGELOG.md",
     repo="${{ github.repository }}",
@@ -90,6 +108,10 @@ def post_release_cleanup(
     citation_filepath="CITATION.cff",
     debug=False,
 ):
+    changelog_filepath = path_resolve(changelog_filepath)
+    version_filepath = path_resolve(version_filepath)
+    citation_filepath = path_resolve(citation_filepath)
+
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
     lines.insert(0, f"## { os.path.basename(repo) } {dev_header}\n\n")
@@ -97,7 +119,13 @@ def post_release_cleanup(
     with open(version_filepath, "r") as infile:
         version = infile.read().strip()
 
-    changed_files = " ".join([citation_filepath, changelog_filepath, version_filepath])
+    changed_files = " ".join(
+        [
+            str(filepath)
+            for filepath in (citation_filepath, changelog_filepath, version_filepath)
+            if filepath.is_file()
+        ]
+    )
 
     commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of { release_tag }" && git push --set-upstream origin { pr_branch }'
     pr_cmd = f"gh pr create --fill-first --reviewer { pr_reviewer }"
@@ -107,9 +135,9 @@ def post_release_cleanup(
         print(commit_cmd, pr_cmd, delete_cmd, sep="\n", end="")
         pr_url = ""
     else:
-        with open(changelog_filepath, "w") as outfile:
+        with open(path_resolve(changelog_filepath), "w") as outfile:
             outfile.writelines(lines)
-        with open(version_filepath, "w") as outfile:
+        with open(path_resolve(version_filepath), "w") as outfile:
             outfile.write(f"{version}-dev\n")
         precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)

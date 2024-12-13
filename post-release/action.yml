@@ -39,8 +39,8 @@ inputs:
     required: true
     default: "41898282+github-actions[bot]"
   update-sliding-branch:
-    description: "Whether to update the sliding branch to the new major.minor version"
-    default: "true"
+    description: "Whether to update the sliding branch (major.minor) to the new patch version"
+    default: "false"
 
 runs:
   using: "composite"
@@ -50,6 +50,7 @@ runs:
       run: |
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
+        git config --global --add --bool push.autoSetupRemote true
         git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
         git checkout ${{ github.event.release.tag_name }}
         git switch -c ${{ inputs.pr-branch }}
@@ -85,14 +86,18 @@ runs:
       run: |
         from ccbr_actions.versions import get_major_minor_version
         from ccbr_actions.actions import set_output
-        maj_min_version = get_major_minor_version("${{ github.event.release.tag_name }}")
+        maj_min_version = get_major_minor_version("${{ github.event.release.tag_name }}", with_leading_v = True)
+        if not maj_min_version:
+          raise ValueError(f"Could not determine major.minor version from tag: ${{ github.event.release.tag_name }}")
         set_output("SLIDING_VERSION", maj_min_version)
     - name: fast forward sliding branch
       shell: bash
       if: ${{ inputs.update-sliding-branch == 'true' }}
       run: |
-        git switch ${{ steps.sliding-version.output.SLIDING_VERSION }} 2>/dev/null || git switch -c ${{ steps.sliding-version.output.SLIDING_VERSION }}
-        git merge ${{ github.event.release.tag_name }} --ff-only && git push
+        SLIDING_VERSION=${{ steps.sliding-version.outputs.SLIDING_VERSION }}
+        git branch -D $SLIDING_VERSION || echo "No $SLIDING_VERSION branch to delete"
+        git checkout -b $SLIDING_VERSION
+        git push
     - name: Next steps
       shell: bash
       run: |

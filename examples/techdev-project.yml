@@ -1,4 +1,4 @@
-name: Add issues/PRs to the TechDev project
+name: TechDev-project
 
 on:
   issues:

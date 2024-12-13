@@ -10,6 +10,7 @@ GitHub Actions for CCBR repos
 
 [![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13761059.svg)](https://doi.org/10.5281/zenodo.13761059)
 
 ## Examples
 
@@ -69,6 +70,15 @@ Or install it from a specific version or branch with:
 pip install git+https://github.com/CCBR/actions@v0.1
 ```
 
+## Help & Contributing
+
+Come across a **bug**? Open an [issue](https://github.com/CCBR/actions/issues) and include a minimal reproducible example.
+
+Have a **question**? Ask it in [discussions](https://github.com/CCBR/actions/discussions).
+
+Want to **contribute** to this project? Check out the [contributing guidelines](.github/CONTRIBUTING.md).
+
+
 ## Citation
 
 Please cite this software if you use it in a publication:
@@ -86,3 +96,9 @@ Please cite this software if you use it in a publication:
 #| echo: false
 !ccbr_tools cite CITATION.cff -f bibtex
 ```
+
+## Inspiration
+
+This project was inspired by [r-lib/actions](https://github.com/r-lib/actions/)
+and [{usethis}](https://usethis.r-lib.org/reference/github_actions.html).
+Check them out for actions, workflows, and helper functions for R packages!

@@ -18,7 +18,7 @@ Required files:
   chronological order. The newest entry should contain “development
   header”.
 - `VERSION` - a single-source version file.
-- `CITATION.cff` - a citation file.
+- `CITATION.cff` - a citation file. (optional)
 
 ### Basic example
 
@@ -91,5 +91,5 @@ steps:
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.
-- `update-sliding-branch`: Whether to update the sliding branch to the
-  new major.minor version. Default: `true`.
+- `update-sliding-branch`: Whether to update the sliding branch
+  (major.minor) to the new patch version. Default: `false`.

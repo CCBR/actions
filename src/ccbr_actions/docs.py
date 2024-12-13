@@ -18,12 +18,17 @@ from .versions import (
 from .actions import set_output
 
 
-def get_docs_version():
+def get_docs_version(release_args=""):
     """
     Get correct version and alias for documentation website.
 
     Determines the appropriate version and alias for the
     documentation based on the latest release tag and the current hash.
+
+    Parameters
+    ----------
+    release_args : str, optional
+        Additional arguments to pass to the `gh release` GitHub CLI command (default is "").
 
     Returns
     -------
@@ -53,18 +58,20 @@ def get_docs_version():
     >>> get_docs_version()
     ('1.0', 'latest')
     """
-    release_tag = get_latest_release_tag().lstrip("v")
+    release_tag = get_latest_release_tag(args=release_args).lstrip("v")
     if not release_tag:
         warnings.warn("No latest release found")
 
-    release_hash = get_latest_release_hash()
+    release_hash = get_latest_release_hash(args=release_args)
     current_hash = get_current_hash()
 
     if release_hash == current_hash:
         docs_alias = "latest"
         docs_version = get_major_minor_version(release_tag)
     else:
-        if is_ancestor(ancestor=release_hash, descendant=current_hash):
+        if not release_hash or is_ancestor(
+            ancestor=release_hash, descendant=current_hash
+        ):
             docs_alias = ""
             docs_version = "dev"
         else:

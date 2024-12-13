@@ -2,7 +2,7 @@ from cffconvert.cli.create_citation import create_citation
 from cffconvert.cli.validate_or_write_output import validate_or_write_output
 import yaml
 
-from .util import date_today
+from .util import date_today, path_resolve
 
 
 def print_citation(
@@ -29,5 +29,5 @@ def update_citation(
     if debug:
         print(citation_yaml)
     else:
-        with open(citation_file, "w") as outfile:
+        with open(path_resolve(citation_file), "w") as outfile:
             outfile.write(citation_yaml)
