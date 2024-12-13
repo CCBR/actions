@@ -1,6 +1,6 @@
-<!-- README.md is generated from README.qmd. Please edit that file -->
+# CCBR actions 🤖
 
-# CCBR Actions 🤖
+<!-- README.md is generated from README.qmd. Please edit that file -->
 
 GitHub Actions for CCBR repos
 
@@ -58,14 +58,6 @@ Or install it from a specific version or branch with:
 ```bash
 pip install git+https://github.com/CCBR/actions@v0.1
 ```
-
-## Help & Contributing
-
-Come across a **bug**? Open an [issue](https://github.com/CCBR/actions/issues) and include a minimal reproducible example.
-
-Have a **question**? Ask it in [discussions](https://github.com/CCBR/actions/discussions).
-
-Want to **contribute** to this project? Check out the [contributing guidelines](.github/CONTRIBUTING.md).
 
 ## Citation
 
