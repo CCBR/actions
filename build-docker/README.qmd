@@ -1,0 +1,61 @@
+---
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+# build-docker
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+This action is designed to build Docker containers according to
+the format used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
+
+This action:
+
+  - Logs in to DockerHub if the 'push' input is set to 'true'.
+  - Prepares build-time variables by running a custom script.
+  - Checks variables and creates a README file with build details in the same directory as the dockerfile.
+  - Builds and optionally pushes the Docker image using the docker/build-push-action.
+  - Lists Docker images on the runner.
+  - Updates the DockerHub description with the contents of the README file if the image was successfully pushed.
+  - Opens and merges a PR with the updates to the README file.
+
+## Usage
+
+### Basic example
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+    with:
+        fetch-depth: 0
+  - uses: CCBR/actions/build-docker@main
+    with:
+      dockerfile: Dockerfile.v1
+      dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+      suffix: dev
+      push: true
+      ccbr-actions-version: v0.2
+      github-token: ${{ github.token }}
+      github-actor: ${{ github.actor }}
+```
+
+For an example to manually trigger the workflow for a single docker container,
+see [build-docker-manual.yml](/examples/build-docker-manual.yml).
+
+For an advanced example to automatically build docker containers when files
+change, see [build-docker-auto.yml](/examples/build-docker-auto.yml).
+
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```

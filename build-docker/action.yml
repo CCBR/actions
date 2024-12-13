@@ -1,0 +1,203 @@
+name: build-docker
+description: "Build a docker container using CCBR guidelines"
+author: "Vishal Koparde & Kelly Sovacool"
+
+inputs:
+  dockerfile:
+    type: string
+    description: |
+      path to the Dockerfile in the repo (e.g. common/ccbr_bwa/Dockerfile)
+    required: true
+  dockerhub-namespace:
+    type: string
+    description: |
+      dockerhub namespace or org name (e.g. nciccbr)
+    required: true
+    default: nciccbr
+  dockerhub-username:
+    type: string
+    description: |
+      dockerhub username of a user with admin permissions for `dockerhub-namespace`. Recommend using secrets, e.g. secrets.DOCKERHUB_USERNAME
+    required: true
+  dockerhub-token:
+    type: string
+    description: |
+      dockerhub token with read & write permissions. Strongly recommend using secrets, e.g. secrets.DOCKERHUB_TOKEN
+  suffix:
+    type: string
+    description: |
+      Suffix to add to image tag eg. "dev" to add "-dev"
+    required: true
+    default: feat
+  push:
+    type: boolean
+    description: |
+      Push to DockerHub (leave unchecked to just build the container without pushing)
+    required: true
+    default: false
+  ccbr-actions-version:
+    type: string
+    description: |
+      The version of ccbr_actions to use
+    required: true
+    default: "main"
+  python-version:
+    type: string
+    description: |
+      The version of Python to install
+    required: true
+    default: "3.11"
+  github-actor:
+    type: string
+    description: |
+      Username of GitHub actor for the git commit when the README is updated
+    required: true
+    default: "41898282+github-actions[bot]"
+  github-token:
+    type: string
+    description: |
+      GitHub Actions token (e.g. github.token)
+    required: true
+  print-versions:
+    type: boolean
+    description: |
+      Whether to print tool versions in the container for the README file using `json-file`
+    default: true
+  json-file:
+    type: string
+    description: |
+      Relative path to JSON file for printing tool versions.
+      If not provided and print-versions is true, a default JSON file in ccbr_actions will be used.
+    default: "scripts/tool_version_commands.json"
+  gh-merge-args:
+    type: string
+    description: |
+      arguments for `gh pr merge`
+    default: "-ds --admin"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+
+    - name: Install CCBR/actions
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - name: Login to DockerHub
+      id: login_dockerhub
+      if: ${{ inputs.push == 'true' }}
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.dockerhub-username }}
+        password: ${{ inputs.dockerhub-token }}
+
+    - name: Prepare build-time variables
+      shell: bash
+      id: prepare_vars
+      run: |
+        prepare_docker_build_variables.sh ${{ inputs.dockerfile }} ${{ inputs.suffix }} ${{ inputs.dockerhub-namespace }}
+
+    - name: Check variables and create README
+      shell: bash
+      id: check_and_create_readme
+      run: |
+        echo "DOCKERFILE: $DOCKERFILE"
+        echo "IMAGENAME: $IMAGENAME"
+        echo "BASEIMAGENAME: $BASEIMAGENAME"
+        echo "BUILD_DATE: $BUILD_DATE"
+        echo "BUILD_TAG: $BUILD_TAG"
+        echo "REPONAME: $REPONAME"
+        echo "MDFILE: $MDFILE"
+        echo -ne "## ${{ github.repository }} $IMAGENAME\n\n" > $MDFILE
+        echo "Dockerfile source: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/${{ inputs.dockerfile }}" >> $MDFILE
+        echo -ne "\n\n" >> $MDFILE
+        echo -ne "Built on: $BUILD_DATE \n\n" >> $MDFILE
+        echo -ne "Build tag: $BUILD_TAG \n\n" >> $MDFILE
+        echo -ne "Base image: $BASEIMAGENAME \n\n" >> $MDFILE
+        echo -ne "Dockerfile path in repo: $DOCKERFILE \n\n" >> $MDFILE
+
+    - name: Build and push Docker image
+      id: build_and_push
+      uses: docker/build-push-action@v5
+      with:
+        file: ${{ env.DOCKERFILE }}
+        push: ${{ inputs.push }}
+        tags: ${{ env.IMAGENAME }}
+        build-args: |
+          DOCKERFILE=${{ env.DOCKERFILE }}
+          BUILD_DATE=${{ env.BUILD_DATE }}
+          BUILD_TAG=${{ env.BUILD_TAG }}
+          REPONAME=${{ env.REPONAME }}
+          IMAGENAME=${{ env.IMAGENAME }}
+          BASEIMAGENAME=${{ env.BASEIMAGENAME }}
+
+    - name: List Docker images
+      shell: bash
+      id: list_docker_images
+      run: docker images
+
+    - name: Run print_versions.py inside Docker container
+      shell: bash
+      id: run_script_in_container
+      if: ${{ inputs.print-versions == 'true' }}
+      run: |
+        set -euo pipefail
+        SCRIPT=$(which print_versions.py)
+        echo $SCRIPT
+        cp $SCRIPT ${{ github.workspace }}
+
+        if [ -f ${{ inputs.json-file }} ]; then
+          JSON=${{ inputs.json-file }}
+        else
+          json_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.json"))')
+          cp $json_src ${{ github.workspace }}
+          JSON=tool_version_commands.json
+        fi
+        echo $JSON
+
+        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
+          python3 /ws/print_versions.py --json /ws/${JSON} --output /ws/${{ env.MDFILE }}
+
+    - name: Update Docker Hub Description
+      id: update_dockerhub_description
+      if: ${{ (inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
+      uses: peter-evans/dockerhub-description@v4
+      with:
+        username: ${{ inputs.dockerhub-username }}
+        password: ${{ inputs.dockerhub-token }}
+        repository: ${{ inputs.dockerhub-namespace }}/${{ env.REPONAME }}
+        readme-filepath: ${{ env.MDFILE }}
+
+    - name: Create Pull Request
+      id: create-pr
+      uses: peter-evans/create-pull-request@v7
+      if: ${{ steps.update_dockerhub_description.outcome == 'success' }}
+      with:
+        token: ${{ github.token }}
+        add-paths: ${{ env.MDFILE }}
+        commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
+        author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
+        committer: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
+        branch: "auto-pr/${{ env.DOCKERFILE }}"
+        title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
+
+    - name: Approve PR
+      shell: bash
+      id: approve-pr
+      if: ${{ (steps.create-pr.outputs.pull-request-number != '') && (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
+      run: |
+        gh pr merge ${args} ${PR}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        args: ${{ inputs.gh-merge-args }}
+        PR: ${{ steps.create-pr.outputs.pull-request-number }}
+
+    - name: upload readme file
+      uses: actions/upload-artifact@v4
+      if: failure() || ${{ steps.approve-pr.outcome != 'success'}}
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ${{ env.MDFILE }}

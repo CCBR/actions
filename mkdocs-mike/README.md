@@ -16,6 +16,8 @@ need an mkdocs config file `mkdocs.yml` in the root of your repository.
 To properly configure mike for your website, you will also need to
 complete these one-time steps:
 
+- delete any existing github workflows that deploy to github pages
+
 - delete all files in `gh-pages` if the branch exists already
 
   ```sh

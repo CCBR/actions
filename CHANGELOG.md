@@ -1,7 +1,38 @@
 ## actions development version
 
+- make citation files optional for `draft-release` and `post-release`. (#44, @kelly-sovacool)
+- fix `post-release` action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)
+
+## actions 0.2.2
+
+- fix `print_versions.py` script to work with new JSON version proposed [here](https://github.com/CCBR/Dockers2/issues/150). (#39, @kopardev)
+
+## actions 0.2.1
+
+- fix bug in `build-docker`, where version information was overwriting the docker container information in the README file & dockerhub description. (#35, @kelly-sovacool)
+
+## actions 0.2.0
+
+- new actions & example workflows:
+  - `label-issue-repo-name` - Label issues & PRs with the repository name
+  - `add-issue-label-list` - Update issue description with a list of issues of a given label
+  - `update-cff-R` - For R packages: update the CITATION.cff file based on the DESCRIPTION file.
+  - `build-docker` - Build docker containers for [CCBR/Dockers2](https://github.com/CCBR/dockers2). (#31, #33, @kelly-sovacool)
+- minor documentation improvements.
+
+## actions 0.1.3
+
+- fix: make sure `get_latest_release_hash()` and `get_current_hash()` strip newlines in hash strings. (@kelly-sovacool)
+  - this bug caused a malformed command string in `is_ancestor()`, which caused `mkdocs-mike` to fail.
+- set `update-sliding-branch` to false by default in `post-release` action. (#18, @kelly-sovacool)
+- fix bug that prevented `mkdocs-mike` from working on repos with no release. (#20, @kelly-sovacool)
+- fix: resolve symlinks when writing files. (#23, #24, @kelly-sovacool)
+
+## actions 0.1.2
+
 - fix the `draft-release` action to properly use the full owner & repo name when creating a draft release. (#13, @kelly-sovacool)
-- new option in `post-release` to update a sliding branch (typically named `major.minor`) with new patch releases. (#13, @kelly-sovacool)
+- new option in `post-release` to update a sliding branch (typically named `v<major>.<minor>`) with new patch releases. (#13, #16, @kelly-sovacool)
+- fix logic for `get_latest_release_tag()` to ignore draft releases. (#14, @kelly-sovacool)
 
 ## actions 0.1.1
 

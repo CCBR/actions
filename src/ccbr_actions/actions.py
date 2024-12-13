@@ -19,6 +19,7 @@ import os
 import requests
 import uuid
 
+from .util import path_resolve
 from .versions import get_latest_release_tag
 
 
@@ -74,7 +75,7 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
 
     response = requests.get(url)
     if response.status_code == 200:
-        with open(save_as, "w") as outfile:
+        with open(path_resolve(save_as), "w") as outfile:
             outfile.write(response.text)
     else:
         raise ValueError(
