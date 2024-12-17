@@ -1,4 +1,4 @@
-name: Add to personal projects
+name: personal-projects
 
 on:
   issues:

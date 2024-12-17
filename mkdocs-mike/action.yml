@@ -1,21 +1,23 @@
 name: "mkdocs-mike"
-description: "Deploy docs website using mkdocs + mike"
+description: "Deploy documentation to github pages using mkdocs + mike"
 author: "Kelly Sovacool"
 inputs:
   github-token:
-    description: "GitHub Actions token (e.g. github.token)"
+    description: "GitHub Actions token (e.g. { github.token })"
     required: true
   ccbr-actions-version:
-    description: "The version of CCBR/actions to use"
+    description: "The version of ccbr_actions to install"
     required: true
     default: "main"
   python-version:
+    description: "The version of Python to install"
     required: true
     default: "3.11"
   docs-branch:
+    description: "The branch to deploy the docs website to"
     required: true
     default: "gh-pages"
-  actor:
+  github-actor:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed"
     required: true
     default: "41898282+github-actions[bot]"
@@ -36,8 +38,8 @@ runs:
     - name: git config
       shell: bash
       run: |
-        git config --local user.email "${{ inputs.actor }}@users.noreply.github.com"
-        git config --local user.name "${{ inputs.actor }}"
+        git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
+        git config --local user.name "${{ inputs.github-actor }}"
     - name: pip install
       shell: bash
       run: |

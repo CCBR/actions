@@ -23,7 +23,7 @@ repos:
         # https://github.com/codespell-project/codespell/issues/1498
   # Python formatting
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.10.0
     hooks:
       - id: black
   # general linting

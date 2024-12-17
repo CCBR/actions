@@ -1,0 +1,107 @@
+---
+format: gfm
+---
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
+
+# CCBR actions 🤖
+
+GitHub Actions for CCBR repos
+
+[![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
+[![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13761059.svg)](https://doi.org/10.5281/zenodo.13761059)
+
+## Examples
+
+See [examples/](examples) for workflow examples.
+You can copy these to your own repository in the `.github/workflows/` directory
+and modify them for your needs.
+
+```{python}
+#| output: asis
+#| echo: false
+import pathlib
+for path in sorted(pathlib.Path('examples').glob('*.yml')):
+    print(f"- [{path.stem}]({path})")
+```
+
+
+## Actions
+
+Custom actions used in our github workflows.
+
+```{python}
+#| output: asis
+#| echo: false
+import yaml
+for action_yml in sorted(pathlib.Path().glob("*/action.yml")):
+    with action_yml.open('r') as infile:
+        action_meta = yaml.load(infile, Loader = yaml.FullLoader)
+    name = action_meta['name']
+    desc = action_meta['description']
+    print(f"- [{name}]({action_yml.parent}) - {desc}")
+
+```
+
+## Package
+
+This repo contains a python package with helper functions for some of our
+custom actions.
+You do not need to install anything in order to use the example workflows,
+as the actions install their dependencies as needed.
+However, you can install the package if you wish to use it outside of GitHub Actions.
+
+### Installation
+
+You will need the GitHub CLI installed
+(this is pre-installed on all github actions runners):
+https://github.com/cli/cli#installation
+
+Then install the `ccbr_actions` package with pip:
+
+```bash
+pip install git+https://github.com/CCBR/actions
+```
+
+Or install it from a specific version or branch with:
+
+```bash
+pip install git+https://github.com/CCBR/actions@v0.1
+```
+
+## Help & Contributing
+
+Come across a **bug**? Open an
+[issue](https://github.com/CCBR/actions/issues) and include a minimal
+reproducible example.
+
+Have a **question**? Ask it in
+[discussions](https://github.com/CCBR/actions/discussions).
+
+Want to **contribute** to this project? Check out the [contributing
+guidelines](.github/CONTRIBUTING.md).
+
+## Citation
+
+Please cite this software if you use it in a publication:
+
+```{python}
+#| echo: false
+#| output: asis
+!ccbr_tools cite CITATION.cff -f apalike | sed -E 's/^/> /g'
+```
+
+
+### Bibtex entry
+
+```{python}
+#| echo: false
+!ccbr_tools cite CITATION.cff -f bibtex
+```
+
+## Inspiration
+
+This project was inspired by [r-lib/actions](https://github.com/r-lib/actions/)
+and [{usethis}](https://usethis.r-lib.org/reference/github_actions.html).
+Check them out for actions, workflows, and helper functions for R packages!
