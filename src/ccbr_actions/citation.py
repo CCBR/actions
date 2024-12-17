@@ -1,4 +1,5 @@
 """ Print and update citation files in CFF format. """
+
 from cffconvert.cli.create_citation import create_citation
 from cffconvert.cli.validate_or_write_output import validate_or_write_output
 import yaml
