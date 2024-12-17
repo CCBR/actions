@@ -1,10 +1,13 @@
 ---
-format: gfm
+listing:
+    - id: actions
+      contents: actions
+      type: table
+      fields: [title, subtitle]
+      field-display-names:
+        title: action
+        subtitle: description
 ---
-
-<!-- README.md is generated from README.qmd. Please edit that file -->
-
-# CCBR actions 🤖
 
 GitHub Actions for CCBR repos
 
@@ -12,37 +15,14 @@ GitHub Actions for CCBR repos
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13761059.svg)](https://doi.org/10.5281/zenodo.13761059)
 
-## Examples
-
-See [examples/](examples) for workflow examples.
-You can copy these to your own repository in the `.github/workflows/` directory
-and modify them for your needs.
-
-```{python}
-#| output: asis
-#| echo: false
-import pathlib
-for path in sorted(pathlib.Path('examples').glob('*.yml')):
-    print(f"- [{path.stem}]({path})")
-```
-
-
 ## Actions
 
-Custom actions used in our github workflows.
+:::{#actions}
+:::
 
-```{python}
-#| output: asis
-#| echo: false
-import yaml
-for action_yml in sorted(pathlib.Path().glob("*/action.yml")):
-    with action_yml.open('r') as infile:
-        action_meta = yaml.load(infile, Loader = yaml.FullLoader)
-    name = action_meta['name']
-    desc = action_meta['description']
-    print(f"- [{name}]({action_yml.parent}) - {desc}")
-
-```
+See example workflows here: <https://github.com/CCBR/actions/tree/main/examples>.
+You can copy these to your own repository in the `.github/workflows/` directory
+and modify them for your needs.
 
 ## Package
 
@@ -70,7 +50,7 @@ Or install it from a specific version or branch with:
 pip install git+https://github.com/CCBR/actions@v0.1
 ```
 
-View the package documentation [here](https://CCBR.github.io/actions/reference).
+View the package documentation [here](/reference).
 
 ## Help & Contributing
 
@@ -82,7 +62,7 @@ Have a **question**? Ask it in
 [discussions](https://github.com/CCBR/actions/discussions).
 
 Want to **contribute** to this project? Check out the [contributing
-guidelines](.github/CONTRIBUTING.md).
+guidelines](https://github.com/CCBR/actions/blob/main/.github/CONTRIBUTING.md).
 
 ## Citation
 
@@ -91,19 +71,13 @@ Please cite this software if you use it in a publication:
 ```{python}
 #| echo: false
 #| output: asis
-!ccbr_tools cite CITATION.cff -f apalike | sed -E 's/^/> /g'
+!ccbr_tools cite ../CITATION.cff -f apalike | sed -E 's/^/> /g'
 ```
 
 
-### Bibtex entry
+Bibtex entry:
 
 ```{python}
 #| echo: false
-!ccbr_tools cite CITATION.cff -f bibtex
+!ccbr_tools cite ../CITATION.cff -f bibtex
 ```
-
-## Inspiration
-
-This project was inspired by [r-lib/actions](https://github.com/r-lib/actions/)
-and [{usethis}](https://usethis.r-lib.org/reference/github_actions.html).
-Check them out for actions, workflows, and helper functions for R packages!
