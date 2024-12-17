@@ -1,8 +1,8 @@
 """
 Module for managing documentation versions.
 
-This module provides functions to determine the appropriate version and alias
-for the documentation website based on the latest release tag and the current hash.
+Determine the appropriate version and alias for the documentation website
+based on the latest release tag and the current hash.
 """
 
 import warnings
@@ -25,38 +25,26 @@ def get_docs_version(release_args=""):
     Determines the appropriate version and alias for the
     documentation based on the latest release tag and the current hash.
 
-    Parameters
-    ----------
-    release_args : str, optional
-        Additional arguments to pass to the `gh release` GitHub CLI command (default is "").
+    Args:
+        release_args (str, optional): Additional arguments to pass to the `gh release` GitHub CLI command (default is "").
 
-    Returns
-    -------
-    tuple
-        A tuple containing:
-        - docs_version : str
-            The major and minor version of the latest release.
-        - docs_alias : str
-            The alias for the documentation version, e.g., "latest".
+    Returns:
+        tuple: A tuple containing:
+            - docs_version (str): The major and minor version of the latest release.
+            - docs_alias (str): The alias for the documentation version, e.g., "latest".
 
-    Raises
-    ------
-    ValueError
-        If the current commit hash is not a descendant of the latest release.
+    Raises:
+        ValueError: If the current commit hash is not a descendant of the latest release.
 
-    Warns
-    -----
-    UserWarning
-        If no latest release is found.
+    Warns:
+        UserWarning: If no latest release is found.
 
-    See Also
-    --------
-    set_docs_version : Sets the version and alias in the GitHub environment.
+    See Also:
+        set_docs_version: Sets the version and alias in the GitHub environment.
 
-    Examples
-    --------
-    >>> get_docs_version()
-    ('1.0', 'latest')
+    Examples:
+        >>> get_docs_version()
+        ('1.0', 'latest')
     """
     release_tag = get_latest_release_tag(args=release_args).lstrip("v")
     if not release_tag:
@@ -89,24 +77,18 @@ def set_docs_version():
     `get_docs_version` and sets them as environment variables in the GitHub
     Actions environment.
 
-    Raises
-    ------
-    ValueError
-        If the current commit hash is not a descendant of the latest release.
+    Raises:
+        ValueError: If the current commit hash is not a descendant of the latest release.
 
-    Warns
-    -----
-    UserWarning
-        If no latest release is found.
+    Warns:
+        UserWarning: If no latest release is found.
 
-    See Also
-    --------
-    get_docs_version : Retrieves the documentation version and alias.
-    set_output : Sets the GitHub Actions environment variable.
+    See Also:
+        get_docs_version: Retrieves the documentation version and alias.
+        set_output: Sets the GitHub Actions environment variable.
 
-    Examples
-    --------
-    >>> set_docs_version()
+    Examples:
+        >>> set_docs_version()
     """
     version, alias = get_docs_version()
     set_output("VERSION", version)
@@ -114,24 +96,81 @@ def set_docs_version():
 
 
 def parse_action_yaml(filename):
+    """
+    Parses a YAML file and returns its contents as a dictionary.
+
+    Args:
+        filename (str): The path to the YAML file to be parsed.
+
+    Returns:
+        dict: The contents of the YAML file as a dictionary.
+    """
     with open(filename, "r") as infile:
         action = yaml.load(infile, Loader=yaml.FullLoader)
     return action
 
 
 def action_markdown_desc(action_dict):
+    """
+    Generates a markdown formatted description for a given action.
+
+    Args:
+        action_dict (dict): A dictionary containing action details. Expected keys are:
+            - "name" (str): The name of the action.
+            - "description" (str): A brief description of the action.
+
+    Returns:
+        str: A markdown formatted string with the action name in bold and code format, followed by the description.
+    """
     name = action_dict.get("name", "")
     description = action_dict.get("description", "")
     return f"**`{name}`** - {description}\n\n"
 
 
 def action_markdown_header(action_dict):
+    """
+    Generates a markdown header for a given action.
+
+    Args:
+        action_dict (dict): A dictionary containing action details. Expected keys are:
+            - "name" (str): The name of the action.
+            - "description" (str): A brief description of the action.
+
+    Returns:
+        str: A formatted markdown string with the action's name as a header and the description as the content.
+    """
     name = action_dict.get("name", "")
     description = action_dict.get("description", "")
     return f"# {name}\n\n{description}\n\n"
 
 
 def action_markdown_io(action_dict):
+    """
+    Generates a markdown string documenting the inputs and outputs of a given action.
+
+    Args:
+        action_dict (dict): A dictionary containing the action's inputs and outputs.
+            The dictionary should have the following structure:
+            {
+                "inputs": {
+                    "input_name": {
+                        "description": "Description of the input",
+                        "required": bool,
+                        "default": "default_value"
+                    },
+                    ...
+                },
+                "outputs": {
+                    "output_name": {
+                        "description": "Description of the output"
+                    },
+                    ...
+                }
+            }
+
+    Returns:
+        str: A markdown formatted string documenting the inputs and outputs of the action.
+    """
     markdown = []
     inputs = action_dict.get("inputs", {})
     if inputs:

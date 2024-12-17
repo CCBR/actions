@@ -37,6 +37,7 @@ quartodoc:
       contents:
         - actions
         - citation
+        - data
         - docs
         - release
         - util
