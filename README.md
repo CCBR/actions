@@ -58,7 +58,7 @@ outside of GitHub Actions.
 ### Installation
 
 You will need the GitHub CLI installed (this is pre-installed on all
-github actions runners): https://github.com/cli/cli#installation
+github actions runners): <https://github.com/cli/cli#installation>
 
 Then install the `ccbr_actions` package with pip:
 
@@ -71,6 +71,9 @@ Or install it from a specific version or branch with:
 ```bash
 pip install git+https://github.com/CCBR/actions@v0.1
 ```
+
+View the package documentation
+[here](https://CCBR.github.io/actions/reference).
 
 ## Help & Contributing
 
