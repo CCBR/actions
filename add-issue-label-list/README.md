@@ -1,4 +1,4 @@
-# label-issue-repo-name
+# add-issue-label-list
 
 **`add-issue-label-list`** - Update issue description with a list of
 issues of a given label
