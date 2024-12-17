@@ -1,0 +1,13 @@
+---
+title: Actions
+listing:
+    - id: actions
+      contents: ./actions
+      type: table
+      fields: [title, subtitle]
+      field-display-names:
+        title: action
+        subtitle: description
+---
+
+{{< include _actions.qmd >}}

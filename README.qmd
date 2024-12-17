@@ -26,6 +26,8 @@ for path in sorted(pathlib.Path('examples').glob('*.yml')):
     print(f"- [{path.stem}]({path})")
 ```
 
+View the [GitHub Actions docs](https://docs.github.com/en/actions) for more
+information on how to write and use GitHub Actions workflows.
 
 ## Actions
 

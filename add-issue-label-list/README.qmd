@@ -5,7 +5,7 @@ execute:
   output: asis
 ---
 
-# label-issue-repo-name
+# add-issue-label-list
 
 ```{python}
 import ccbr_actions.docs

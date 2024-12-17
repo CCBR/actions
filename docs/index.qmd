@@ -17,12 +17,7 @@ GitHub Actions for CCBR repos
 
 ## Actions
 
-:::{#actions}
-:::
-
-See example workflows here: <https://github.com/CCBR/actions/tree/main/examples>.
-You can copy these to your own repository in the `.github/workflows/` directory
-and modify them for your needs.
+{{< include ./_actions.qmd >}}
 
 ## Package
 

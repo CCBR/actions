@@ -1,6 +1,6 @@
-# CCBR actions 🤖
-
 <!-- README.md is generated from README.qmd. Please edit that file -->
+
+# CCBR actions 🤖
 
 GitHub Actions for CCBR repos
 
@@ -29,6 +29,9 @@ them for your needs.
 - [techdev-project](examples/techdev-project.yml)
 - [update-cff-R](examples/update-cff-R.yml)
 - [user-projects](examples/user-projects.yml)
+
+View the [GitHub Actions docs](https://docs.github.com/en/actions) for
+more information on how to write and use GitHub Actions workflows.
 
 ## Actions
 

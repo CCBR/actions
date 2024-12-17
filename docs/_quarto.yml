@@ -4,7 +4,7 @@ project:
   output-dir: _site
 
 website:
-  title: "CCBR GitHub Actions"
+  title: "CCBR actions"
   site-url: https://ccbr.github.io/actions
   repo-url: https://github.com/CCBR/actions
   repo-actions: [edit, issue]
@@ -13,6 +13,7 @@ website:
       contents: "_sidebar.yml"
   navbar:
     right:
+      - href: actions.qmd
       - text: API
         href: reference/index.qmd
       - text: Changelog
