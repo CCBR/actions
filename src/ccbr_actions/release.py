@@ -128,6 +128,7 @@ def write_lines(filepath, lines, debug=False):
 
     Examples:
         >>> write_lines("output.txt", ["line 1\n", "line 2\n"])
+
         >>> write_lines("output.txt", ["line 1\n", "line 2\n"], debug=True)
         'line 1\nline 2\n'
     """

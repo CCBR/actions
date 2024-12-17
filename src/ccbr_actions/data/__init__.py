@@ -22,8 +22,8 @@ def get_file_path(filename):
         FileNotFoundError: If the specified file is not found within the package data.
 
     Examples:
-    >>> get_file_path('tool_version_commands.json')
-    PosixPath('/path/to/package/tool_version_commands.json')
+        >>> get_file_path('tool_version_commands.json')
+        PosixPath('/path/to/package/tool_version_commands.json')
     """
     pkg_files = importlib.resources.files(__package__)
     file_path = pkg_files / filename

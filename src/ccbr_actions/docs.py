@@ -36,9 +36,6 @@ def get_docs_version(release_args=""):
     Raises:
         ValueError: If the current commit hash is not a descendant of the latest release.
 
-    Warns:
-        UserWarning: If no latest release is found.
-
     See Also:
         set_docs_version: Sets the version and alias in the GitHub environment.
 
@@ -79,9 +76,6 @@ def set_docs_version():
 
     Raises:
         ValueError: If the current commit hash is not a descendant of the latest release.
-
-    Warns:
-        UserWarning: If no latest release is found.
 
     See Also:
         get_docs_version: Retrieves the documentation version and alias.
