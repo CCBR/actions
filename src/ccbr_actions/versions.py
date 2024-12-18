@@ -17,11 +17,11 @@ def get_current_hash():
             str: The current commit hash.
 
     See Also:
-        get_latest_release_hash : Get the commit hash of the latest release.
+        [](`~ccbr_actions.versions.get_latest_release_hash`) : Get the commit hash of the latest release.
 
     Examples:
-    >>> get_current_hash()
-    'abc123def4567890abcdef1234567890abcdef12'
+        >>> get_current_hash()
+        'abc123def4567890abcdef1234567890abcdef12'
     """
     return shell_run("git rev-parse HEAD").strip()
 
@@ -42,7 +42,7 @@ def match_semver(version_str, with_leading_v=False):
             The match object if the version string matches the semantic versioning pattern, otherwise None.
 
     See Also:
-        get_major_minor_version : Extract the major and minor version from a semantic versioning string.
+        [](`~ccbr_actions.versions.get_major_minor_version`) : Extract the major and minor version from a semantic versioning string.
 
     Examples:
         >>> match_semver("1.0.0")
@@ -72,15 +72,15 @@ def get_major_minor_version(version_str, with_leading_v=False):
         str or None: The major and minor version in the format 'major.minor', or None if the version string is invalid.
 
     See Also:
-        match_semver: Match a version string against the semantic versioning pattern.
+        [](`~ccbr_actions.versions.match_semver`): Match a version string against the semantic versioning pattern.
 
     Examples:
-    >>> get_major_minor_version("1.0.0")
-    '1.0'
-    >>> get_major_minor_version("2.1.3-alpha")
-    '2.1'
-    >>> get_major_minor_version("invalid_version")
-    None
+        >>> get_major_minor_version("1.0.0")
+        '1.0'
+        >>> get_major_minor_version("2.1.3-alpha")
+        '2.1'
+        >>> get_major_minor_version("invalid_version")
+        None
     """
     semver_match = match_semver(version_str, with_leading_v=with_leading_v)
     prefix = "v" if with_leading_v else ""
@@ -192,13 +192,12 @@ def is_ancestor(ancestor, descendant):
         ancestor (str): The commit hash of the potential ancestor.
         descendant (str): The commit hash of the potential descendant.
 
-
     Returns:
         bool: True if the ancestor is an ancestor of the descendant, otherwise False.
 
     See Also:
-        get_latest_release_hash : Get the commit hash of the latest release.
-        get_current_hash : Get the commit hash of the current.
+        [](`~ccbr_actions.versions.get_latest_release_hash`) : Get the commit hash of the latest release.
+        [](`~ccbr_actions.versions.get_current_hash`) : Get the commit hash of the current.
 
     Examples:
         >>> is_ancestor("abc123", "def456")
@@ -228,8 +227,8 @@ def get_releases(limit=1, args="", json_fields="name,tagName,isLatest,publishedA
         list: A list of dictionaries containing release information.
 
     See Also:
-        get_latest_release_tag : Get the tag name of the latest release.
-        get_latest_release_hash : Get the commit hash of the latest release.
+        [](`~ccbr_actions.versions.get_latest_release_tag`) : Get the tag name of the latest release.
+        [](`~ccbr_actions.versions.get_latest_release_hash`) : Get the commit hash of the latest release.
 
     Notes:
         gh cli docs: <https://cli.github.com/manual/gh_release_list>
@@ -259,7 +258,7 @@ def get_latest_release_tag(args=""):
         str or None: The tag name of the latest release, or None if no latest release is found.
 
     See Also:
-        get_releases: Get a list of releases from GitHub.
+        [](`~ccbr_actions.versions.get_releases`): Get a list of releases from GitHub.
 
     Examples:
         >>> get_latest_release_tag()
@@ -288,7 +287,7 @@ def get_latest_release_hash(args=""):
         ValueError: If the tag is not found in the repository commit history.
 
     See Also:
-        get_latest_release_tag: Get the tag name of the latest release.
+        [](`~ccbr_actions.versions.get_latest_release_tag`): Get the tag name of the latest release.
 
     Examples:
         >>> get_latest_release_hash()
