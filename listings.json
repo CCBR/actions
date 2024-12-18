@@ -1,0 +1,24 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/actions/add-issue-label-list/index.html",
+      "/actions/build-docker/index.html",
+      "/actions/draft-release/index.html",
+      "/actions/label-issue-repo-name/index.html",
+      "/actions/mkdocs-mike/index.html",
+      "/actions/post-release/index.html"
+    ]
+  },
+  {
+    "listing": "/actions.html",
+    "items": [
+      "/actions/add-issue-label-list/index.html",
+      "/actions/build-docker/index.html",
+      "/actions/draft-release/index.html",
+      "/actions/label-issue-repo-name/index.html",
+      "/actions/mkdocs-mike/index.html",
+      "/actions/post-release/index.html"
+    ]
+  }
+]
