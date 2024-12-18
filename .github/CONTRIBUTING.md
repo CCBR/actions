@@ -88,6 +88,8 @@ Run the tests with `python -m pytest`.
 
 #### document
 
+All functions and classes should have docstrings that follow the
+[numpydoc format](https://numpydoc.readthedocs.io/en/latest/format.html).
 If you have added a new feature or changed the API of an existing feature,
 you will likely need to update the documentation in `docs/`.
 

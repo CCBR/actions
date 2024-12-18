@@ -1,0 +1,61 @@
+# see: https://github.com/rstudio/vetiver-python/blob/main/docs/_quarto.yml
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "CCBR actions"
+  site-url: https://ccbr.github.io/actions
+  repo-url: https://github.com/CCBR/actions
+  repo-actions: [edit, issue]
+  sidebar:
+    - id: reference
+      contents: "_sidebar.yml"
+  navbar:
+    right:
+      - href: actions.qmd
+      - text: API
+        href: reference/index.qmd
+      - text: Changelog
+        href: CHANGELOG.md
+      - icon: github
+        href: https://github.com/CCBR/actions
+        aria-label: CCBR/actions GitHub
+  page-footer:
+    left: |
+      Created by the
+      [CCR Collaborative Bioinformatics Resource](https://github.com/CCBR)
+
+quartodoc:
+  package: ccbr_actions
+  parser: google
+  render_interlinks: true
+  sidebar: _sidebar.yml
+  title: "API Reference"
+  sections:
+    - title: Modules
+      #desc: Functions for CCBR GitHub Actions
+      contents:
+        - actions
+        - citation
+        - data
+        - docs
+        - release
+        - util
+        - versions
+
+metadata-files:
+  - _sidebar.yml
+
+filters:
+  - interlinks
+
+interlinks:
+  sources: {}
+
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    toc: true

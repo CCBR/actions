@@ -12,20 +12,18 @@ def get_file_path(filename):
     This function retrieves the path to a specified file within the package's
     data files using the `importlib.resources` module.
 
-    Parameters
-    ----------
-    filename : str
-        The name of the file for which to retrieve the path.
+    Args:
+        filename (str): The name of the file for which to retrieve the path.
 
-    Returns
-    -------
-    pathlib.Path
-        The path to the specified file within the package.
+    Returns:
+        pathlib.Path: The path to the specified file within the package.
 
-    Examples
-    --------
-    >>> get_file_path('tool_version_commands.json')
-    PosixPath('/path/to/package/tool_version_commands.json')
+    Raises:
+        FileNotFoundError: If the specified file is not found within the package data.
+
+    Examples:
+        >>> get_file_path('tool_version_commands.json')
+        PosixPath('/path/to/package/tool_version_commands.json')
     """
     pkg_files = importlib.resources.files(__package__)
     file_path = pkg_files / filename

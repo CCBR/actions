@@ -30,6 +30,9 @@ them for your needs.
 - [update-cff-R](examples/update-cff-R.yml)
 - [user-projects](examples/user-projects.yml)
 
+View the [GitHub Actions docs](https://docs.github.com/en/actions) for
+more information on how to write and use GitHub Actions workflows.
+
 ## Actions
 
 Custom actions used in our github workflows.
@@ -58,7 +61,7 @@ outside of GitHub Actions.
 ### Installation
 
 You will need the GitHub CLI installed (this is pre-installed on all
-github actions runners): https://github.com/cli/cli#installation
+github actions runners): <https://github.com/cli/cli#installation>
 
 Then install the `ccbr_actions` package with pip:
 
@@ -71,6 +74,9 @@ Or install it from a specific version or branch with:
 ```bash
 pip install git+https://github.com/CCBR/actions@v0.1
 ```
+
+View the package documentation
+[here](https://CCBR.github.io/actions/reference).
 
 ## Help & Contributing
 

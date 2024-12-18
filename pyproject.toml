@@ -53,7 +53,9 @@ test = [
     "pytest",
     "pytest-cov"
 ]
-
+docs = [
+    "quartodoc >= v0.7.6"
+]
 [project.scripts]
 ccbr_actions = "ccbr_actions.__main__:main"
 
@@ -89,5 +91,6 @@ readme = {file = "README.md"}
 [tool.setuptools]
 script-files = [
     "scripts/prepare_docker_build_variables.sh",
-    "scripts/print_versions.py"
+    "scripts/print_versions.py",
+    "scripts/quarto-listings.py"
 ]
