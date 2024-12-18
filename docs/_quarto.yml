@@ -18,6 +18,8 @@ website:
         href: reference/index.qmd
       - text: Changelog
         href: CHANGELOG.md
+      - text: Contributing
+        href: CONTRIBUTING.md
       - icon: github
         href: https://github.com/CCBR/actions
         aria-label: CCBR/actions GitHub
