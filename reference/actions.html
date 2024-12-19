@@ -135,6 +135,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="../CHANGELOG.html"> 
 <span class="menu-text">Changelog</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../CONTRIBUTING.md"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/CCBR/actions"> <i class="bi bi-github" role="img" aria-label="CCBR/actions GitHub">
 </i> 
@@ -235,6 +239,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#ccbr_actions.actions" id="toc-ccbr_actions.actions" class="nav-link active" data-scroll-target="#ccbr_actions.actions">actions</a>
   <ul class="collapse">
+  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
@@ -255,7 +260,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>actions</h1>
 <p><code>actions</code></p>
 <p>Download and use GitHub Actions workflow files.</p>
-<p>See Also: get_latest_release_tag : Get the latest release tag from a GitHub repository.</p>
+<section id="see-also" class="level2 doc-section doc-section-see-also">
+<h2 class="doc-section doc-section-see-also anchored" data-anchor-id="see-also">See Also</h2>
+<p><code>get_latest_release_tag</code> : Get the latest release tag from a GitHub repository.</p>
+</section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>)</span>
@@ -290,12 +298,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 9%">
-<col style="width: 71%">
-<col style="width: 12%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -307,19 +309,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>name</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the output variable to set.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>value</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The value of the output variable to set.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>environ</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The environment variable that specifies the GitHub Actions environment file. Defaults to “GITHUB_OUTPUT”.</td>
 <td><code>'GITHUB_OUTPUT'</code></td>
 </tr>
@@ -346,12 +348,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="parameters-1" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 5%">
-<col style="width: 8%">
-<col style="width: 75%">
-<col style="width: 10%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -363,40 +359,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>name</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the GitHub Actions workflow file to download.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>ref</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The git reference (branch, tag, or commit SHA) to use. Defaults to None, in which case the latest release or “main” is used.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>url</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The URL to download the workflow file from. Defaults to building it based on the repo and ref.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>save_as</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The path to save the downloaded workflow file. Defaults to building it based on .github/workflows/name.yml.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>repo</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The GitHub repository to download the workflow file from. Defaults to “CCBR/actions”.</td>
 <td><code>'CCBR/actions'</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="see-also" class="level4 doc-section doc-section-see-also">
-<h4 class="doc-section doc-section-see-also anchored" data-anchor-id="see-also">See Also</h4>
-<p>get_latest_release_tag : Get the latest release tag from a GitHub repository. get_docs_version : Get the documentation version and alias.</p>
+<section id="see-also-1" class="level4 doc-section doc-section-see-also">
+<h4 class="doc-section doc-section-see-also anchored" data-anchor-id="see-also-1">See Also</h4>
+<p><code>get_latest_release_tag</code>: Get the latest release tag from a GitHub repository. <code>get_docs_version</code>: Get the documentation version and alias.</p>
 </section>
 <section id="notes" class="level4 doc-section doc-section-notes">
 <h4 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h4>

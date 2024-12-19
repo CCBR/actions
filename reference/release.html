@@ -164,6 +164,10 @@ window.Quarto = {
     <a class="nav-link" href="../CHANGELOG.html"> 
 <span class="menu-text">Changelog</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../CONTRIBUTING.md"> 
+<span class="menu-text">Contributing</span></a>
+  </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/CCBR/actions"> <i class="bi bi-github" role="img" aria-label="CCBR/actions GitHub">
 </i> 
@@ -347,12 +351,6 @@ window.Quarto = {
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 8%">
-<col style="width: 51%">
-<col style="width: 26%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -364,13 +362,13 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>release_branch</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the release branch. Defaults to “release-draft”.</td>
 <td><code>'release-draft'</code></td>
 </tr>
 <tr class="even">
 <td>next_version</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The next version of the release. Defaults to “<span class="math inline">\({{ steps.release.outputs.NEXT_VERSION }}". | `'\)</span>{{ steps.release.outputs.NEXT_VERSION }}‘<code>| | release_notes_filepath | [str](</code>str<code>)   | The file path to the release notes. Defaults to ".github/latest-release.md".              |</code>’.github/latest-release.md’<code>| | release_target         | [str](</code>str<code>)   | The target commit hash for the release. Defaults to the current commit hash.              |</code>get_current_hash()<code>| | repo                   | [str](</code>str<code>)   | The GitHub repository in the format "owner/repo". Defaults to "${{ github.repository }}". |</code>‘${{ github.repository }}’<code>| | debug                  | [bool](</code>bool<code>) | If True, print the command instead of executing it. Defaults to False.                    |</code>False`</td>
 <td></td>
 </tr>
@@ -415,12 +413,6 @@ window.Quarto = {
 <section id="parameters-1" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 14%">
-<col style="width: 8%">
-<col style="width: 61%">
-<col style="width: 15%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -432,25 +424,25 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>latest_version_strict</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The latest version string that follows semantic versioning.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>next_version_strict</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The next version string that follows semantic versioning.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>changelog_filepath</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The path to the changelog file. Defaults to “CHANGELOG.md”.</td>
 <td><code>'CHANGELOG.md'</code></td>
 </tr>
 <tr class="even">
 <td>dev_header</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The header used for the development version in the changelog. Defaults to “development version”.</td>
 <td><code>'development version'</code></td>
 </tr>
@@ -484,11 +476,6 @@ window.Quarto = {
 <section id="raises" class="level4 doc-section doc-section-raises">
 <h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 22%">
-<col style="width: 70%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -499,7 +486,7 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td></td>
-<td><code>ValueError</code></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If any of the provided version strings do not match the semantic versioning pattern.</td>
 </tr>
 </tbody>
@@ -520,12 +507,6 @@ window.Quarto = {
 <section id="parameters-2" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 12%">
-<col style="width: 62%">
-<col style="width: 8%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -537,31 +518,31 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>next_version_manual</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The manually specified next version (default is None).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>next_version_convco</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The next version determined by conventional commit history (default is None).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>current_version</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The current version of the project (default is None).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>gh_event_name</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the GitHub event triggering the release (default is None).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>with_leading_v</td>
-<td><code>bool</code></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to include a leading ‘v’ in the version string (default is True).</td>
 <td><code>True</code></td>
 </tr>
@@ -590,11 +571,6 @@ window.Quarto = {
 <section id="raises-1" class="level4 doc-section doc-section-raises">
 <h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 17%">
-<col style="width: 75%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -605,7 +581,7 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td></td>
-<td><code>Warning</code></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#Warning">Warning</a></td>
 <td>If the manual version does not match the version determined by conventional commit history.</td>
 </tr>
 </tbody>
@@ -638,12 +614,6 @@ window.Quarto = {
 <section id="parameters-3" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 11%">
-<col style="width: 8%">
-<col style="width: 59%">
-<col style="width: 21%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -655,20 +625,20 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>changelog_filepath</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The path to the changelog file (default is “CHANGELOG.md”).</td>
 <td><code>'CHANGELOG.md'</code></td>
 </tr>
 <tr class="even">
 <td>repo</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The GitHub repository (default is “<span class="math inline">\({{ github.repository }}").                                      | `'\)</span>{{ github.repository }}‘<code>| | release_tag        | [str](</code>str<code>) | The tag of the release (default is "${{ github.ref_name }}").                                       |</code>’<span class="math inline">\({{ github.ref_name }}'`         |
 | pr_branch          | [str](`str`) | The branch for the pull request (default is "\)</span>{{ inputs.branch }}”).</td>
 <td><code>'${{ inputs.branch }}'</code></td>
 </tr>
 <tr class="odd">
 <td>pr_reviewer</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The reviewer for the pull request (default is “<span class="math inline">\({{ github.triggering_actor }}").                    | `'\)</span>{{ github.triggering_actor }}‘<code>| | draft_branch       | [str](</code>str<code>) | The name of the draft branch (default is "release-draft").                                          |</code>’release-draft’<code>| | dev_header         | [str](</code>str<code>) | The header for the development version section in the changelog (default is "development version"). |</code>‘development version’<code>| | version_filepath   | [str](</code>str<code>) | The path to the version file (default is "VERSION").                                                |</code>‘VERSION’<code>| | citation_filepath  | [str](</code>str<code>) | The path to the citation file (default is "CITATION.cff").                                          |</code>‘CITATION.cff’`</td>
 <td></td>
 </tr>
@@ -703,12 +673,6 @@ window.Quarto = {
 <section id="parameters-4" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 9%">
-<col style="width: 58%">
-<col style="width: 18%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -720,37 +684,37 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>dev_header</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The header for the development version section in the changelog (default is “development version”).</td>
 <td><code>'development version'</code></td>
 </tr>
 <tr class="even">
 <td>release_notes_filepath</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The path to the release notes file (default is “.github/latest-release.md”).</td>
 <td><code>'.github/latest-release.md'</code></td>
 </tr>
 <tr class="odd">
 <td>version_filepath</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The path to the version file (default is “VERSION”).</td>
 <td><code>'VERSION'</code></td>
 </tr>
 <tr class="even">
 <td>citation_filepath</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The path to the citation file (default is “CITATION.cff”).</td>
 <td><code>'CITATION.cff'</code></td>
 </tr>
 <tr class="odd">
 <td>release_branch</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the release branch (default is “release-draft”).</td>
 <td><code>'release-draft'</code></td>
 </tr>
 <tr class="even">
 <td>pr_ref_name</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The reference name of the pull request (default is “<span class="math inline">\({{ github.ref_name }}").                       | `'\)</span>{{ github.ref_name }}‘<code>| | repo                   | [str](</code>str<code>)   | The GitHub repository (default is "${{ github.repository }}").                                      |</code>’${{ github.repository }}’<code>| | debug                  | [bool](</code>bool<code>) | If True, print debug information instead of writing to files (default is False).                    |</code>False`</td>
 <td></td>
 </tr>
@@ -760,11 +724,6 @@ window.Quarto = {
 <section id="raises-2" class="level4 doc-section doc-section-raises">
 <h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-2">Raises</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 8%">
-<col style="width: 38%">
-<col style="width: 53%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -775,7 +734,7 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td></td>
-<td><code>AssertionError</code></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#AssertionError">AssertionError</a></td>
 <td>If the changelog or version file does not exist.</td>
 </tr>
 </tbody>
@@ -801,12 +760,6 @@ window.Quarto = {
 <section id="parameters-5" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 9%">
-<col style="width: 54%">
-<col style="width: 27%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -818,13 +771,13 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>release_branch</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the release branch to create or switch to. Defaults to “release-draft”.</td>
 <td><code>'release-draft'</code></td>
 </tr>
 <tr class="even">
 <td>pr_ref_name</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The reference name of the pull request to merge. Defaults to “<span class="math inline">\({{ github.ref_name }}".        | `'\)</span>{{ github.ref_name }}’<code>| | next_version   | [str](</code>str<code>)   | The next version number to include in the commit message. Defaults to None.                   |</code>None<code>| | files          | [list](</code>list<code>) | A list of files to stage and commit. Defaults to ["CHANGELOG.md", "VERSION", "CITATION.cff"]. |</code>[‘CHANGELOG.md’, ‘VERSION’, ‘CITATION.cff’]<code>| | debug          | [bool](</code>bool<code>) | If True, prints the generated git commands instead of executing them. Defaults to False.      |</code>False`</td>
 <td></td>
 </tr>
@@ -864,12 +817,6 @@ window.Quarto = {
 <section id="parameters-6" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 11%">
-<col style="width: 7%">
-<col style="width: 57%">
-<col style="width: 23%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -881,14 +828,14 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>next_version_manual</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The manually specified next version (default is “<span class="math inline">\({{ github.event.inputs.version_tag }}").                  | `'\)</span>{{ github.event.inputs.version_tag }}‘<code>| | next_version_convco | [str](</code>str<code>) | The next version determined by conventional commit history (default is "${{ steps.semver.outputs.next }}"). |</code>’<span class="math inline">\({{ steps.semver.outputs.next }}'`       |
 | current_version     | [str](`str`) | The current version of the project (default is "\)</span>{{ steps.semver.outputs.current }}”).</td>
 <td><code>'${{ steps.semver.outputs.current }}'</code></td>
 </tr>
 <tr class="even">
 <td>gh_event_name</td>
-<td><code>str</code></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the GitHub event triggering the release (default is “<span class="math inline">\({{ github.event_name }}").                | `'\)</span>{{ github.event_name }}’`</td>
 <td></td>
 </tr>
