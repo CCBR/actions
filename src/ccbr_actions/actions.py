@@ -2,7 +2,7 @@
 Download and use GitHub Actions workflow files.
 
 See Also:
-get_latest_release_tag : Get the latest release tag from a GitHub repository.
+    [](`~ccbr_actions.get_latest_release_tag`) : Get the latest release tag from a GitHub repository.
 
 Examples:
     >>> use_github_action("docs-mkdocs")
@@ -32,8 +32,8 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
         repo (str, optional): The GitHub repository to download the workflow file from. Defaults to "CCBR/actions".
 
     See Also:
-        get_latest_release_tag : Get the latest release tag from a GitHub repository.
-        get_docs_version : Get the documentation version and alias.
+        [](`~ccbr_actions.get_latest_release_tag`): Get the latest release tag from a GitHub repository.
+        [](`~ccbr_actions.get_docs_version`): Get the documentation version and alias.
 
     Notes:
         If `ref` is not provided, the latest release tag is used (if available) or main.

@@ -18,6 +18,8 @@ website:
         href: reference/index.qmd
       - text: Changelog
         href: CHANGELOG.md
+      - text: Contributing
+        href: CONTRIBUTING.md
       - icon: github
         href: https://github.com/CCBR/actions
         aria-label: CCBR/actions GitHub
@@ -51,7 +53,13 @@ filters:
   - interlinks
 
 interlinks:
-  sources: {}
+  sources:
+    python:
+      url: https://docs.python.org/3/
+    # ccbr_actions:
+    #   url: https://ccbr.github.io/actions/reference
+    # ccbr_tools:
+    #   url: https://ccbr.github.io/Tools/reference
 
 format:
   html:

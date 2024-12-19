@@ -37,7 +37,7 @@ def get_docs_version(release_args=""):
         ValueError: If the current commit hash is not a descendant of the latest release.
 
     See Also:
-        set_docs_version: Sets the version and alias in the GitHub environment.
+        [](`~ccbr_actions.docs.set_docs_version`): Sets the version and alias in the GitHub environment.
 
     Examples:
         >>> get_docs_version()
@@ -78,8 +78,8 @@ def set_docs_version():
         ValueError: If the current commit hash is not a descendant of the latest release.
 
     See Also:
-        get_docs_version: Retrieves the documentation version and alias.
-        set_output: Sets the GitHub Actions environment variable.
+        [](`~ccbr_actions.docs.get_docs_version`): Retrieves the documentation version and alias.
+        [](`~ccbr_actions.actions.set_output`): Sets the GitHub Actions environment variable.
 
     Examples:
         >>> set_docs_version()
