@@ -74,14 +74,14 @@
     "href": "CHANGELOG.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "make citation files optional for draft-release and post-release. (#44, @kelly-sovacool)\nfix post-release action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)\nnew documentation website: https://CCBR.github.io/actions. (#48, #49, @kelly-sovacool)\nfix build-docker to set the docker build context as the same directory as the Dockerfile. (#51, @kelly-sovacool)"
+    "text": "fix post-release action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)\nfix build-docker to set the docker build context as the same directory as the Dockerfile. (#51, @kelly-sovacool)\n\n\n\n\n\nmake citation files optional for draft-release and post-release. (#44, @kelly-sovacool)\n\nthese actions will no longer error when a repository lacks a citation file.\n\nnew documentation website: https://CCBR.github.io/actions. (#48, #49, @kelly-sovacool)"
   },
   {
     "objectID": "CHANGELOG.html#actions-development-version",
     "href": "CHANGELOG.html#actions-development-version",
     "title": "CCBR actions",
     "section": "",
-    "text": "make citation files optional for draft-release and post-release. (#44, @kelly-sovacool)\nfix post-release action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)\nnew documentation website: https://CCBR.github.io/actions. (#48, #49, @kelly-sovacool)\nfix build-docker to set the docker build context as the same directory as the Dockerfile. (#51, @kelly-sovacool)"
+    "text": "fix post-release action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)\nfix build-docker to set the docker build context as the same directory as the Dockerfile. (#51, @kelly-sovacool)\n\n\n\n\n\nmake citation files optional for draft-release and post-release. (#44, @kelly-sovacool)\n\nthese actions will no longer error when a repository lacks a citation file.\n\nnew documentation website: https://CCBR.github.io/actions. (#48, #49, @kelly-sovacool)"
   },
   {
     "objectID": "CHANGELOG.html#actions-0.2.2",
