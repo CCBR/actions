@@ -77,8 +77,8 @@
     "text": "fix post-release action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)\nfix build-docker to set the docker build context as the same directory as the Dockerfile. (#51, @kelly-sovacool)\n\n\n\n\n\nmake citation files optional for draft-release and post-release. (#44, @kelly-sovacool)\n\nthese actions will no longer error when a repository lacks a citation file.\n\nnew documentation website: https://CCBR.github.io/actions. (#48, #49, @kelly-sovacool)"
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.2.3",
+    "href": "CHANGELOG.html#actions-0.2.3",
     "title": "CCBR actions",
     "section": "",
     "text": "fix post-release action to properly update the sliding branch when new releases have incompatible history (typically due to rebasing). (#46, @kelly-sovacool)\nfix build-docker to set the docker build context as the same directory as the Dockerfile. (#51, @kelly-sovacool)\n\n\n\n\n\nmake citation files optional for draft-release and post-release. (#44, @kelly-sovacool)\n\nthese actions will no longer error when a repository lacks a citation file.\n\nnew documentation website: https://CCBR.github.io/actions. (#48, #49, @kelly-sovacool)"
@@ -165,7 +165,7 @@
     "href": "index.html#citation",
     "title": "CCBR actions",
     "section": "Citation",
-    "text": "Citation\nPlease cite this software if you use it in a publication:\n\nSovacool K., Koparde V. (2024). CCBR actions: GitHub Actions for CCBR repos (version v0.2.2). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\nBibtex entry:\n\n\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {11},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2024}\n}"
+    "text": "Citation\nPlease cite this software if you use it in a publication:\n\nSovacool K., Koparde V. (2024). CCBR actions: GitHub Actions for CCBR repos (version v0.2.3). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\nBibtex entry:\n\n\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {12},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2024}\n}"
   },
   {
     "objectID": "reference/release.html",
