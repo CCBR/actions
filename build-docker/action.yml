@@ -124,6 +124,7 @@ runs:
       uses: docker/build-push-action@v5
       with:
         file: ${{ env.DOCKERFILE }}
+        context: ${{ env.CONTEXT }}
         push: ${{ inputs.push }}
         tags: ${{ env.IMAGENAME }}
         build-args: |
