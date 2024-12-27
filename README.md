@@ -1,4 +1,4 @@
-# CCBR actions 🤖
+# ccbr_actions
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
@@ -51,12 +51,6 @@ Custom actions used in our github workflows.
   to be triggered by publishing a release
 
 ## Package
-
----
-
-title: ccbr_actions
-
----
 
 `ccbr_actions` is a Python package with helper functions used by our
 custom GitHub Actions. You do not need to install the package in order
