@@ -6,4 +6,17 @@ subtitle: Example workflows used in CCBR repositories
 You can copy these to your own repository in the `.github/workflows/` directory
 and modify them for your needs.
 
-{{< include _examples.qmd >}}
+```{python}
+#| echo: false
+#| output: asis
+import pathlib
+
+for filename in sorted(pathlib.Path().glob("../examples/*.yml")):
+    print(f"### {filename.stem}")
+    print("[{{< fa brands github >}} Source]" + f"(https://github.com/CCBR/actions/tree/main/{filename})")
+    print("```yaml")
+    with open(filename, "r") as infile:
+        example_yml = infile.read()
+        print(example_yml)
+    print("```")
+```

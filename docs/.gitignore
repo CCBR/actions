@@ -1,9 +1,8 @@
 /.quarto/
+/_freeze
+/_inv/
 /_sidebar.yml
 /_site/
-/_inv/
+/actions
 /objects.json
 /reference/
-/actions
-/_examples.qmd
-/_freeze
