@@ -38,7 +38,7 @@ jobs:
           cache: "pip"
       - name: Install dependencies
         run: |
-          python -m pip install .[dev] --upgrade pip
+          python -m pip install .[dev,docs] --upgrade pip
       - uses: quarto-dev/quarto-actions/setup@v2
         with:
           version: 1.4.515

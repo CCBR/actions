@@ -1,0 +1,9 @@
+---
+title: Example Workflows
+subtitle: Example workflows used in CCBR repositories
+---
+
+You can copy these to your own repository in the `.github/workflows/` directory
+and modify them for your needs.
+
+{{< include _examples.qmd >}}

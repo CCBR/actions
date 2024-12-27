@@ -2,7 +2,7 @@
 title: Actions
 listing:
     - id: actions
-      contents: ./actions
+      contents: actions
       type: table
       fields: [title, subtitle]
       field-display-names:
@@ -10,4 +10,5 @@ listing:
         subtitle: description
 ---
 
-{{< include _actions.qmd >}}
+:::{#actions}
+:::

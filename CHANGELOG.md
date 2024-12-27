@@ -1,6 +1,9 @@
 ## actions development version
 
-- fix `post-release` to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)
+- fix `post-release` to make sure the sliding branch is created from the latest release tag. (#53, #56, @kelly-sovacool)
+- improvements to documentation website:
+  - add contributors page to docs website. (#54, @kelly-sovacool)
+  - list example workflows and improve navigation. (#55, @kelly-sovacool)
 
 ## actions 0.2.3
 
