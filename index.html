@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -75,8 +41,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d166b450ba5a8e9f7a0ab969bf6592c1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-04dd6a5ca28aac96903e51a8fbffbcaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-b3883a83b6cdceb4314f965facc5c958.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-6c40ed3430fa5f31e6fbc0b8598a3ef8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1de5c4262cdefdb2b0852314e1a3ccc6.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -166,7 +132,7 @@ window.Quarto = {
 
 </head>
 
-<body class="nav-fixed">
+<body class="nav-sidebar docked nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -183,22 +149,59 @@ window.Quarto = {
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="./actions.html"> 
-<span class="menu-text">Actions</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-docs" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Docs</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-docs">    
+        <li>
+    <a class="dropdown-item" href="./index.html">
+ <span class="dropdown-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./reference/index.html"> 
-<span class="menu-text">API</span></a>
+        <li><hr class="dropdown-divider"></li>
+        <li class="dropdown-header">GitHub Actions</li>
+        <li>
+    <a class="dropdown-item" href="./actions/label-issue-repo-name/index.html">
+ <span class="dropdown-text">Actions</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./CHANGELOG.html"> 
-<span class="menu-text">Changelog</span></a>
+        <li>
+    <a class="dropdown-item" href="./examples.html">
+ <span class="dropdown-text">Example Workflows</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./CONTRIBUTING.md"> 
-<span class="menu-text">Contributing</span></a>
+        <li><hr class="dropdown-divider"></li>
+        <li class="dropdown-header">Python package</li>
+        <li>
+    <a class="dropdown-item" href="./install.html">
+ <span class="dropdown-text">Installation</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./reference/actions.html">
+ <span class="dropdown-text">API reference</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li class="dropdown-header">Project information</li>
+        <li>
+    <a class="dropdown-item" href="./cite.html">
+ <span class="dropdown-text">Citation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./CONTRIBUTING.html">
+ <span class="dropdown-text">Contributing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./contributors.html">
+ <span class="dropdown-text">Contributors</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./LICENSE.html">
+ <span class="dropdown-text">License</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./CHANGELOG.html">
+ <span class="dropdown-text">Changelog</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/CCBR/actions"> <i class="bi bi-github" role="img" aria-label="CCBR/actions GitHub">
 </i> 
@@ -211,25 +214,211 @@ window.Quarto = {
 </div>
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Home</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./gh-actions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">GitHub Actions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./actions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Actions</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">label-issue-repo-name</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">build-docker</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">draft-release</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mkdocs-mike</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/add-issue-label-list/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">add-issue-label-list</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/post-release/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">post-release</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./examples.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Example Workflows</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Python package</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./install.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./reference/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">API reference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reference/actions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">actions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reference/citation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">citation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reference/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reference/docs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">docs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reference/release.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">release</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reference/util.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">util</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reference/versions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">versions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Project information</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cite.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Citation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./contributors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./LICENSE.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./CHANGELOG.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changelog</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#actions" id="toc-actions" class="nav-link active" data-scroll-target="#actions">Actions</a></li>
-  <li><a href="#package" id="toc-package" class="nav-link" data-scroll-target="#package">Package</a>
-  <ul class="collapse">
-  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
-  </ul></li>
-  <li><a href="#help-contributing" id="toc-help-contributing" class="nav-link" data-scroll-target="#help-contributing">Help &amp; Contributing</a></li>
-  <li><a href="#citation" id="toc-citation" class="nav-link" data-scroll-target="#citation">Citation</a></li>
-  </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
@@ -239,9 +428,11 @@ window.Quarto = {
 
 <p>GitHub Actions for CCBR repos</p>
 <p><a href="https://github.com/CCBR/actions/actions/workflows/build-python.yml"><img src="https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg" class="img-fluid" alt="build"></a> <a href="https://codecov.io/gh/CCBR/actions"><img src="https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap" class="img-fluid" alt="codecov"></a> <a href="https://doi.org/10.5281/zenodo.13761059"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.13761059.svg" class="img-fluid" alt="DOI"></a></p>
-<section id="actions" class="level2">
-<h2 class="anchored" data-anchor-id="actions">Actions</h2>
-<div id="listing-actions" class="quarto-listing quarto-listing-container-table">
+
+
+
+
+<div class="quarto-listing quarto-listing-container-table" id="listing-actions">
 <div class="listing-actions-group">
    <div class="input-group input-group-sm quarto-listing-sort">
      <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
@@ -270,7 +461,7 @@ description
 </tr>
 </thead>
 <tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1734977505095" data-listing-reading-time-sort="2" data-listing-word-count-sort="218" data-listing-title-sort="add-issue-label-list" data-listing-filename-sort="index.qmd">
+<tr data-index="0" data-listing-file-modified-sort="1735322914794" data-listing-reading-time-sort="2" data-listing-word-count-sort="218" data-listing-title-sort="add-issue-label-list" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/add-issue-label-list/index.html" class="title listing-title">add-issue-label-list</a>
 </td>
@@ -278,7 +469,7 @@ description
 <span class="listing-subtitle">Update issue description with a list of issues of a given label</span>
 </td>
 </tr>
-<tr data-index="1" data-listing-file-modified-sort="1734977505072" data-listing-reading-time-sort="3" data-listing-word-count-sort="437" data-listing-title-sort="build-docker" data-listing-filename-sort="index.qmd">
+<tr data-index="1" data-listing-file-modified-sort="1735322914763" data-listing-reading-time-sort="3" data-listing-word-count-sort="437" data-listing-title-sort="build-docker" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/build-docker/index.html" class="title listing-title">build-docker</a>
 </td>
@@ -286,7 +477,7 @@ description
 <span class="listing-subtitle">Build a docker container using CCBR guidelines</span>
 </td>
 </tr>
-<tr data-index="2" data-listing-file-modified-sort="1734977505083" data-listing-reading-time-sort="4" data-listing-word-count-sort="615" data-listing-title-sort="draft-release" data-listing-filename-sort="index.qmd">
+<tr data-index="2" data-listing-file-modified-sort="1735322914777" data-listing-reading-time-sort="4" data-listing-word-count-sort="615" data-listing-title-sort="draft-release" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/draft-release/index.html" class="title listing-title">draft-release</a>
 </td>
@@ -294,7 +485,7 @@ description
 <span class="listing-subtitle">Draft a new release based on conventional commits and prepare release notes</span>
 </td>
 </tr>
-<tr data-index="3" data-listing-file-modified-sort="1734977505045" data-listing-reading-time-sort="1" data-listing-word-count-sort="111" data-listing-title-sort="label-issue-repo-name" data-listing-filename-sort="index.qmd">
+<tr data-index="3" data-listing-file-modified-sort="1735322914736" data-listing-reading-time-sort="1" data-listing-word-count-sort="111" data-listing-title-sort="label-issue-repo-name" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/label-issue-repo-name/index.html" class="title listing-title">label-issue-repo-name</a>
 </td>
@@ -302,7 +493,7 @@ description
 <span class="listing-subtitle">Label issues &amp; PRs with the repository name</span>
 </td>
 </tr>
-<tr data-index="4" data-listing-file-modified-sort="1734977505091" data-listing-reading-time-sort="3" data-listing-word-count-sort="406" data-listing-title-sort="mkdocs-mike" data-listing-filename-sort="index.qmd">
+<tr data-index="4" data-listing-file-modified-sort="1735322914790" data-listing-reading-time-sort="3" data-listing-word-count-sort="406" data-listing-title-sort="mkdocs-mike" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/mkdocs-mike/index.html" class="title listing-title">mkdocs-mike</a>
 </td>
@@ -310,7 +501,7 @@ description
 <span class="listing-subtitle">Deploy documentation to github pages using mkdocs + mike</span>
 </td>
 </tr>
-<tr data-index="5" data-listing-file-modified-sort="1734977505107" data-listing-reading-time-sort="3" data-listing-word-count-sort="522" data-listing-title-sort="post-release" data-listing-filename-sort="index.qmd">
+<tr data-index="5" data-listing-file-modified-sort="1735322914805" data-listing-reading-time-sort="3" data-listing-word-count-sort="522" data-listing-title-sort="post-release" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/post-release/index.html" class="title listing-title">post-release</a>
 </td>
@@ -323,54 +514,7 @@ description
 <div class="listing-no-matching d-none">
 No matching items
 </div>
-</div>
-<p>See example workflows that use our custom actions here: <a href="https://github.com/CCBR/actions/tree/main/examples" class="uri">https://github.com/CCBR/actions/tree/main/examples</a>. You can copy these to your own repository in the <code>.github/workflows/</code> directory and modify them for your needs.</p>
-<p>View the <a href="https://docs.github.com/en/actions">GitHub Actions docs</a> for more information on how to write and use GitHub Actions workflows.</p>
-</section>
-<section id="package" class="level2">
-<h2 class="anchored" data-anchor-id="package">Package</h2>
-<p>This repo contains a python package with helper functions for some of our custom actions. You do not need to install anything in order to use the example workflows, as the actions install their dependencies as needed. However, you can install the package if you wish to use it outside of GitHub Actions.</p>
-<section id="installation" class="level3">
-<h3 class="anchored" data-anchor-id="installation">Installation</h3>
-<p>You will need the GitHub CLI installed (this is pre-installed on all github actions runners): <a href="https://github.com/cli/cli#installation" class="uri">https://github.com/cli/cli#installation</a></p>
-<p>Then install the <code>ccbr_actions</code> package with pip:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/CCBR/actions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Or install it from a specific version or branch with:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install git+https://github.com/CCBR/actions@v0.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>View the package documentation <a href="./reference">here</a>.</p>
-</section>
-</section>
-<section id="help-contributing" class="level2">
-<h2 class="anchored" data-anchor-id="help-contributing">Help &amp; Contributing</h2>
-<p>Come across a <strong>bug</strong>? Open an <a href="https://github.com/CCBR/actions/issues">issue</a> and include a minimal reproducible example.</p>
-<p>Have a <strong>question</strong>? Ask it in <a href="https://github.com/CCBR/actions/discussions">discussions</a>.</p>
-<p>Want to <strong>contribute</strong> to this project? Check out the <a href="https://github.com/CCBR/actions/blob/main/.github/CONTRIBUTING.md">contributing guidelines</a>.</p>
-</section>
-<section id="citation" class="level2">
-<h2 class="anchored" data-anchor-id="citation">Citation</h2>
-<p>Please cite this software if you use it in a publication:</p>
-<blockquote class="blockquote">
-<p>Sovacool K., Koparde V. (2024). CCBR actions: GitHub Actions for CCBR repos (version v0.2.3). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/</p>
-</blockquote>
-<p>Bibtex entry:</p>
-<div id="aface0ce" class="cell" data-execution_count="2">
-<div class="cell-output cell-output-stdout">
-<pre><code>@misc{YourReferenceHere,
-author = {Sovacool, Kelly and Koparde, Vishal},
-doi = {10.5281/zenodo.13761059},
-month = {12},
-title = {CCBR actions: GitHub Actions for CCBR repos},
-url = {https://ccbr.github.io/actions/},
-year = {2024}
-}</code></pre>
-</div>
-</div>
-
-
-
-</section>
-
-</main> <!-- /main -->
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -940,7 +1084,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/actions/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
