@@ -9,9 +9,6 @@ website:
   repo-url: https://github.com/CCBR/actions
   repo-actions: [edit, issue]
   sidebar:
-    - id: reference
-      style: docked
-      contents: "_sidebar.yml"
     - id: docs
       title: Docs
       style: docked
@@ -31,8 +28,10 @@ website:
           contents:
             - text: Installation
               href: install.qmd
-            - text: API reference
+            - section: API reference
               href: reference/index.qmd
+              contents:
+                - auto: "reference/**"
         - section: Project information
           contents:
             - text: Citation
@@ -63,7 +62,6 @@ quartodoc:
   title: "API Reference"
   sections:
     - title: Modules
-      #desc: Functions for CCBR GitHub Actions
       contents:
         - actions
         - citation
