@@ -1,10 +1,9 @@
 ---
 format: gfm
+title: "CCBR actions 🤖"
 ---
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
-
-# CCBR actions 🤖
 
 GitHub Actions for CCBR repos
 
