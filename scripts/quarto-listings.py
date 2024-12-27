@@ -8,6 +8,11 @@ yaml_str = YAML(typ=["rt", "string"])
 
 
 def main():
+    create_actions_listing()
+    create_examples_page()
+
+
+def create_actions_listing():
     listing_subdir = pathlib.Path("docs/actions/")
     for action_yml in get_yaml_glob():
         f = action_yml["filename"]
@@ -33,6 +38,23 @@ def main():
             yaml_str.dump(qmd_meta, outfile)
             outfile.write("---\n")
             outfile.write(readme_body)
+
+
+def create_examples_page():
+    with open("docs/_examples.qmd", "w") as outfile:
+        for filename in sorted(pathlib.Path().glob("examples/*.yml")):
+            outfile.writelines(
+                [
+                    f"\n### {filename.stem}\n",
+                    "\n[{{< fa brands github >}} Source]",
+                    f"(https://github.com/CCBR/actions/tree/main/{filename})\n",
+                    "\n```yaml\n",
+                ]
+            )
+            with open(filename, "r") as infile:
+                example_yml = infile.readlines()
+                outfile.writelines(example_yml)
+            outfile.write("```\n")
 
 
 def get_yaml_glob():

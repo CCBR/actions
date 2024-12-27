@@ -4,13 +4,17 @@ Please cite this software if you use it in a publication:
 ```{python}
 #| echo: false
 #| output: asis
-!ccbr_tools cite -f apalike | sed -E 's/^/> /g'
+!ccbr_tools cite CITATION.cff -f apalike | sed -E 's/^/> /g'
 ```
 
 
 ### Bibtex entry
 
+
 ```{python}
 #| echo: false
-!ccbr_tools cite -f bibtex
+#| output: asis
+print('```bibtex')
+!ccbr_tools cite CITATION.cff -f bibtex
+print('```')
 ```

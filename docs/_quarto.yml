@@ -18,8 +18,14 @@ website:
       contents:
         - text: Home
           href: index.qmd
-        - text: GitHub ACtions
-          href: actions.qmd
+        - section: GitHub Actions
+          href: gh-actions.qmd
+          contents:
+            - section: Actions
+              href: actions.qmd
+              contents:
+                - auto: "actions/**"
+            - examples.qmd
         - section: Python package
           href: package.qmd
           contents:
@@ -81,6 +87,11 @@ interlinks:
     #   url: https://ccbr.github.io/actions/reference
     # ccbr_tools:
     #   url: https://ccbr.github.io/Tools/reference
+
+execute:
+  freeze: auto
+  eval: true
+  echo: true
 
 format:
   html:

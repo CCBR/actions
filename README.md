@@ -1,3 +1,5 @@
+# ccbr_actions
+
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
 # CCBR actions 🤖
@@ -52,6 +54,12 @@ Custom actions used in our github workflows.
 
 ## Package
 
+---
+
+title: ccbr_actions
+
+---
+
 `ccbr_actions` is a Python package with helper functions used by our
 custom GitHub Actions. You do not need to install the package in order
 to use the example workflows, as the actions install their dependencies
@@ -94,20 +102,22 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 
 Please cite this software if you use it in a publication:
 
-> Sovacool K., Koparde V., Kuhn S., Tandon M., Huse S. (2024). CCBR
-> Tools: Utilities for CCBR Bioinformatics Software (version v0.1.3).
-> DOI: 10.5281/zenodo.13377166 URL: https://ccbr.github.io/Tools/
+> Sovacool K., Koparde V. (2024). CCBR actions: GitHub Actions for CCBR
+> repos (version v0.2.3). DOI: 10.5281/zenodo.13761059 URL:
+> https://ccbr.github.io/actions/
 
 ### Bibtex entry
 
-    @misc{YourReferenceHere,
-    author = {Sovacool, Kelly and Koparde, Vishal and Kuhn, Skyler and Tandon, Mayank and Huse, Susan},
-    doi = {10.5281/zenodo.13377166},
-    month = {12},
-    title = {CCBR Tools: Utilities for CCBR Bioinformatics Software},
-    url = {https://ccbr.github.io/Tools/},
-    year = {2024}
-    }
+```bibtex
+@misc{YourReferenceHere,
+author = {Sovacool, Kelly and Koparde, Vishal},
+doi = {10.5281/zenodo.13761059},
+month = {12},
+title = {CCBR actions: GitHub Actions for CCBR repos},
+url = {https://ccbr.github.io/actions/},
+year = {2024}
+}
+```
 
 ## Inspiration
 

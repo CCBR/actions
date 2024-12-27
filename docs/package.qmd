@@ -1,3 +1,6 @@
+---
+title: ccbr_actions
+---
 
 `ccbr_actions` is a Python package with helper functions used by our custom GitHub Actions.
 You do not need to install the package in order to use the example workflows,
