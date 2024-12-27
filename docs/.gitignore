@@ -1,5 +1,8 @@
 /.quarto/
 /_sidebar.yml
 /_site/
+/_inv/
 /objects.json
 /reference/
+/actions
+/examples.qmd

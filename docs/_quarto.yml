@@ -10,17 +10,37 @@ website:
   repo-actions: [edit, issue]
   sidebar:
     - id: reference
+      style: docked
       contents: "_sidebar.yml"
+    - id: docs
+      title: Docs
+      style: docked
+      contents:
+        - text: Home
+          href: index.qmd
+        - text: GitHub ACtions
+          href: actions.qmd
+        - section: Python package
+          href: package.qmd
+          contents:
+            - text: Installation
+              href: install.qmd
+            - text: API reference
+              href: reference/index.qmd
+        - section: Project information
+          contents:
+            - text: Citation
+              href: cite.qmd
+            - text: Contributing
+              href: CONTRIBUTING.md
+            - href: contributors.qmd
+            - text: License
+              href: LICENSE.md
+            - text: Changelog
+              href: CHANGELOG.md
   navbar:
     right:
-      - href: actions.qmd
-      - text: API
-        href: reference/index.qmd
-      - text: Changelog
-        href: CHANGELOG.md
-      - text: Contributing
-        href: CONTRIBUTING.md
-      - href: contributors.qmd
+      - sidebar:docs
       - icon: github
         href: https://github.com/CCBR/actions
         aria-label: CCBR/actions GitHub
@@ -68,3 +88,4 @@ format:
       light: flatly
       dark: darkly
     toc: true
+    code-fold: show
