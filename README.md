@@ -2,8 +2,6 @@
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
-# CCBR actions 🤖
-
 GitHub Actions for CCBR repos
 
 [![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
@@ -53,12 +51,6 @@ Custom actions used in our github workflows.
   to be triggered by publishing a release
 
 ## Package
-
----
-
-title: ccbr_actions
-
----
 
 `ccbr_actions` is a Python package with helper functions used by our
 custom GitHub Actions. You do not need to install the package in order
