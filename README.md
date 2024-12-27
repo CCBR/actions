@@ -1,4 +1,4 @@
-# CCBR actions 🤖
+# ccbr_actions
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
@@ -52,11 +52,11 @@ Custom actions used in our github workflows.
 
 ## Package
 
-This repo contains a python package with helper functions for some of
-our custom actions. You do not need to install anything in order to use
-the example workflows, as the actions install their dependencies as
-needed. However, you can install the package if you wish to use it
-outside of GitHub Actions.
+`ccbr_actions` is a Python package with helper functions used by our
+custom GitHub Actions. You do not need to install the package in order
+to use the example workflows, as the actions install their dependencies
+as needed. However, you can install the package if you wish to use it
+outside of GitHub Actions or contribute changes.
 
 ### Installation
 
@@ -76,7 +76,7 @@ pip install git+https://github.com/CCBR/actions@v0.1
 ```
 
 View the package documentation
-[here](https://CCBR.github.io/actions/reference).
+[here](https://CCBR.github.io/actions/docs/package).
 
 ## Help & Contributing
 
@@ -88,7 +88,7 @@ Have a **question**? Ask it in
 [discussions](https://github.com/CCBR/actions/discussions).
 
 Want to **contribute** to this project? Check out the [contributing
-guidelines](.github/CONTRIBUTING.md).
+guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 
 ## Citation
 
@@ -100,14 +100,16 @@ Please cite this software if you use it in a publication:
 
 ### Bibtex entry
 
-    @misc{YourReferenceHere,
-    author = {Sovacool, Kelly and Koparde, Vishal},
-    doi = {10.5281/zenodo.13761059},
-    month = {12},
-    title = {CCBR actions: GitHub Actions for CCBR repos},
-    url = {https://ccbr.github.io/actions/},
-    year = {2024}
-    }
+```bibtex
+@misc{YourReferenceHere,
+author = {Sovacool, Kelly and Koparde, Vishal},
+doi = {10.5281/zenodo.13761059},
+month = {12},
+title = {CCBR actions: GitHub Actions for CCBR repos},
+url = {https://ccbr.github.io/actions/},
+year = {2024}
+}
+```
 
 ## Inspiration
 

@@ -1,10 +1,9 @@
 ---
 format: gfm
+title: "CCBR actions 🤖"
 ---
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
-
-# CCBR actions 🤖
 
 GitHub Actions for CCBR repos
 
@@ -48,61 +47,21 @@ for action_yml in sorted(pathlib.Path().glob("*/action.yml")):
 
 ## Package
 
-This repo contains a python package with helper functions for some of our
-custom actions.
-You do not need to install anything in order to use the example workflows,
-as the actions install their dependencies as needed.
-However, you can install the package if you wish to use it outside of GitHub Actions.
+{{< include docs/package.qmd >}}
 
 ### Installation
 
-You will need the GitHub CLI installed
-(this is pre-installed on all github actions runners):
-<https://github.com/cli/cli#installation>
+{{< include docs/install.qmd >}}
 
-Then install the `ccbr_actions` package with pip:
-
-```bash
-pip install git+https://github.com/CCBR/actions
-```
-
-Or install it from a specific version or branch with:
-
-```bash
-pip install git+https://github.com/CCBR/actions@v0.1
-```
-
-View the package documentation [here](https://CCBR.github.io/actions/reference).
+View the package documentation [here](https://CCBR.github.io/actions/docs/package).
 
 ## Help & Contributing
 
-Come across a **bug**? Open an
-[issue](https://github.com/CCBR/actions/issues) and include a minimal
-reproducible example.
-
-Have a **question**? Ask it in
-[discussions](https://github.com/CCBR/actions/discussions).
-
-Want to **contribute** to this project? Check out the [contributing
-guidelines](.github/CONTRIBUTING.md).
+{{< include docs/help.qmd >}}
 
 ## Citation
 
-Please cite this software if you use it in a publication:
-
-```{python}
-#| echo: false
-#| output: asis
-!ccbr_tools cite CITATION.cff -f apalike | sed -E 's/^/> /g'
-```
-
-
-### Bibtex entry
-
-```{python}
-#| echo: false
-!ccbr_tools cite CITATION.cff -f bibtex
-```
+{{< include docs/cite.qmd >}}
 
 ## Inspiration
 
