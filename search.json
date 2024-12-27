@@ -244,7 +244,17 @@
     "href": "index.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "GitHub Actions for CCBR repos\n  \n\n\n\n\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          action\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\naction\n\n\ndescription\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\nNo matching items",
+    "text": "GitHub Actions for CCBR repos",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#help-contributing",
+    "href": "index.html#help-contributing",
+    "title": "CCBR actions",
+    "section": "Help & Contributing",
+    "text": "Help & Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question? Ask it in discussions.\nWant to contribute to this project? Check out the contributing guidelines.",
     "crumbs": [
       "Home"
     ]
