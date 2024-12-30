@@ -5,6 +5,7 @@
   - add contributors page. (#54, @kelly-sovacool)
   - list example workflows and improve navigation. (#55, @kelly-sovacool)
   - use FNL theme from ccbr_tools. (#57, @kelly-sovacool)
+- New CLI and command `ccbr_actions use-example` to copy example GitHub Actions workflows to a repository. (#58, @kelly-sovacool)
 
 ## actions 0.2.3
 
