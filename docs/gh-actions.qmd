@@ -1,6 +1,5 @@
 
-We include custom [GitHub Actions](actions.qmd) and [example workflows](examples.qmd)
+Custom [GitHub Actions](actions.qmd) and [example workflows](examples.qmd)
 for CCBR repositories.
-
 View the [GitHub Actions docs](https://docs.github.com/en/actions) for more
 information on how to write and use GitHub Actions workflows.

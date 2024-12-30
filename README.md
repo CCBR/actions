@@ -8,6 +8,12 @@ GitHub Actions for CCBR repos
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13761059.svg)](https://doi.org/10.5281/zenodo.13761059)
 
+Custom [GitHub Actions](#actions) and [example workflows](#examples) for
+CCBR repositories. View [our documentation
+website](https://CCBR.github.io/actions) for implementation details.
+View the [GitHub Actions docs](https://docs.github.com/en/actions) for
+information on how to write and use GitHub Actions workflows.
+
 ## Examples
 
 See [examples/](examples) for workflow examples. You can copy these to
@@ -29,9 +35,6 @@ them for your needs.
 - [techdev-project](examples/techdev-project.yml)
 - [update-cff-R](examples/update-cff-R.yml)
 - [user-projects](examples/user-projects.yml)
-
-View the [GitHub Actions docs](https://docs.github.com/en/actions) for
-more information on how to write and use GitHub Actions workflows.
 
 ## Actions
 
