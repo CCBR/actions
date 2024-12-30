@@ -234,7 +234,7 @@
     "href": "package.html",
     "title": "ccbr_actions",
     "section": "",
-    "text": "ccbr_actions is a Python package with helper functions used by our custom GitHub Actions. You do not need to install the package in order to use the example workflows, as the actions install their dependencies as needed. However, you can install the package if you wish to use it outside of GitHub Actions or contribute changes.",
+    "text": "ccbr_actions is a Python package with helper functions used by our custom GitHub Actions. You do not need to install the package in order to use the example workflows, as the actions install their dependencies as needed. However, you can install the package if you wish to use it outside of GitHub Actions or contribute changes.\nSee detailed usage information in the API reference.",
     "crumbs": [
       "Python package"
     ]
@@ -255,6 +255,16 @@
     "title": "CCBR actions",
     "section": "Help & Contributing",
     "text": "Help & Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question? Ask it in discussions.\nWant to contribute to this project? Check out the contributing guidelines.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#actions",
+    "href": "index.html#actions",
+    "title": "CCBR actions",
+    "section": "Actions",
+    "text": "Actions\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          action\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\naction\n\n\ndescription\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\nNo matching items",
     "crumbs": [
       "Home"
     ]
@@ -330,31 +340,7 @@
     "href": "reference/actions.html",
     "title": "actions",
     "section": "",
-    "text": "actions\nDownload and use GitHub Actions workflow files.\n\n\nget_latest_release_tag : Get the latest release tag from a GitHub repository.\n\n\n\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")\n\n\n\n\n\n\nName\nDescription\n\n\n\n\nset_output\nSet a GitHub Actions output variable.\n\n\nuse_github_action\nDownload an example GitHub Actions workflow file from CCBR/actions.\n\n\n\n\n\nactions.set_output(name, value, environ='GITHUB_OUTPUT')\nSet a GitHub Actions output variable.\nWrite the given name and value to the GitHub Actions environment file specified by the GITHUB_OUTPUT environment variable. You can then access the variable in GitHub Actions using ${{ steps.&lt;step_id&gt;.outputs.&lt;name&gt; }}.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the output variable to set.\nrequired\n\n\nvalue\nstr\nThe value of the output variable to set.\nrequired\n\n\nenviron\nstr\nThe environment variable that specifies the GitHub Actions environment file. Defaults to “GITHUB_OUTPUT”.\n'GITHUB_OUTPUT'\n\n\n\n\n\n\n&gt;&gt;&gt; set_output(\"VERSION\", \"1.0.0\")\n&gt;&gt;&gt; set_output(\"ALIAS\", \"latest\")\n\n\n\n\nactions.use_github_action(\n    name,\n    ref=None,\n    url=None,\n    save_as=None,\n    repo='CCBR/actions',\n)\nDownload an example GitHub Actions workflow file from CCBR/actions.\nThis function was inspired by {usethis}: https://usethis.r-lib.org/reference/github_actions.html\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the GitHub Actions workflow file to download.\nrequired\n\n\nref\nstr\nThe git reference (branch, tag, or commit SHA) to use. Defaults to None, in which case the latest release or “main” is used.\nNone\n\n\nurl\nstr\nThe URL to download the workflow file from. Defaults to building it based on the repo and ref.\nNone\n\n\nsave_as\nstr\nThe path to save the downloaded workflow file. Defaults to building it based on .github/workflows/name.yml.\nNone\n\n\nrepo\nstr\nThe GitHub repository to download the workflow file from. Defaults to “CCBR/actions”.\n'CCBR/actions'\n\n\n\n\n\n\nget_latest_release_tag: Get the latest release tag from a GitHub repository. get_docs_version: Get the documentation version and alias.\n\n\n\nIf ref is not provided, the latest release tag is used (if available) or main. If url is not provided, the URL is constructed based on the repository and reference. If save_as is not provided, the file is saved in the .github/workflows directory.\n\n\n\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")",
-    "crumbs": [
-      "Python package",
-      "API reference",
-      "actions"
-    ]
-  },
-  {
-    "objectID": "reference/actions.html#see-also",
-    "href": "reference/actions.html#see-also",
-    "title": "actions",
-    "section": "",
-    "text": "get_latest_release_tag : Get the latest release tag from a GitHub repository.",
-    "crumbs": [
-      "Python package",
-      "API reference",
-      "actions"
-    ]
-  },
-  {
-    "objectID": "reference/actions.html#examples",
-    "href": "reference/actions.html#examples",
-    "title": "actions",
-    "section": "",
-    "text": "&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")",
+    "text": "actions\nDownload and use GitHub Actions workflow files.\n\n\n\n\n\nName\nDescription\n\n\n\n\nset_output\nSet a GitHub Actions output variable.\n\n\nuse_github_action\nDownload an example GitHub Actions workflow file from CCBR/actions.\n\n\n\n\n\nactions.set_output(name, value, environ='GITHUB_OUTPUT')\nSet a GitHub Actions output variable.\nWrite the given name and value to the GitHub Actions environment file specified by the GITHUB_OUTPUT environment variable. You can then access the variable in GitHub Actions using ${{ steps.&lt;step_id&gt;.outputs.&lt;name&gt; }}.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the output variable to set.\nrequired\n\n\nvalue\nstr\nThe value of the output variable to set.\nrequired\n\n\nenviron\nstr\nThe environment variable that specifies the GitHub Actions environment file. Defaults to “GITHUB_OUTPUT”.\n'GITHUB_OUTPUT'\n\n\n\n\n\n\n&gt;&gt;&gt; set_output(\"VERSION\", \"1.0.0\")\n&gt;&gt;&gt; set_output(\"ALIAS\", \"latest\")\n\n\n\n\nactions.use_github_action(\n    name,\n    ref=None,\n    url=None,\n    save_as=None,\n    repo='CCBR/actions',\n)\nDownload an example GitHub Actions workflow file from CCBR/actions.\nThis function was inspired by {usethis}: https://usethis.r-lib.org/reference/github_actions.html\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the GitHub Actions workflow file to download.\nrequired\n\n\nref\nstr\nThe git reference (branch, tag, or commit SHA) to use. Defaults to None, in which case the latest release or “main” is used.\nNone\n\n\nurl\nstr\nThe URL to download the workflow file from. Defaults to building it based on the repo and ref.\nNone\n\n\nsave_as\nstr\nThe path to save the downloaded workflow file. Defaults to building it based on .github/workflows/name.yml.\nNone\n\n\nrepo\nstr\nThe GitHub repository to download the workflow file from. Defaults to “CCBR/actions”.\n'CCBR/actions'\n\n\n\n\n\n\nget_latest_release_tag: Get the latest release tag from a GitHub repository. get_docs_version: Get the documentation version and alias.\n\n\n\nIf ref is not provided, the latest release tag is used (if available) or main. If url is not provided, the URL is constructed based on the repository and reference. If save_as is not provided, the file is saved in the .github/workflows directory.\n\n\n\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")",
     "crumbs": [
       "Python package",
       "API reference",

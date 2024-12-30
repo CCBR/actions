@@ -398,8 +398,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#ccbr_actions.actions" id="toc-ccbr_actions.actions" class="nav-link active" data-scroll-target="#ccbr_actions.actions">actions</a>
   <ul class="collapse">
-  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See Also</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
   <li><a href="#ccbr_actions.actions.set_output" id="toc-ccbr_actions.actions.set_output" class="nav-link" data-scroll-target="#ccbr_actions.actions.set_output">set_output</a></li>
@@ -419,16 +417,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>actions</h1>
 <p><code>actions</code></p>
 <p>Download and use GitHub Actions workflow files.</p>
-<section id="see-also" class="level2 doc-section doc-section-see-also">
-<h2 class="doc-section doc-section-see-also anchored" data-anchor-id="see-also">See Also</h2>
-<p><a href="../reference/versions.html#ccbr_actions.versions.get_latest_release_tag"><code>get_latest_release_tag</code></a> : Get the latest release tag from a GitHub repository.</p>
-</section>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>, ref<span class="op">=</span><span class="st">"v1.0.0"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>, save_as<span class="op">=</span><span class="st">"custom/path/example-action.yml"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
 <section id="functions" class="level2">
 <h2 class="anchored" data-anchor-id="functions">Functions</h2>
 <table class="caption-top table">
@@ -451,7 +439,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="ccbr_actions.actions.set_output" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.actions.set_output">set_output</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>actions.set_output(name, value, environ<span class="op">=</span><span class="st">'GITHUB_OUTPUT'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>actions.set_output(name, value, environ<span class="op">=</span><span class="st">'GITHUB_OUTPUT'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Set a GitHub Actions output variable.</p>
 <p>Write the given name and value to the GitHub Actions environment file specified by the <code>GITHUB_OUTPUT</code> environment variable. You can then access the variable in GitHub Actions using <code>${{ steps.&lt;step_id&gt;.outputs.&lt;name&gt; }}</code>.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
@@ -487,21 +475,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="examples-1" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> set_output(<span class="st">"VERSION"</span>, <span class="st">"1.0.0"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> set_output(<span class="st">"ALIAS"</span>, <span class="st">"latest"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> set_output(<span class="st">"VERSION"</span>, <span class="st">"1.0.0"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> set_output(<span class="st">"ALIAS"</span>, <span class="st">"latest"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="ccbr_actions.actions.use_github_action" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.actions.use_github_action">use_github_action</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>actions.use_github_action(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    name,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    ref<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    url<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    save_as<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    repo<span class="op">=</span><span class="st">'CCBR/actions'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>actions.use_github_action(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    name,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    ref<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    url<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    save_as<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    repo<span class="op">=</span><span class="st">'CCBR/actions'</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Download an example GitHub Actions workflow file from CCBR/actions.</p>
 <p>This function was inspired by {usethis}: <a href="https://usethis.r-lib.org/reference/github_actions.html" class="uri">https://usethis.r-lib.org/reference/github_actions.html</a></p>
 <section id="parameters-1" class="level4 doc-section doc-section-parameters">
@@ -549,19 +537,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="see-also-1" class="level4 doc-section doc-section-see-also">
-<h4 class="doc-section doc-section-see-also anchored" data-anchor-id="see-also-1">See Also</h4>
+<section id="see-also" class="level4 doc-section doc-section-see-also">
+<h4 class="doc-section doc-section-see-also anchored" data-anchor-id="see-also">See Also</h4>
 <p><a href="../reference/versions.html#ccbr_actions.versions.get_latest_release_tag"><code>get_latest_release_tag</code></a>: Get the latest release tag from a GitHub repository. <a href="../reference/docs.html#ccbr_actions.docs.get_docs_version"><code>get_docs_version</code></a>: Get the documentation version and alias.</p>
 </section>
 <section id="notes" class="level4 doc-section doc-section-notes">
 <h4 class="doc-section doc-section-notes anchored" data-anchor-id="notes">Notes</h4>
 <p>If <code>ref</code> is not provided, the latest release tag is used (if available) or main. If <code>url</code> is not provided, the URL is constructed based on the repository and reference. If <code>save_as</code> is not provided, the file is saved in the <code>.github/workflows</code> directory.</p>
 </section>
-<section id="examples-2" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>, ref<span class="op">=</span><span class="st">"v1.0.0"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>, save_as<span class="op">=</span><span class="st">"custom/path/example-action.yml"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>, ref<span class="op">=</span><span class="st">"v1.0.0"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> use_github_action(<span class="st">"docs-mkdocs"</span>, save_as<span class="op">=</span><span class="st">"custom/path/example-action.yml"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>
