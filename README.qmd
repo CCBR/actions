@@ -47,13 +47,16 @@ for action_yml in sorted(pathlib.Path().glob("*/action.yml")):
 
 ## Package
 
-{{< include docs/package.qmd >}}
+`ccbr_actions` is a Python package with helper functions used by our custom GitHub Actions.
+You do not need to install the package in order to use the example workflows,
+as the actions install their dependencies as needed.
+However, you can install the package if you wish to use it outside of GitHub Actions or contribute changes.
 
 ### Installation
 
 {{< include docs/install.qmd >}}
 
-View the package documentation [here](https://CCBR.github.io/actions/docs/package).
+View the package documentation [here](https://CCBR.github.io/actions/package).
 
 ## Help & Contributing
 

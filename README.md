@@ -1,4 +1,4 @@
-# ccbr_actions
+# CCBR actions 🤖
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
@@ -76,7 +76,7 @@ pip install git+https://github.com/CCBR/actions@v0.1
 ```
 
 View the package documentation
-[here](https://CCBR.github.io/actions/docs/package).
+[here](https://CCBR.github.io/actions/package).
 
 ## Help & Contributing
 
