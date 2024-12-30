@@ -1,13 +1,5 @@
 """
 Download and use GitHub Actions workflow files.
-
-See Also:
-    [](`~ccbr_actions.versions.get_latest_release_tag`) : Get the latest release tag from a GitHub repository.
-
-Examples:
-    >>> use_github_action("docs-mkdocs")
-    >>> use_github_action("docs-mkdocs", ref="v1.0.0")
-    >>> use_github_action("docs-mkdocs", save_as="custom/path/example-action.yml")
 """
 
 import os
