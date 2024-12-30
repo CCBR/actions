@@ -124,7 +124,7 @@
     "href": "CHANGELOG.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "fix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page to docs website. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)",
+    "text": "fix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)\nuse FNL theme from ccbr_tools. (#57, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -135,7 +135,7 @@
     "href": "CHANGELOG.html#actions-development-version",
     "title": "CCBR actions",
     "section": "",
-    "text": "fix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page to docs website. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)",
+    "text": "fix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)\nuse FNL theme from ccbr_tools. (#57, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
