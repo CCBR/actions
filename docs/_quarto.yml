@@ -72,6 +72,7 @@ quartodoc:
   sections:
     - title: Modules
       contents:
+        - __main__
         - actions
         - citation
         - data
