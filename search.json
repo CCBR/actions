@@ -244,7 +244,7 @@
     "href": "index.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "GitHub Actions for CCBR repos",
+    "text": "GitHub Actions for CCBR repos\nCustom GitHub Actions and example workflows for CCBR repositories. View the GitHub Actions docs for more information on how to write and use GitHub Actions workflows.",
     "crumbs": [
       "Home"
     ]
@@ -399,7 +399,7 @@
     "href": "gh-actions.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "We include custom GitHub Actions and example workflows for CCBR repositories.\nView the GitHub Actions docs for more information on how to write and use GitHub Actions workflows.",
+    "text": "Custom GitHub Actions and example workflows for CCBR repositories. View the GitHub Actions docs for more information on how to write and use GitHub Actions workflows.",
     "crumbs": [
       "GitHub Actions"
     ]
