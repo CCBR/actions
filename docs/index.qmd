@@ -18,3 +18,8 @@ GitHub Actions for CCBR repos
 ## Help & Contributing
 
 {{< include help.qmd >}}
+
+## Actions
+
+:::{#actions}
+:::
