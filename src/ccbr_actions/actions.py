@@ -57,7 +57,7 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
         with open(save_as, "w") as outfile:
             outfile.write(response.text)
     else:
-        raise ValueError(
+        raise FileNotFoundError(
             f"Failed to download {url}. Are you sure {name} is a valid GitHub Action in {repo}?"
         )
 
