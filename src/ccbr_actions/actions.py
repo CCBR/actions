@@ -3,6 +3,7 @@ Download and use GitHub Actions workflow files.
 """
 
 import os
+import pathlib
 import requests
 import uuid
 
@@ -43,15 +44,20 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
         ref = latest_release if latest_release else "main"
     if not url:
         url = f"https://raw.githubusercontent.com/{repo}/{ref}/examples/{filename}"
-    if not save_as:
-        save_as = os.path.join(".github", "workflows", filename)
+    save_as = (
+        path_resolve(save_as)
+        if save_as
+        else pathlib.Path(".github") / "workflows" / filename
+    )
+    # make directories
+    save_as.parent.mkdir(parents=True, exist_ok=True)
 
     response = requests.get(url)
     if response.status_code == 200:
-        with open(path_resolve(save_as), "w") as outfile:
+        with open(save_as, "w") as outfile:
             outfile.write(response.text)
     else:
-        raise ValueError(
+        raise FileNotFoundError(
             f"Failed to download {url}. Are you sure {name} is a valid GitHub Action in {repo}?"
         )
 
