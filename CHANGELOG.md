@@ -1,6 +1,6 @@
 ## actions development version
 
-- fix `post-release` to force-push the sliding branch with the latest tag.
+- fix `post-release` to force-push the sliding branch with the latest tag (#61, @kelly-sovacool).
 
 ## actions 0.2.4
 
