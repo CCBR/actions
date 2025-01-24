@@ -395,22 +395,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "fix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_BASENAME for copying the Dockerfile inside the container. (#59, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)\nuse FNL theme from ccbr_tools. (#57, @kelly-sovacool)\n\nNew CLI and command ccbr_actions use-example to copy example GitHub Actions workflows to a repository. (#58, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.2.4",
     "href": "CHANGELOG.html#actions-0.2.4",
     "title": "CCBR actions",
-    "section": "",
-    "text": "fix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_BASENAME for copying the Dockerfile inside the container. (#59, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)\nuse FNL theme from ccbr_tools. (#57, @kelly-sovacool)\n\nNew CLI and command ccbr_actions use-example to copy example GitHub Actions workflows to a repository. (#58, @kelly-sovacool)",
+    "section": "actions 0.2.4",
+    "text": "actions 0.2.4\n\nfix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_BASENAME for copying the Dockerfile inside the container. (#59, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)\nuse FNL theme from ccbr_tools. (#57, @kelly-sovacool)\n\nNew CLI and command ccbr_actions use-example to copy example GitHub Actions workflows to a repository. (#58, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
