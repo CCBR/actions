@@ -1,6 +1,7 @@
 ## actions development version
 
 - fix `post-release` to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)
+- fix `build-docker` to set `$DOCKERFILE_BASENAME` for copying the Dockerfile inside the container. (#59, @kelly-sovacool)
 - improvements to documentation website:
   - add contributors page. (#54, @kelly-sovacool)
   - list example workflows and improve navigation. (#55, @kelly-sovacool)
