@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.2.4
 
 - fix `post-release` to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)
 - fix `build-docker` to set `$DOCKERFILE_BASENAME` for copying the Dockerfile inside the container. (#59, @kelly-sovacool)
