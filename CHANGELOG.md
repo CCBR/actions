@@ -1,5 +1,7 @@
 ## actions development version
 
+- fix `post-release` to force-push the sliding branch with the latest tag.
+
 ## actions 0.2.4
 
 - fix `post-release` to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)
