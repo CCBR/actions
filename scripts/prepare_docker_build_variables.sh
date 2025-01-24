@@ -61,6 +61,7 @@ artifact_name=$(echo $mdfile | sed 's|/|_|g')
 
 # Output each variable to $GITHUB_ENV to pass it to the next steps
 echo "DOCKERFILE=$dockerfile" >> $GITHUB_ENV
+echo "DOCKERFILE_BASENAME=$bn_dockerfile" >> $GITHUB_ENV
 echo "CONTEXT=$(dirname $dockerfile)" >> $GITHUB_ENV
 echo "IMAGENAME=$imagename" >> $GITHUB_ENV
 echo "BASEIMAGENAME=$baseimagename" >> $GITHUB_ENV

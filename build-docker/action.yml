@@ -105,6 +105,7 @@ runs:
       id: check_and_create_readme
       run: |
         echo "DOCKERFILE: $DOCKERFILE"
+        echo "DOCKERFILE_BASENAME: $DOCKERFILE_BASENAME"
         echo "IMAGENAME: $IMAGENAME"
         echo "BASEIMAGENAME: $BASEIMAGENAME"
         echo "BUILD_DATE: $BUILD_DATE"
@@ -128,7 +129,7 @@ runs:
         push: ${{ inputs.push }}
         tags: ${{ env.IMAGENAME }}
         build-args: |
-          DOCKERFILE=${{ env.DOCKERFILE }}
+          DOCKERFILE=${{ env.DOCKERFILE_BASENAME }}
           BUILD_DATE=${{ env.BUILD_DATE }}
           BUILD_TAG=${{ env.BUILD_TAG }}
           REPONAME=${{ env.REPONAME }}
