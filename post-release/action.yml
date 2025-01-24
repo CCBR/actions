@@ -97,7 +97,7 @@ runs:
         SLIDING_VERSION=${{ steps.sliding-version.outputs.SLIDING_VERSION }}
         git branch -D $SLIDING_VERSION || echo "No $SLIDING_VERSION branch to delete"
         git checkout ${{ github.event.release.tag_name }} -b $SLIDING_VERSION
-        git push
+        git push -f
     - name: Next steps
       shell: bash
       run: |
