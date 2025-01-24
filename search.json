@@ -266,7 +266,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K., Koparde V. (2024). CCBR actions: GitHub Actions for CCBR repos (version v0.2.3). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {12},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2024}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K., Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.2.4). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {1},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
     "crumbs": [
       "Project information",
       "Citation"
@@ -406,8 +406,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.2.4",
+    "href": "CHANGELOG.html#actions-0.2.4",
     "title": "CCBR actions",
     "section": "",
     "text": "fix post-release to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_BASENAME for copying the Dockerfile inside the container. (#59, @kelly-sovacool)\nimprovements to documentation website:\n\nadd contributors page. (#54, @kelly-sovacool)\nlist example workflows and improve navigation. (#55, @kelly-sovacool)\nuse FNL theme from ccbr_tools. (#57, @kelly-sovacool)\n\nNew CLI and command ccbr_actions use-example to copy example GitHub Actions workflows to a repository. (#58, @kelly-sovacool)",
