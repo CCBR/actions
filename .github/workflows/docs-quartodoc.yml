@@ -65,7 +65,7 @@ jobs:
           python -m quartodoc interlinks
           quarto render
       - name: save docs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docs-html
           path: docs/_site
