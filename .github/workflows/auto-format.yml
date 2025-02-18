@@ -3,11 +3,6 @@ name: auto-format
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - "src/**"
-      - "**/README.qmd"
-      - "**.yml"
-      - "**.cff"
 
 env:
   GH_TOKEN: ${{ github.token }}

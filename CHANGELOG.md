@@ -1,6 +1,7 @@
 ## actions development version
 
-- fix `post-release` to force-push the sliding branch with the latest tag (#61, @kelly-sovacool).
+- fix `post-release` to force-push the sliding branch with the latest tag. (#61, @kelly-sovacool)
+- fix broken links to example workflows in docs website. (#62, @kelly-sovacool)
 
 ## actions 0.2.4
 
