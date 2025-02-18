@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./package.html" rel="next">
-<link href="./actions/build-docker/index.html" rel="prev">
+<link href="./actions/label-issue-repo-name/index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -75,8 +75,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-315f621f901707706d3e135395544505.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-67b28b225c4e4edafb004a584c18fbd5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-8710538d11262b1a0f8cd55e4c086b1a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-bd1e6534b4f8fd61984b86f99844b129.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-a03863fe0c165a16615e3ff0b2e2bd9a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
 <link href="site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
@@ -138,7 +138,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">GitHub Actions</li>
         <li>
-    <a class="dropdown-item" href="./actions/mkdocs-mike/index.html">
+    <a class="dropdown-item" href="./actions/draft-release/index.html">
  <span class="dropdown-text">Actions</span></a>
   </li>  
         <li>
@@ -234,20 +234,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">mkdocs-mike</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">draft-release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/post-release/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">post-release</span></a>
+  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">build-docker</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mkdocs-mike</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -258,14 +258,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">label-issue-repo-name</span></a>
+  <a href="./actions/post-release/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">post-release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">build-docker</span></a>
+  <a href="./actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">label-issue-repo-name</span></a>
   </div>
 </li>
       </ul>
@@ -443,7 +443,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>You can copy these to your own repository in the <code>.github/workflows/</code> directory and modify them for your needs.</p>
 <section id="add-issue-label-list" class="level3">
 <h3 class="anchored" data-anchor-id="add-issue-label-list">add-issue-label-list</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/add-issue-label-list.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/add-issue-label-list.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> add-issue-label-list</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -470,7 +470,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="auto-format" class="level3">
 <h3 class="anchored" data-anchor-id="auto-format">auto-format</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/auto-format.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/auto-format.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> auto-format</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -510,7 +510,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="build-docker-auto" class="level3">
 <h3 class="anchored" data-anchor-id="build-docker-auto">build-docker-auto</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/build-docker-auto.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/build-docker-auto.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This GitHub Actions workflow is designed to trigger a manual Docker build for each modified Dockerfile.</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Workflow Name: build-docker-auto</span></span>
@@ -613,7 +613,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="build-docker-manual" class="level3">
 <h3 class="anchored" data-anchor-id="build-docker-manual">build-docker-manual</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/build-docker-manual.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/build-docker-manual.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This GitHub Actions workflow is designed to manually build and optionally push a Docker image to DockerHub.</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Workflow Name: build-docker-manual</span></span>
@@ -688,7 +688,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="build-nextflow" class="level3">
 <h3 class="anchored" data-anchor-id="build-nextflow">build-nextflow</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/build-nextflow.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/build-nextflow.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> build</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co"> replace tool_name with the name of your tool</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -755,7 +755,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="build-python" class="level3">
 <h3 class="anchored" data-anchor-id="build-python">build-python</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/build-python.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/build-python.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This workflow will install Python dependencies, run tests and lint with a variety of Python versions</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -818,7 +818,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="build-snakemake" class="level3">
 <h3 class="anchored" data-anchor-id="build-snakemake">build-snakemake</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/build-snakemake.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/build-snakemake.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> build</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -904,7 +904,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="docs-mkdocs" class="level3">
 <h3 class="anchored" data-anchor-id="docs-mkdocs">docs-mkdocs</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/docs-mkdocs.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/docs-mkdocs.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> docs</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># this workflow requires:</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  - an mkdocs config file (`mkdocs.yml`)</span></span>
@@ -936,7 +936,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="docs-quarto" class="level3">
 <h3 class="anchored" data-anchor-id="docs-quarto">docs-quarto</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/docs-quarto.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/docs-quarto.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> docs</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -971,7 +971,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="draft-release" class="level3">
 <h3 class="anchored" data-anchor-id="draft-release">draft-release</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/draft-release.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/draft-release.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> draft-release</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -1000,7 +1000,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="label-issues-repo-name" class="level3">
 <h3 class="anchored" data-anchor-id="label-issues-repo-name">label-issues-repo-name</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/label-issues-repo-name.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/label-issues-repo-name.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> label-issues-repo-name</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -1021,7 +1021,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="post-release" class="level3">
 <h3 class="anchored" data-anchor-id="post-release">post-release</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/post-release.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/post-release.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> post-release</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -1042,7 +1042,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="techdev-project" class="level3">
 <h3 class="anchored" data-anchor-id="techdev-project">techdev-project</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/techdev-project.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/techdev-project.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> TechDev-project</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -1064,7 +1064,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="update-cff-r" class="level3">
 <h3 class="anchored" data-anchor-id="update-cff-r">update-cff-R</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/update-cff-R.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/update-cff-R.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Workflow derived from https://github.com/r-lib/actions/tree/master/examples</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The action runs when:</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># - A new release is published</span></span>
@@ -1131,7 +1131,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="user-projects" class="level3">
 <h3 class="anchored" data-anchor-id="user-projects">user-projects</h3>
-<p><a href="https://github.com/CCBR/actions/tree/main/../examples/user-projects.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
+<p><a href="https://github.com/CCBR/actions/tree/main/examples/user-projects.yml"><i class="fa-brands fa-github" aria-label="github"></i> Source</a></p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> personal-projects</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
@@ -1714,8 +1714,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./actions/build-docker/index.html" class="pagination-link" aria-label="build-docker">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">build-docker</span>
+      <a href="./actions/label-issue-repo-name/index.html" class="pagination-link" aria-label="label-issue-repo-name">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">label-issue-repo-name</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
