@@ -13,7 +13,7 @@ import pathlib
 
 for filename in sorted(pathlib.Path().glob("../examples/*.yml")):
     print(f"### {filename.stem}")
-    print("[{{< fa brands github >}} Source]" + f"(https://github.com/CCBR/actions/tree/main/{filename})")
+    print("[{{< fa brands github >}} Source]" + f"(https://github.com/CCBR/actions/tree/main/{str(filename).lstrip('../')})")
     print("```yaml")
     with open(filename, "r") as infile:
         example_yml = infile.read()
