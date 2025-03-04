@@ -104,7 +104,7 @@ runs:
       shell: bash
       id: check_and_create_readme
       run: |
-        echo "DOCKERFILE: $DOCKERFILE"
+        echo "DOCKERFILE_PATH: $DOCKERFILE_PATH"
         echo "DOCKERFILE_BASENAME: $DOCKERFILE_BASENAME"
         echo "IMAGENAME: $IMAGENAME"
         echo "BASEIMAGENAME: $BASEIMAGENAME"
@@ -118,13 +118,13 @@ runs:
         echo -ne "Built on: $BUILD_DATE \n\n" >> $MDFILE
         echo -ne "Build tag: $BUILD_TAG \n\n" >> $MDFILE
         echo -ne "Base image: $BASEIMAGENAME \n\n" >> $MDFILE
-        echo -ne "Dockerfile path in repo: $DOCKERFILE \n\n" >> $MDFILE
+        echo -ne "Dockerfile path in repo: $DOCKERFILE_PATH \n\n" >> $MDFILE
 
     - name: Build and push Docker image
       id: build_and_push
       uses: docker/build-push-action@v5
       with:
-        file: ${{ env.DOCKERFILE }}
+        file: ${{ env.DOCKERFILE_PATH }}
         context: ${{ env.CONTEXT }}
         push: ${{ inputs.push }}
         tags: ${{ env.IMAGENAME }}
