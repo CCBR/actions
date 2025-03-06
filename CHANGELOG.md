@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions 0.2.5
+
 - fix `post-release` to force-push the sliding branch with the latest tag. (#61, @kelly-sovacool)
 - fix broken links to example workflows in docs website. (#62, @kelly-sovacool)
 - fix `build-docker` to set `$DOCKERFILE_PATH` separately from `$DOCKERFILE` to prevent variable clasing while building containers. (#63, @kelly-sovacool)
