@@ -180,10 +180,10 @@ runs:
       with:
         token: ${{ github.token }}
         add-paths: ${{ env.MDFILE }}
-        commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE }}"
+        commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE_PATH }}"
         author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
         committer: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
-        branch: "auto-pr/${{ env.DOCKERFILE }}"
+        branch: "auto-pr/${{ env.DOCKERFILE_PATH }}"
         title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
 
     - name: Approve PR
