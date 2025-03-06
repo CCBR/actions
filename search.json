@@ -341,8 +341,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.2.5",
+    "href": "CHANGELOG.html#actions-0.2.5",
     "title": "CCBR actions",
     "section": "",
     "text": "fix post-release to force-push the sliding branch with the latest tag. (#61, @kelly-sovacool)\nfix broken links to example workflows in docs website. (#62, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_PATH separately from $DOCKERFILE to prevent variable clasing while building containers. (#63, @kelly-sovacool)",
@@ -472,7 +472,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K., Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.2.4). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {1},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K., Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.2.5). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {3},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
     "crumbs": [
       "Project information",
       "Citation"
