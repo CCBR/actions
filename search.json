@@ -330,22 +330,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "fix post-release to force-push the sliding branch with the latest tag. (#61, @kelly-sovacool)\nfix broken links to example workflows in docs website. (#62, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_PATH separately from $DOCKERFILE to prevent variable clasing while building containers. (#63, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.2.5",
     "href": "CHANGELOG.html#actions-0.2.5",
     "title": "CCBR actions",
-    "section": "",
-    "text": "fix post-release to force-push the sliding branch with the latest tag. (#61, @kelly-sovacool)\nfix broken links to example workflows in docs website. (#62, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_PATH separately from $DOCKERFILE to prevent variable clasing while building containers. (#63, @kelly-sovacool)",
+    "section": "actions 0.2.5",
+    "text": "actions 0.2.5\n\nfix post-release to force-push the sliding branch with the latest tag. (#61, @kelly-sovacool)\nfix broken links to example workflows in docs website. (#62, @kelly-sovacool)\nfix build-docker to set $DOCKERFILE_PATH separately from $DOCKERFILE to prevent variable clasing while building containers. (#63, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
