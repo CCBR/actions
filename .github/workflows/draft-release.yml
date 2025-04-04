@@ -12,6 +12,11 @@ on:
         type: string
         default: ""
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
   draft-release:
     runs-on: ubuntu-latest

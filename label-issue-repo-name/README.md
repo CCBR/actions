@@ -24,6 +24,10 @@ on:
     types:
       - opened
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
   add-label:
     runs-on: ubuntu-latest

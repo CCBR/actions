@@ -1,5 +1,7 @@
 ## actions development version
 
+- set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)
+
 ## actions 0.2.5
 
 - fix `post-release` to force-push the sliding branch with the latest tag. (#61, @kelly-sovacool)
