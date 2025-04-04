@@ -99,7 +99,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K., Koparde V. (2025). CCBR actions: GitHub Actions for CCBR
-> repos (version v0.2.4). DOI: 10.5281/zenodo.13761059 URL:
+> repos (version v0.2.5). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
@@ -108,7 +108,7 @@ Please cite this software if you use it in a publication:
 @misc{YourReferenceHere,
 author = {Sovacool, Kelly and Koparde, Vishal},
 doi = {10.5281/zenodo.13761059},
-month = {1},
+month = {3},
 title = {CCBR actions: GitHub Actions for CCBR repos},
 url = {https://ccbr.github.io/actions/},
 year = {2025}

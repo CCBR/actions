@@ -32,6 +32,11 @@ on:
     types:
       - published
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
