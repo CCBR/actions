@@ -12,6 +12,11 @@ on:
         type: string
         description: "Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)"
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   add-list:
     runs-on: ubuntu-latest

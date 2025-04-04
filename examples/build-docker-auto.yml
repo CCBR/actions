@@ -36,6 +36,9 @@ on:
 env:
   suffix: ${{ github.base_ref == 'main' && github.event_name == 'pull_request' && 'main' || github.base_ref == 'dev' && github.event_name == 'pull_request' && 'dev' || 'feat' }}
 
+permissions:
+  contents: read
+
 jobs:
   get-files:
     runs-on: ubuntu-latest

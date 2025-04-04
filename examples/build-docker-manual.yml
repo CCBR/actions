@@ -47,6 +47,9 @@ on:
         required: true
         default: "v0.2"
 
+permissions:
+  contents: read
+
 jobs:
   build-docker:
     runs-on: ubuntu-latest
