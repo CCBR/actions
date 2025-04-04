@@ -8,6 +8,11 @@ on:
     types:
       - opened
 
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
 jobs:
   add-to-project:
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 ## actions development version
 
-- set permissions for all example workflows to satisfy codeQL alerts.
+- set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)
 
 ## actions 0.2.5
 
