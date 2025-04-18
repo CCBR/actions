@@ -28,3 +28,5 @@ jobs:
         run: |
           from ccbr_actions.actions import trigger_workflow
           trigger_workflow(workflow_name='auto-format.yml', branch='trigger-fmt', repo='CCBR/actions')
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
