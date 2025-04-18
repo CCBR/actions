@@ -110,8 +110,9 @@ def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
     headers = {
         "Accept": "application/vnd.github.v3+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        # "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
     }
+    if "GITHUB_TOKEN" in os.environ:  # not needed if users runs `gh auth login`
+        headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
     data = {"ref": branch}
     if inputs and isinstance(inputs, dict):
         data.update(inputs)
