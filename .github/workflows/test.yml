@@ -6,6 +6,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   manual-test:
@@ -15,10 +16,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # required to include tags
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.11
       - name: Install dependencies
         run: |
           python -m pip install .[dev,test] --upgrade pip
@@ -26,4 +27,8 @@ jobs:
         shell: python {0}
         run: |
           from ccbr_actions.actions import trigger_workflow
+          import warnings
+          warnings.filterwarnings("error")
           trigger_workflow(workflow_name='auto-format.yml', branch='trigger-fmt', repo='CCBR/actions')
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

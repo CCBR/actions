@@ -6,6 +6,7 @@ import os
 import pathlib
 import requests
 import uuid
+import warnings
 
 from .util import path_resolve
 from .versions import get_latest_release_tag
@@ -89,3 +90,33 @@ def set_output(name, value, environ="GITHUB_OUTPUT"):
             print(delimiter, file=fh)
     else:
         print(f"::set-output name={name}::{value}")
+
+
+def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
+    """
+    Trigger a GitHub Actions workflow.
+
+    Args:
+        workflow_name (str): The name of the workflow to trigger.
+        branch (str): The branch to trigger the workflow on.
+        repo (str): The GitHub repository to trigger the workflow in.
+    """
+    url = f"https://api.github.com/repos/{repo}/actions/workflows/{workflow_name}/dispatches"
+    headers = {
+        "Accept": "application/vnd.github.v3+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    if (
+        "GITHUB_TOKEN" in os.environ
+    ):  # required for curl usage, not needed for gh api usage
+        headers["Authorization"] = f"token {os.environ['GITHUB_TOKEN']}"
+    data = {"ref": branch}
+    if inputs and isinstance(inputs, dict):
+        data.update(inputs)
+    if not debug:
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code != 204:
+            warnings.warn(f"Failed to trigger workflow:\n{response.text}")
+        return response
+    else:
+        return url, headers, data
