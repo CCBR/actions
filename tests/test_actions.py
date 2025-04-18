@@ -39,7 +39,10 @@ def test_trigger_workflow_debug():
     )
 
 
-@pytest.mark.skipif("GITHUB_TOKEN" not in os.environ)
+@pytest.mark.skipif(
+    "GITHUB_TOKEN" not in os.environ,
+    reason="this will fail when GITHUB_TOKEN is not an envvar",
+)
 def test_trigger_workflow():
     response = trigger_workflow(
         workflow_name="hello.yml", branch="main", repo="CCBR/actions", debug=False
