@@ -6,7 +6,7 @@ import os
 import warnings
 from ccbr_tools.shell import shell_run
 
-from .actions import set_output
+from .actions import set_output, trigger_workflow
 from .citation import update_citation
 from .util import precommit_run, path_resolve
 from .versions import (
@@ -99,6 +99,13 @@ def prepare_draft_release(
         files=changed_files,
         debug=debug,
     )
+    if not debug:
+        try:
+            trigger_workflow(
+                workflow_name="auto-format.yml", branch=release_branch, repo=repo
+            )
+        except Exception as e:
+            warnings.warn(f"Failed to trigger workflow:\n{e}")
     release_url = create_release_draft(
         release_branch=release_branch,
         next_version=next_version,
