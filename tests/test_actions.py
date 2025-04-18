@@ -25,7 +25,7 @@ def test_set_output():
     )
 
 
-def test_trigger_workflow():
+def test_trigger_workflow_debug():
     url, headers, data = trigger_workflow(
         workflow_name="test_workflow.yml",
         branch="dev",
@@ -37,3 +37,11 @@ def test_trigger_workflow():
         url
         == "https://api.github.com/repos/CCBR/actions/actions/workflows/test_workflow.yml/dispatches"
     )
+
+
+@pytest.mark.skipif("GITHUB_TOKEN" not in os.environ)
+def test_trigger_workflow():
+    response = trigger_workflow(
+        workflow_name="hello.yml", branch="main", repo="CCBR/actions", debug=False
+    )
+    assert response.status_code == 204
