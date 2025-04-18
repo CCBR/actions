@@ -16,7 +16,9 @@ on:
 env:
   GH_TOKEN: ${{ github.token }}
 
-permissions: read-all
+permissions:
+  contents: read
+  actions: write # needed to trigger actions via workflow dispatch
 
 jobs:
   lint:
