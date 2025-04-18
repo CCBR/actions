@@ -111,7 +111,9 @@ def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
         "Accept": "application/vnd.github.v3+json",
         "X-GitHub-Api-Version": "2022-11-28",
     }
-    if "GITHUB_TOKEN" in os.environ:  # not needed if users runs `gh auth login`
+    if (
+        "GITHUB_TOKEN" in os.environ
+    ):  # required for curl usage, not needed for gh api usage
         headers["Authorization"] = f"token {os.environ['GITHUB_TOKEN']}"
     data = {"ref": branch}
     if inputs and isinstance(inputs, dict):
