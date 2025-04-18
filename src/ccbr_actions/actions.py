@@ -101,11 +101,6 @@ def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
         branch (str): The branch to trigger the workflow on.
         repo (str): The GitHub repository to trigger the workflow in.
     """
-    if not workflow_name:
-        raise ValueError("Workflow name must be provided.")
-    if not repo:
-        raise ValueError("Repository must be provided.")
-
     url = f"https://api.github.com/repos/{repo}/actions/workflows/{workflow_name}/dispatches"
     headers = {
         "Accept": "application/vnd.github.v3+json",
