@@ -2,7 +2,7 @@ import os
 import pytest
 import tempfile
 from ccbr_tools.shell import exec_in_context
-from ccbr_actions.actions import use_github_action, set_output
+from ccbr_actions.actions import use_github_action, set_output, trigger_workflow
 
 
 def test_use_github_action():
@@ -22,4 +22,18 @@ def test_use_github_action_error():
 def test_set_output():
     assert exec_in_context(set_output, "NAME", "VALUE", environ="ABC").startswith(
         "::set-output name=NAME::VALUE\n"
+    )
+
+
+def test_trigger_workflow():
+    url, headers, data = trigger_workflow(
+        workflow_name="test_workflow.yml",
+        branch="dev",
+        repo="CCBR/actions",
+        inputs={"input1": "value1", "input2": "value2"},
+        debug=True,
+    )
+    assert (
+        url
+        == "https://api.github.com/repos/CCBR/actions/actions/workflows/test_workflow.yml/dispatches"
     )
