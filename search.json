@@ -341,8 +341,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.2.6",
+    "href": "CHANGELOG.html#actions-0.2.6",
     "title": "CCBR actions",
     "section": "",
     "text": "set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)\ntrigger auto-format when running draft-release. (#68, @kelly-sovacool)",
@@ -483,7 +483,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.2.5). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {3},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.2.6). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {4},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
     "crumbs": [
       "Project information",
       "Citation"
