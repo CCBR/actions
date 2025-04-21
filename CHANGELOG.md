@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions 0.2.6
+
 - set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)
 - trigger `auto-format` when running `draft-release`. (#68, @kelly-sovacool)
 
