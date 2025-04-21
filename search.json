@@ -330,22 +330,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)\ntrigger auto-format when running draft-release. (#68, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.2.6",
     "href": "CHANGELOG.html#actions-0.2.6",
     "title": "CCBR actions",
-    "section": "",
-    "text": "set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)\ntrigger auto-format when running draft-release. (#68, @kelly-sovacool)",
+    "section": "actions 0.2.6",
+    "text": "actions 0.2.6\n\nset permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)\ntrigger auto-format when running draft-release. (#68, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
