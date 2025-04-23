@@ -1,5 +1,7 @@
 ## actions development version
 
+- `mkdocs-mike`: new option `strict-semver` to toggle whether to enforce strict semantic versioning or allow a relaxed format with only the major and minor components. (#)
+
 ## actions 0.2.6
 
 - set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)
