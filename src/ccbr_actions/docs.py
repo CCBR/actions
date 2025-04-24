@@ -66,7 +66,7 @@ def get_docs_version(repo):
     return docs_version, docs_alias
 
 
-def set_docs_version(repo):
+def set_docs_version(repo, environ="GITHUB_OUTPUT"):
     """
     Set version and alias in GitHub environment variables for docs website action.
 
@@ -88,8 +88,8 @@ def set_docs_version(repo):
         >>> set_docs_version()
     """
     version, alias = get_docs_version(repo=repo)
-    set_output("VERSION", version)
-    set_output("ALIAS", alias)
+    set_output("VERSION", version, environ=environ)
+    set_output("ALIAS", alias, environ=environ)
 
 
 def parse_action_yaml(filename):
