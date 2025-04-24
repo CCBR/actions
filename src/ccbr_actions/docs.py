@@ -49,7 +49,7 @@ def get_docs_version(repo, release_args="", release_tag=None, strict_semver=True
     latest_release_tag = get_latest_release_tag(repo=repo)
     if not latest_release_tag:
         warnings.warn("No latest release found")
-       
+
     if not release_tag:
         release_tag = latest_release_tag
 
@@ -80,8 +80,9 @@ def get_docs_version(repo, release_args="", release_tag=None, strict_semver=True
     return docs_version, docs_alias
 
 
-def set_docs_version(repo, release_tag=None, strict_semver=True, environ="GITHUB_OUTPUT"):
-
+def set_docs_version(
+    repo, release_tag=None, strict_semver=True, environ="GITHUB_OUTPUT"
+):
     """
     Set version and alias in GitHub environment variables for docs website action.
 
@@ -104,7 +105,9 @@ def set_docs_version(repo, release_tag=None, strict_semver=True, environ="GITHUB
     Examples:
         >>> set_docs_version()
     """
-    version, alias = get_docs_version(repo=repo, release_tag=release_tag, strict_semver=strict_semver)
+    version, alias = get_docs_version(
+        repo=repo, release_tag=release_tag, strict_semver=strict_semver
+    )
     set_output("VERSION", version, environ=environ)
     set_output("ALIAS", alias, environ=environ)
 

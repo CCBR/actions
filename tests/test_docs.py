@@ -59,13 +59,14 @@ def test_get_docs_version():
         ]
     )
 
+
 def test_get_docs_version_nonsemantic():
     tag, alias = get_docs_version(
         release_args="--repo CCBR/HowTos", release_tag="1.0", strict_semver=False
     )
     assert tag == "dev" and alias == ""
 
+
 def test_set_docs_version():
     output = exec_in_context(set_docs_version, repo="CCBR/Tools", environ="ABC")
     assert output == "::set-output name=VERSION::dev\n::set-output name=ALIAS::\n"
-
