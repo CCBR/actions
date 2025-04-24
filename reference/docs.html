@@ -611,7 +611,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ccbr_actions.docs.get_docs_version" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docs.get_docs_version">get_docs_version</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>docs.get_docs_version(repo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>docs.get_docs_version(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    repo,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    release_args<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    release_tag<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    strict_semver<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Get correct version and alias for documentation website.</p>
 <p>Determines the appropriate version and alias for the documentation based on the latest release tag and the current hash.</p>
 <section id="parameters-3" class="level4 doc-section doc-section-parameters">
@@ -631,6 +636,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the GitHub repository to check for releases.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>release_args</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
+<td>Additional arguments to pass to the <code>gh release</code> GitHub CLI command (default is ““).</td>
+<td><code>''</code></td>
+</tr>
+<tr class="odd">
+<td>release_tag</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
+<td>The tag of the release (default: None). Set this when running this code from a github release event. Only set this if the tag is currently checked out.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>strict_semver</td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
+<td>If True, the version string must match the full semantic versioning pattern. Otherwise, a relaxed format with only the major and minor components is allowed.</td>
+<td><code>True</code></td>
 </tr>
 </tbody>
 </table>
@@ -735,7 +758,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ccbr_actions.docs.set_docs_version" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docs.set_docs_version">set_docs_version</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>docs.set_docs_version(repo, environ<span class="op">=</span><span class="st">'GITHUB_OUTPUT'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>docs.set_docs_version(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    repo,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    release_tag<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    strict_semver<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    environ<span class="op">=</span><span class="st">'GITHUB_OUTPUT'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Set version and alias in GitHub environment variables for docs website action.</p>
 <p>This function retrieves the documentation version and alias using <code>get_docs_version</code> and sets them as environment variables in the GitHub Actions environment.</p>
 <section id="parameters-5" class="level4 doc-section doc-section-parameters">
@@ -755,6 +783,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The name of the GitHub repository to check for releases.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>release_tag</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
+<td>Specific release tag to use for determining the version. Defaults to None.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>strict_semver</td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
+<td>Whether to enforce strict semantic versioning. Defaults to True.</td>
+<td><code>True</code></td>
 </tr>
 </tbody>
 </table>
