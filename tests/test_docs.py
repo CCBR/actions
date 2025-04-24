@@ -49,7 +49,7 @@ def test_action_markdown_io():
 
 def test_get_docs_version():
     with pytest.warns(UserWarning) as record:
-        result = get_docs_version(release_args="--repo CCBR/CCBR_NextflowTemplate")
+        result = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
     assert all(
         [
             result == ("dev", ""),

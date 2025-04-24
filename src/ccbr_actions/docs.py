@@ -66,13 +66,16 @@ def get_docs_version(repo):
     return docs_version, docs_alias
 
 
-def set_docs_version():
+def set_docs_version(repo):
     """
     Set version and alias in GitHub environment variables for docs website action.
 
     This function retrieves the documentation version and alias using
     `get_docs_version` and sets them as environment variables in the GitHub
     Actions environment.
+
+    Args:
+        repo (str): The name of the GitHub repository to check for releases.
 
     Raises:
         ValueError: If the current commit hash is not a descendant of the latest release.
@@ -84,7 +87,7 @@ def set_docs_version():
     Examples:
         >>> set_docs_version()
     """
-    version, alias = get_docs_version()
+    version, alias = get_docs_version(repo=repo)
     set_output("VERSION", version)
     set_output("ALIAS", alias)
 

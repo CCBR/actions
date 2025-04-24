@@ -41,7 +41,7 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
     """
     filename = f"{name}.yml"
     if not ref:
-        latest_release = get_latest_release_tag(args=f"--repo {repo}")
+        latest_release = get_latest_release_tag(repo=repo)
         ref = latest_release if latest_release else "main"
     if not url:
         url = f"https://raw.githubusercontent.com/{repo}/{ref}/examples/{filename}"
