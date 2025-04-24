@@ -53,14 +53,17 @@ def get_docs_version(repo, release_args="", release_tag=None, strict_semver=True
     if not release_tag:
         release_tag = latest_release_tag
 
+    docs_version = get_major_minor_version(
+        release_tag.lstrip("v"), strict_semver=strict_semver
+    )
+
     release_hash = get_latest_release_hash(repo=repo)
     current_hash = get_current_hash()
 
     if release_hash == current_hash:
         docs_alias = "latest"
-        docs_version = get_major_minor_version(
-            release_tag.lstrip("v"), strict_semver=strict_semver
-        )
+    elif release_tag != latest_release_tag:
+        docs_alias = ""
     else:
         if not release_hash or is_ancestor(
             ancestor=release_hash, descendant=current_hash
