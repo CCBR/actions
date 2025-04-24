@@ -83,7 +83,7 @@ def set_output(name, value, environ="GITHUB_OUTPUT"):
         >>> set_output("ALIAS", "latest")
     """
     if os.environ.get(environ):
-        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+        with open(os.environ[environ], "a") as fh:
             delimiter = uuid.uuid1()
             print(f"{name}<<{delimiter}", file=fh)
             print(value, file=fh)
