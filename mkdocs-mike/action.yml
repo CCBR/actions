@@ -50,7 +50,7 @@ runs:
       shell: python {0}
       run: |
         from ccbr_actions.docs import set_docs_version
-        set_docs_version() # sets VERSION and ALIAS env vars
+        set_docs_version(repo=${{ github.event.repository.name }}) # sets VERSION and ALIAS env vars
       env:
         GH_TOKEN: ${{ inputs.github-token }}
     - name: deploy docs

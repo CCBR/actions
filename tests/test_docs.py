@@ -5,12 +5,14 @@ import warnings
 
 from ccbr_actions.docs import (
     get_docs_version,
+    set_docs_version,
     parse_action_yaml,
     action_markdown_desc,
     action_markdown_header,
     action_markdown_io,
 )
 from ccbr_actions.actions import use_github_action
+from ccbr_tools.shell import exec_in_context
 
 
 def test_parse_action_yaml():
@@ -49,10 +51,15 @@ def test_action_markdown_io():
 
 def test_get_docs_version():
     with pytest.warns(UserWarning) as record:
-        result = get_docs_version(release_args="--repo CCBR/CCBR_NextflowTemplate")
+        result = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
     assert all(
         [
             result == ("dev", ""),
             "No latest release found" in str(record[0].message.args[0]),
         ]
     )
+
+
+def test_set_docs_version():
+    output = exec_in_context(set_docs_version, repo="CCBR/Tools", environ="ABC")
+    assert output == "::set-output name=VERSION::dev\n::set-output name=ALIAS::\n"

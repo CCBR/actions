@@ -18,7 +18,7 @@ from .versions import (
 from .actions import set_output
 
 
-def get_docs_version(release_args=""):
+def get_docs_version(repo):
     """
     Get correct version and alias for documentation website.
 
@@ -26,7 +26,7 @@ def get_docs_version(release_args=""):
     documentation based on the latest release tag and the current hash.
 
     Args:
-        release_args (str, optional): Additional arguments to pass to the `gh release` GitHub CLI command (default is "").
+        repo (str): The name of the GitHub repository to check for releases.
 
     Returns:
         tuple: A tuple containing:
@@ -43,11 +43,11 @@ def get_docs_version(release_args=""):
         >>> get_docs_version()
         ('1.0', 'latest')
     """
-    release_tag = get_latest_release_tag(args=release_args).lstrip("v")
+    release_tag = get_latest_release_tag(repo=repo).lstrip("v")
     if not release_tag:
         warnings.warn("No latest release found")
 
-    release_hash = get_latest_release_hash(args=release_args)
+    release_hash = get_latest_release_hash(repo=repo)
     current_hash = get_current_hash()
 
     if release_hash == current_hash:
@@ -66,13 +66,16 @@ def get_docs_version(release_args=""):
     return docs_version, docs_alias
 
 
-def set_docs_version():
+def set_docs_version(repo, environ="GITHUB_OUTPUT"):
     """
     Set version and alias in GitHub environment variables for docs website action.
 
     This function retrieves the documentation version and alias using
     `get_docs_version` and sets them as environment variables in the GitHub
     Actions environment.
+
+    Args:
+        repo (str): The name of the GitHub repository to check for releases.
 
     Raises:
         ValueError: If the current commit hash is not a descendant of the latest release.
@@ -84,9 +87,9 @@ def set_docs_version():
     Examples:
         >>> set_docs_version()
     """
-    version, alias = get_docs_version()
-    set_output("VERSION", version)
-    set_output("ALIAS", alias)
+    version, alias = get_docs_version(repo=repo)
+    set_output("VERSION", version, environ=environ)
+    set_output("ALIAS", alias, environ=environ)
 
 
 def parse_action_yaml(filename):

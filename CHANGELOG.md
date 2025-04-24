@@ -1,5 +1,7 @@
 ## actions development version
 
+- refactor: update `get_latest_release_tag/hash` usage for ccbr_tools >= v0.3.0. (#74, @kelly-sovacool)
+
 ## actions 0.2.6
 
 - set permissions for all example workflows to satisfy codeQL alerts. (#65, @kelly-sovacool)
