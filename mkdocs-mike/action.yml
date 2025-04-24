@@ -21,6 +21,10 @@ inputs:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed"
     required: true
     default: "41898282+github-actions[bot]"
+  strict-semver:
+    description: "Whether to follow strict semantic versioning guidelines"
+    type: boolean
+    default: true
 outputs:
   version:
     description: "The version of the docs being deployed."
@@ -50,7 +54,12 @@ runs:
       shell: python {0}
       run: |
         from ccbr_actions.docs import set_docs_version
-        set_docs_version(repo=${{ github.event.repository.name }}) # sets VERSION and ALIAS env vars
+        release_tag="${{ github.event.release.tag_name }}" if "${{ github.event_name }}" == "release" else None
+        strict_semver = "${{ inputs.strict-semver }}" == "true"
+
+        # set VERSION and ALIAS env vars
+        set_docs_version(repo=${{ github.event.repository.name }}, release_tag=release_tag, strict_semver = strict_semver)
+
       env:
         GH_TOKEN: ${{ inputs.github-token }}
     - name: deploy docs

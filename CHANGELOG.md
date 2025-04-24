@@ -1,5 +1,6 @@
 ## actions development version
 
+- `mkdocs-mike`: new option `strict-semver` to toggle whether to enforce strict semantic versioning or allow a relaxed format with only the major and minor components. (#72, @kelly-sovacool)
 - refactor: update `get_latest_release_tag/hash` usage for ccbr_tools >= v0.3.0. (#74, @kelly-sovacool)
 
 ## actions 0.2.6

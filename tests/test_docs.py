@@ -50,14 +50,32 @@ def test_action_markdown_io():
 
 
 def test_get_docs_version():
-    with pytest.warns(UserWarning) as record:
-        result = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
+    with pytest.warns(UserWarning) as record1:
+        result1 = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
     assert all(
         [
-            result == ("dev", ""),
-            "No latest release found" in str(record[0].message.args[0]),
+            result1 == ("dev", ""),
+            "No latest release found" in str(record1[0].message.args[0]),
         ]
     )
+
+
+def test_get_docs_version_strict():
+    with pytest.raises(ValueError) as exc_info:
+        get_docs_version(
+            repo="CCBR/Tools", release_tag="notAVersion", strict_semver=True
+        )
+    assert (
+        "The major & minor components of the version cannot be determined from the release tag"
+        in str(exc_info.value)
+    )
+
+
+def test_get_docs_version_nonsemantic():
+    tag1, alias1 = get_docs_version(
+        repo="CCBR/HowTos", release_tag="1.0", strict_semver=False
+    )
+    assert all([tag1 == "1.0", alias1 == ""])
 
 
 def test_set_docs_version():

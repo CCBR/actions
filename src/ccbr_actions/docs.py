@@ -18,7 +18,7 @@ from .versions import (
 from .actions import set_output
 
 
-def get_docs_version(repo):
+def get_docs_version(repo, release_args="", release_tag=None, strict_semver=True):
     """
     Get correct version and alias for documentation website.
 
@@ -27,6 +27,9 @@ def get_docs_version(repo):
 
     Args:
         repo (str): The name of the GitHub repository to check for releases.
+        release_args (str, optional): Additional arguments to pass to the `gh release` GitHub CLI command (default is "").
+        release_tag (str, optional): The tag of the release (default: None). Set this when running this code from a github release event. Only set this if the tag is currently checked out.
+        strict_semver (bool): If True, the version string must match the full semantic versioning pattern. Otherwise, a relaxed format with only the major and minor components is allowed.
 
     Returns:
         tuple: A tuple containing:
@@ -43,16 +46,24 @@ def get_docs_version(repo):
         >>> get_docs_version()
         ('1.0', 'latest')
     """
-    release_tag = get_latest_release_tag(repo=repo).lstrip("v")
-    if not release_tag:
+    latest_release_tag = get_latest_release_tag(repo=repo)
+    if not latest_release_tag:
         warnings.warn("No latest release found")
+
+    if not release_tag:
+        release_tag = latest_release_tag
+
+    docs_version = get_major_minor_version(
+        release_tag.lstrip("v"), strict_semver=strict_semver
+    )
 
     release_hash = get_latest_release_hash(repo=repo)
     current_hash = get_current_hash()
 
     if release_hash == current_hash:
         docs_alias = "latest"
-        docs_version = get_major_minor_version(release_tag)
+    elif release_tag != latest_release_tag:
+        docs_alias = ""
     else:
         if not release_hash or is_ancestor(
             ancestor=release_hash, descendant=current_hash
@@ -63,10 +74,18 @@ def get_docs_version(repo):
             raise ValueError(
                 f"The current commit hash {current_hash[:7]} is not a descendent of the latest release {release_tag} {release_hash[:7]}"
             )
+
+    if not docs_version:
+        raise ValueError(
+            f"The major & minor components of the version cannot be determined from the release tag: {release_tag}. Hint: does the release tag follow semantic versioning?"
+        )
+
     return docs_version, docs_alias
 
 
-def set_docs_version(repo, environ="GITHUB_OUTPUT"):
+def set_docs_version(
+    repo, release_tag=None, strict_semver=True, environ="GITHUB_OUTPUT"
+):
     """
     Set version and alias in GitHub environment variables for docs website action.
 
@@ -76,6 +95,8 @@ def set_docs_version(repo, environ="GITHUB_OUTPUT"):
 
     Args:
         repo (str): The name of the GitHub repository to check for releases.
+        release_tag (str, optional): Specific release tag to use for determining the version. Defaults to None.
+        strict_semver (bool, optional): Whether to enforce strict semantic versioning. Defaults to True.
 
     Raises:
         ValueError: If the current commit hash is not a descendant of the latest release.
@@ -87,7 +108,9 @@ def set_docs_version(repo, environ="GITHUB_OUTPUT"):
     Examples:
         >>> set_docs_version()
     """
-    version, alias = get_docs_version(repo=repo)
+    version, alias = get_docs_version(
+        repo=repo, release_tag=release_tag, strict_semver=strict_semver
+    )
     set_output("VERSION", version, environ=environ)
     set_output("ALIAS", alias, environ=environ)
 
