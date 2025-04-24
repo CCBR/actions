@@ -62,7 +62,7 @@ def test_get_docs_version():
 
 def test_get_docs_version_nonsemantic():
     tag, alias = get_docs_version(
-        release_args="--repo CCBR/HowTos", release_tag="1.0", strict_semver=False
+        repo="CCBR/HowTos", release_tag="1.0", strict_semver=False
     )
     assert tag == "dev" and alias == ""
 
