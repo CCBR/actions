@@ -18,7 +18,7 @@ from .versions import (
 from .actions import set_output
 
 
-def get_docs_version(release_args="", release_tag=None, strict_semver=True):
+def get_docs_version(repo, release_args="", release_tag=None, strict_semver=True):
     """
     Get correct version and alias for documentation website.
 
@@ -26,6 +26,7 @@ def get_docs_version(release_args="", release_tag=None, strict_semver=True):
     documentation based on the latest release tag and the current hash.
 
     Args:
+        repo (str): The name of the GitHub repository to check for releases.
         release_args (str, optional): Additional arguments to pass to the `gh release` GitHub CLI command (default is "").
         release_tag (str, optional): The tag of the release (default: None). Set this when running this code from a github release event. Only set this if the tag is currently checked out.
         strict_semver (bool): If True, the version string must match the full semantic versioning pattern. Otherwise, a relaxed format with only the major and minor components is allowed.
@@ -45,15 +46,15 @@ def get_docs_version(release_args="", release_tag=None, strict_semver=True):
         >>> get_docs_version()
         ('1.0', 'latest')
     """
-    latest_release_tag = get_latest_release_tag(args=release_args)
+    latest_release_tag = get_latest_release_tag(repo=repo)
     if not latest_release_tag:
         warnings.warn("No latest release found")
-
-    release_hash = get_latest_release_hash(args=release_args)
-    current_hash = get_current_hash()
-
+       
     if not release_tag:
         release_tag = latest_release_tag
+
+    release_hash = get_latest_release_hash(repo=repo)
+    current_hash = get_current_hash()
 
     if release_hash == current_hash:
         docs_alias = "latest"
@@ -79,7 +80,8 @@ def get_docs_version(release_args="", release_tag=None, strict_semver=True):
     return docs_version, docs_alias
 
 
-def set_docs_version(release_args="", release_tag=None, strict_semver=True):
+def set_docs_version(repo, release_tag=None, strict_semver=True, environ="GITHUB_OUTPUT"):
+
     """
     Set version and alias in GitHub environment variables for docs website action.
 
@@ -88,7 +90,7 @@ def set_docs_version(release_args="", release_tag=None, strict_semver=True):
     Actions environment.
 
     Args:
-        release_args (str, optional): Additional arguments to determine the release version. Defaults to an empty string.
+        repo (str): The name of the GitHub repository to check for releases.
         release_tag (str, optional): Specific release tag to use for determining the version. Defaults to None.
         strict_semver (bool, optional): Whether to enforce strict semantic versioning. Defaults to True.
 
@@ -102,11 +104,9 @@ def set_docs_version(release_args="", release_tag=None, strict_semver=True):
     Examples:
         >>> set_docs_version()
     """
-    version, alias = get_docs_version(
-        release_args=release_args, release_tag=release_tag, strict_semver=strict_semver
-    )
-    set_output("VERSION", version)
-    set_output("ALIAS", alias)
+    version, alias = get_docs_version(repo=repo, release_tag=release_tag, strict_semver=strict_semver)
+    set_output("VERSION", version, environ=environ)
+    set_output("ALIAS", alias, environ=environ)
 
 
 def parse_action_yaml(filename):

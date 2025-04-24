@@ -41,7 +41,7 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
     """
     filename = f"{name}.yml"
     if not ref:
-        latest_release = get_latest_release_tag(args=f"--repo {repo}")
+        latest_release = get_latest_release_tag(repo=repo)
         ref = latest_release if latest_release else "main"
     if not url:
         url = f"https://raw.githubusercontent.com/{repo}/{ref}/examples/{filename}"
@@ -83,7 +83,7 @@ def set_output(name, value, environ="GITHUB_OUTPUT"):
         >>> set_output("ALIAS", "latest")
     """
     if os.environ.get(environ):
-        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+        with open(os.environ[environ], "a") as fh:
             delimiter = uuid.uuid1()
             print(f"{name}<<{delimiter}", file=fh)
             print(value, file=fh)
