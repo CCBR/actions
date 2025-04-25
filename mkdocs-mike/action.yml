@@ -58,7 +58,7 @@ runs:
         strict_semver = "${{ inputs.strict-semver }}" == "true"
 
         # set VERSION and ALIAS env vars
-        set_docs_version(repo=${{ github.event.repository.name }}, release_tag=release_tag, strict_semver = strict_semver)
+        set_docs_version(repo='${{ github.repository }}', release_tag=release_tag, strict_semver = strict_semver)
 
       env:
         GH_TOKEN: ${{ inputs.github-token }}
