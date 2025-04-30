@@ -71,7 +71,7 @@ def prepare_draft_release(
     set_output("NEXT_VERSION", next_version)
 
     changelog_lines, next_release_lines = get_changelog_lines(
-        latest_version_strict=get_latest_release_tag().lstrip("v"),
+        latest_version_strict=current_version.lstrip("v"),
         next_version_strict=next_version_strict,
         changelog_filepath=changelog_filepath,
         dev_header=dev_header,
