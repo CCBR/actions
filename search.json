@@ -4,7 +4,7 @@
     "href": "actions.html",
     "title": "Actions",
     "section": "",
-    "text": "Order By\n       Default\n         \n          action\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\naction\n\n\ndescription\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\nNo matching items",
+    "text": "Order By\n      Default\n      \n        action\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\naction\n\n\n\ndescription\n\n\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\n\nNo matching items",
     "crumbs": [
       "GitHub Actions",
       "Actions"
@@ -46,7 +46,7 @@
     "href": "index.html#actions",
     "title": "CCBR actions",
     "section": "Actions",
-    "text": "Actions\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          action\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\naction\n\n\ndescription\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\nNo matching items",
+    "text": "Actions\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        action\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\naction\n\n\n\ndescription\n\n\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\n\nNo matching items",
     "crumbs": [
       "Home"
     ]
