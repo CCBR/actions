@@ -21,6 +21,8 @@ Input files:
 
 When you’re ready to draft a new release, [run the workflow
 manually](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
+After the workflow completes, there will be a new draft release that you
+can review and choose to publish.
 
 ### Basic example
 
