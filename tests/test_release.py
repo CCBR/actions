@@ -118,6 +118,12 @@ def test_get_changelog_lines():
     )
 
 
+def test_get_changelog_lines_sinclair():
+    new_changelog, release_notes = get_changelog_lines(
+        "0.3.0", "0.3.1", changelog_filepath="tests/data/sinclair_changelog.md"
+    )
+
+
 def test_get_changelog_lines_error():
     with pytest.raises(ValueError) as exc_info1:
         get_changelog_lines(
