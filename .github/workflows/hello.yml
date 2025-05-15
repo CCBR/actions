@@ -2,6 +2,9 @@ name: hello-world
 
 on: workflow_dispatch
 
+permissions:
+  contents: read
+
 jobs:
   hello-world:
     runs-on: ubuntu-latest
