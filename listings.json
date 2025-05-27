@@ -1,6 +1,6 @@
 [
   {
-    "listing": "/actions.html",
+    "listing": "/index.html",
     "items": [
       "/actions/add-issue-label-list/index.html",
       "/actions/build-docker/index.html",
@@ -11,7 +11,7 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/actions.html",
     "items": [
       "/actions/add-issue-label-list/index.html",
       "/actions/build-docker/index.html",
