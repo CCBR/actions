@@ -28,6 +28,7 @@ them for your needs.
 - [build-nextflow](examples/build-nextflow.yml)
 - [build-python](examples/build-python.yml)
 - [build-snakemake](examples/build-snakemake.yml)
+- [check-links](examples/check-links.yml)
 - [docs-mkdocs](examples/docs-mkdocs.yml)
 - [docs-quarto](examples/docs-quarto.yml)
 - [draft-release](examples/draft-release.yml)
