@@ -18,11 +18,33 @@
     ]
   },
   {
+    "objectID": "CHANGELOG.html",
+    "href": "CHANGELOG.html",
+    "title": "CCBR actions",
+    "section": "",
+    "text": "new example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)",
+    "crumbs": [
+      "Project information",
+      "Changelog"
+    ]
+  },
+  {
+    "objectID": "CHANGELOG.html#actions-development-version",
+    "href": "CHANGELOG.html#actions-development-version",
+    "title": "CCBR actions",
+    "section": "",
+    "text": "new example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)",
+    "crumbs": [
+      "Project information",
+      "Changelog"
+    ]
+  },
+  {
     "objectID": "CHANGELOG.html#actions-0.2.7",
     "href": "CHANGELOG.html#actions-0.2.7",
     "title": "CCBR actions",
     "section": "actions 0.2.7",
-    "text": "actions 0.2.7\n\nmkdocs-mike: new option strict-semver to toggle whether to enforce strict semantic versioning or allow a relaxed format with only the major and minor components. (#72, @kelly-sovacool)\nrefactor: update get_latest_release_tag/hash usage for ccbr_tools &gt;= v0.3.0. (#74, @kelly-sovacool)\nnew example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)",
+    "text": "actions 0.2.7\n\nmkdocs-mike: new option strict-semver to toggle whether to enforce strict semantic versioning or allow a relaxed format with only the major and minor components. (#72, @kelly-sovacool)\nrefactor: update get_latest_release_tag/hash usage for ccbr_tools &gt;= v0.3.0. (#74, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
