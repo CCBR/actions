@@ -28,4 +28,4 @@ jobs:
           target: gh-pages
           path: docs/ # where the qmd documents are
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
