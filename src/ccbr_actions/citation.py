@@ -30,6 +30,15 @@ def print_citation(
     validate_or_write_output(None, output_format, False, citation)
 
 
+def write_citation(
+    citation_file="CITATION.cff",
+    output_file="codemeta.json",
+    output_format="codemeta",
+):
+    citation = create_citation(citation_file, None)
+    validate_or_write_output(output_file, output_format, False, citation)
+
+
 def update_citation(
     citation_file="CITATION.cff",
     version="${{ steps.set-version.output.NEXT_VERSION }}",
