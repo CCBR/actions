@@ -1,17 +1,21 @@
 [
   {
-    "objectID": "help.html",
-    "href": "help.html",
-    "title": "CCBR actions",
+    "objectID": "contributors.html",
+    "href": "contributors.html",
+    "title": "Contributors",
     "section": "",
-    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question? Ask it in discussions.\nWant to contribute to this project? Check out the contributing guidelines."
+    "text": "Kelly Sovacool, PhD\n\n\n\n\n\n\n\ngithub-actions[bot]\n\n\n\n\n\n\n\nVishal Koparde, PhD\n\n\n\n\n\nView the contributors graph on GitHub for more details.",
+    "crumbs": [
+      "Project information",
+      "Contributors"
+    ]
   },
   {
     "objectID": "reference/citation.html",
     "href": "reference/citation.html",
     "title": "citation",
     "section": "",
-    "text": "citation\nPrint and update citation files in CFF format.\n\n\n\n\n\nName\nDescription\n\n\n\n\nprint_citation\nPrint the citation in the specified format.\n\n\nupdate_citation\nUpdate the citation file with the specified version and date.\n\n\n\n\n\ncitation.print_citation(citation_file='CITATION.cff', output_format='bibtex')\nPrint the citation in the specified format.\nThis function reads a citation file in CFF format and prints it in the specified output format using the cffconvert library.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\noutput_format\nstr\nThe format to print the citation in (default is “bibtex”).\n'bibtex'\n\n\n\n\n\n\n&gt;&gt;&gt; print_citation()\n@article{...\n\n\n\n\ncitation.update_citation(\n    citation_file='CITATION.cff',\n    version='${{ steps.set-version.output.NEXT_VERSION }}',\n    date=date_today(),\n    debug=False,\n)\nUpdate the citation file with the specified version and date.\nThis function updates the version and date-released fields in the citation file and writes the updated content back to the file.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\nversion\nstr\nThe version to set in the citation file (default is “\\({{ steps.set-version.output.NEXT_VERSION }}\"). | `'\\){{ steps.set-version.output.NEXT_VERSION }}’| | date          | [str](str)   | The release date to set in the citation file (default is today's date).                              |date_today()| | debug         | [bool](bool) | If True, print the updated citation content instead of writing to the file (default is False).       |False`\n\n\n\n\n\n\n\n&gt;&gt;&gt; update_citation(version=\"1.0.1\", date=\"2023-10-01\")",
+    "text": "citation\nPrint and update citation files in CFF format.\n\n\n\n\n\nName\nDescription\n\n\n\n\nprint_citation\nPrint the citation in the specified format.\n\n\nupdate_citation\nUpdate the citation file with the specified version and date.\n\n\nwrite_citation\nGenerates a citation metadata file in the specified format.\n\n\n\n\n\ncitation.print_citation(citation_file='CITATION.cff', output_format='bibtex')\nPrint the citation in the specified format.\nThis function reads a citation file in CFF format and prints it in the specified output format using the cffconvert library.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\noutput_format\nstr\nThe format to print the citation in (default is “bibtex”).\n'bibtex'\n\n\n\n\n\n\n&gt;&gt;&gt; print_citation()\n@article{...\n\n\n\n\ncitation.update_citation(\n    citation_file='CITATION.cff',\n    version='${{ steps.set-version.output.NEXT_VERSION }}',\n    date=date_today(),\n    debug=False,\n)\nUpdate the citation file with the specified version and date.\nThis function updates the version and date-released fields in the citation file and writes the updated content back to the file.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\nversion\nstr\nThe version to set in the citation file (default is “\\({{ steps.set-version.output.NEXT_VERSION }}\"). | `'\\){{ steps.set-version.output.NEXT_VERSION }}’| | date          | [str](str)   | The release date to set in the citation file (default is today's date).                              |date_today()| | debug         | [bool](bool) | If True, print the updated citation content instead of writing to the file (default is False).       |False`\n\n\n\n\n\n\n\n&gt;&gt;&gt; update_citation(version=\"1.0.1\", date=\"2023-10-01\")\n\n\n\n\ncitation.write_citation(\n    citation_file='CITATION.cff',\n    output_file='codemeta.json',\n    output_format='codemeta',\n)\nGenerates a citation metadata file in the specified format.\nReads citation information from a CITATION.cff file, converts it to the desired output format (default: codemeta), and writes it to the specified output file.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nPath to the input CITATION.cff file. (Default: “CITATION.cff”).\n'CITATION.cff'\n\n\noutput_file\nstr\nPath to the output file where the citation metadata will be written. (Default: “codemeta.json”).\n'codemeta.json'\n\n\noutput_format\nstr\nFormat of the output citation metadata. See validate_or_write_output. (Default: “codemeta”).\n'codemeta'\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\n\nNone",
     "crumbs": [
       "Python package",
       "API reference",
@@ -23,11 +27,59 @@
     "href": "reference/citation.html#functions",
     "title": "citation",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\nprint_citation\nPrint the citation in the specified format.\n\n\nupdate_citation\nUpdate the citation file with the specified version and date.\n\n\n\n\n\ncitation.print_citation(citation_file='CITATION.cff', output_format='bibtex')\nPrint the citation in the specified format.\nThis function reads a citation file in CFF format and prints it in the specified output format using the cffconvert library.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\noutput_format\nstr\nThe format to print the citation in (default is “bibtex”).\n'bibtex'\n\n\n\n\n\n\n&gt;&gt;&gt; print_citation()\n@article{...\n\n\n\n\ncitation.update_citation(\n    citation_file='CITATION.cff',\n    version='${{ steps.set-version.output.NEXT_VERSION }}',\n    date=date_today(),\n    debug=False,\n)\nUpdate the citation file with the specified version and date.\nThis function updates the version and date-released fields in the citation file and writes the updated content back to the file.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\nversion\nstr\nThe version to set in the citation file (default is “\\({{ steps.set-version.output.NEXT_VERSION }}\"). | `'\\){{ steps.set-version.output.NEXT_VERSION }}’| | date          | [str](str)   | The release date to set in the citation file (default is today's date).                              |date_today()| | debug         | [bool](bool) | If True, print the updated citation content instead of writing to the file (default is False).       |False`\n\n\n\n\n\n\n\n&gt;&gt;&gt; update_citation(version=\"1.0.1\", date=\"2023-10-01\")",
+    "text": "Name\nDescription\n\n\n\n\nprint_citation\nPrint the citation in the specified format.\n\n\nupdate_citation\nUpdate the citation file with the specified version and date.\n\n\nwrite_citation\nGenerates a citation metadata file in the specified format.\n\n\n\n\n\ncitation.print_citation(citation_file='CITATION.cff', output_format='bibtex')\nPrint the citation in the specified format.\nThis function reads a citation file in CFF format and prints it in the specified output format using the cffconvert library.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\noutput_format\nstr\nThe format to print the citation in (default is “bibtex”).\n'bibtex'\n\n\n\n\n\n\n&gt;&gt;&gt; print_citation()\n@article{...\n\n\n\n\ncitation.update_citation(\n    citation_file='CITATION.cff',\n    version='${{ steps.set-version.output.NEXT_VERSION }}',\n    date=date_today(),\n    debug=False,\n)\nUpdate the citation file with the specified version and date.\nThis function updates the version and date-released fields in the citation file and writes the updated content back to the file.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nThe path to the citation file (default is “CITATION.cff”).\n'CITATION.cff'\n\n\nversion\nstr\nThe version to set in the citation file (default is “\\({{ steps.set-version.output.NEXT_VERSION }}\"). | `'\\){{ steps.set-version.output.NEXT_VERSION }}’| | date          | [str](str)   | The release date to set in the citation file (default is today's date).                              |date_today()| | debug         | [bool](bool) | If True, print the updated citation content instead of writing to the file (default is False).       |False`\n\n\n\n\n\n\n\n&gt;&gt;&gt; update_citation(version=\"1.0.1\", date=\"2023-10-01\")\n\n\n\n\ncitation.write_citation(\n    citation_file='CITATION.cff',\n    output_file='codemeta.json',\n    output_format='codemeta',\n)\nGenerates a citation metadata file in the specified format.\nReads citation information from a CITATION.cff file, converts it to the desired output format (default: codemeta), and writes it to the specified output file.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\ncitation_file\nstr\nPath to the input CITATION.cff file. (Default: “CITATION.cff”).\n'CITATION.cff'\n\n\noutput_file\nstr\nPath to the output file where the citation metadata will be written. (Default: “codemeta.json”).\n'codemeta.json'\n\n\noutput_format\nstr\nFormat of the output citation metadata. See validate_or_write_output. (Default: “codemeta”).\n'codemeta'\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\n\nNone",
     "crumbs": [
       "Python package",
       "API reference",
       "citation"
+    ]
+  },
+  {
+    "objectID": "reference/data.html",
+    "href": "reference/data.html",
+    "title": "data",
+    "section": "",
+    "text": "data\nData files for CCBR actions\n\n\n\n\n\nName\nDescription\n\n\n\n\nget_file_path\nGet the file path for a given filename within the package.\n\n\n\n\n\ndata.get_file_path(filename)\nGet the file path for a given filename within the package.\nThis function retrieves the path to a specified file within the package’s data files using the importlib.resources module.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe name of the file for which to retrieve the path.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\n\npathlib.Path: The path to the specified file within the package.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the specified file is not found within the package data.\n\n\n\n\n\n\n&gt;&gt;&gt; get_file_path('tool_version_commands.json')\nPosixPath('/path/to/package/tool_version_commands.json')",
+    "crumbs": [
+      "Python package",
+      "API reference",
+      "data"
+    ]
+  },
+  {
+    "objectID": "reference/data.html#functions",
+    "href": "reference/data.html#functions",
+    "title": "data",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nget_file_path\nGet the file path for a given filename within the package.\n\n\n\n\n\ndata.get_file_path(filename)\nGet the file path for a given filename within the package.\nThis function retrieves the path to a specified file within the package’s data files using the importlib.resources module.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe name of the file for which to retrieve the path.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\n\npathlib.Path: The path to the specified file within the package.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the specified file is not found within the package data.\n\n\n\n\n\n\n&gt;&gt;&gt; get_file_path('tool_version_commands.json')\nPosixPath('/path/to/package/tool_version_commands.json')",
+    "crumbs": [
+      "Python package",
+      "API reference",
+      "data"
+    ]
+  },
+  {
+    "objectID": "reference/docs.html",
+    "href": "reference/docs.html",
+    "title": "docs",
+    "section": "",
+    "text": "docs\nModule for managing documentation versions.\nDetermine the appropriate version and alias for the documentation website based on the latest release tag and the current hash.\n\n\n\n\n\nName\nDescription\n\n\n\n\naction_markdown_desc\nGenerates a markdown formatted description for a given action.\n\n\naction_markdown_header\nGenerates a markdown header for a given action.\n\n\naction_markdown_io\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\nget_docs_version\nGet correct version and alias for documentation website.\n\n\nparse_action_yaml\nParses a YAML file and returns its contents as a dictionary.\n\n\nset_docs_version\nSet version and alias in GitHub environment variables for docs website action.\n\n\n\n\n\ndocs.action_markdown_desc(action_dict)\nGenerates a markdown formatted description for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string with the action name in bold and code format, followed by the description.\n\n\n\n\n\n\n\ndocs.action_markdown_header(action_dict)\nGenerates a markdown header for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA formatted markdown string with the action’s name as a header and the description as the content.\n\n\n\n\n\n\n\ndocs.action_markdown_io(action_dict)\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing the action’s inputs and outputs. The dictionary should have the following structure: { “inputs”: { “input_name”: { “description”: “Description of the input”, “required”: bool, “default”: “default_value” }, … }, “outputs”: { “output_name”: { “description”: “Description of the output” }, … } }\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string documenting the inputs and outputs of the action.\n\n\n\n\n\n\n\ndocs.get_docs_version(\n    repo,\n    release_args='',\n    release_tag=None,\n    strict_semver=True,\n)\nGet correct version and alias for documentation website.\nDetermines the appropriate version and alias for the documentation based on the latest release tag and the current hash.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_args\nstr\nAdditional arguments to pass to the gh release GitHub CLI command (default is ““).\n''\n\n\nrelease_tag\nstr\nThe tag of the release (default: None). Set this when running this code from a github release event. Only set this if the tag is currently checked out.\nNone\n\n\nstrict_semver\nbool\nIf True, the version string must match the full semantic versioning pattern. Otherwise, a relaxed format with only the major and minor components is allowed.\nTrue\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ntuple\n\nA tuple containing: - docs_version (str): The major and minor version of the latest release. - docs_alias (str): The alias for the documentation version, e.g., “latest”.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nset_docs_version: Sets the version and alias in the GitHub environment.\n\n\n\n&gt;&gt;&gt; get_docs_version()\n('1.0', 'latest')\n\n\n\n\ndocs.parse_action_yaml(filename)\nParses a YAML file and returns its contents as a dictionary.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe path to the YAML file to be parsed.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ndict\n\nThe contents of the YAML file as a dictionary.\n\n\n\n\n\n\n\ndocs.set_docs_version(\n    repo,\n    release_tag=None,\n    strict_semver=True,\n    environ='GITHUB_OUTPUT',\n)\nSet version and alias in GitHub environment variables for docs website action.\nThis function retrieves the documentation version and alias using get_docs_version and sets them as environment variables in the GitHub Actions environment.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_tag\nstr\nSpecific release tag to use for determining the version. Defaults to None.\nNone\n\n\nstrict_semver\nbool\nWhether to enforce strict semantic versioning. Defaults to True.\nTrue\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nget_docs_version: Retrieves the documentation version and alias. set_output: Sets the GitHub Actions environment variable.\n\n\n\n&gt;&gt;&gt; set_docs_version()",
+    "crumbs": [
+      "Python package",
+      "API reference",
+      "docs"
+    ]
+  },
+  {
+    "objectID": "reference/docs.html#functions",
+    "href": "reference/docs.html#functions",
+    "title": "docs",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\naction_markdown_desc\nGenerates a markdown formatted description for a given action.\n\n\naction_markdown_header\nGenerates a markdown header for a given action.\n\n\naction_markdown_io\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\nget_docs_version\nGet correct version and alias for documentation website.\n\n\nparse_action_yaml\nParses a YAML file and returns its contents as a dictionary.\n\n\nset_docs_version\nSet version and alias in GitHub environment variables for docs website action.\n\n\n\n\n\ndocs.action_markdown_desc(action_dict)\nGenerates a markdown formatted description for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string with the action name in bold and code format, followed by the description.\n\n\n\n\n\n\n\ndocs.action_markdown_header(action_dict)\nGenerates a markdown header for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA formatted markdown string with the action’s name as a header and the description as the content.\n\n\n\n\n\n\n\ndocs.action_markdown_io(action_dict)\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing the action’s inputs and outputs. The dictionary should have the following structure: { “inputs”: { “input_name”: { “description”: “Description of the input”, “required”: bool, “default”: “default_value” }, … }, “outputs”: { “output_name”: { “description”: “Description of the output” }, … } }\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string documenting the inputs and outputs of the action.\n\n\n\n\n\n\n\ndocs.get_docs_version(\n    repo,\n    release_args='',\n    release_tag=None,\n    strict_semver=True,\n)\nGet correct version and alias for documentation website.\nDetermines the appropriate version and alias for the documentation based on the latest release tag and the current hash.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_args\nstr\nAdditional arguments to pass to the gh release GitHub CLI command (default is ““).\n''\n\n\nrelease_tag\nstr\nThe tag of the release (default: None). Set this when running this code from a github release event. Only set this if the tag is currently checked out.\nNone\n\n\nstrict_semver\nbool\nIf True, the version string must match the full semantic versioning pattern. Otherwise, a relaxed format with only the major and minor components is allowed.\nTrue\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ntuple\n\nA tuple containing: - docs_version (str): The major and minor version of the latest release. - docs_alias (str): The alias for the documentation version, e.g., “latest”.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nset_docs_version: Sets the version and alias in the GitHub environment.\n\n\n\n&gt;&gt;&gt; get_docs_version()\n('1.0', 'latest')\n\n\n\n\ndocs.parse_action_yaml(filename)\nParses a YAML file and returns its contents as a dictionary.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe path to the YAML file to be parsed.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ndict\n\nThe contents of the YAML file as a dictionary.\n\n\n\n\n\n\n\ndocs.set_docs_version(\n    repo,\n    release_tag=None,\n    strict_semver=True,\n    environ='GITHUB_OUTPUT',\n)\nSet version and alias in GitHub environment variables for docs website action.\nThis function retrieves the documentation version and alias using get_docs_version and sets them as environment variables in the GitHub Actions environment.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_tag\nstr\nSpecific release tag to use for determining the version. Defaults to None.\nNone\n\n\nstrict_semver\nbool\nWhether to enforce strict semantic versioning. Defaults to True.\nTrue\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nget_docs_version: Retrieves the documentation version and alias. set_output: Sets the GitHub Actions environment variable.\n\n\n\n&gt;&gt;&gt; set_docs_version()",
+    "crumbs": [
+      "Python package",
+      "API reference",
+      "docs"
     ]
   },
   {
@@ -55,53 +107,6 @@
     ]
   },
   {
-    "objectID": "reference/actions.html",
-    "href": "reference/actions.html",
-    "title": "actions",
-    "section": "",
-    "text": "actions\nDownload and use GitHub Actions workflow files.\n\n\n\n\n\nName\nDescription\n\n\n\n\nset_output\nSet a GitHub Actions output variable.\n\n\ntrigger_workflow\nTrigger a GitHub Actions workflow.\n\n\nuse_github_action\nDownload an example GitHub Actions workflow file from CCBR/actions.\n\n\n\n\n\nactions.set_output(name, value, environ='GITHUB_OUTPUT')\nSet a GitHub Actions output variable.\nWrite the given name and value to the GitHub Actions environment file specified by the GITHUB_OUTPUT environment variable. You can then access the variable in GitHub Actions using ${{ steps.&lt;step_id&gt;.outputs.&lt;name&gt; }}.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the output variable to set.\nrequired\n\n\nvalue\nstr\nThe value of the output variable to set.\nrequired\n\n\nenviron\nstr\nThe environment variable that specifies the GitHub Actions environment file. Defaults to “GITHUB_OUTPUT”.\n'GITHUB_OUTPUT'\n\n\n\n\n\n\n&gt;&gt;&gt; set_output(\"VERSION\", \"1.0.0\")\n&gt;&gt;&gt; set_output(\"ALIAS\", \"latest\")\n\n\n\n\nactions.trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False)\nTrigger a GitHub Actions workflow.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nworkflow_name\nstr\nThe name of the workflow to trigger.\nrequired\n\n\nbranch\nstr\nThe branch to trigger the workflow on.\nrequired\n\n\nrepo\nstr\nThe GitHub repository to trigger the workflow in.\nrequired\n\n\n\n\n\n\n\nactions.use_github_action(\n    name,\n    ref=None,\n    url=None,\n    save_as=None,\n    repo='CCBR/actions',\n)\nDownload an example GitHub Actions workflow file from CCBR/actions.\nThis function was inspired by {usethis}: https://usethis.r-lib.org/reference/github_actions.html\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the GitHub Actions workflow file to download.\nrequired\n\n\nref\nstr\nThe git reference (branch, tag, or commit SHA) to use. Defaults to None, in which case the latest release or “main” is used.\nNone\n\n\nurl\nstr\nThe URL to download the workflow file from. Defaults to building it based on the repo and ref.\nNone\n\n\nsave_as\nstr\nThe path to save the downloaded workflow file. Defaults to building it based on .github/workflows/name.yml.\nNone\n\n\nrepo\nstr\nThe GitHub repository to download the workflow file from. Defaults to “CCBR/actions”.\n'CCBR/actions'\n\n\n\n\n\n\nget_latest_release_tag: Get the latest release tag from a GitHub repository. get_docs_version: Get the documentation version and alias.\n\n\n\nIf ref is not provided, the latest release tag is used (if available) or main. If url is not provided, the URL is constructed based on the repository and reference. If save_as is not provided, the file is saved in the .github/workflows directory.\n\n\n\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")",
-    "crumbs": [
-      "Python package",
-      "API reference",
-      "actions"
-    ]
-  },
-  {
-    "objectID": "reference/actions.html#functions",
-    "href": "reference/actions.html#functions",
-    "title": "actions",
-    "section": "",
-    "text": "Name\nDescription\n\n\n\n\nset_output\nSet a GitHub Actions output variable.\n\n\ntrigger_workflow\nTrigger a GitHub Actions workflow.\n\n\nuse_github_action\nDownload an example GitHub Actions workflow file from CCBR/actions.\n\n\n\n\n\nactions.set_output(name, value, environ='GITHUB_OUTPUT')\nSet a GitHub Actions output variable.\nWrite the given name and value to the GitHub Actions environment file specified by the GITHUB_OUTPUT environment variable. You can then access the variable in GitHub Actions using ${{ steps.&lt;step_id&gt;.outputs.&lt;name&gt; }}.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the output variable to set.\nrequired\n\n\nvalue\nstr\nThe value of the output variable to set.\nrequired\n\n\nenviron\nstr\nThe environment variable that specifies the GitHub Actions environment file. Defaults to “GITHUB_OUTPUT”.\n'GITHUB_OUTPUT'\n\n\n\n\n\n\n&gt;&gt;&gt; set_output(\"VERSION\", \"1.0.0\")\n&gt;&gt;&gt; set_output(\"ALIAS\", \"latest\")\n\n\n\n\nactions.trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False)\nTrigger a GitHub Actions workflow.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nworkflow_name\nstr\nThe name of the workflow to trigger.\nrequired\n\n\nbranch\nstr\nThe branch to trigger the workflow on.\nrequired\n\n\nrepo\nstr\nThe GitHub repository to trigger the workflow in.\nrequired\n\n\n\n\n\n\n\nactions.use_github_action(\n    name,\n    ref=None,\n    url=None,\n    save_as=None,\n    repo='CCBR/actions',\n)\nDownload an example GitHub Actions workflow file from CCBR/actions.\nThis function was inspired by {usethis}: https://usethis.r-lib.org/reference/github_actions.html\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the GitHub Actions workflow file to download.\nrequired\n\n\nref\nstr\nThe git reference (branch, tag, or commit SHA) to use. Defaults to None, in which case the latest release or “main” is used.\nNone\n\n\nurl\nstr\nThe URL to download the workflow file from. Defaults to building it based on the repo and ref.\nNone\n\n\nsave_as\nstr\nThe path to save the downloaded workflow file. Defaults to building it based on .github/workflows/name.yml.\nNone\n\n\nrepo\nstr\nThe GitHub repository to download the workflow file from. Defaults to “CCBR/actions”.\n'CCBR/actions'\n\n\n\n\n\n\nget_latest_release_tag: Get the latest release tag from a GitHub repository. get_docs_version: Get the documentation version and alias.\n\n\n\nIf ref is not provided, the latest release tag is used (if available) or main. If url is not provided, the URL is constructed based on the repository and reference. If save_as is not provided, the file is saved in the .github/workflows directory.\n\n\n\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")",
-    "crumbs": [
-      "Python package",
-      "API reference",
-      "actions"
-    ]
-  },
-  {
-    "objectID": "reference/versions.html",
-    "href": "reference/versions.html",
-    "title": "versions",
-    "section": "",
-    "text": "versions\nversions\nGet information from git tags, commit hashes, and GitHub releases.",
-    "crumbs": [
-      "Python package",
-      "API reference",
-      "versions"
-    ]
-  },
-  {
-    "objectID": "examples.html",
-    "href": "examples.html",
-    "title": "Example Workflows",
-    "section": "",
-    "text": "You can copy these to your own repository in the .github/workflows/ directory and modify them for your needs.\n\nadd-issue-label-list\n Source\nname: add-issue-label-list\n\non:\n  workflow_dispatch:\n    inputs:\n      issue-num:\n        required: true\n        type: string\n        description: \"Number of the issue to update (issue should already exist!)\"\n      label-name:\n        required: true\n        type: string\n        description: \"Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)\"\n\npermissions:\n  contents: read\n  issues: write\n  pull-requests: write\n\njobs:\n  add-list:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/add-issue-label-list\n        with:\n          github-token: ${{ github.token }}\n          issue-num: ${{ inputs.issue-num }}\n          label-name: ${{ inputs.label-name }}\n\n\nauto-format\n Source\nname: auto-format\n\non:\n  workflow_dispatch:\n  pull_request:\n\nenv:\n  GH_TOKEN: ${{ github.token }}\n\npermissions:\n  contents: write\n  pull-requests: write\n\njobs:\n  auto-format:\n    runs-on: ubuntu-latest\n\n    steps:\n      - uses: actions/checkout@v4\n        if: github.event_name == 'pull_request'\n        with:\n          fetch-depth: 0\n          ref: ${{ github.event.pull_request.head.ref }}\n      - uses: actions/checkout@v4\n        if: github.event_name != 'pull_request'\n        with:\n          fetch-depth: 0\n\n      - name: format\n        uses: pre-commit/action@v3.0.1\n        continue-on-error: true\n      - name: commit & push\n        run: |\n          git config --global user.name \"github-actions[bot]\"\n          git config --global user.email \"41898282+github-actions[bot]@users.noreply.github.com\"\n          git add .\n          git commit -m \"ci: 🤖 format everything with pre-commit\" && git push || echo \"nothing to commit\"\n\n\nbuild-docker-auto\n Source\n# This GitHub Actions workflow is designed to trigger a manual Docker build for each modified Dockerfile.\n#\n# Workflow Name: build-docker-auto\n# Short Description: Trigger Build Docker Manual for Each modified Dockerfile\n#\n# Triggers:\n# - On push events to any branch except 'main' and 'dev', if any Dockerfile.* is modified.\n# - On pull request events to 'main' and 'dev' branches, if any Dockerfile.* is modified.\n#\n# Jobs:\n#   - Runs on the latest Ubuntu environment.\n#   - Steps:\n#     1. Check out the repository using actions/checkout@v4.\n#     2. Identify modified Dockerfiles using git diff and store them in the environment variable 'dockerfiles'.\n#     3. For each modified Dockerfile, trigger the 'build-docker-manual' workflow with the Dockerfile path and additional parameters.\n#\n# Environment Variables:\n# - GITHUB_TOKEN: Used for authentication to trigger the 'build-docker-manual' workflow.\n\nname: build-docker-auto\n\non:\n  push:\n    branches:\n      - \"**autobuild**\" # Only trigger if the branch name contains \"autobuild\"\n    paths:\n      - \"**/Dockerfile.*\" # Only trigger if a Dockerfile.* is modified in any directory\n\n  pull_request:\n    branches:\n      - main\n      - dev\n    paths:\n      - \"**/Dockerfile.*\" # Only trigger if a Dockerfile.* is modified in any directory\n\nenv:\n  suffix: ${{ github.base_ref == 'main' && github.event_name == 'pull_request' && 'main' || github.base_ref == 'dev' && github.event_name == 'pull_request' && 'dev' || 'feat' }}\n\npermissions:\n  contents: read\n\njobs:\n  get-files:\n    runs-on: ubuntu-latest\n    outputs:\n      json: ${{ steps.changed-files.outputs.matched_files_json }}\n    steps:\n      - name: Checkout repository\n        id: checkout\n        uses: actions/checkout@v4\n\n      - id: changed-files\n        name: Check changed files\n        uses: knu/changed-files@v1\n        with:\n          paths: |\n            **/Dockerfile.*\n\n      - name: Show changed files\n        id: matrix\n        run: |\n          echo \"matched files:\"\n          echo \"${{ steps.changed-files.outputs.matched_files }}\" | sed 's/^/  /'\n\n  build-docker:\n    needs: [get-files]\n    strategy:\n      matrix:\n        file: \"${{ fromJson(needs.get-files.outputs.json) }}\"\n      max-parallel: 1\n      fail-fast: false\n    continue-on-error: true\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n      pull-requests: write\n    steps:\n      - uses: actions/checkout@v4\n        name: \"checkout PR ${{ github.head_ref }}\"\n        if: github.event_name == 'pull_request'\n        with:\n          fetch-depth: 0\n          ref: ${{ github.head_ref }} # branch name of PR\n\n      - uses: actions/checkout@v4\n        name: \"checkout push ${{ github.ref_name }}\"\n        if: github.event_name == 'push'\n        with:\n          fetch-depth: 0\n          ref: ${{ github.ref_name }} # branch name of push\n\n      - uses: CCBR/actions/build-docker@v0.2\n        with:\n          dockerfile: ${{ matrix.file }}\n          dockerhub-namespace: nciccbr\n          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}\n          dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}\n          suffix: ${{ env.suffix }}\n          push: true\n          ccbr-actions-version: v0.2\n          github-token: ${{ github.token }}\n          json-file: \"scripts/tool_version_commands.json\"\n\n\nbuild-docker-manual\n Source\n# This GitHub Actions workflow is designed to manually build and optionally push a Docker image to DockerHub.\n#\n# Workflow Name: build-docker-manual\n#\n# Inputs:\n# - dockerfile: Path to the Dockerfile in the repository (e.g., common/ccbr_bwa/Dockerfile). This input is required.\n# - dockerhub-namespace: DockerHub namespace or organization name (e.g., nciccbr). This input is required and defaults to 'nciccbr'.\n# - push: Boolean flag to determine whether to push the built image to DockerHub. This input is required and defaults to 'false'.\n#\n# Jobs:\n# - build-docker: This job runs on an Ubuntu latest runner and performs the following steps:\n#   - Checks out the repository.\n#   - Logs in to DockerHub if the 'push' input is set to 'true'.\n#   - Prepares build-time variables by running a custom script.\n#   - Checks variables and creates a temporary README file with build details.\n#   - Builds and optionally pushes the Docker image using the docker/build-push-action.\n#   - Lists Docker images on the runner.\n#   - Updates the DockerHub description with the contents of the temporary README file if the image was successfully pushed.\n\nname: build-docker-manual\nrun-name: build-docker ${{ inputs.dockerfile }}-${{ inputs.suffix }}\n\non:\n  workflow_dispatch:\n    inputs:\n      dockerfile:\n        type: string\n        description: path to the Dockerfile in the repo (e.g. common/ccbr_bwa/Dockerfile)\n        required: true\n      dockerhub-namespace:\n        type: string\n        description: dockerhub namespace or org name (e.g. nciccbr)\n        required: true\n        default: nciccbr\n      suffix:\n        type: string\n        description: Suffix to add to image tag eg. \"dev\" to add \"-dev\"\n        required: true\n        default: feat\n      push:\n        type: boolean\n        description: Push to DockerHub (leave unchecked to just build the container without pushing)\n        required: true\n        default: false\n      ccbr-actions-version:\n        description: \"The version of ccbr_actions to use\"\n        required: true\n        default: \"v0.2\"\n\npermissions:\n  contents: read\n\njobs:\n  build-docker:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n      pull-requests: write\n    steps:\n      - name: Checkout repository\n        id: checkout\n        uses: actions/checkout@v4\n\n      - uses: CCBR/actions/build-docker@v0.2\n        with:\n          dockerfile: ${{ github.event.inputs.dockerfile }}\n          dockerhub-namespace: ${{ github.event.inputs.dockerhub-namespace }}\n          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}\n          dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}\n          suffix: ${{ github.event.inputs.suffix }}\n          push: ${{ github.event.inputs.push }}\n          ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}\n          github-token: ${{ github.token }}\n          json-file: \"scripts/tool_version_commands.json\"\n\n\nbuild-nextflow\n Source\nname: build\n# TODO replace tool_name with the name of your tool\n\non:\n  push:\n    branches:\n      - main\n      - develop\n  pull_request:\n    branches:\n      - main\n      - develop\n\npermissions:\n  contents: read\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 2\n    strategy:\n      matrix:\n        python-version: [\"3.11\"]\n    steps:\n      - uses: actions/checkout@v3\n      - name: Set up Python ${{ matrix.python-version }}\n        uses: actions/setup-python@v4\n        with:\n          python-version: ${{ matrix.python-version }}\n          cache: \"pip\"\n      - name: Install nextflow\n        uses: nf-core/setup-nextflow@v1\n      - name: Install Python dependencies\n        run: |\n          python -m pip install --upgrade pip setuptools\n          pip install .[dev,test]\n      - name: Check CLI basics\n        run: |\n          which tool_name\n          tool_name --help\n          tool_name --version\n          tool_name --citation\n      - name: Stub run\n        run: |\n          mkdir -p tmp && pushd tmp\n          tool_name init\n          tool_name run -c conf/ci_stub.config -stub\n          popd\n      - name: \"Upload Artifact\"\n        uses: actions/upload-artifact@v4\n        if: always() # run even if previous steps fail\n        with:\n          name: nextflow-log\n          path: .nextflow.log\n\n  build-status: # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871\n    runs-on: ubuntu-latest\n    needs: [build]\n    if: always()\n    steps:\n      - name: Successful build\n        if: ${{ !(contains(needs.*.result, 'failure')) }}\n        run: exit 0\n      - name: Failing build\n        if: ${{ contains(needs.*.result, 'failure') }}\n        run: exit 1\n\n\nbuild-python\n Source\n# This workflow will install Python dependencies, run tests and lint with a variety of Python versions\n# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python\n\nname: build\n\non:\n  push:\n    branches:\n      - main\n      - master\n  pull_request:\n    branches:\n      - main\n      - master\n\nenv:\n  GH_TOKEN: ${{ github.token }}\n\npermissions: read-all\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    strategy:\n      fail-fast: false\n      matrix:\n        python-version: [\"3.11\"]\n\n    steps:\n      - uses: actions/checkout@v4\n      - name: Set up Python ${{ matrix.python-version }}\n        uses: actions/setup-python@v3\n        with:\n          python-version: ${{ matrix.python-version }}\n      - name: Lint\n        uses: psf/black@stable\n        continue-on-error: true\n        with:\n          options: \"--check --verbose\"\n          use_pyproject: true\n      - name: Install dependencies\n        run: |\n          python -m pip install .[dev,test] --upgrade pip\n      - name: Test\n        run: |\n          python -m pytest --cov src\n      - uses: codecov/codecov-action@v4\n        with:\n          token: ${{ secrets.CODECOV_TOKEN }}\n\n  build-status: # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871\n    runs-on: ubuntu-latest\n    needs: [build]\n    if: always()\n    steps:\n      - name: Successful build\n        if: ${{ !(contains(needs.*.result, 'failure')) }}\n        run: exit 0\n      - name: Failing build\n        if: ${{ contains(needs.*.result, 'failure') }}\n        run: exit 1\n\n\nbuild-snakemake\n Source\nname: build\n\non:\n  push:\n    branches:\n      - master\n      - main\n      - develop\n  pull_request:\n\npermissions: read-all\n\njobs:\n  dryrun-lint:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: docker://snakemake/snakemake:v7.32.4\n      - name: Dry-run\n        run: |\n          docker run -v $PWD:/opt2 -w /opt2 snakemake/snakemake:v7.32.4 \\\n            ./bin/renee run \\\n              --input .tests/KO_S3.R1.fastq.gz .tests/KO_S3.R2.fastq.gz .tests/KO_S4.R1.fastq.gz .tests/KO_S4.R2.fastq.gz .tests/WT_S1.R1.fastq.gz .tests/WT_S1.R2.fastq.gz .tests/WT_S2.R1.fastq.gz .tests/WT_S2.R2.fastq.gz \\\n              --output output \\\n              --genome config/genomes/biowulf/hg38_30.json \\\n              --shared-resources .tests/shared_resources/ \\\n              --mode local \\\n              --dry-run\n      - name: Lint\n        continue-on-error: true\n        run: |\n          docker run -v $PWD:/opt2 snakemake/snakemake:v7.32.4 \\\n            snakemake --lint -s /opt2/output/workflow/Snakefile -d /opt2/output || \\\n          echo 'There may have been a few warnings or errors. Please read through the log to determine if its harmless.'\n\n  test:\n    runs-on: ubuntu-latest\n    strategy:\n      matrix:\n        python-version: [\"3.11\"]\n        snakemake-version: [\"7.32.3\"]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: mamba-org/setup-micromamba@v1\n        with:\n          environment-name: test\n          cache-environment: true\n          condarc: |\n            channels:\n              - conda-forge\n              - bioconda\n          create-args: &gt;-\n            python=${{ matrix.python-version }}\n            snakemake=${{ matrix.snakemake-version }}\n            setuptools\n            pip\n            pytest\n      - name: check CLI basics\n        run: |\n          ./bin/renee --help\n          ./bin/renee --version\n        shell: micromamba-shell {0}\n      - name: pip install python package\n        run: |\n          pip install .[dev,test]\n        shell: micromamba-shell {0}\n      - name: Test\n        run: |\n          python -m pytest\n        env:\n          TMPDIR: ${{ runner.temp }}\n        shell: micromamba-shell {0}\n\n  build-status: # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871\n    runs-on: ubuntu-latest\n    needs: [dryrun-lint, test]\n    if: always()\n    steps:\n      - name: Successful build\n        if: ${{ !(contains(needs.*.result, 'failure')) }}\n        run: exit 0\n      - name: Failing build\n        if: ${{ contains(needs.*.result, 'failure') }}\n        run: exit 1\n\n\ncheck-links\n Source\nname: links\n\non:\n  repository_dispatch:\n  workflow_dispatch:\n  schedule:\n    - cron: \"11 13 4 * *\"\n\njobs:\n  linkChecker:\n    runs-on: ubuntu-latest\n    permissions:\n      issues: write # required for peter-evans/create-issue-from-file\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Link Checker\n        id: lychee\n        uses: lycheeverse/lychee-action@v2\n        with:\n          fail: false\n\n      - name: Create Issue From File\n        if: steps.lychee.outputs.exit_code != 0\n        uses: peter-evans/create-issue-from-file@v5\n        with:\n          title: Link Checker Report\n          content-filepath: ./lychee/out.md\n          labels: automated issue\n\n\ndocs-mkdocs\n Source\nname: docs\n# this workflow requires:\n#  - an mkdocs config file (`mkdocs.yml`)\n#  - website dependencies in `docs/requirements.txt`\non:\n  workflow_dispatch:\n  release:\n    types:\n      - published\n  push:\n    branches:\n      - main\n    paths:\n      - \"docs/**\"\n      - \"**.md\"\n      - .github/workflows/docs-mkdocs.yml\n      - mkdocs.yml\n\npermissions:\n  contents: write\n  pages: write\n\njobs:\n  mkdocs:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          fetch-depth: 0\n      - uses: CCBR/actions/mkdocs-mike@v0.2\n        with:\n          github-token: ${{ github.token }}\n\n\ndocs-quarto\n Source\nname: docs\n\non:\n  workflow_dispatch:\n  push:\n    branches: main\n    paths:\n      - \"docs/**\"\n      - \".github/workflows/docs-quarto.yml\"\n\npermissions:\n  contents: write\n  pages: write\n\njobs:\n  build-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Check out repository\n        uses: actions/checkout@v4\n\n      - name: Set up Quarto\n        uses: quarto-dev/quarto-actions/setup@v2\n\n      - name: Publish to GitHub Pages (and render)\n        uses: quarto-dev/quarto-actions/publish@v2\n        with:\n          target: gh-pages\n          path: docs/ # where the qmd documents are\n        env:\n          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n\n\ndraft-release\n Source\nname: draft-release\n\non:\n  workflow_dispatch:\n    inputs:\n      version-tag:\n        description: |\n          Semantic version tag for next release.\n          If not provided, it will be determined based on conventional commit history.\n          Example: v2.5.11\n        required: false\n        type: string\n        default: \"\"\n\npermissions:\n  contents: write\n  pull-requests: write\n  actions: write\n\njobs:\n  draft-release:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          fetch-depth: 0 # required to include tags\n      - uses: CCBR/actions/draft-release@v0.2\n        with:\n          github-token: ${{ github.token }}\n          version-tag: ${{ github.event.inputs.version-tag }}\n\n\nlabel-issues-repo-name\n Source\nname: label-issues-repo-name\n\non:\n  issues:\n    types:\n      - opened\n  pull_request:\n    types:\n      - opened\n\npermissions:\n  issues: write\n  pull-requests: write\n\njobs:\n  add-label:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/label-issue-repo-name@main\n        with:\n          github-token: ${{ github.token }}\n\n\npost-release\n Source\nname: post-release\n\non:\n  release:\n    types:\n      - published\n\npermissions:\n  contents: write\n  pull-requests: write\n  actions: write\n\njobs:\n  cleanup:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          fetch-depth: 0\n      - uses: CCBR/actions/post-release@v0.2\n        with:\n          github-token: ${{ github.token }}\n\n\ntechdev-project\n Source\nname: TechDev-project\n\non:\n  issues:\n    types:\n      - opened\n  pull_request:\n    types:\n      - opened\n\npermissions:\n  issues: write\n  pull-requests: write\n  contents: read\n\njobs:\n  add-to-project:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/add-to-project@v1.0.2\n        with:\n          project-url: https://github.com/orgs/CCBR/projects/17\n          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}\n\n\nupdate-cff-R\n Source\n# Workflow derived from https://github.com/r-lib/actions/tree/master/examples\n# The action runs when:\n# - A new release is published\n# - The DESCRIPTION or inst/CITATION are modified\n# - Can be run manually\n# For customizing the triggers, visit https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows\non:\n  release:\n    types: [published]\n  pull_request:\n    branches: [master, main]\n    paths:\n      - .github/workflows/update-citation-cff.yaml\n      - DESCRIPTION\n      - inst/CITATION\n  workflow_dispatch:\n\nname: Update CITATION.cff\n\npermissions:\n  contents: write\n\njobs:\n  update-citation-cff:\n    runs-on: macos-latest\n    env:\n      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}\n    steps:\n      - uses: actions/checkout@v3\n        with:\n          ref: ${{ github.head_ref }}\n          fetch-depth: 0\n      - uses: r-lib/actions/setup-r@v2\n      - uses: r-lib/actions/setup-r-dependencies@v2\n        with:\n          extra-packages: |\n            any::cffr\n            any::V8\n            any::docopt\n\n      - name: Update CITATION.cff\n        run: |\n\n          library(cffr)\n\n          # Customize with your own code\n          # See https://docs.ropensci.org/cffr/articles/cffr.html\n\n          # Write your own keys\n          mykeys &lt;- list()\n\n          # Create your CITATION.cff file\n          cff_write(keys = mykeys)\n\n        shell: Rscript {0}\n      - uses: pre-commit/action@v3.0.0\n        with:\n          extra_args: --files CITATION.cff\n        continue-on-error: true\n      - name: Commit results\n        run: |\n          git config --local user.name \"github-actions[bot]\"\n          git config --local user.email \"41898282+github-actions[bot]@users.noreply.github.com\"\n          git add CITATION.cff\n          git commit -m 'chore: update CITATION.cff' || echo \"No changes to commit\"\n          git push origin || echo \"No changes to commit\"\n\n\nuser-projects\n Source\nname: personal-projects\n\non:\n  issues:\n    types:\n      - assigned\n  pull_request:\n    types:\n      - assigned\n\npermissions:\n  issues: write\n  pull-requests: write\n  contents: read\n\njobs:\n  add-to-project:\n    uses: CCBR/.github/.github/workflows/auto-add-user-project.yml@v0.1.0\n    secrets: inherit",
-    "crumbs": [
-      "GitHub Actions",
-      "Example Workflows"
-    ]
-  },
-  {
     "objectID": "cite.html",
     "href": "cite.html",
     "title": "CCBR actions",
@@ -113,17 +118,6 @@
     ]
   },
   {
-    "objectID": "LICENSE.html",
-    "href": "LICENSE.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "MIT License\nCopyright (c) 2024 CCR Collaborative Bioinformatics Resource\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
-    "crumbs": [
-      "Project information",
-      "License"
-    ]
-  },
-  {
     "objectID": "gh-actions.html",
     "href": "gh-actions.html",
     "title": "CCBR actions",
@@ -131,53 +125,6 @@
     "text": "Custom GitHub Actions and example workflows for CCBR repositories. View the GitHub Actions docs for more information on how to write and use GitHub Actions workflows.",
     "crumbs": [
       "GitHub Actions"
-    ]
-  },
-  {
-    "objectID": "actions.html",
-    "href": "actions.html",
-    "title": "Actions",
-    "section": "",
-    "text": "Order By\n      Default\n      \n        action\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\naction\n\n\n\ndescription\n\n\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\n\nNo matching items",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions"
-    ]
-  },
-  {
-    "objectID": "actions/label-issue-repo-name/index.html",
-    "href": "actions/label-issue-repo-name/index.html",
-    "title": "label-issue-repo-name",
-    "section": "",
-    "text": "label-issue-repo-name - Label issues & PRs with the repository name\nThis action labels issues & PRs with the name of the repository. It is useful for organizing GitHub Project boards with issues from multiple repos.",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "label-issue-repo-name"
-    ]
-  },
-  {
-    "objectID": "actions/label-issue-repo-name/index.html#usage",
-    "href": "actions/label-issue-repo-name/index.html#usage",
-    "title": "label-issue-repo-name",
-    "section": "Usage",
-    "text": "Usage\n\nBasic example\nlabel-issues-reponame.yml\nname: label-issues-repo-name\n\non:\n  issues:\n    types:\n      - opened\n  pull_request:\n    types:\n      - opened\n\npermissions:\n  issues: write\n  pull-requests: write\n\njobs:\n  add-label:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/label-issue-repo-name@main\n        with:\n          github-token: ${{ github.token }}",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "label-issue-repo-name"
-    ]
-  },
-  {
-    "objectID": "actions/label-issue-repo-name/index.html#inputs",
-    "href": "actions/label-issue-repo-name/index.html#inputs",
-    "title": "label-issue-repo-name",
-    "section": "Inputs",
-    "text": "Inputs\n\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "label-issue-repo-name"
     ]
   },
   {
@@ -217,94 +164,27 @@
     ]
   },
   {
-    "objectID": "actions/mkdocs-mike/index.html",
-    "href": "actions/mkdocs-mike/index.html",
-    "title": "mkdocs-mike",
+    "objectID": "actions/add-issue-label-list/index.html",
+    "href": "actions/add-issue-label-list/index.html",
+    "title": "add-issue-label-list",
     "section": "",
-    "text": "mkdocs-mike - Deploy documentation to github pages using mkdocs + mike\nThis action is designed to be used with a repository that uses mkdocs to generate documentation and mike to deploy it to github pages. The action will checkout the repository, install the necessary python packages, build the documentation, and deploy it to the specified branch.",
+    "text": "add-issue-label-list - Update issue description with a list of issues of a given label\n\n\nadd-issue-label-list.yml\nname: add-issue-label-list\n\non:\n  workflow_dispatch:\n    inputs:\n      issue-num:\n        required: true\n        type: string\n        description: \"Number of the issue to update (issue should already exist!)\"\n      label-name:\n        required: true\n        type: string\n        description: \"Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)\"\n\npermissions:\n  contents: read\n  issues: write\n  pull-requests: write\n\njobs:\n  add-list:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/add-issue-label-list\n        with:\n          github-token: ${{ github.token }}\n          issue-num: ${{ inputs.issue-num }}\n          label-name: ${{ inputs.label-name }}\n\n\n\n\nissue-num: Number of the issue to update (issue should already exist!). Required.\nlabel-name: Name of the label to create a task list for (eg. RENEE or ccbr1310, etc.). Required.\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.",
     "crumbs": [
       "GitHub Actions",
       "Actions",
-      "mkdocs-mike"
+      "add-issue-label-list"
     ]
   },
   {
-    "objectID": "actions/mkdocs-mike/index.html#usage",
-    "href": "actions/mkdocs-mike/index.html#usage",
-    "title": "mkdocs-mike",
-    "section": "Usage",
-    "text": "Usage\nAny python requirements for your docs website (mkdocs, mike, other extensions) should be placed in docs/requirements.txt. You will also need an mkdocs config file mkdocs.yml in the root of your repository. To properly configure mike for your website, you will also need to complete these one-time steps:\n\ndelete any existing github workflows that deploy to github pages\ndelete all files in gh-pages if the branch exists already\ngit switch gh-pages\ngit rm -rf $(git ls-files)\ngit commit -m 'docs: delete gh-pages files to prepare for mike'\ncheck out the previous release tag and deploy it\ngit checkout v1.0.0\nmike deploy 1.0 latest --push --update-aliases --branch gh-pages\nWe recommend using just the major and minor components of the version without the leading v.\nset the default landing page:\nmike set-default latest\ndeploy the dev version from main\ngit switch main\nmike deploy dev --push --update-aliases --branch gh-pages\n\n\nBasic example\ndocs-mkdocs.yml\nsteps:\n  - uses: actions/checkout@v4\n    with:\n        fetch-depth: 0\n  - uses: CCBR/actions/mkdocs-mike@main\n    with:\n        github-token: ${{ github.token }}\n\n\nCustomized inputs\nsteps:\n  - uses: actions/checkout@v4\n    with:\n      fetch-depth: 0\n  - uses: CCBR/actions/mkdocs-mike@main\n    with:\n      github-token: ${{ github.token }}\n      ccbr-actions-version: 0.1\n      python-version: 3.12\n      docs-branch: gh-pages\n      github-actor: \"41898282+github-actions[bot]\"",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "mkdocs-mike"
-    ]
-  },
-  {
-    "objectID": "actions/mkdocs-mike/index.html#inputs",
-    "href": "actions/mkdocs-mike/index.html#inputs",
-    "title": "mkdocs-mike",
-    "section": "Inputs",
-    "text": "Inputs\n\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.\nccbr-actions-version: The version of ccbr_actions to install. Required. Default: main.\npython-version: The version of Python to install. Required. Default: 3.11.\ndocs-branch: The branch to deploy the docs website to. Required. Default: gh-pages.\ngithub-actor: Username of GitHub actor for the git commit when the docs branch is deployed. Required. Default: 41898282+github-actions[bot].\nstrict-semver: Whether to follow strict semantic versioning guidelines. Default: True.",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "mkdocs-mike"
-    ]
-  },
-  {
-    "objectID": "actions/mkdocs-mike/index.html#outputs",
-    "href": "actions/mkdocs-mike/index.html#outputs",
-    "title": "mkdocs-mike",
-    "section": "Outputs",
-    "text": "Outputs\n\nversion: The version of the docs being deployed..\nalias: The alias of the version being deployed..",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "mkdocs-mike"
-    ]
-  },
-  {
-    "objectID": "badges.html",
-    "href": "badges.html",
-    "title": "CCBR actions",
+    "objectID": "actions/add-issue-label-list/index.html#inputs",
+    "href": "actions/add-issue-label-list/index.html#inputs",
+    "title": "add-issue-label-list",
     "section": "",
-    "text": "GitHub Actions for CCBR repos"
-  },
-  {
-    "objectID": "actions/build-docker/index.html",
-    "href": "actions/build-docker/index.html",
-    "title": "build-docker",
-    "section": "",
-    "text": "build-docker - Build a docker container using CCBR guidelines\nThis action is designed to build Docker containers according to the format used in CCBR/dockers2.\nThis action:",
+    "text": "issue-num: Number of the issue to update (issue should already exist!). Required.\nlabel-name: Name of the label to create a task list for (eg. RENEE or ccbr1310, etc.). Required.\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.",
     "crumbs": [
       "GitHub Actions",
       "Actions",
-      "build-docker"
-    ]
-  },
-  {
-    "objectID": "actions/build-docker/index.html#usage",
-    "href": "actions/build-docker/index.html#usage",
-    "title": "build-docker",
-    "section": "Usage",
-    "text": "Usage\n\nBasic example\nsteps:\n  - uses: actions/checkout@v4\n    with:\n        fetch-depth: 0\n  - uses: CCBR/actions/build-docker@main\n    with:\n      dockerfile: Dockerfile.v1\n      dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}\n      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}\n      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}\n      suffix: dev\n      push: true\n      ccbr-actions-version: v0.2\n      github-token: ${{ github.token }}\n      github-actor: ${{ github.actor }}\nFor an example to manually trigger the workflow for a single docker container, see build-docker-manual.yml.\nFor an advanced example to automatically build docker containers when files change, see build-docker-auto.yml.",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "build-docker"
-    ]
-  },
-  {
-    "objectID": "actions/build-docker/index.html#inputs",
-    "href": "actions/build-docker/index.html#inputs",
-    "title": "build-docker",
-    "section": "Inputs",
-    "text": "Inputs\n\ndockerfile: path to the Dockerfile in the repo (e.g. common/ccbr_bwa/Dockerfile) . Required.\ndockerhub-namespace: dockerhub namespace or org name (e.g. nciccbr) . Required. Default: nciccbr.\ndockerhub-username: dockerhub username of a user with admin permissions for dockerhub-namespace. Recommend using secrets, e.g. secrets.DOCKERHUB_USERNAME . Required.\ndockerhub-token: dockerhub token with read & write permissions. Strongly recommend using secrets, e.g. secrets.DOCKERHUB_TOKEN .\nsuffix: Suffix to add to image tag eg. “dev” to add “-dev” . Required. Default: feat.\npush: Push to DockerHub (leave unchecked to just build the container without pushing) . Required.\nccbr-actions-version: The version of ccbr_actions to use . Required. Default: main.\npython-version: The version of Python to install . Required. Default: 3.11.\ngithub-actor: Username of GitHub actor for the git commit when the README is updated . Required. Default: 41898282+github-actions[bot].\ngithub-token: GitHub Actions token (e.g. github.token) . Required.\nprint-versions: Whether to print tool versions in the container for the README file using json-file . Default: True.\njson-file: Relative path to JSON file for printing tool versions. If not provided and print-versions is true, a default JSON file in ccbr_actions will be used. . Default: scripts/tool_version_commands.json.\ngh-merge-args: arguments for gh pr merge . Default: -ds --admin.",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "build-docker"
+      "add-issue-label-list"
     ]
   },
   {
@@ -312,7 +192,7 @@
     "href": "actions/draft-release/index.html",
     "title": "draft-release",
     "section": "",
-    "text": "draft-release - Draft a new release based on conventional commits and prepare release notes\nThis action helps create a draft release based on the contents of the changelog and commit history. It is designed to be used in a manually triggered workflow to draft a release. The latest commit in the branch you run the workflow from will be used as the target for the release tag.",
+    "text": "draft-release - Draft a new release based on conventional commits and prepare release notes\nThis action helps create a draft release based on the contents of the changelog and commit history. It is designed to be used in a manually triggered workflow to draft a release.\nThis action checks out the latest commit in the branch you run the workflow from, updates files (including CHANGELOG.md, VERSION, CITATION.cff, and codemeta.json), and then creates a draft release with the new version and changelog entry.\nAfter the workflow completes, navigate to the Releases page on GitHub and ensure everything looks correct, then publish the release when you’re ready.",
     "crumbs": [
       "GitHub Actions",
       "Actions",
@@ -344,41 +224,6 @@
     ]
   },
   {
-    "objectID": "actions/add-issue-label-list/index.html",
-    "href": "actions/add-issue-label-list/index.html",
-    "title": "add-issue-label-list",
-    "section": "",
-    "text": "add-issue-label-list - Update issue description with a list of issues of a given label\n\n\nadd-issue-label-list.yml\nname: add-issue-label-list\n\non:\n  workflow_dispatch:\n    inputs:\n      issue-num:\n        required: true\n        type: string\n        description: \"Number of the issue to update (issue should already exist!)\"\n      label-name:\n        required: true\n        type: string\n        description: \"Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)\"\n\npermissions:\n  contents: read\n  issues: write\n  pull-requests: write\n\njobs:\n  add-list:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/add-issue-label-list\n        with:\n          github-token: ${{ github.token }}\n          issue-num: ${{ inputs.issue-num }}\n          label-name: ${{ inputs.label-name }}\n\n\n\n\nissue-num: Number of the issue to update (issue should already exist!). Required.\nlabel-name: Name of the label to create a task list for (eg. RENEE or ccbr1310, etc.). Required.\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "add-issue-label-list"
-    ]
-  },
-  {
-    "objectID": "actions/add-issue-label-list/index.html#inputs",
-    "href": "actions/add-issue-label-list/index.html#inputs",
-    "title": "add-issue-label-list",
-    "section": "",
-    "text": "issue-num: Number of the issue to update (issue should already exist!). Required.\nlabel-name: Name of the label to create a task list for (eg. RENEE or ccbr1310, etc.). Required.\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.",
-    "crumbs": [
-      "GitHub Actions",
-      "Actions",
-      "add-issue-label-list"
-    ]
-  },
-  {
-    "objectID": "install.html",
-    "href": "install.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.1",
-    "crumbs": [
-      "Python package",
-      "Installation"
-    ]
-  },
-  {
     "objectID": "package.html",
     "href": "package.html",
     "title": "ccbr_actions",
@@ -386,36 +231,6 @@
     "text": "ccbr_actions is a Python package with helper functions used by our custom GitHub Actions. You do not need to install the package in order to use the example workflows, as the actions install their dependencies as needed. However, you can install the package if you wish to use it outside of GitHub Actions or contribute changes.\nSee detailed usage information in the API reference.",
     "crumbs": [
       "Python package"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "GitHub Actions for CCBR repos\nCustom GitHub Actions and example workflows for CCBR repositories. View the GitHub Actions docs for more information on how to write and use GitHub Actions workflows.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#help-contributing",
-    "href": "index.html#help-contributing",
-    "title": "CCBR actions",
-    "section": "Help & Contributing",
-    "text": "Help & Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question? Ask it in discussions.\nWant to contribute to this project? Check out the contributing guidelines.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#actions",
-    "href": "index.html#actions",
-    "title": "CCBR actions",
-    "section": "Actions",
-    "text": "Actions\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        action\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\naction\n\n\n\ndescription\n\n\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\n\nNo matching items",
-    "crumbs": [
-      "Home"
     ]
   },
   {
@@ -463,11 +278,62 @@
     ]
   },
   {
+    "objectID": "actions.html",
+    "href": "actions.html",
+    "title": "Actions",
+    "section": "",
+    "text": "Order By\n      Default\n      \n        action\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\naction\n\n\n\ndescription\n\n\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\n\nNo matching items",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions"
+    ]
+  },
+  {
+    "objectID": "install.html",
+    "href": "install.html",
+    "title": "CCBR actions",
+    "section": "",
+    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.1",
+    "crumbs": [
+      "Python package",
+      "Installation"
+    ]
+  },
+  {
+    "objectID": "LICENSE.html",
+    "href": "LICENSE.html",
+    "title": "CCBR actions",
+    "section": "",
+    "text": "MIT License\nCopyright (c) 2024 CCR Collaborative Bioinformatics Resource\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\nTHE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+    "crumbs": [
+      "Project information",
+      "License"
+    ]
+  },
+  {
+    "objectID": "help.html",
+    "href": "help.html",
+    "title": "CCBR actions",
+    "section": "",
+    "text": "Come across a bug? Open an issue and include a minimal reproducible example.\nHave a question? Ask it in discussions.\nWant to contribute to this project? Check out the contributing guidelines."
+  },
+  {
+    "objectID": "examples.html",
+    "href": "examples.html",
+    "title": "Example Workflows",
+    "section": "",
+    "text": "You can copy these to your own repository in the .github/workflows/ directory and modify them for your needs.\n\nadd-issue-label-list\n Source\nname: add-issue-label-list\n\non:\n  workflow_dispatch:\n    inputs:\n      issue-num:\n        required: true\n        type: string\n        description: \"Number of the issue to update (issue should already exist!)\"\n      label-name:\n        required: true\n        type: string\n        description: \"Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)\"\n\npermissions:\n  contents: read\n  issues: write\n  pull-requests: write\n\njobs:\n  add-list:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/add-issue-label-list\n        with:\n          github-token: ${{ github.token }}\n          issue-num: ${{ inputs.issue-num }}\n          label-name: ${{ inputs.label-name }}\n\n\nauto-format\n Source\nname: auto-format\n\non:\n  workflow_dispatch:\n  pull_request:\n\nenv:\n  GH_TOKEN: ${{ github.token }}\n\npermissions:\n  contents: write\n  pull-requests: write\n\njobs:\n  auto-format:\n    runs-on: ubuntu-latest\n\n    steps:\n      - uses: actions/checkout@v4\n        if: github.event_name == 'pull_request'\n        with:\n          fetch-depth: 0\n          ref: ${{ github.event.pull_request.head.ref }}\n      - uses: actions/checkout@v4\n        if: github.event_name != 'pull_request'\n        with:\n          fetch-depth: 0\n\n      - name: update codemeta\n        run: |\n          if [ -f CITATION.cff ]; then\n            cffconvert -f codemeta &gt; codemeta.json\n          fi\n\n      - name: format\n        uses: pre-commit/action@v3.0.1\n        continue-on-error: true\n\n      - name: commit & push\n        run: |\n          git config --global user.name \"github-actions[bot]\"\n          git config --global user.email \"41898282+github-actions[bot]@users.noreply.github.com\"\n          git add .\n          git commit -m \"ci: 🤖 format everything with pre-commit\" && git push || echo \"nothing to commit\"\n\n\nbuild-docker-auto\n Source\n# This GitHub Actions workflow is designed to trigger a manual Docker build for each modified Dockerfile.\n#\n# Workflow Name: build-docker-auto\n# Short Description: Trigger Build Docker Manual for Each modified Dockerfile\n#\n# Triggers:\n# - On push events to any branch except 'main' and 'dev', if any Dockerfile.* is modified.\n# - On pull request events to 'main' and 'dev' branches, if any Dockerfile.* is modified.\n#\n# Jobs:\n#   - Runs on the latest Ubuntu environment.\n#   - Steps:\n#     1. Check out the repository using actions/checkout@v4.\n#     2. Identify modified Dockerfiles using git diff and store them in the environment variable 'dockerfiles'.\n#     3. For each modified Dockerfile, trigger the 'build-docker-manual' workflow with the Dockerfile path and additional parameters.\n#\n# Environment Variables:\n# - GITHUB_TOKEN: Used for authentication to trigger the 'build-docker-manual' workflow.\n\nname: build-docker-auto\n\non:\n  push:\n    branches:\n      - \"**autobuild**\" # Only trigger if the branch name contains \"autobuild\"\n    paths:\n      - \"**/Dockerfile.*\" # Only trigger if a Dockerfile.* is modified in any directory\n\n  pull_request:\n    branches:\n      - main\n      - dev\n    paths:\n      - \"**/Dockerfile.*\" # Only trigger if a Dockerfile.* is modified in any directory\n\nenv:\n  suffix: ${{ github.base_ref == 'main' && github.event_name == 'pull_request' && 'main' || github.base_ref == 'dev' && github.event_name == 'pull_request' && 'dev' || 'feat' }}\n\npermissions:\n  contents: read\n\njobs:\n  get-files:\n    runs-on: ubuntu-latest\n    outputs:\n      json: ${{ steps.changed-files.outputs.matched_files_json }}\n    steps:\n      - name: Checkout repository\n        id: checkout\n        uses: actions/checkout@v4\n\n      - id: changed-files\n        name: Check changed files\n        uses: knu/changed-files@v1\n        with:\n          paths: |\n            **/Dockerfile.*\n\n      - name: Show changed files\n        id: matrix\n        run: |\n          echo \"matched files:\"\n          echo \"${{ steps.changed-files.outputs.matched_files }}\" | sed 's/^/  /'\n\n  build-docker:\n    needs: [get-files]\n    strategy:\n      matrix:\n        file: \"${{ fromJson(needs.get-files.outputs.json) }}\"\n      max-parallel: 1\n      fail-fast: false\n    continue-on-error: true\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n      pull-requests: write\n    steps:\n      - uses: actions/checkout@v4\n        name: \"checkout PR ${{ github.head_ref }}\"\n        if: github.event_name == 'pull_request'\n        with:\n          fetch-depth: 0\n          ref: ${{ github.head_ref }} # branch name of PR\n\n      - uses: actions/checkout@v4\n        name: \"checkout push ${{ github.ref_name }}\"\n        if: github.event_name == 'push'\n        with:\n          fetch-depth: 0\n          ref: ${{ github.ref_name }} # branch name of push\n\n      - uses: CCBR/actions/build-docker@v0.2\n        with:\n          dockerfile: ${{ matrix.file }}\n          dockerhub-namespace: nciccbr\n          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}\n          dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}\n          suffix: ${{ env.suffix }}\n          push: true\n          ccbr-actions-version: v0.2\n          github-token: ${{ github.token }}\n          json-file: \"scripts/tool_version_commands.json\"\n\n\nbuild-docker-manual\n Source\n# This GitHub Actions workflow is designed to manually build and optionally push a Docker image to DockerHub.\n#\n# Workflow Name: build-docker-manual\n#\n# Inputs:\n# - dockerfile: Path to the Dockerfile in the repository (e.g., common/ccbr_bwa/Dockerfile). This input is required.\n# - dockerhub-namespace: DockerHub namespace or organization name (e.g., nciccbr). This input is required and defaults to 'nciccbr'.\n# - push: Boolean flag to determine whether to push the built image to DockerHub. This input is required and defaults to 'false'.\n#\n# Jobs:\n# - build-docker: This job runs on an Ubuntu latest runner and performs the following steps:\n#   - Checks out the repository.\n#   - Logs in to DockerHub if the 'push' input is set to 'true'.\n#   - Prepares build-time variables by running a custom script.\n#   - Checks variables and creates a temporary README file with build details.\n#   - Builds and optionally pushes the Docker image using the docker/build-push-action.\n#   - Lists Docker images on the runner.\n#   - Updates the DockerHub description with the contents of the temporary README file if the image was successfully pushed.\n\nname: build-docker-manual\nrun-name: build-docker ${{ inputs.dockerfile }}-${{ inputs.suffix }}\n\non:\n  workflow_dispatch:\n    inputs:\n      dockerfile:\n        type: string\n        description: path to the Dockerfile in the repo (e.g. common/ccbr_bwa/Dockerfile)\n        required: true\n      dockerhub-namespace:\n        type: string\n        description: dockerhub namespace or org name (e.g. nciccbr)\n        required: true\n        default: nciccbr\n      suffix:\n        type: string\n        description: Suffix to add to image tag eg. \"dev\" to add \"-dev\"\n        required: true\n        default: feat\n      push:\n        type: boolean\n        description: Push to DockerHub (leave unchecked to just build the container without pushing)\n        required: true\n        default: false\n      ccbr-actions-version:\n        description: \"The version of ccbr_actions to use\"\n        required: true\n        default: \"v0.2\"\n\npermissions:\n  contents: read\n\njobs:\n  build-docker:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: write\n      pull-requests: write\n    steps:\n      - name: Checkout repository\n        id: checkout\n        uses: actions/checkout@v4\n\n      - uses: CCBR/actions/build-docker@v0.2\n        with:\n          dockerfile: ${{ github.event.inputs.dockerfile }}\n          dockerhub-namespace: ${{ github.event.inputs.dockerhub-namespace }}\n          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}\n          dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}\n          suffix: ${{ github.event.inputs.suffix }}\n          push: ${{ github.event.inputs.push }}\n          ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}\n          github-token: ${{ github.token }}\n          json-file: \"scripts/tool_version_commands.json\"\n\n\nbuild-nextflow\n Source\nname: build\n# TODO replace tool_name with the name of your tool\n\non:\n  push:\n    branches:\n      - main\n      - develop\n  pull_request:\n    branches:\n      - main\n      - develop\n\npermissions:\n  contents: read\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 2\n    strategy:\n      matrix:\n        python-version: [\"3.11\"]\n    steps:\n      - uses: actions/checkout@v3\n      - name: Set up Python ${{ matrix.python-version }}\n        uses: actions/setup-python@v4\n        with:\n          python-version: ${{ matrix.python-version }}\n          cache: \"pip\"\n      - name: Install nextflow\n        uses: nf-core/setup-nextflow@v1\n      - name: Install Python dependencies\n        run: |\n          python -m pip install --upgrade pip setuptools\n          pip install .[dev,test]\n      - name: Check CLI basics\n        run: |\n          which tool_name\n          tool_name --help\n          tool_name --version\n          tool_name --citation\n      - name: Stub run\n        run: |\n          mkdir -p tmp && pushd tmp\n          tool_name init\n          tool_name run -c conf/ci_stub.config -stub\n          popd\n      - name: \"Upload Artifact\"\n        uses: actions/upload-artifact@v4\n        if: always() # run even if previous steps fail\n        with:\n          name: nextflow-log\n          path: .nextflow.log\n\n  build-status: # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871\n    runs-on: ubuntu-latest\n    needs: [build]\n    if: always()\n    steps:\n      - name: Successful build\n        if: ${{ !(contains(needs.*.result, 'failure')) }}\n        run: exit 0\n      - name: Failing build\n        if: ${{ contains(needs.*.result, 'failure') }}\n        run: exit 1\n\n\nbuild-python\n Source\n# This workflow will install Python dependencies, run tests and lint with a variety of Python versions\n# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python\n\nname: build\n\non:\n  push:\n    branches:\n      - main\n      - master\n  pull_request:\n    branches:\n      - main\n      - master\n\nenv:\n  GH_TOKEN: ${{ github.token }}\n\npermissions: read-all\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    strategy:\n      fail-fast: false\n      matrix:\n        python-version: [\"3.11\"]\n\n    steps:\n      - uses: actions/checkout@v4\n      - name: Set up Python ${{ matrix.python-version }}\n        uses: actions/setup-python@v3\n        with:\n          python-version: ${{ matrix.python-version }}\n      - name: Lint\n        uses: psf/black@stable\n        continue-on-error: true\n        with:\n          options: \"--check --verbose\"\n          use_pyproject: true\n      - name: Install dependencies\n        run: |\n          python -m pip install .[dev,test] --upgrade pip\n      - name: Test\n        run: |\n          python -m pytest --cov src\n      - uses: codecov/codecov-action@v4\n        with:\n          token: ${{ secrets.CODECOV_TOKEN }}\n\n  build-status: # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871\n    runs-on: ubuntu-latest\n    needs: [build]\n    if: always()\n    steps:\n      - name: Successful build\n        if: ${{ !(contains(needs.*.result, 'failure')) }}\n        run: exit 0\n      - name: Failing build\n        if: ${{ contains(needs.*.result, 'failure') }}\n        run: exit 1\n\n\nbuild-snakemake\n Source\nname: build\n\non:\n  push:\n    branches:\n      - master\n      - main\n      - develop\n  pull_request:\n\npermissions: read-all\n\njobs:\n  dryrun-lint:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: docker://snakemake/snakemake:v7.32.4\n      - name: Dry-run\n        run: |\n          docker run -v $PWD:/opt2 -w /opt2 snakemake/snakemake:v7.32.4 \\\n            ./bin/renee run \\\n              --input .tests/KO_S3.R1.fastq.gz .tests/KO_S3.R2.fastq.gz .tests/KO_S4.R1.fastq.gz .tests/KO_S4.R2.fastq.gz .tests/WT_S1.R1.fastq.gz .tests/WT_S1.R2.fastq.gz .tests/WT_S2.R1.fastq.gz .tests/WT_S2.R2.fastq.gz \\\n              --output output \\\n              --genome config/genomes/biowulf/hg38_30.json \\\n              --shared-resources .tests/shared_resources/ \\\n              --mode local \\\n              --dry-run\n      - name: Lint\n        continue-on-error: true\n        run: |\n          docker run -v $PWD:/opt2 snakemake/snakemake:v7.32.4 \\\n            snakemake --lint -s /opt2/output/workflow/Snakefile -d /opt2/output || \\\n          echo 'There may have been a few warnings or errors. Please read through the log to determine if its harmless.'\n\n  test:\n    runs-on: ubuntu-latest\n    strategy:\n      matrix:\n        python-version: [\"3.11\"]\n        snakemake-version: [\"7.32.3\"]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: mamba-org/setup-micromamba@v1\n        with:\n          environment-name: test\n          cache-environment: true\n          condarc: |\n            channels:\n              - conda-forge\n              - bioconda\n          create-args: &gt;-\n            python=${{ matrix.python-version }}\n            snakemake=${{ matrix.snakemake-version }}\n            setuptools\n            pip\n            pytest\n      - name: check CLI basics\n        run: |\n          ./bin/renee --help\n          ./bin/renee --version\n        shell: micromamba-shell {0}\n      - name: pip install python package\n        run: |\n          pip install .[dev,test]\n        shell: micromamba-shell {0}\n      - name: Test\n        run: |\n          python -m pytest\n        env:\n          TMPDIR: ${{ runner.temp }}\n        shell: micromamba-shell {0}\n\n  build-status: # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871\n    runs-on: ubuntu-latest\n    needs: [dryrun-lint, test]\n    if: always()\n    steps:\n      - name: Successful build\n        if: ${{ !(contains(needs.*.result, 'failure')) }}\n        run: exit 0\n      - name: Failing build\n        if: ${{ contains(needs.*.result, 'failure') }}\n        run: exit 1\n\n\ncheck-links\n Source\nname: links\n\non:\n  repository_dispatch:\n  workflow_dispatch:\n  schedule:\n    - cron: \"11 13 4 * *\"\n\njobs:\n  linkChecker:\n    runs-on: ubuntu-latest\n    permissions:\n      issues: write # required for peter-evans/create-issue-from-file\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Link Checker\n        id: lychee\n        uses: lycheeverse/lychee-action@v2\n        with:\n          fail: false\n\n      - name: Create Issue From File\n        if: steps.lychee.outputs.exit_code != 0\n        uses: peter-evans/create-issue-from-file@v5\n        with:\n          title: Link Checker Report\n          content-filepath: ./lychee/out.md\n          labels: automated issue\n\n\ndocs-mkdocs\n Source\nname: docs\n# this workflow requires:\n#  - an mkdocs config file (`mkdocs.yml`)\n#  - website dependencies in `docs/requirements.txt`\non:\n  workflow_dispatch:\n  release:\n    types:\n      - published\n  push:\n    branches:\n      - main\n    paths:\n      - \"docs/**\"\n      - \"**.md\"\n      - .github/workflows/docs-mkdocs.yml\n      - mkdocs.yml\n\npermissions:\n  contents: write\n  pages: write\n\njobs:\n  mkdocs:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          fetch-depth: 0\n      - uses: CCBR/actions/mkdocs-mike@v0.2\n        with:\n          github-token: ${{ github.token }}\n\n\ndocs-quarto\n Source\nname: docs\n\non:\n  workflow_dispatch:\n  push:\n    branches: main\n    paths:\n      - \"docs/**\"\n      - \".github/workflows/docs-quarto.yml\"\n\npermissions:\n  contents: write\n  pages: write\n\njobs:\n  build-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - name: Check out repository\n        uses: actions/checkout@v4\n\n      - name: Set up Quarto\n        uses: quarto-dev/quarto-actions/setup@v2\n\n      - name: Publish to GitHub Pages (and render)\n        uses: quarto-dev/quarto-actions/publish@v2\n        with:\n          target: gh-pages\n          path: docs/ # where the qmd documents are\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n\n\ndraft-release\n Source\nname: draft-release\n\non:\n  workflow_dispatch:\n    inputs:\n      version-tag:\n        description: |\n          Semantic version tag for next release.\n          If not provided, it will be determined based on conventional commit history.\n          Example: v2.5.11\n        required: false\n        type: string\n        default: \"\"\n\npermissions:\n  contents: write\n  pull-requests: write\n  actions: write\n\njobs:\n  draft-release:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          fetch-depth: 0 # required to include tags\n      - uses: CCBR/actions/draft-release@v0.2\n        with:\n          github-token: ${{ github.token }}\n          version-tag: ${{ github.event.inputs.version-tag }}\n\n\nlabel-issues-repo-name\n Source\nname: label-issues-repo-name\n\non:\n  issues:\n    types:\n      - opened\n  pull_request:\n    types:\n      - opened\n\npermissions:\n  issues: write\n  pull-requests: write\n\njobs:\n  add-label:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/label-issue-repo-name@main\n        with:\n          github-token: ${{ github.token }}\n\n\npost-release\n Source\nname: post-release\n\non:\n  release:\n    types:\n      - published\n\npermissions:\n  contents: write\n  pull-requests: write\n  actions: write\n\njobs:\n  cleanup:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          fetch-depth: 0\n      - uses: CCBR/actions/post-release@v0.2\n        with:\n          github-token: ${{ github.token }}\n\n\ntechdev-project\n Source\nname: TechDev-project\n\non:\n  issues:\n    types:\n      - opened\n  pull_request:\n    types:\n      - opened\n\npermissions:\n  issues: write\n  pull-requests: write\n  contents: read\n\njobs:\n  add-to-project:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/add-to-project@v1.0.2\n        with:\n          project-url: https://github.com/orgs/CCBR/projects/17\n          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}\n\n\nupdate-cff-R\n Source\n# Workflow derived from https://github.com/r-lib/actions/tree/master/examples\n# The action runs when:\n# - A new release is published\n# - The DESCRIPTION or inst/CITATION are modified\n# - Can be run manually\n# For customizing the triggers, visit https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows\non:\n  release:\n    types: [published]\n  pull_request:\n    branches: [master, main]\n    paths:\n      - .github/workflows/update-citation-cff.yaml\n      - DESCRIPTION\n      - inst/CITATION\n  workflow_dispatch:\n\nname: Update CITATION.cff\n\npermissions:\n  contents: write\n\njobs:\n  update-citation-cff:\n    runs-on: macos-latest\n    env:\n      GITHUB_PAT: ${{ github.token }}\n    steps:\n      - uses: actions/checkout@v3\n        with:\n          ref: ${{ github.head_ref }}\n          fetch-depth: 0\n      - uses: r-lib/actions/setup-r@v2\n      - uses: r-lib/actions/setup-r-dependencies@v2\n        with:\n          extra-packages: |\n            any::cffr\n            any::V8\n            any::docopt\n\n      - name: Update CITATION.cff\n        run: |\n\n          library(cffr)\n\n          # Customize with your own code\n          # See https://docs.ropensci.org/cffr/articles/cffr.html\n\n          # Write your own keys\n          mykeys &lt;- list()\n\n          # Create your CITATION.cff file\n          cff_write(keys = mykeys)\n\n        shell: Rscript {0}\n      - uses: pre-commit/action@v3.0.0\n        with:\n          extra_args: --files CITATION.cff\n        continue-on-error: true\n      - name: Commit results\n        run: |\n          git config --local user.name \"github-actions[bot]\"\n          git config --local user.email \"41898282+github-actions[bot]@users.noreply.github.com\"\n          git add CITATION.cff\n          git commit -m 'chore: update CITATION.cff' || echo \"No changes to commit\"\n          git push origin || echo \"No changes to commit\"\n\n\nuser-projects\n Source\nname: personal-projects\n\non:\n  issues:\n    types:\n      - assigned\n  pull_request:\n    types:\n      - assigned\n\npermissions:\n  issues: write\n  pull-requests: write\n  contents: read\n\njobs:\n  add-to-project:\n    uses: CCBR/.github/.github/workflows/auto-add-user-project.yml@v0.1.0\n    secrets: inherit",
+    "crumbs": [
+      "GitHub Actions",
+      "Example Workflows"
+    ]
+  },
+  {
     "objectID": "CHANGELOG.html",
     "href": "CHANGELOG.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "new example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)",
+    "text": "New example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)\nNew function write_citation() to write citation.cff files to other formats, e.g. codemeta. (#87, @kelly-sovacool)\n\nNow performed in draft-release action and in auto-format example workflow.",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -478,7 +344,7 @@
     "href": "CHANGELOG.html#actions-development-version",
     "title": "CCBR actions",
     "section": "",
-    "text": "new example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)",
+    "text": "New example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)\nNew function write_citation() to write citation.cff files to other formats, e.g. codemeta. (#87, @kelly-sovacool)\n\nNow performed in draft-release action and in auto-format example workflow.",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -617,6 +483,156 @@
     ]
   },
   {
+    "objectID": "actions/label-issue-repo-name/index.html",
+    "href": "actions/label-issue-repo-name/index.html",
+    "title": "label-issue-repo-name",
+    "section": "",
+    "text": "label-issue-repo-name - Label issues & PRs with the repository name\nThis action labels issues & PRs with the name of the repository. It is useful for organizing GitHub Project boards with issues from multiple repos.",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "label-issue-repo-name"
+    ]
+  },
+  {
+    "objectID": "actions/label-issue-repo-name/index.html#usage",
+    "href": "actions/label-issue-repo-name/index.html#usage",
+    "title": "label-issue-repo-name",
+    "section": "Usage",
+    "text": "Usage\n\nBasic example\nlabel-issues-reponame.yml\nname: label-issues-repo-name\n\non:\n  issues:\n    types:\n      - opened\n  pull_request:\n    types:\n      - opened\n\npermissions:\n  issues: write\n  pull-requests: write\n\njobs:\n  add-label:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: CCBR/actions/label-issue-repo-name@main\n        with:\n          github-token: ${{ github.token }}",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "label-issue-repo-name"
+    ]
+  },
+  {
+    "objectID": "actions/label-issue-repo-name/index.html#inputs",
+    "href": "actions/label-issue-repo-name/index.html#inputs",
+    "title": "label-issue-repo-name",
+    "section": "Inputs",
+    "text": "Inputs\n\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "label-issue-repo-name"
+    ]
+  },
+  {
+    "objectID": "actions/build-docker/index.html",
+    "href": "actions/build-docker/index.html",
+    "title": "build-docker",
+    "section": "",
+    "text": "build-docker - Build a docker container using CCBR guidelines\nThis action is designed to build Docker containers according to the format used in CCBR/dockers2.\nThis action:",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "build-docker"
+    ]
+  },
+  {
+    "objectID": "actions/build-docker/index.html#usage",
+    "href": "actions/build-docker/index.html#usage",
+    "title": "build-docker",
+    "section": "Usage",
+    "text": "Usage\n\nBasic example\nsteps:\n  - uses: actions/checkout@v4\n    with:\n        fetch-depth: 0\n  - uses: CCBR/actions/build-docker@main\n    with:\n      dockerfile: Dockerfile.v1\n      dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}\n      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}\n      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}\n      suffix: dev\n      push: true\n      ccbr-actions-version: v0.2\n      github-token: ${{ github.token }}\n      github-actor: ${{ github.actor }}\nFor an example to manually trigger the workflow for a single docker container, see build-docker-manual.yml.\nFor an advanced example to automatically build docker containers when files change, see build-docker-auto.yml.",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "build-docker"
+    ]
+  },
+  {
+    "objectID": "actions/build-docker/index.html#inputs",
+    "href": "actions/build-docker/index.html#inputs",
+    "title": "build-docker",
+    "section": "Inputs",
+    "text": "Inputs\n\ndockerfile: path to the Dockerfile in the repo (e.g. common/ccbr_bwa/Dockerfile) . Required.\ndockerhub-namespace: dockerhub namespace or org name (e.g. nciccbr) . Required. Default: nciccbr.\ndockerhub-username: dockerhub username of a user with admin permissions for dockerhub-namespace. Recommend using secrets, e.g. secrets.DOCKERHUB_USERNAME . Required.\ndockerhub-token: dockerhub token with read & write permissions. Strongly recommend using secrets, e.g. secrets.DOCKERHUB_TOKEN .\nsuffix: Suffix to add to image tag eg. “dev” to add “-dev” . Required. Default: feat.\npush: Push to DockerHub (leave unchecked to just build the container without pushing) . Required.\nccbr-actions-version: The version of ccbr_actions to use . Required. Default: main.\npython-version: The version of Python to install . Required. Default: 3.11.\ngithub-actor: Username of GitHub actor for the git commit when the README is updated . Required. Default: 41898282+github-actions[bot].\ngithub-token: GitHub Actions token (e.g. github.token) . Required.\nprint-versions: Whether to print tool versions in the container for the README file using json-file . Default: True.\njson-file: Relative path to JSON file for printing tool versions. If not provided and print-versions is true, a default JSON file in ccbr_actions will be used. . Default: scripts/tool_version_commands.json.\ngh-merge-args: arguments for gh pr merge . Default: -ds --admin.",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "build-docker"
+    ]
+  },
+  {
+    "objectID": "actions/mkdocs-mike/index.html",
+    "href": "actions/mkdocs-mike/index.html",
+    "title": "mkdocs-mike",
+    "section": "",
+    "text": "mkdocs-mike - Deploy documentation to github pages using mkdocs + mike\nThis action is designed to be used with a repository that uses mkdocs to generate documentation and mike to deploy it to github pages. The action will checkout the repository, install the necessary python packages, build the documentation, and deploy it to the specified branch.",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "mkdocs-mike"
+    ]
+  },
+  {
+    "objectID": "actions/mkdocs-mike/index.html#usage",
+    "href": "actions/mkdocs-mike/index.html#usage",
+    "title": "mkdocs-mike",
+    "section": "Usage",
+    "text": "Usage\nAny python requirements for your docs website (mkdocs, mike, other extensions) should be placed in docs/requirements.txt. You will also need an mkdocs config file mkdocs.yml in the root of your repository. To properly configure mike for your website, you will also need to complete these one-time steps:\n\ndelete any existing github workflows that deploy to github pages\ndelete all files in gh-pages if the branch exists already\ngit switch gh-pages\ngit rm -rf $(git ls-files)\ngit commit -m 'docs: delete gh-pages files to prepare for mike'\ncheck out the previous release tag and deploy it\ngit checkout v1.0.0\nmike deploy 1.0 latest --push --update-aliases --branch gh-pages\nWe recommend using just the major and minor components of the version without the leading v.\nset the default landing page:\nmike set-default latest\ndeploy the dev version from main\ngit switch main\nmike deploy dev --push --update-aliases --branch gh-pages\n\n\nBasic example\ndocs-mkdocs.yml\nsteps:\n  - uses: actions/checkout@v4\n    with:\n        fetch-depth: 0\n  - uses: CCBR/actions/mkdocs-mike@main\n    with:\n        github-token: ${{ github.token }}\n\n\nCustomized inputs\nsteps:\n  - uses: actions/checkout@v4\n    with:\n      fetch-depth: 0\n  - uses: CCBR/actions/mkdocs-mike@main\n    with:\n      github-token: ${{ github.token }}\n      ccbr-actions-version: 0.1\n      python-version: 3.12\n      docs-branch: gh-pages\n      github-actor: \"41898282+github-actions[bot]\"",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "mkdocs-mike"
+    ]
+  },
+  {
+    "objectID": "actions/mkdocs-mike/index.html#inputs",
+    "href": "actions/mkdocs-mike/index.html#inputs",
+    "title": "mkdocs-mike",
+    "section": "Inputs",
+    "text": "Inputs\n\ngithub-token: GitHub Actions token (e.g. { github.token }). Required.\nccbr-actions-version: The version of ccbr_actions to install. Required. Default: main.\npython-version: The version of Python to install. Required. Default: 3.11.\ndocs-branch: The branch to deploy the docs website to. Required. Default: gh-pages.\ngithub-actor: Username of GitHub actor for the git commit when the docs branch is deployed. Required. Default: 41898282+github-actions[bot].\nstrict-semver: Whether to follow strict semantic versioning guidelines. Default: True.",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "mkdocs-mike"
+    ]
+  },
+  {
+    "objectID": "actions/mkdocs-mike/index.html#outputs",
+    "href": "actions/mkdocs-mike/index.html#outputs",
+    "title": "mkdocs-mike",
+    "section": "Outputs",
+    "text": "Outputs\n\nversion: The version of the docs being deployed..\nalias: The alias of the version being deployed..",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "mkdocs-mike"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "CCBR actions",
+    "section": "",
+    "text": "GitHub Actions for CCBR repos\nCustom GitHub Actions and example workflows for CCBR repositories. View the GitHub Actions docs for more information on how to write and use GitHub Actions workflows.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#help-contributing",
+    "href": "index.html#help-contributing",
+    "title": "CCBR actions",
+    "section": "Help & Contributing",
+    "text": "Help & Contributing\nCome across a bug? Open an issue and include a minimal reproducible example.\nHave a question? Ask it in discussions.\nWant to contribute to this project? Check out the contributing guidelines.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#actions",
+    "href": "index.html#actions",
+    "title": "CCBR actions",
+    "section": "Actions",
+    "text": "Actions\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        action\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\naction\n\n\n\ndescription\n\n\n\n\n\n\n\n\nadd-issue-label-list\n\n\nUpdate issue description with a list of issues of a given label\n\n\n\n\n\n\nbuild-docker\n\n\nBuild a docker container using CCBR guidelines\n\n\n\n\n\n\ndraft-release\n\n\nDraft a new release based on conventional commits and prepare release notes\n\n\n\n\n\n\nlabel-issue-repo-name\n\n\nLabel issues & PRs with the repository name\n\n\n\n\n\n\nmkdocs-mike\n\n\nDeploy documentation to github pages using mkdocs + mike\n\n\n\n\n\n\npost-release\n\n\nPost-release cleanup chores, intended to be triggered by publishing a release\n\n\n\n\n\n\nNo matching items",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
     "objectID": "reference/release.html",
     "href": "reference/release.html",
     "title": "release",
@@ -641,27 +657,27 @@
     ]
   },
   {
-    "objectID": "reference/data.html",
-    "href": "reference/data.html",
-    "title": "data",
+    "objectID": "reference/actions.html",
+    "href": "reference/actions.html",
+    "title": "actions",
     "section": "",
-    "text": "data\nData files for CCBR actions\n\n\n\n\n\nName\nDescription\n\n\n\n\nget_file_path\nGet the file path for a given filename within the package.\n\n\n\n\n\ndata.get_file_path(filename)\nGet the file path for a given filename within the package.\nThis function retrieves the path to a specified file within the package’s data files using the importlib.resources module.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe name of the file for which to retrieve the path.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\n\npathlib.Path: The path to the specified file within the package.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the specified file is not found within the package data.\n\n\n\n\n\n\n&gt;&gt;&gt; get_file_path('tool_version_commands.json')\nPosixPath('/path/to/package/tool_version_commands.json')",
+    "text": "actions\nDownload and use GitHub Actions workflow files.\n\n\n\n\n\nName\nDescription\n\n\n\n\nset_output\nSet a GitHub Actions output variable.\n\n\ntrigger_workflow\nTrigger a GitHub Actions workflow.\n\n\nuse_github_action\nDownload an example GitHub Actions workflow file from CCBR/actions.\n\n\n\n\n\nactions.set_output(name, value, environ='GITHUB_OUTPUT')\nSet a GitHub Actions output variable.\nWrite the given name and value to the GitHub Actions environment file specified by the GITHUB_OUTPUT environment variable. You can then access the variable in GitHub Actions using ${{ steps.&lt;step_id&gt;.outputs.&lt;name&gt; }}.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the output variable to set.\nrequired\n\n\nvalue\nstr\nThe value of the output variable to set.\nrequired\n\n\nenviron\nstr\nThe environment variable that specifies the GitHub Actions environment file. Defaults to “GITHUB_OUTPUT”.\n'GITHUB_OUTPUT'\n\n\n\n\n\n\n&gt;&gt;&gt; set_output(\"VERSION\", \"1.0.0\")\n&gt;&gt;&gt; set_output(\"ALIAS\", \"latest\")\n\n\n\n\nactions.trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False)\nTrigger a GitHub Actions workflow.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nworkflow_name\nstr\nThe name of the workflow to trigger.\nrequired\n\n\nbranch\nstr\nThe branch to trigger the workflow on.\nrequired\n\n\nrepo\nstr\nThe GitHub repository to trigger the workflow in.\nrequired\n\n\n\n\n\n\n\nactions.use_github_action(\n    name,\n    ref=None,\n    url=None,\n    save_as=None,\n    repo='CCBR/actions',\n)\nDownload an example GitHub Actions workflow file from CCBR/actions.\nThis function was inspired by {usethis}: https://usethis.r-lib.org/reference/github_actions.html\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the GitHub Actions workflow file to download.\nrequired\n\n\nref\nstr\nThe git reference (branch, tag, or commit SHA) to use. Defaults to None, in which case the latest release or “main” is used.\nNone\n\n\nurl\nstr\nThe URL to download the workflow file from. Defaults to building it based on the repo and ref.\nNone\n\n\nsave_as\nstr\nThe path to save the downloaded workflow file. Defaults to building it based on .github/workflows/name.yml.\nNone\n\n\nrepo\nstr\nThe GitHub repository to download the workflow file from. Defaults to “CCBR/actions”.\n'CCBR/actions'\n\n\n\n\n\n\nget_latest_release_tag: Get the latest release tag from a GitHub repository. get_docs_version: Get the documentation version and alias.\n\n\n\nIf ref is not provided, the latest release tag is used (if available) or main. If url is not provided, the URL is constructed based on the repository and reference. If save_as is not provided, the file is saved in the .github/workflows directory.\n\n\n\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")",
     "crumbs": [
       "Python package",
       "API reference",
-      "data"
+      "actions"
     ]
   },
   {
-    "objectID": "reference/data.html#functions",
-    "href": "reference/data.html#functions",
-    "title": "data",
+    "objectID": "reference/actions.html#functions",
+    "href": "reference/actions.html#functions",
+    "title": "actions",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\nget_file_path\nGet the file path for a given filename within the package.\n\n\n\n\n\ndata.get_file_path(filename)\nGet the file path for a given filename within the package.\nThis function retrieves the path to a specified file within the package’s data files using the importlib.resources module.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe name of the file for which to retrieve the path.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\n\npathlib.Path: The path to the specified file within the package.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nFileNotFoundError\nIf the specified file is not found within the package data.\n\n\n\n\n\n\n&gt;&gt;&gt; get_file_path('tool_version_commands.json')\nPosixPath('/path/to/package/tool_version_commands.json')",
+    "text": "Name\nDescription\n\n\n\n\nset_output\nSet a GitHub Actions output variable.\n\n\ntrigger_workflow\nTrigger a GitHub Actions workflow.\n\n\nuse_github_action\nDownload an example GitHub Actions workflow file from CCBR/actions.\n\n\n\n\n\nactions.set_output(name, value, environ='GITHUB_OUTPUT')\nSet a GitHub Actions output variable.\nWrite the given name and value to the GitHub Actions environment file specified by the GITHUB_OUTPUT environment variable. You can then access the variable in GitHub Actions using ${{ steps.&lt;step_id&gt;.outputs.&lt;name&gt; }}.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the output variable to set.\nrequired\n\n\nvalue\nstr\nThe value of the output variable to set.\nrequired\n\n\nenviron\nstr\nThe environment variable that specifies the GitHub Actions environment file. Defaults to “GITHUB_OUTPUT”.\n'GITHUB_OUTPUT'\n\n\n\n\n\n\n&gt;&gt;&gt; set_output(\"VERSION\", \"1.0.0\")\n&gt;&gt;&gt; set_output(\"ALIAS\", \"latest\")\n\n\n\n\nactions.trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False)\nTrigger a GitHub Actions workflow.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nworkflow_name\nstr\nThe name of the workflow to trigger.\nrequired\n\n\nbranch\nstr\nThe branch to trigger the workflow on.\nrequired\n\n\nrepo\nstr\nThe GitHub repository to trigger the workflow in.\nrequired\n\n\n\n\n\n\n\nactions.use_github_action(\n    name,\n    ref=None,\n    url=None,\n    save_as=None,\n    repo='CCBR/actions',\n)\nDownload an example GitHub Actions workflow file from CCBR/actions.\nThis function was inspired by {usethis}: https://usethis.r-lib.org/reference/github_actions.html\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nname\nstr\nThe name of the GitHub Actions workflow file to download.\nrequired\n\n\nref\nstr\nThe git reference (branch, tag, or commit SHA) to use. Defaults to None, in which case the latest release or “main” is used.\nNone\n\n\nurl\nstr\nThe URL to download the workflow file from. Defaults to building it based on the repo and ref.\nNone\n\n\nsave_as\nstr\nThe path to save the downloaded workflow file. Defaults to building it based on .github/workflows/name.yml.\nNone\n\n\nrepo\nstr\nThe GitHub repository to download the workflow file from. Defaults to “CCBR/actions”.\n'CCBR/actions'\n\n\n\n\n\n\nget_latest_release_tag: Get the latest release tag from a GitHub repository. get_docs_version: Get the documentation version and alias.\n\n\n\nIf ref is not provided, the latest release tag is used (if available) or main. If url is not provided, the URL is constructed based on the repository and reference. If save_as is not provided, the file is saved in the .github/workflows directory.\n\n\n\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", ref=\"v1.0.0\")\n&gt;&gt;&gt; use_github_action(\"docs-mkdocs\", save_as=\"custom/path/example-action.yml\")",
     "crumbs": [
       "Python package",
       "API reference",
-      "data"
+      "actions"
     ]
   },
   {
@@ -687,38 +703,22 @@
     ]
   },
   {
-    "objectID": "reference/docs.html",
-    "href": "reference/docs.html",
-    "title": "docs",
+    "objectID": "reference/versions.html",
+    "href": "reference/versions.html",
+    "title": "versions",
     "section": "",
-    "text": "docs\nModule for managing documentation versions.\nDetermine the appropriate version and alias for the documentation website based on the latest release tag and the current hash.\n\n\n\n\n\nName\nDescription\n\n\n\n\naction_markdown_desc\nGenerates a markdown formatted description for a given action.\n\n\naction_markdown_header\nGenerates a markdown header for a given action.\n\n\naction_markdown_io\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\nget_docs_version\nGet correct version and alias for documentation website.\n\n\nparse_action_yaml\nParses a YAML file and returns its contents as a dictionary.\n\n\nset_docs_version\nSet version and alias in GitHub environment variables for docs website action.\n\n\n\n\n\ndocs.action_markdown_desc(action_dict)\nGenerates a markdown formatted description for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string with the action name in bold and code format, followed by the description.\n\n\n\n\n\n\n\ndocs.action_markdown_header(action_dict)\nGenerates a markdown header for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA formatted markdown string with the action’s name as a header and the description as the content.\n\n\n\n\n\n\n\ndocs.action_markdown_io(action_dict)\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing the action’s inputs and outputs. The dictionary should have the following structure: { “inputs”: { “input_name”: { “description”: “Description of the input”, “required”: bool, “default”: “default_value” }, … }, “outputs”: { “output_name”: { “description”: “Description of the output” }, … } }\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string documenting the inputs and outputs of the action.\n\n\n\n\n\n\n\ndocs.get_docs_version(\n    repo,\n    release_args='',\n    release_tag=None,\n    strict_semver=True,\n)\nGet correct version and alias for documentation website.\nDetermines the appropriate version and alias for the documentation based on the latest release tag and the current hash.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_args\nstr\nAdditional arguments to pass to the gh release GitHub CLI command (default is ““).\n''\n\n\nrelease_tag\nstr\nThe tag of the release (default: None). Set this when running this code from a github release event. Only set this if the tag is currently checked out.\nNone\n\n\nstrict_semver\nbool\nIf True, the version string must match the full semantic versioning pattern. Otherwise, a relaxed format with only the major and minor components is allowed.\nTrue\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ntuple\n\nA tuple containing: - docs_version (str): The major and minor version of the latest release. - docs_alias (str): The alias for the documentation version, e.g., “latest”.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nset_docs_version: Sets the version and alias in the GitHub environment.\n\n\n\n&gt;&gt;&gt; get_docs_version()\n('1.0', 'latest')\n\n\n\n\ndocs.parse_action_yaml(filename)\nParses a YAML file and returns its contents as a dictionary.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe path to the YAML file to be parsed.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ndict\n\nThe contents of the YAML file as a dictionary.\n\n\n\n\n\n\n\ndocs.set_docs_version(\n    repo,\n    release_tag=None,\n    strict_semver=True,\n    environ='GITHUB_OUTPUT',\n)\nSet version and alias in GitHub environment variables for docs website action.\nThis function retrieves the documentation version and alias using get_docs_version and sets them as environment variables in the GitHub Actions environment.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_tag\nstr\nSpecific release tag to use for determining the version. Defaults to None.\nNone\n\n\nstrict_semver\nbool\nWhether to enforce strict semantic versioning. Defaults to True.\nTrue\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nget_docs_version: Retrieves the documentation version and alias. set_output: Sets the GitHub Actions environment variable.\n\n\n\n&gt;&gt;&gt; set_docs_version()",
+    "text": "versions\nversions\nGet information from git tags, commit hashes, and GitHub releases.",
     "crumbs": [
       "Python package",
       "API reference",
-      "docs"
+      "versions"
     ]
   },
   {
-    "objectID": "reference/docs.html#functions",
-    "href": "reference/docs.html#functions",
-    "title": "docs",
+    "objectID": "badges.html",
+    "href": "badges.html",
+    "title": "CCBR actions",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\naction_markdown_desc\nGenerates a markdown formatted description for a given action.\n\n\naction_markdown_header\nGenerates a markdown header for a given action.\n\n\naction_markdown_io\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\nget_docs_version\nGet correct version and alias for documentation website.\n\n\nparse_action_yaml\nParses a YAML file and returns its contents as a dictionary.\n\n\nset_docs_version\nSet version and alias in GitHub environment variables for docs website action.\n\n\n\n\n\ndocs.action_markdown_desc(action_dict)\nGenerates a markdown formatted description for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string with the action name in bold and code format, followed by the description.\n\n\n\n\n\n\n\ndocs.action_markdown_header(action_dict)\nGenerates a markdown header for a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing action details. Expected keys are: - “name” (str): The name of the action. - “description” (str): A brief description of the action.\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA formatted markdown string with the action’s name as a header and the description as the content.\n\n\n\n\n\n\n\ndocs.action_markdown_io(action_dict)\nGenerates a markdown string documenting the inputs and outputs of a given action.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\naction_dict\ndict\nA dictionary containing the action’s inputs and outputs. The dictionary should have the following structure: { “inputs”: { “input_name”: { “description”: “Description of the input”, “required”: bool, “default”: “default_value” }, … }, “outputs”: { “output_name”: { “description”: “Description of the output” }, … } }\nrequired\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\nstr\n\nA markdown formatted string documenting the inputs and outputs of the action.\n\n\n\n\n\n\n\ndocs.get_docs_version(\n    repo,\n    release_args='',\n    release_tag=None,\n    strict_semver=True,\n)\nGet correct version and alias for documentation website.\nDetermines the appropriate version and alias for the documentation based on the latest release tag and the current hash.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_args\nstr\nAdditional arguments to pass to the gh release GitHub CLI command (default is ““).\n''\n\n\nrelease_tag\nstr\nThe tag of the release (default: None). Set this when running this code from a github release event. Only set this if the tag is currently checked out.\nNone\n\n\nstrict_semver\nbool\nIf True, the version string must match the full semantic versioning pattern. Otherwise, a relaxed format with only the major and minor components is allowed.\nTrue\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ntuple\n\nA tuple containing: - docs_version (str): The major and minor version of the latest release. - docs_alias (str): The alias for the documentation version, e.g., “latest”.\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nset_docs_version: Sets the version and alias in the GitHub environment.\n\n\n\n&gt;&gt;&gt; get_docs_version()\n('1.0', 'latest')\n\n\n\n\ndocs.parse_action_yaml(filename)\nParses a YAML file and returns its contents as a dictionary.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nfilename\nstr\nThe path to the YAML file to be parsed.\nrequired\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\ndict\n\nThe contents of the YAML file as a dictionary.\n\n\n\n\n\n\n\ndocs.set_docs_version(\n    repo,\n    release_tag=None,\n    strict_semver=True,\n    environ='GITHUB_OUTPUT',\n)\nSet version and alias in GitHub environment variables for docs website action.\nThis function retrieves the documentation version and alias using get_docs_version and sets them as environment variables in the GitHub Actions environment.\n\n\n\n\n\nName\nType\nDescription\nDefault\n\n\n\n\nrepo\nstr\nThe name of the GitHub repository to check for releases.\nrequired\n\n\nrelease_tag\nstr\nSpecific release tag to use for determining the version. Defaults to None.\nNone\n\n\nstrict_semver\nbool\nWhether to enforce strict semantic versioning. Defaults to True.\nTrue\n\n\n\n\n\n\n\n\n\nName\nType\nDescription\n\n\n\n\n\nValueError\nIf the current commit hash is not a descendant of the latest release.\n\n\n\n\n\n\nget_docs_version: Retrieves the documentation version and alias. set_output: Sets the GitHub Actions environment variable.\n\n\n\n&gt;&gt;&gt; set_docs_version()",
-    "crumbs": [
-      "Python package",
-      "API reference",
-      "docs"
-    ]
-  },
-  {
-    "objectID": "contributors.html",
-    "href": "contributors.html",
-    "title": "Contributors",
-    "section": "",
-    "text": "Kelly Sovacool, PhD\n\n\n\n\n\n\n\ngithub-actions[bot]\n\n\n\n\n\n\n\nVishal Koparde, PhD\n\n\n\n\n\nView the contributors graph on GitHub for more details.",
-    "crumbs": [
-      "Project information",
-      "Contributors"
-    ]
+    "text": "GitHub Actions for CCBR repos"
   }
 ]

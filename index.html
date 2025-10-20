@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -35,16 +35,17 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-5b088bc1b061208832f78ccf2e33693d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0678520d783fdb8f6244310d0234a21f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-cd4e4562af9062d9f200841793bf5c06.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-42da390b1251f2a7a621bc99940f6342.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-016cdc6898551994f9a5918bca485163.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-bc2c602e15a08dbec0d9fb1e1cfc3970.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-2d3384c60af8d7714fe495c988c5f9c3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-e9fa70176ebde634be6d04af30707417.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -115,7 +116,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -300,6 +301,8 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">CCBR actions</span>
     </a>
@@ -322,7 +325,7 @@ window.Quarto = {
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">GitHub Actions</li>
         <li>
-    <a class="dropdown-item" href="./actions/build-docker/index.html">
+    <a class="dropdown-item" href="./actions/draft-release/index.html">
  <span class="dropdown-text">Actions</span></a>
   </li>  
         <li>
@@ -390,6 +393,10 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
@@ -418,26 +425,14 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">build-docker</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">mkdocs-mike</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">draft-release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/post-release/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">post-release</span></a>
+  <a href="./actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">label-issue-repo-name</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -448,8 +443,20 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">label-issue-repo-name</span></a>
+  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">build-docker</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/post-release/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">post-release</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mkdocs-mike</span></a>
   </div>
 </li>
       </ul>
@@ -639,7 +646,7 @@ description
 </thead>
 <tbody class="list">
 
-<tr data-index="0" data-listing-file-modified-sort="1753798834316" data-listing-reading-time-sort="2" data-listing-word-count-sort="227" data-listing-title-sort="add-issue-label-list" data-listing-filename-sort="index.qmd">
+<tr data-index="0" data-listing-file-modified-sort="1760977581307" data-listing-reading-time-sort="2" data-listing-word-count-sort="227" data-listing-title-sort="add-issue-label-list" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/add-issue-label-list/index.html" class="title listing-title">add-issue-label-list</a>
 </td>
@@ -649,7 +656,7 @@ description
 
 </tr>
 
-<tr data-index="1" data-listing-file-modified-sort="1753798834281" data-listing-reading-time-sort="3" data-listing-word-count-sort="437" data-listing-title-sort="build-docker" data-listing-filename-sort="index.qmd">
+<tr data-index="1" data-listing-file-modified-sort="1760977581334" data-listing-reading-time-sort="3" data-listing-word-count-sort="437" data-listing-title-sort="build-docker" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/build-docker/index.html" class="title listing-title">build-docker</a>
 </td>
@@ -659,7 +666,7 @@ description
 
 </tr>
 
-<tr data-index="2" data-listing-file-modified-sort="1753798834301" data-listing-reading-time-sort="4" data-listing-word-count-sort="641" data-listing-title-sort="draft-release" data-listing-filename-sort="index.qmd">
+<tr data-index="2" data-listing-file-modified-sort="1760977581300" data-listing-reading-time-sort="4" data-listing-word-count-sort="674" data-listing-title-sort="draft-release" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/draft-release/index.html" class="title listing-title">draft-release</a>
 </td>
@@ -669,7 +676,7 @@ description
 
 </tr>
 
-<tr data-index="3" data-listing-file-modified-sort="1753798834320" data-listing-reading-time-sort="1" data-listing-word-count-sort="117" data-listing-title-sort="label-issue-repo-name" data-listing-filename-sort="index.qmd">
+<tr data-index="3" data-listing-file-modified-sort="1760977581305" data-listing-reading-time-sort="1" data-listing-word-count-sort="117" data-listing-title-sort="label-issue-repo-name" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/label-issue-repo-name/index.html" class="title listing-title">label-issue-repo-name</a>
 </td>
@@ -679,7 +686,7 @@ description
 
 </tr>
 
-<tr data-index="4" data-listing-file-modified-sort="1753798834290" data-listing-reading-time-sort="3" data-listing-word-count-sort="417" data-listing-title-sort="mkdocs-mike" data-listing-filename-sort="index.qmd">
+<tr data-index="4" data-listing-file-modified-sort="1760977581352" data-listing-reading-time-sort="3" data-listing-word-count-sort="417" data-listing-title-sort="mkdocs-mike" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/mkdocs-mike/index.html" class="title listing-title">mkdocs-mike</a>
 </td>
@@ -689,7 +696,7 @@ description
 
 </tr>
 
-<tr data-index="5" data-listing-file-modified-sort="1753798834312" data-listing-reading-time-sort="3" data-listing-word-count-sort="531" data-listing-title-sort="post-release" data-listing-filename-sort="index.qmd">
+<tr data-index="5" data-listing-file-modified-sort="1760977581345" data-listing-reading-time-sort="3" data-listing-word-count-sort="531" data-listing-title-sort="post-release" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/post-release/index.html" class="title listing-title">post-release</a>
 </td>
@@ -773,13 +780,14 @@ description
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
