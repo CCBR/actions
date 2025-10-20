@@ -5,9 +5,16 @@ and prepare release notes
 
 This action helps create a draft release based on the contents of the
 changelog and commit history. It is designed to be used in a manually
-triggered workflow to draft a release. The latest commit in the branch
-you run the workflow from will be used as the target for the release
-tag.
+triggered workflow to draft a release.
+
+This action checks out the latest commit in the branch you run the
+workflow from, updates files (including `CHANGELOG.md`, `VERSION`,
+`CITATION.cff`, and `codemeta.json`), and then creates a draft release
+with the new version and changelog entry.
+
+After the workflow completes, navigate to the Releases page on GitHub
+and ensure everything looks correct, then publish the release when
+you’re ready.
 
 ## Usage
 
