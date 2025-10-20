@@ -1,9 +1,10 @@
+import json
 import os
 import pathlib
 import shutil
 import tempfile
 
-from ccbr_actions.citation import print_citation, update_citation
+from ccbr_actions.citation import print_citation, update_citation, write_citation
 from ccbr_tools.shell import exec_in_context
 
 
@@ -46,3 +47,46 @@ def test_update_citation_symlink():
             "title: 'CCBR actions: GitHub Actions for CCBR repos'" in citation,
         ]
     )
+
+
+def test_write_citation_codemeta():
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        # codemeta_filename = pathlib.Path(tmp_dir) / "codemeta.json"
+        codemeta_filename = "test.codemeta.json"
+        write_citation(
+            citation_file=pathlib.Path("tests") / "data" / "CITATION.cff",
+            output_file=codemeta_filename,
+            output_format="codemeta",
+        )
+        with open(codemeta_filename, "r") as infile:
+            codemeta_content = json.load(infile)
+    assert codemeta_content == {
+        "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+        "@type": "SoftwareSourceCode",
+        "author": [
+            {
+                "@id": "https://orcid.org/0000-0003-3283-829X",
+                "@type": "Person",
+                "affiliation": {
+                    "@type": "Organization",
+                    "name": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA",
+                },
+                "familyName": "Sovacool",
+                "givenName": "Kelly",
+            },
+            {
+                "@id": "https://orcid.org/0000-0001-8978-8495",
+                "@type": "Person",
+                "affiliation": {
+                    "@type": "Organization",
+                    "name": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA",
+                },
+                "familyName": "Koparde",
+                "givenName": "Vishal",
+            },
+        ],
+        "codeRepository": "https://github.com/CCBR/actions",
+        "license": "https://spdx.org/licenses/MIT",
+        "name": "CCBR actions: GitHub Actions for CCBR repos",
+        "url": "https://ccbr.github.io/actions/",
+    }
