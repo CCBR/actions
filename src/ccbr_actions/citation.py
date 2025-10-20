@@ -35,6 +35,20 @@ def write_citation(
     output_file="codemeta.json",
     output_format="codemeta",
 ):
+    """
+    Generates a citation metadata file in the specified format.
+
+    Reads citation information from a CITATION.cff file, converts it to the desired output format (default: codemeta),
+    and writes it to the specified output file.
+
+    Args:
+        citation_file (str): Path to the input CITATION.cff file. (Default: "CITATION.cff").
+        output_file (str): Path to the output file where the citation metadata will be written. (Default: "codemeta.json").
+        output_format (str): Format of the output citation metadata. See [](`~cffconvert.cli.validate_or_write_output` for options). (Default: "codemeta").
+
+    Returns:
+        None
+    """
     citation = create_citation(citation_file, None)
     validate_or_write_output(output_file, output_format, False, citation)
 
