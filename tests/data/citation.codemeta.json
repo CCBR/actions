@@ -1,0 +1,30 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "author": [
+    {
+      "@id": "https://orcid.org/0000-0003-3283-829X",
+      "@type": "Person",
+      "affiliation": {
+        "@type": "Organization",
+        "legalName": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
+      },
+      "familyName": "Sovacool",
+      "givenName": "Kelly"
+    },
+    {
+      "@id": "https://orcid.org/0000-0001-8978-8495",
+      "@type": "Person",
+      "affiliation": {
+        "@type": "Organization",
+        "legalName": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
+      },
+      "familyName": "Koparde",
+      "givenName": "Vishal"
+    }
+  ],
+  "codeRepository": "https://github.com/CCBR/actions",
+  "license": "https://spdx.org/licenses/MIT",
+  "name": "CCBR actions: GitHub Actions for CCBR repos",
+  "url": "https://ccbr.github.io/actions/"
+}
