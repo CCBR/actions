@@ -7,7 +7,7 @@ import warnings
 from ccbr_tools.shell import shell_run
 
 from .actions import set_output, trigger_workflow
-from .citation import update_citation
+from .citation import update_citation, write_citation
 from .util import precommit_run, path_resolve
 from .versions import (
     check_version_increments_by_one,
@@ -84,6 +84,11 @@ def prepare_draft_release(
     if citation_filepath.is_file():
         update_citation(
             citation_file=citation_filepath, version=next_version, debug=debug
+        )
+        write_citation(
+            citation_file=citation_filepath,
+            output_file="codemeta.json",
+            output_format="codemeta",
         )
     else:
         citation_filepath = ""
