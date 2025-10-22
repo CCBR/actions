@@ -45,15 +45,16 @@ jobs:
       - name: quarto render readme files
         run: |
           for f in README.qmd **/README.qmd; do quarto render $f; done
-      - name: update codemeta
-        run: |
-          if [ -f CITATION.cff ]; then
-            cffconvert -f codemeta > codemeta.json
-          fi
 
-      - name: format
+      - uses: citation-file-format/cffconvert-github-action@2.0.0
+        if: ${{ hashFiles('CITATION.cff') != ''}}
+        with:
+          args: "--format codemeta --outfile codemeta.json"
+
+      - name: pre-commit
         uses: pre-commit/action@v3.0.1
         continue-on-error: true
+
       - name: black
         uses: psf/black@stable
         with:
