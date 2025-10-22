@@ -7,7 +7,7 @@
       "@type": "Person",
       "affiliation": {
         "@type": "Organization",
-        "name": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
+        "legalName": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
       },
       "familyName": "Sovacool",
       "givenName": "Kelly"
@@ -17,7 +17,7 @@
       "@type": "Person",
       "affiliation": {
         "@type": "Organization",
-        "name": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
+        "legalName": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
       },
       "familyName": "Koparde",
       "givenName": "Vishal"
