@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.3.0
 
 - New example workflow: `check-links` -- automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)
 - New function `write_citation()` to write citation.cff files to other formats, e.g. codemeta. (#87,#89, @kelly-sovacool)
