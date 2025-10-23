@@ -254,7 +254,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.2.7). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {5},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.3.0). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {10},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
     "crumbs": [
       "Project information",
       "Citation"
@@ -272,8 +272,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.3.0",
+    "href": "CHANGELOG.html#actions-0.3.0",
     "title": "CCBR actions",
     "section": "",
     "text": "New example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)\nNew function write_citation() to write citation.cff files to other formats, e.g. codemeta. (#87,#89, @kelly-sovacool)\n\nNow performed in draft-release action and in auto-format example workflow.",
