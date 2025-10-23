@@ -261,22 +261,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "New example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)\nNew function write_citation() to write citation.cff files to other formats, e.g. codemeta. (#87,#89, @kelly-sovacool)\n\nNow performed in draft-release action and in auto-format example workflow.",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.3.0",
     "href": "CHANGELOG.html#actions-0.3.0",
     "title": "CCBR actions",
-    "section": "",
-    "text": "New example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)\nNew function write_citation() to write citation.cff files to other formats, e.g. codemeta. (#87,#89, @kelly-sovacool)\n\nNow performed in draft-release action and in auto-format example workflow.",
+    "section": "actions 0.3.0",
+    "text": "actions 0.3.0\n\nNew example workflow: check-links – automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)\nNew function write_citation() to write citation.cff files to other formats, e.g. codemeta. (#87,#89, @kelly-sovacool)\n\nNow performed in draft-release action and in auto-format example workflow.",
     "crumbs": [
       "Project information",
       "Changelog"
