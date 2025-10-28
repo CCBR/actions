@@ -17,7 +17,7 @@ which will be read and passed along to the `extra-packages` argument of
 
 [R-CMD-check.yaml](/examples/R-CMD-check.yaml)
 
-``` yaml
+```yaml
 steps:
   - uses: actions/checkout@v4
   - uses: CCBR/actions/install-r-pak
@@ -29,15 +29,15 @@ steps:
 
 [R-CMD-check.yaml](/examples/R-CMD-check.yaml)
 
-``` yaml
+```yaml
 jobs:
   R-CMD-check:
     strategy:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, r: 'release' }
-          - { os: ubuntu-latest, r: 'oldrel-1' }
+          - { os: ubuntu-latest, r: "release" }
+          - { os: ubuntu-latest, r: "oldrel-1" }
 
     runs-on: ${{ matrix.config.os }}
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
