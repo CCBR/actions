@@ -1,5 +1,7 @@
 ## actions development version
 
+- New action `install-r-pak` to install R package dependencies with optional version pins. (#92, @kelly-sovacool)
+
 ## actions 0.3.0
 
 - New example workflow: `check-links` -- automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)
