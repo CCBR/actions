@@ -44,14 +44,21 @@ Custom actions used in our github workflows.
 
 - [add-issue-label-list](add-issue-label-list) - Update issue
   description with a list of issues of a given label
+
 - [build-docker](build-docker) - Build a docker container using CCBR
   guidelines
+
 - [draft-release](draft-release) - Draft a new release based on
   conventional commits and prepare release notes
+
+- [Install R + pak](install-r-pak) - Install R and dependencies with pak
+
 - [label-issue-repo-name](label-issue-repo-name) - Label issues & PRs
   with the repository name
+
 - [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
   using mkdocs + mike
+
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
 
@@ -100,7 +107,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.2.7). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.3.0). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
@@ -109,7 +116,7 @@ Please cite this software if you use it in a publication:
 @misc{YourReferenceHere,
 author = {Sovacool, Kelly and Koparde, Vishal},
 doi = {10.5281/zenodo.13761059},
-month = {5},
+month = {10},
 title = {CCBR actions: GitHub Actions for CCBR repos},
 url = {https://ccbr.github.io/actions/},
 year = {2025}
