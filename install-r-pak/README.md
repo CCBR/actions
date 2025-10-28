@@ -1,6 +1,6 @@
 # install-r-pak
 
-**`Install R + pak`** - Install R and dependencies with pak
+**`Install R + pak`** - Install R package dependencies with pak
 
 Install R package dependencies with pak
 
@@ -20,7 +20,7 @@ which will be read and passed along to the `extra-packages` argument of
 ```yaml
 steps:
   - uses: actions/checkout@v4
-  - uses: CCBR/actions/install-r-pak
+  - uses: CCBR/actions/install-r-pak@main
     with:
       extra-packages: local::.
 ```
@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: CCBR/actions/install-r-pak
+      - uses: CCBR/actions/install-r-pak@main
         with:
           versions-file: .github/package-versions.txt
           extra-packages: local::.

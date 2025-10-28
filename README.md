@@ -52,7 +52,8 @@ Custom actions used in our github workflows.
 - [draft-release](draft-release) - Draft a new release based on
   conventional commits and prepare release notes
 
-- [Install R + pak](install-r-pak) - Install R and dependencies with pak
+- [Install R + pak](install-r-pak) - Install R package dependencies with
+  pak
 
 - [label-issue-repo-name](label-issue-repo-name) - Label issues & PRs
   with the repository name
