@@ -34,8 +34,8 @@ runs:
       shell: bash
       run: |
         # get package versions from file
-        if [ -f ${{ inputs.versions-file }} ]; then
-          PKG_VERSIONS=$(cat ${{ inputs.versions-file }})
+        if [ -f "${{ inputs.versions-file }}" ]; then
+          PKG_VERSIONS=$(cat "${{ inputs.versions-file }}")
         fi
 
         # get additional package versions from input
