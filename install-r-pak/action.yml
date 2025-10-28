@@ -1,6 +1,6 @@
 name: Install R + pak
 description: |
-  Install R and dependencies with pak
+  Install R package dependencies with pak
 author: "Kelly Sovacool"
 inputs:
   r-version:
