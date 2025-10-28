@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/actions.html",
+    "listing": "/index.html",
     "items": [
+      "/actions/install-r-pak/index.html",
       "/actions/add-issue-label-list/index.html",
       "/actions/build-docker/index.html",
       "/actions/draft-release/index.html",
@@ -11,8 +12,9 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/actions.html",
     "items": [
+      "/actions/install-r-pak/index.html",
       "/actions/add-issue-label-list/index.html",
       "/actions/build-docker/index.html",
       "/actions/draft-release/index.html",
