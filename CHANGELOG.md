@@ -5,6 +5,7 @@
 - New example workflow: `check-links` -- automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)
 - New function `write_citation()` to write citation.cff files to other formats, e.g. codemeta. (#87,#89, @kelly-sovacool)
   - Now performed in `draft-release` action and in `auto-format` example workflow.
+- New action `install-r-pak` to install R package dependencies with optional version pins. (#92, @kelly-sovacool)
 
 ## actions 0.2.7
 
