@@ -8,6 +8,7 @@ GitHub Actions for CCBR repos
 [![docs](https://github.com/CCBR/actions/actions/workflows/docs-quartodoc.yml/badge.svg)](https://CCBR.github.io/actions)
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13761059.svg)](https://doi.org/10.5281/zenodo.13761059)
+[![CodeQL](https://github.com/CCBR/actions/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/CCBR/actions/actions/workflows/github-code-scanning/codeql)
 
 Custom [GitHub Actions](#actions) and [example workflows](#examples) for
 CCBR repositories. View [our documentation
@@ -100,7 +101,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.2.7). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.3.0). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
@@ -109,7 +110,7 @@ Please cite this software if you use it in a publication:
 @misc{YourReferenceHere,
 author = {Sovacool, Kelly and Koparde, Vishal},
 doi = {10.5281/zenodo.13761059},
-month = {5},
+month = {10},
 title = {CCBR actions: GitHub Actions for CCBR repos},
 url = {https://ccbr.github.io/actions/},
 year = {2025}
