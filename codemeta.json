@@ -24,10 +24,10 @@
     }
   ],
   "codeRepository": "https://github.com/CCBR/actions",
-  "datePublished": "2025-05-27",
+  "datePublished": "2025-10-23",
   "identifier": "https://doi.org/10.5281/zenodo.13761059",
   "license": "https://spdx.org/licenses/MIT",
   "name": "CCBR actions: GitHub Actions for CCBR repos",
   "url": "https://ccbr.github.io/actions/",
-  "version": "v0.2.7"
+  "version": "v0.3.0"
 }
