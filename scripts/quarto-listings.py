@@ -16,8 +16,8 @@ def create_actions_listing():
 
         qmd_meta = {
             "title": action_yml["name"],
-            "subtitle": action_yml["description"],
-            "author": action_yml["author"],
+            "subtitle": action_yml.get("description"),
+            "author": action_yml.get("author"),
             "execute": {"echo": False, "output": "asis"},
         }
         with open(f.parent / "README.md", "r") as infile:
