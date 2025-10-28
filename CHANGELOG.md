@@ -1,6 +1,6 @@
 ## actions development version
 
-- New action `install-r-pak` to install R package dependencies with optional version pins. (#92, @kelly-sovacool)
+- New action `install-r-pak` to install R package dependencies with optional version pins. (#92, #93, @kelly-sovacool)
 
 ## actions 0.3.0
 
