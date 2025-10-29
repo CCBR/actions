@@ -40,9 +40,8 @@ for action_yml in sorted(pathlib.Path().glob("*/action.yml")):
     with action_yml.open('r') as infile:
         action_meta = yaml.load(infile, Loader = yaml.FullLoader)
     name = action_meta['name']
-    desc = action_meta['description']
+    desc = action_meta['description'].strip()
     print(f"- [{name}]({action_yml.parent}) - {desc}")
-
 ```
 
 ## Package

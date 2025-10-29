@@ -45,22 +45,16 @@ Custom actions used in our github workflows.
 
 - [add-issue-label-list](add-issue-label-list) - Update issue
   description with a list of issues of a given label
-
 - [build-docker](build-docker) - Build a docker container using CCBR
   guidelines
-
 - [draft-release](draft-release) - Draft a new release based on
   conventional commits and prepare release notes
-
 - [Install R + pak](install-r-pak) - Install R package dependencies with
   pak
-
 - [label-issue-repo-name](label-issue-repo-name) - Label issues & PRs
   with the repository name
-
 - [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
   using mkdocs + mike
-
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
 
@@ -86,7 +80,7 @@ pip install git+https://github.com/CCBR/actions
 Or install it from a specific version or branch with:
 
 ```bash
-pip install git+https://github.com/CCBR/actions@v0.1
+pip install git+https://github.com/CCBR/actions@v0.3
 ```
 
 View the package documentation
