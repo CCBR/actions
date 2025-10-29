@@ -166,7 +166,7 @@
     "href": "install.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.1",
+    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.3",
     "crumbs": [
       "Python package",
       "Installation"
