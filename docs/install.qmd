@@ -11,6 +11,17 @@ pip install git+https://github.com/CCBR/actions
 
 Or install it from a specific version or branch with:
 
-```bash
-pip install git+https://github.com/CCBR/actions@v0.1
+```{python}
+#| echo: false
+#| output: asis
+
+from ccbr_actions.util import repo_base
+from ccbr_tools.pkg_util import get_version
+from ccbr_tools.versions import get_major_minor_version
+version = get_major_minor_version(get_version(repo_base))
+print("\n".join([
+    "```bash",
+    f"pip install git+https://github.com/CCBR/actions@v{version}",
+    "```"
+]))
 ```
