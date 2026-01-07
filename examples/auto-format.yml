@@ -29,11 +29,20 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           fetch-depth: 0
+          ref: ${{ github.ref_name }}
+
+      - name: git config
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - uses: citation-file-format/cffconvert-github-action@2.0.0
         if: ${{ hashFiles('CITATION.cff') != ''}}
         with:
           args: "--format codemeta --outfile codemeta.json"
+
+      - name: Format R code with air
+        uses: rstudio/shiny-workflows/format-r-code@v1
 
       - name: format
         uses: pre-commit/action@v3.0.1
@@ -44,4 +53,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "ci: 🤖 format everything with pre-commit" && git push || echo "nothing to commit"
+          git commit -m "ci: 🤖 auto-format" || echo "nothing to commit"
+          git push || echo "nothing to push"
