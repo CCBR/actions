@@ -1,0 +1,71 @@
+name: auto-add-user-project
+description: "Add issue/PR to user's project"
+author: "Kelly Sovacool"
+
+inputs:
+  username:
+    required: false
+    type: string
+    description: "GitHub username of the person assigned to the Issue or PR"
+    default: ${{ github.event.assignee.login }}
+  user_projects:
+    required: false
+    type: string
+    description: "URL of a yaml file mapping usernames to project boards"
+    default: https://raw.githubusercontent.com/CCBR/.github/main/assets/user-kanbans.yml
+  github-token:
+    description: "GitHub Actions token with access to organization projects. Optional - set the app-id and app-private-key instead."
+    required: false
+    default: ""
+  app-id:
+    description: "GitHub App ID for authentication. Use this instead of a token."
+    required: false
+    default: ""
+  app-private-key:
+    description: "Private key for the GitHub App used for authentication. Use this instead of a token."
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: download yaml
+      shell: bash
+      run: |
+        wget ${{ inputs.user_projects }}
+
+    - uses: pietrobolcato/action-read-yaml@1.1.0
+      id: metadata
+      with:
+        config: user-kanbans.yml
+
+    - name: echo
+      shell: bash
+      run: |
+        echo ${{ inputs.username }} ${{ steps.metadata.outputs[inputs.username] }}
+
+    - name: Generate a token
+      id: generate-token
+      if: ${{ inputs.github-token == '' }}
+      uses: actions/create-github-app-token@v2
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-private-key }}
+
+    - name: Set GitHub token from app
+      if: ${{ inputs.github-token == '' }}
+      shell: bash
+      run: |
+        echo "GITHUB_TOKEN=${{ steps.generate-token.outputs.token }}" >> $GITHUB_ENV
+
+    - name: Set GitHub token from input
+      if: ${{ inputs.github-token != '' }}
+      shell: bash
+      run: |
+        echo "GITHUB_TOKEN=${{ inputs.github-token }}" >> $GITHUB_ENV
+
+    - uses: actions/add-to-project@v1.0.2
+      if: ${{ steps.metadata.outputs[inputs.username] != '' }}
+      with:
+        project-url: ${{ steps.metadata.outputs[inputs.username] }}
+        github-token: ${{ env.GITHUB_TOKEN }}
