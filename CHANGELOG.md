@@ -2,7 +2,7 @@
 
 - New action `install-r-pak` to install R package dependencies with optional version pins. (#92, #93, @kelly-sovacool)
 - `user-projects`: now supports GitHub App authentication in addition to token-based authentication, providing enhanced security and better integration with organization workflows. (#99, @kelly-sovacool)
-- `techdev-project`: uses CCBR-bot GitHub App authentication instead of the default `GITHUB_TOKEN`. (#101, @kelly-sovacool)
+- `techdev-project`: uses CCBR-bot GitHub App authentication instead of the custom personal access token. (#101, @kelly-sovacool)
 - docs: add GitHub App authentication guidance and examples, plus `user-projects` README. (#101, @kelly-sovacool)
 
 ## actions 0.3.0
