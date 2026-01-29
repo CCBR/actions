@@ -1,0 +1,55 @@
+---
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+# user-projects
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+Automatically add issues and pull requests to a user's GitHub project board.
+This action maps assignees to project boards using a YAML configuration file
+and supports both token-based and GitHub App authentication for enhanced security.
+
+## Usage
+
+The action reads a YAML file that maps GitHub usernames to project board URLs.
+When an issue or PR is assigned to a user, the action automatically adds it to
+their corresponding project board.
+
+### Basic example with GitHub token
+
+```yaml
+steps:
+  - uses: CCBR/actions/user-projects@main
+    with:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Example with GitHub App authentication
+
+For enhanced security, you can use a GitHub App instead of a personal access token.
+Create a GitHub App with the necessary permissions and store the app ID and private key
+as organization variables or secrets.
+
+```yaml
+steps:
+  - uses: CCBR/actions/user-projects@main
+    with:
+      app-id: ${{ vars.CCBR_BOT_APP_ID }}
+      app-private-key: ${{ secrets.CCBR_BOT_APP_PRIVATE_KEY }}
+      token-owner: CCBR
+```
+
+For a complete example workflow, see [user-projects.yml](/examples/user-projects.yml).
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```
