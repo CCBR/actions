@@ -16,15 +16,15 @@ inputs:
     required: false
     default: ""
   app-id:
-    description: "GitHub App ID for authentication. Use this instead of a token."
+    description: "GitHub App ID for authentication. Optional - Use this instead of a token."
     required: false
     default: ""
   app-private-key:
-    description: "Private key for the GitHub App used for authentication. Use this instead of a token."
+    description: "Private key for the GitHub App used for authentication. Optional - Use this instead of a token. Must be set if app-id is set."
     required: false
     default: ""
   token-owner:
-    description: "Owner of the resources that the GitHub app will use for authentication"
+    description: "Owner of the resources that the GitHub app will use for authentication. Optional - use this if using app-id and app-private-key."
     required: false
     default: "CCBR"
 

@@ -18,6 +18,6 @@ jobs:
     steps:
       - uses: CCBR/actions/auto-add-user-project@gh-app-auth
         with:
-          app-id: ${{ variables.CCBR_BOT_APP_ID }}
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
           app-private-key: ${{ secrets.CCBR_BOT_APP_PRIVATE_KEY }}
           token-owner: "CCBR"
