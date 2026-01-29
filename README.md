@@ -45,8 +45,6 @@ Custom actions used in our github workflows.
 
 - [add-issue-label-list](add-issue-label-list) - Update issue
   description with a list of issues of a given label
-- [auto-add-user-project](auto-add-user-project) - Add issue/PR to
-  user’s project
 - [build-docker](build-docker) - Build a docker container using CCBR
   guidelines
 - [draft-release](draft-release) - Draft a new release based on
@@ -59,6 +57,7 @@ Custom actions used in our github workflows.
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [user-projects](user-projects) - Add issue/PR to user’s project
 
 ## Package
 
