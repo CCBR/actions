@@ -5,12 +5,10 @@ author: "Kelly Sovacool"
 inputs:
   username:
     required: false
-    type: string
     description: "GitHub username of the person assigned to the Issue or PR"
     default: ${{ github.event.assignee.login }}
   user_projects:
     required: false
-    type: string
     description: "URL of a yaml file mapping usernames to project boards"
     default: https://raw.githubusercontent.com/CCBR/.github/main/assets/user-kanbans.yml
   github-token:
@@ -25,6 +23,10 @@ inputs:
     description: "Private key for the GitHub App used for authentication. Use this instead of a token."
     required: false
     default: ""
+  token-owner:
+    description: "Owner of the resources that the GitHub app will use for authentication"
+    required: false
+    default: "CCBR"
 
 runs:
   using: composite
@@ -51,6 +53,7 @@ runs:
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.app-private-key }}
+        owner: ${{ inputs.token-owner }}
 
     - name: Set GitHub token from app
       if: ${{ inputs.github-token == '' }}
