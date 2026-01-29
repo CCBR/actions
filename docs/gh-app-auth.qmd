@@ -1,0 +1,114 @@
+---
+title: GitHub App Authentication
+subtitle: Using the CCBR Bot for secure workflow authentication
+---
+
+## Overview
+
+The [CCBR Bot](http://github.com/apps/CCBR-bot) is a GitHub App that provides secure authentication for automated workflows without requiring personal access tokens. This approach offers better security, granular permissions, and easier token management for organization-wide automation.
+
+## Motivation
+
+- **Enhanced Security**: Short-lived tokens that expire automatically
+- **Granular Permissions**: Grant only the permissions needed for each workflow
+- **Better Auditability**: Actions are clearly attributed to the bot
+
+## Setting Up the CCBR Bot
+
+An organization admin should store these in your organization's variables and secrets:
+
+- **`CCBR_BOT_APP_ID`** (variable): The GitHub App ID
+- **`CCBR_BOT_APP_PRIVATE_KEY`** (secret): The GitHub App private key
+
+## Using GitHub App Authentication in Workflows
+
+When using actions that support GitHub App authentication, pass the app ID and private key as inputs:
+
+```yaml
+with:
+  app-id: ${{ vars.CCBR_BOT_APP_ID }}
+  app-private-key: ${{ secrets.CCBR_BOT_APP_PRIVATE_KEY }}
+```
+
+## Example Workflows
+
+### user-projects
+
+Automatically add issues and pull requests to a user's project board:
+
+[{{< fa brands github >}} Source](https://github.com/CCBR/actions/tree/main/examples/user-projects.yml)
+
+```yaml
+name: personal-projects
+
+on:
+  issues:
+    types:
+      - assigned
+  pull_request:
+    types:
+      - assigned
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/user-projects@main
+        with:
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          app-private-key: ${{ secrets.CCBR_BOT_APP_PRIVATE_KEY }}
+```
+
+### Implementation Details
+
+The `user-projects` action supports **both authentication methods**: provide a `github-token` directly, or provide `app-id` and `app-private-key` for on-demand generation. Here's the relevant configuration:
+
+```yaml
+inputs:
+  github-token:
+    description: "Pre-generated GitHub token. Optional - use app-id and app-private-key instead."
+    required: false
+  app-id:
+    description: "GitHub App ID for token generation."
+    required: false
+  app-private-key:
+    description: "GitHub App private key for token generation."
+    required: false
+  token-owner:
+    description: "Owner of GitHub App resources (default: CCBR)"
+    required: false
+    default: "CCBR"
+
+runs:
+  using: composite
+  steps:
+    - name: Generate token from app
+      if: ${{ inputs.github-token == '' }}
+      uses: actions/create-github-app-token@v2
+      id: generate-token
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-private-key }}
+        owner: ${{ inputs.token-owner }}
+
+    - name: Set GITHUB_TOKEN
+      shell: bash
+      run: |
+        TOKEN=${{ inputs.github-token || steps.generate-token.outputs.token }}
+        echo "GITHUB_TOKEN=$TOKEN" >> $GITHUB_ENV
+```
+
+## Troubleshooting
+
+- Verify app ID and private key are stored as organization variables/secrets
+- Ensure the GitHub App has required permissions configured
+- Check that the app is installed on the target repository/organization
+- Review workflow logs for errors from `actions/create-github-app-token`
+
+## Resources
+
+- [Making authenticated API requests with a GitHub App in a GitHub Actions workflow](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/making-authenticated-api-requests-with-a-github-app-in-a-github-actions-workflow)
