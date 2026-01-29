@@ -44,7 +44,7 @@ steps:
   - uses: CCBR/actions/user-projects@main
     with:
       app-id: ${{ vars.CCBR_BOT_APP_ID }}
-      app-private-key: ${{ secrets.CCBR_BOT_APP_PRIVATE_KEY }}
+      app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
       token-owner: CCBR
 ```
 

@@ -1,6 +1,7 @@
 ---
 title: GitHub App Authentication
 subtitle: Using the CCBR Bot for secure workflow authentication
+author: "[Kelly Sovacool](https://github.com/kelly-sovacool)"
 ---
 
 ## Overview
@@ -18,7 +19,7 @@ The [CCBR Bot](http://github.com/apps/CCBR-bot) is a GitHub App that provides se
 An organization admin should store these in your organization's variables and secrets:
 
 - **`CCBR_BOT_APP_ID`** (variable): The GitHub App ID
-- **`CCBR_BOT_APP_PRIVATE_KEY`** (secret): The GitHub App private key
+- **`CCBR_BOT_PRIVATE_KEY`** (secret): The GitHub App private key
 
 ## Using GitHub App Authentication in Workflows
 
@@ -27,7 +28,7 @@ When using actions that support GitHub App authentication, pass the app ID and p
 ```yaml
 with:
   app-id: ${{ vars.CCBR_BOT_APP_ID }}
-  app-private-key: ${{ secrets.CCBR_BOT_APP_PRIVATE_KEY }}
+  app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
 ```
 
 ## Example Workflows
@@ -60,7 +61,7 @@ jobs:
       - uses: CCBR/actions/user-projects@main
         with:
           app-id: ${{ vars.CCBR_BOT_APP_ID }}
-          app-private-key: ${{ secrets.CCBR_BOT_APP_PRIVATE_KEY }}
+          app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
 ```
 
 ### Implementation Details
