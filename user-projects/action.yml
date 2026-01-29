@@ -1,4 +1,4 @@
-name: auto-add-user-project
+name: user-projects
 description: "Add issue/PR to user's project"
 author: "Kelly Sovacool"
 
