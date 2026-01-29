@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Create quarto listing for custom CCBR actions"""
+
 import pathlib
 from ruamel.yaml import YAML
 
