@@ -27,6 +27,7 @@ website:
               contents:
                 - auto: "actions/**"
             - examples.qmd
+            - gh-app-auth.qmd
         - section: Python package
           href: package.qmd
           contents:
