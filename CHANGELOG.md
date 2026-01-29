@@ -1,6 +1,7 @@
 ## actions development version
 
 - New action `install-r-pak` to install R package dependencies with optional version pins. (#92, #93, @kelly-sovacool)
+- `user-projects`: now supports GitHub App authentication in addition to token-based authentication, providing enhanced security and better integration with organization workflows. (#99, @kelly-sovacool)
 
 ## actions 0.3.0
 
