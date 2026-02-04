@@ -285,8 +285,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.4.0",
+    "href": "CHANGELOG.html#actions-0.4.0",
     "title": "CCBR actions",
     "section": "",
     "text": "New action install-r-pak to install R package dependencies with optional version pins. (#92, #93, @kelly-sovacool)\nuser-projects: now supports GitHub App authentication in addition to token-based authentication, providing enhanced security and better integration with organization workflows. (#99, @kelly-sovacool)\ntechdev-project: uses CCBR-bot GitHub App authentication instead of the custom personal access token. (#101, @kelly-sovacool)\ndocs: add GitHub App authentication guidance and examples, plus user-projects README. (#101, @kelly-sovacool)",
@@ -443,7 +443,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for CCBR repos (version v0.3.0). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {10},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2025}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.4.0). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {2},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
     "crumbs": [
       "Project information",
       "Citation"
@@ -712,7 +712,7 @@
     "href": "install.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.3",
+    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.4",
     "crumbs": [
       "Python package",
       "Installation"
