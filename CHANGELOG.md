@@ -1,5 +1,7 @@
 ## actions development version
 
+- `check-links` - only open an issue if there are broken links. (#105, @kelly-sovacool)
+
 ## actions 0.4.0
 
 - New action `install-r-pak` to install R package dependencies with optional version pins. (#92, #93, @kelly-sovacool)
