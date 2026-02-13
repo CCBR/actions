@@ -81,7 +81,7 @@ pip install git+https://github.com/CCBR/actions
 Or install it from a specific version or branch with:
 
 ```bash
-pip install git+https://github.com/CCBR/actions@v0.3
+pip install git+https://github.com/CCBR/actions@v0.4
 ```
 
 View the package documentation
@@ -103,8 +103,8 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 
 Please cite this software if you use it in a publication:
 
-> Sovacool K. and Koparde V. (2025). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.3.0). DOI: 10.5281/zenodo.13761059 URL:
+> Sovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for
+> CCBR repos (version v0.4.0). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
@@ -113,10 +113,10 @@ Please cite this software if you use it in a publication:
 @misc{YourReferenceHere,
 author = {Sovacool, Kelly and Koparde, Vishal},
 doi = {10.5281/zenodo.13761059},
-month = {10},
+month = {2},
 title = {CCBR actions: GitHub Actions for CCBR repos},
 url = {https://ccbr.github.io/actions/},
-year = {2025}
+year = {2026}
 }
 ```
 
