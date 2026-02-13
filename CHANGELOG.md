@@ -1,6 +1,6 @@
 ## actions development version
 
-- `check-links` - only open an issue if there are broken links. (@kelly-sovacool)
+- `check-links` - only open an issue if there are broken links. (#105, @kelly-sovacool)
 
 ## actions 0.4.0
 
