@@ -147,21 +147,25 @@ runs:
       if: ${{ inputs.print-versions == 'true' }}
       run: |
         set -euo pipefail
-        SCRIPT=$(which print_versions.py)
-        echo $SCRIPT
-        cp $SCRIPT ${{ github.workspace }}
+        if docker run --rm ${{ env.IMAGENAME }} sh -c 'command -v python3 >/dev/null 2>&1'; then
+          SCRIPT=$(which print_versions.py)
+          echo $SCRIPT
+          cp $SCRIPT ${{ github.workspace }}
 
-        if [ -f ${{ inputs.json-file }} ]; then
-          JSON=${{ inputs.json-file }}
+          if [ -f ${{ inputs.json-file }} ]; then
+            JSON=${{ inputs.json-file }}
+          else
+            json_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.json"))')
+            cp $json_src ${{ github.workspace }}
+            JSON=tool_version_commands.json
+          fi
+          echo $JSON
+
+          docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
+            python3 /ws/print_versions.py --json /ws/${JSON} --output /ws/${{ env.MDFILE }}
         else
-          json_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.json"))')
-          cp $json_src ${{ github.workspace }}
-          JSON=tool_version_commands.json
+          : > ${{ env.MDFILE }}
         fi
-        echo $JSON
-
-        docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
-          python3 /ws/print_versions.py --json /ws/${JSON} --output /ws/${{ env.MDFILE }}
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
