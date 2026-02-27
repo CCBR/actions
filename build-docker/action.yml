@@ -164,7 +164,7 @@ runs:
           docker run --rm -v "${{ github.workspace }}:/ws" ${{ env.IMAGENAME }} \
             python3 /ws/print_versions.py --json /ws/${JSON} --output /ws/${{ env.MDFILE }}
         else
-          : > ${{ env.MDFILE }}
+          echo "python3 not found in container; leaving existing README at \`${{ env.MDFILE }}\` unchanged."
         fi
 
     - name: Update Docker Hub Description
