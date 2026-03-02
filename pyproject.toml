@@ -95,10 +95,13 @@ script-files = [
     "scripts/quarto-listings.py"
 ]
 
-[tool.coverage.run]
-omit = [
-    "*/tests/*"
-]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
-[tool.coverage.report]
-show_missing = true
+[tool.coverage.run]
+source = ["src", "scripts"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__init__.py",
+]
