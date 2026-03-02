@@ -95,10 +95,15 @@ runs:
         password: ${{ inputs.dockerhub-token }}
 
     - name: Prepare build-time variables
-      shell: bash
+      shell: python
       id: prepare_vars
       run: |
-        prepare_docker_build_variables.sh ${{ inputs.dockerfile }} ${{ inputs.suffix }} ${{ inputs.dockerhub-namespace }}
+        from ccbr_actions.docker import prepare_docker_build_variables
+        prepare_docker_build_variables(
+            dockerfile="${{ inputs.dockerfile }}",
+            suffix="${{ inputs.suffix }}",
+            dockerhub_account="${{ inputs.dockerhub-namespace }}"
+        )
 
     - name: Check variables and create README
       shell: bash
