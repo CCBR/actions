@@ -94,3 +94,11 @@ script-files = [
     "scripts/print_versions.py",
     "scripts/quarto-listings.py"
 ]
+
+[tool.coverage.run]
+omit = [
+    "*/tests/*"
+]
+
+[tool.coverage.report]
+show_missing = true
