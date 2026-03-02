@@ -30,6 +30,9 @@ def test_prepare_draft_release():
     with tempfile.TemporaryDirectory() as tmp_dir:
         original_cwd = os.getcwd()
         os.chdir(tmp_dir)
+        # Initialize a git repository to avoid git rev-parse errors
+        os.system("git init > /dev/null 2>&1")
+        os.system("git commit --allow-empty -m 'initial commit' > /dev/null 2>&1")
         try:
             output = exec_in_context(
                 prepare_draft_release,
