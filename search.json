@@ -601,22 +601,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "check-links - only open an issue if there are broken links. (#105, @kelly-sovacool)\nfix build-docker - use everything after the first dot in the dockerfile name as the version tag. (#109, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.4.1",
     "href": "CHANGELOG.html#actions-0.4.1",
     "title": "CCBR actions",
-    "section": "",
-    "text": "check-links - only open an issue if there are broken links. (#105, @kelly-sovacool)\nfix build-docker - use everything after the first dot in the dockerfile name as the version tag. (#109, @kelly-sovacool)",
+    "section": "actions 0.4.1",
+    "text": "actions 0.4.1\n\ncheck-links - only open an issue if there are broken links. (#105, @kelly-sovacool)\nfix build-docker - use everything after the first dot in the dockerfile name as the version tag. (#109, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
