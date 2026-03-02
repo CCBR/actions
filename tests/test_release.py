@@ -14,7 +14,7 @@ from ccbr_actions.release import (
     post_release_cleanup,
     set_release_version,
 )
-from ccbr_tools.shell import exec_in_context
+from ccbr_tools.shell import exec_in_context, shell_run
 
 
 def test_write_lines():
@@ -31,8 +31,10 @@ def test_prepare_draft_release():
         original_cwd = os.getcwd()
         os.chdir(tmp_dir)
         # Initialize a git repository to avoid git rev-parse errors
-        os.system("git init > /dev/null 2>&1")
-        os.system("git commit --allow-empty -m 'initial commit' > /dev/null 2>&1")
+        shell_run("git init > /dev/null 2>&1")
+        shell_run(
+            "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+        )
         try:
             output = exec_in_context(
                 prepare_draft_release,
