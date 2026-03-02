@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.4.1
 
 - `check-links` - only open an issue if there are broken links. (#105, @kelly-sovacool)
 - fix `build-docker` - use everything after the first dot in the dockerfile name as the version tag. (#109, @kelly-sovacool)
