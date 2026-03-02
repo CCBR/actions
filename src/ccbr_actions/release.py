@@ -13,7 +13,6 @@ from .versions import (
     check_version_increments_by_one,
     match_semver,
     get_current_hash,
-    get_latest_release_tag,
 )
 
 
@@ -96,7 +95,7 @@ def prepare_draft_release(
     changed_files = [
         str(f) for f in (citation_filepath, changelog_filepath, version_filepath) if f
     ]
-    precommit_run(f'--files {" ".join(changed_files)}')
+    precommit_run(f"--files {' '.join(changed_files)}")
     push_release_draft_branch(
         release_branch=release_branch,
         pr_ref_name=pr_ref_name,
@@ -190,7 +189,7 @@ def post_release_cleanup(
 
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
-    lines.insert(0, f"## { os.path.basename(repo) } {dev_header}\n\n")
+    lines.insert(0, f"## {os.path.basename(repo)} {dev_header}\n\n")
 
     with open(version_filepath, "r") as infile:
         version = infile.read().strip()
@@ -203,8 +202,8 @@ def post_release_cleanup(
         ]
     )
 
-    commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of { release_tag }" && git push --set-upstream origin { pr_branch }'
-    pr_cmd = f"gh pr create --fill-first --reviewer { pr_reviewer }"
+    commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of {release_tag}" && git push --set-upstream origin {pr_branch}'
+    pr_cmd = f"gh pr create --fill-first --reviewer {pr_reviewer}"
     delete_cmd = f'git push origin --delete {draft_branch} || echo "No {draft_branch} branch to delete"'
 
     if debug:
@@ -217,7 +216,7 @@ def post_release_cleanup(
             outfile.write(f"{version}-dev\n")
         precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)
-        pr_url = shell_run(f"gh pr create --fill-first --reviewer { pr_reviewer }")
+        pr_url = shell_run(f"gh pr create --fill-first --reviewer {pr_reviewer}")
         shell_run(delete_cmd)
 
     set_output("PR_URL", pr_url)
@@ -374,10 +373,10 @@ def push_release_draft_branch(
     """
     cmd = f"""git push origin --delete {release_branch} || echo "No {release_branch} branch to delete"
 git switch -c {release_branch} || git switch {release_branch}
-git merge --ff-only { pr_ref_name }
+git merge --ff-only {pr_ref_name}
 
-git add { " ".join(files) }
-git commit -m 'chore: 🤖 prepare release { next_version }'
+git add {" ".join(files)}
+git commit -m 'chore: 🤖 prepare release {next_version}'
 git push --set-upstream origin {release_branch}
 """
     if debug:
