@@ -1,0 +1,6 @@
+# Format: tool_name::command_in_path::version_txt::version_command
+# Test config file
+bcftools::bcftools::::bcftools 2>&1 | grep -m1 -i version | awk -F":" '{print $2}'
+pqr::::tests/data/xyz/version.txt::
+bedops::bedops::::bedops --version 2>&1 | grep -i version | awk -F":" '{print $2}'
+bedtools::bedtools::::bedtools --version 2>&1 | awk '{print $NF}'
