@@ -31,8 +31,12 @@ def tag_from_dockerfile(dockerfile: str) -> str:
 
     Mirrors bash ${bn_dockerfile##*.} behavior.
     """
+    if "." not in dockerfile:
+        raise ValueError(
+            f"The dockerfile {dockerfile} must contain a dot to separate the version tag, e.g. Dockerfile.v1"
+        )
     bn_dockerfile = os.path.basename(dockerfile)
-    return bn_dockerfile.rsplit(".", 1)[-1]
+    return bn_dockerfile.split(".", 1)[-1]
 
 
 def prepare_docker_build_variables(

@@ -6,7 +6,7 @@ import tempfile
 
 import pytest
 
-from ccbr_actions.docker import prepare_docker_build_variables
+from ccbr_actions.docker import prepare_docker_build_variables, tag_from_dockerfile
 
 
 def parse_env_file(env_path):
@@ -31,6 +31,19 @@ def run_bash_prepare(script_path, dockerfile, suffix, dockerhub_account, env_pat
         capture_output=True,
     )
     return parse_env_file(env_path)
+
+
+@pytest.mark.parametrize(
+    "dockerfile, expected_tag",
+    [("Dockerfile.v0.9.1", "v0.9.1"), ("Dockerfile.v1", "v1")],
+)
+def test_tag_from_dockerfile(dockerfile, expected_tag):
+    assert tag_from_dockerfile(dockerfile) == expected_tag
+
+
+def test_tag_fail():
+    with pytest.raises(ValueError):
+        tag_from_dockerfile("Dockerfile")  # No dot in the filename
 
 
 @pytest.mark.parametrize("suffix", ["dev", "main", "", "feature"])

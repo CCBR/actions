@@ -36,7 +36,7 @@ dt=$(date +"%Y-%m-%d_%H:%M:%S")
 bn_dockerfile=$(basename $dockerfile)
 
 # Extract the tag from the Dockerfile name (e.g., if Dockerfile.v2, tag=v2)
-tag=${bn_dockerfile##*.}
+tag=$(echo $bn_dockerfile | sed 's/\([a-zA-Z0-9_-]*\)\.\([:$]*\)/\2/')
 
 # Extract the directory name of the Dockerfile
 dn_dockerfile=$(dirname $dockerfile)
