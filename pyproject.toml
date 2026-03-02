@@ -94,14 +94,3 @@ script-files = [
     "scripts/print_versions.py",
     "scripts/quarto-listings.py"
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-
-[tool.coverage.run]
-source = ["src", "scripts"]
-omit = [
-    "*/tests/*",
-    "*/test_*.py",
-    "*/__init__.py",
-]
