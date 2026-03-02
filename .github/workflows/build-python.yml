@@ -43,7 +43,7 @@ jobs:
           python -m pip install .[dev,test] --upgrade pip
       - name: Test
         run: |
-          python -m pytest --cov=src --cov=scripts --cov-omit="*/tests/*"
+          python -m pytest --cov=src --cov=scripts
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
