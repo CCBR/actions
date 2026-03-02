@@ -71,4 +71,4 @@ jobs:
           push: ${{ github.event.inputs.push }}
           ccbr-actions-version: ${{ github.event.inputs.ccbr-actions-version }}
           github-token: ${{ github.token }}
-          json-file: "scripts/tool_version_commands.json"
+          config-file: "scripts/tool_version_commands.txt"

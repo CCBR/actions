@@ -47,6 +47,7 @@ steps:
       ccbr-actions-version: v0.2
       github-token: ${{ github.token }}
       github-actor: ${{ github.actor }}
+      config-file: "scripts/tool_version_commands.txt"
 ```
 
 For an example to manually trigger the workflow for a single docker container,
