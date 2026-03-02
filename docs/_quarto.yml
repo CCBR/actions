@@ -74,6 +74,7 @@ quartodoc:
         - actions
         - citation
         - data
+        - docker
         - docs
         - release
         - util
