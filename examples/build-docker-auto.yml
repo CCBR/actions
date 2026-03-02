@@ -89,7 +89,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref_name }} # branch name of push
 
-      - uses: CCBR/actions/build-docker@v0.3
+      - uses: CCBR/actions/build-docker@v0.4
         with:
           dockerfile: ${{ matrix.file }}
           dockerhub-namespace: nciccbr
