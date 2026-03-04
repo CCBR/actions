@@ -44,7 +44,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/post-release@v0.4
+      - uses: CCBR/actions/post-release@v0.5
         with:
           github-token: ${{ github.token }}
           update-sliding-tags: false
