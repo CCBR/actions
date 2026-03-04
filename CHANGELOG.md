@@ -1,6 +1,7 @@
 ## actions development version
 
 - fix `build-docker` - refactor the print versions script to use bash so it can run even if python isn't installed. (#111, @kelly-sovacool)
+- `post-release` - update sliding tags instead of branches. (#119, @kelly-sovacool)
 
 ## actions 0.4.1
 
