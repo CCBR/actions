@@ -39,7 +39,7 @@ inputs:
     required: true
     default: "41898282+github-actions[bot]"
   update-sliding-tags:
-    description: "Whether to update the sliding tags (major.minor) to the new patch version"
+    description: "Whether to update the sliding tags (major.minor & latest) to the new patch version"
     default: "false"
 
 runs:
@@ -96,12 +96,11 @@ runs:
         if latest_tag == release_tag:
           maj_min_version = f"{maj_min_version},latest"
         set_output("SLIDING_VERSION", maj_min_version)
-    - uses: jimeh/update-tags-actions@v2
+    - uses: jimeh/update-tags-action@v2
       if: ${{ inputs.update-sliding-tags == 'true' }}
       with:
         github_token: ${{ inputs.github-token }}
         tags: ${{ steps.sliding-tag.outputs.SLIDING_VERSION }}
-        source_tag: ${{ github.event.release.tag_name }}
     - name: Next steps
       shell: bash
       run: |
