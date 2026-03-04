@@ -83,6 +83,8 @@ runs:
     - name: get major-minor version
       id: sliding-tag
       shell: python {0}
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
       run: |
         from ccbr_actions.versions import get_major_minor_version
         from ccbr_actions.actions import set_output
