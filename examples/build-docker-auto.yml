@@ -99,4 +99,4 @@ jobs:
           push: true
           ccbr-actions-version: v0.3
           github-token: ${{ github.token }}
-          json-file: "scripts/tool_version_commands.json"
+          config-file: "scripts/tool_version_commands.txt"
