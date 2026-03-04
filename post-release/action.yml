@@ -38,8 +38,8 @@ inputs:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed"
     required: true
     default: "41898282+github-actions[bot]"
-  update-sliding-branch:
-    description: "Whether to update the sliding branch (major.minor) to the new patch version"
+  update-sliding-tags:
+    description: "Whether to update the sliding tags (major.minor & latest) to the new patch version"
     default: "false"
 
 runs:
@@ -81,23 +81,28 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github-token }}
     - name: get major-minor version
-      id: sliding-version
+      id: sliding-tag
       shell: python {0}
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
       run: |
         from ccbr_actions.versions import get_major_minor_version
         from ccbr_actions.actions import set_output
-        maj_min_version = get_major_minor_version("${{ github.event.release.tag_name }}", with_leading_v = True)
+        from ccbr_tools.shell import shell_run
+
+        release_tag = "${{ github.event.release.tag_name }}"
+        maj_min_version = get_major_minor_version(release_tag, with_leading_v = True)
         if not maj_min_version:
-          raise ValueError(f"Could not determine major.minor version from tag: ${{ github.event.release.tag_name }}")
+          raise ValueError(f"Could not determine major.minor version from tag: {release_tag}")
+        latest_tag = shell_run("gh api repos/${{ github.repository }}/releases/latest --jq .tag_name").strip()
+        if latest_tag == release_tag:
+          maj_min_version = f"{maj_min_version},latest"
         set_output("SLIDING_VERSION", maj_min_version)
-    - name: fast forward sliding branch
-      shell: bash
-      if: ${{ inputs.update-sliding-branch == 'true' }}
-      run: |
-        SLIDING_VERSION=${{ steps.sliding-version.outputs.SLIDING_VERSION }}
-        git branch -D $SLIDING_VERSION || echo "No $SLIDING_VERSION branch to delete"
-        git checkout ${{ github.event.release.tag_name }} -b $SLIDING_VERSION
-        git push -f
+    - uses: jimeh/update-tags-action@v2
+      if: ${{ inputs.update-sliding-tags == 'true' }}
+      with:
+        github_token: ${{ inputs.github-token }}
+        tags: ${{ steps.sliding-tag.outputs.SLIDING_VERSION }}
     - name: Next steps
       shell: bash
       run: |

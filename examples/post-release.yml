@@ -20,3 +20,4 @@ jobs:
       - uses: CCBR/actions/post-release@v0.4
         with:
           github-token: ${{ github.token }}
+          update-sliding-tags: false
