@@ -203,7 +203,7 @@ def post_release_cleanup(
     )
 
     commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of {release_tag}" && git push --set-upstream origin {pr_branch}'
-    pr_cmd = f"gh pr create --fill-first --reviewer {pr_reviewer}"
+    pr_cmd = f"gh pr create --title 'chore: post-release cleanup for {release_tag}' --reviewer {pr_reviewer}"
     delete_cmd = f'git push origin --delete {draft_branch} || echo "No {draft_branch} branch to delete"'
 
     if debug:
@@ -216,7 +216,7 @@ def post_release_cleanup(
             outfile.write(f"{version}-dev\n")
         precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)
-        pr_url = shell_run(f"gh pr create --fill-first --reviewer {pr_reviewer}")
+        pr_url = shell_run(pr_cmd)
         shell_run(delete_cmd)
 
     set_output("PR_URL", pr_url)
