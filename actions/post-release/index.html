@@ -629,7 +629,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><strong><code>post-release</code></strong> - Post-release cleanup chores, intended to be triggered by publishing a release</p>
-<p>This action is designed to be triggered by publishing a release. On completion, it will open a pull request to merge post-release clean up chores such as bumping the developemnt version in the version file and changelog. It works best when used in conjunction with <a href="./draft-release"><code>draft-release</code></a> to help automate parts of the release process.</p>
+<p>This action is designed to be triggered by publishing a release. On completion, it will open a pull request to merge post-release clean up chores such as bumping the development version in the version file and changelog. It works best when used in conjunction with <a href="./draft-release"><code>draft-release</code></a> to help automate parts of the release process.</p>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <p>Required files:</p>
@@ -662,7 +662,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">fetch-depth</span><span class="kw">:</span><span class="at"> </span><span class="dv">0</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/post-release@v0.4</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ github.token }}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ github.token }}</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">update-sliding-tags</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="customized-inputs" class="level3">
 <h3 class="anchored" data-anchor-id="customized-inputs">Customized inputs</h3>
@@ -682,7 +683,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">citation-filepath</span><span class="kw">:</span><span class="at"> CITATION.cff</span></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">dev-header</span><span class="kw">:</span><span class="at"> </span><span class="st">"development version"</span></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">github-actor</span><span class="kw">:</span><span class="at"> </span><span class="st">"41898282+github-actions[bot]"</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">update-sliding-branch</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">update-sliding-tags</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
 <section id="inputs" class="level2">
@@ -698,7 +699,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>citation-filepath</code>: Path to the citation file. Default: <code>CITATION.cff</code>.</li>
 <li><code>dev-header</code>: Header string to match to find the development version entry in the changelog, typically of the form ‘## <software name=""> development version’. Default: <code>development version</code>.</software></li>
 <li><code>github-actor</code>: Username of GitHub actor for the git commit when the docs branch is deployed. <strong>Required.</strong> Default: <code>41898282+github-actions[bot]</code>.</li>
-<li><code>update-sliding-branch</code>: Whether to update the sliding branch (major.minor) to the new patch version. Default: <code>false</code>.</li>
+<li><code>update-sliding-tags</code>: Whether to update the sliding tags (major.minor &amp; latest) to the new patch version. Default: <code>false</code>.</li>
 </ul>
 
 
