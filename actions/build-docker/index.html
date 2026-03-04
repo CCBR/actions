@@ -657,7 +657,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">push</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ccbr-actions-version</span><span class="kw">:</span><span class="at"> v0.2</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ github.token }}</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">github-actor</span><span class="kw">:</span><span class="at"> ${{ github.actor }}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">github-actor</span><span class="kw">:</span><span class="at"> ${{ github.actor }}</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">config-file</span><span class="kw">:</span><span class="at"> </span><span class="st">"scripts/tool_version_commands.txt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For an example to manually trigger the workflow for a single docker container, see <a href=".https://github.com/CCBR/actions/blob/main/examples/build-docker-manual.yml">build-docker-manual.yml</a>.</p>
 <p>For an advanced example to automatically build docker containers when files change, see <a href=".https://github.com/CCBR/actions/blob/main/examples/build-docker-auto.yml">build-docker-auto.yml</a>.</p>
 </section>
@@ -675,8 +676,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>python-version</code>: The version of Python to install . <strong>Required.</strong> Default: <code>3.11</code>.</li>
 <li><code>github-actor</code>: Username of GitHub actor for the git commit when the README is updated . <strong>Required.</strong> Default: <code>41898282+github-actions[bot]</code>.</li>
 <li><code>github-token</code>: GitHub Actions token (e.g.&nbsp;github.token) . <strong>Required.</strong></li>
-<li><code>print-versions</code>: Whether to print tool versions in the container for the README file using <code>json-file</code> . Default: <code>True</code>.</li>
-<li><code>json-file</code>: Relative path to JSON file for printing tool versions. If not provided and print-versions is true, a default JSON file in ccbr_actions will be used. . Default: <code>scripts/tool_version_commands.json</code>.</li>
+<li><code>print-versions</code>: Whether to print tool versions in the container for the README file using <code>config-file</code> . Default: <code>True</code>.</li>
+<li><code>config-file</code>: Relative path to config file for tool version commands (text format with :: delimiters). If not provided and print-versions is true, the default config file from ccbr_actions will be used. . Default: <code>scripts/tool_version_commands.txt</code>.</li>
 <li><code>gh-merge-args</code>: arguments for <code>gh pr merge</code> . Default: <code>-ds --admin</code>.</li>
 </ul>
 
