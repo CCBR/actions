@@ -601,22 +601,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "fix build-docker - refactor the print versions script to use bash so it can run even if python isn’t installed. (#111, @kelly-sovacool)\npost-release - update sliding tags instead of branches. (#119, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.5.0",
     "href": "CHANGELOG.html#actions-0.5.0",
     "title": "CCBR actions",
-    "section": "",
-    "text": "fix build-docker - refactor the print versions script to use bash so it can run even if python isn’t installed. (#111, @kelly-sovacool)\npost-release - update sliding tags instead of branches. (#119, @kelly-sovacool)",
+    "section": "actions 0.5.0",
+    "text": "actions 0.5.0\n\nfix build-docker - refactor the print versions script to use bash so it can run even if python isn’t installed. (#111, @kelly-sovacool)\npost-release - update sliding tags instead of branches. (#119, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
