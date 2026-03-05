@@ -76,18 +76,18 @@ jobs:
 
       - name: Resolve workflow inputs
         id: cfg
+        env:
+          INPUT_SOURCE_REPOSITORY: ${{ inputs.source_repository || github.event.inputs.source_repository || 'CCBR/.github' }}
+          INPUT_SOURCE_REF: ${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}
+          INPUT_SOURCE_FILE: ${{ inputs.source_file || github.event.inputs.source_file || '.github/copilot-instructions.md' }}
+          INPUT_TARGET_FILE: ${{ inputs.target_file || github.event.inputs.target_file || '.github/copilot-instructions.md' }}
+          INPUT_COMMIT_MESSAGE: ${{ inputs.commit_message || github.event.inputs.commit_message || 'chore(ci): sync copilot instructions' }}
         run: |
-          SOURCE_REPOSITORY="${{ inputs.source_repository || github.event.inputs.source_repository || 'CCBR/.github' }}"
-          SOURCE_REF="${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}"
-          SOURCE_FILE="${{ inputs.source_file || github.event.inputs.source_file || '.github/copilot-instructions.md' }}"
-          TARGET_FILE="${{ inputs.target_file || github.event.inputs.target_file || '.github/copilot-instructions.md' }}"
-          COMMIT_MESSAGE="${{ inputs.commit_message || github.event.inputs.commit_message || 'chore(ci): sync copilot instructions' }}"
-
-          echo "source_repository=$SOURCE_REPOSITORY" >> "$GITHUB_OUTPUT"
-          echo "source_ref=$SOURCE_REF" >> "$GITHUB_OUTPUT"
-          echo "source_file=$SOURCE_FILE" >> "$GITHUB_OUTPUT"
-          echo "target_file=$TARGET_FILE" >> "$GITHUB_OUTPUT"
-          echo "commit_message=$COMMIT_MESSAGE" >> "$GITHUB_OUTPUT"
+          echo "source_repository=$INPUT_SOURCE_REPOSITORY" >> "$GITHUB_OUTPUT"
+          echo "source_ref=$INPUT_SOURCE_REF" >> "$GITHUB_OUTPUT"
+          echo "source_file=$INPUT_SOURCE_FILE" >> "$GITHUB_OUTPUT"
+          echo "target_file=$INPUT_TARGET_FILE" >> "$GITHUB_OUTPUT"
+          echo "commit_message=$INPUT_COMMIT_MESSAGE" >> "$GITHUB_OUTPUT"
 
       - name: Configure git identity
         run: |
@@ -106,18 +106,19 @@ jobs:
 
       - name: Update local file when changed
         id: update
+        env:
+          SOURCE_FILE: ${{ steps.cfg.outputs.source_file }}
+          TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
         run: |
-          SOURCE_FILE="canonical/${{ steps.cfg.outputs.source_file }}"
-          TARGET_FILE="${{ steps.cfg.outputs.target_file }}"
-
-          if [[ ! -f "$SOURCE_FILE" ]]; then
-            echo "Source file not found: $SOURCE_FILE"
+          CANONICAL_SOURCE_FILE="canonical/$SOURCE_FILE"
+          if [[ ! -f "$CANONICAL_SOURCE_FILE" ]]; then
+            echo "Source file not found: $CANONICAL_SOURCE_FILE"
             exit 1
           fi
 
           mkdir -p "$(dirname "$TARGET_FILE")"
-          if [[ ! -f "$TARGET_FILE" ]] || ! cmp -s "$SOURCE_FILE" "$TARGET_FILE"; then
-            cp "$SOURCE_FILE" "$TARGET_FILE"
+          if [[ ! -f "$TARGET_FILE" ]] || ! cmp -s "$CANONICAL_SOURCE_FILE" "$TARGET_FILE"; then
+            cp "$CANONICAL_SOURCE_FILE" "$TARGET_FILE"
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -125,7 +126,10 @@ jobs:
 
       - name: Commit and push updates
         if: steps.update.outputs.changed == 'true'
+        env:
+          TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
+          COMMIT_MESSAGE: ${{ steps.cfg.outputs.commit_message }}
         run: |
-          git add "${{ steps.cfg.outputs.target_file }}"
-          git commit -m "${{ steps.cfg.outputs.commit_message }}"
+          git add "$TARGET_FILE"
+          git commit -m "$COMMIT_MESSAGE"
           git push
