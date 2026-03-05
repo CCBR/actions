@@ -125,7 +125,10 @@ jobs:
 
       - name: Commit and push updates
         if: steps.update.outputs.changed == 'true'
+        env:
+          TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
+          COMMIT_MESSAGE: ${{ steps.cfg.outputs.commit_message }}
         run: |
-          git add "${{ steps.cfg.outputs.target_file }}"
-          git commit -m "${{ steps.cfg.outputs.commit_message }}"
+          git add "$TARGET_FILE"
+          git commit -m "$COMMIT_MESSAGE"
           git push
