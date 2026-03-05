@@ -14,7 +14,7 @@ from ccbr_actions.release import (
     post_release_cleanup,
     set_release_version,
 )
-from ccbr_tools.shell import exec_in_context
+from ccbr_tools.shell import exec_in_context, shell_run
 
 
 def test_write_lines():
@@ -26,22 +26,34 @@ def test_write_lines():
 
 
 def test_prepare_draft_release():
-    output = exec_in_context(
-        prepare_draft_release,
-        next_version_manual="v1.0.0",
-        next_version_convco="v1.0.0",
-        current_version="v0.9.10",
-        gh_event_name="push",
-        changelog_filepath="tests/data/example_changelog.md",
-        dev_header="development version",
-        release_notes_filepath="tests/data/latest-release.md",
-        version_filepath="tests/data/VERSION",
-        citation_filepath="tests/data/CITATION.cff",
-        release_branch="release-draft",
-        pr_ref_name="PR_BRANCH_NAME",
-        repo="CCBR/actions",
-        debug=True,
-    )
+    data_dir = pathlib.Path(__file__).resolve().parent / "data"
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        original_cwd = os.getcwd()
+        os.chdir(tmp_dir)
+        # Initialize a git repository to avoid git rev-parse errors
+        shell_run("git init > /dev/null 2>&1")
+        shell_run(
+            "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+        )
+        try:
+            output = exec_in_context(
+                prepare_draft_release,
+                next_version_manual="v1.0.0",
+                next_version_convco="v1.0.0",
+                current_version="v0.9.10",
+                gh_event_name="push",
+                changelog_filepath=str(data_dir / "example_changelog.md"),
+                dev_header="development version",
+                release_notes_filepath=str(data_dir / "latest-release.md"),
+                version_filepath=str(data_dir / "VERSION"),
+                citation_filepath=str(data_dir / "CITATION.cff"),
+                release_branch="release-draft",
+                pr_ref_name="PR_BRANCH_NAME",
+                repo="CCBR/actions",
+                debug=True,
+            )
+        finally:
+            os.chdir(original_cwd)
     assert all(
         [
             "gh release create v1.0.0 --draft --notes-file " in output,

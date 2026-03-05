@@ -5,7 +5,7 @@ triggered by publishing a release
 
 This action is designed to be triggered by publishing a release. On
 completion, it will open a pull request to merge post-release clean up
-chores such as bumping the developemnt version in the version file and
+chores such as bumping the development version in the version file and
 changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
@@ -44,9 +44,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/post-release@v0.3
+      - uses: CCBR/actions/post-release@v0.5
         with:
           github-token: ${{ github.token }}
+          update-sliding-tags: false
 ```
 
 ### Customized inputs
@@ -68,7 +69,7 @@ steps:
       citation-filepath: CITATION.cff
       dev-header: "development version"
       github-actor: "41898282+github-actions[bot]"
-      update-sliding-branch: false
+      update-sliding-tags: false
 ```
 
 ## Inputs
@@ -96,5 +97,5 @@ steps:
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.
-- `update-sliding-branch`: Whether to update the sliding branch
-  (major.minor) to the new patch version. Default: `false`.
+- `update-sliding-tags`: Whether to update the sliding tags (major.minor
+  & latest) to the new patch version. Default: `false`.

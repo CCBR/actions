@@ -1,7 +1,6 @@
 import os
 import pytest
 import tempfile
-import warnings
 
 from ccbr_actions.docs import (
     get_docs_version,

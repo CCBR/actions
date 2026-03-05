@@ -38,6 +38,7 @@ steps:
       ccbr-actions-version: v0.2
       github-token: ${{ github.token }}
       github-actor: ${{ github.actor }}
+      config-file: "scripts/tool_version_commands.txt"
 ```
 
 For an example to manually trigger the workflow for a single docker
@@ -73,9 +74,9 @@ files change, see
 - `github-token`: GitHub Actions token (e.g. github.token) .
   **Required.**
 - `print-versions`: Whether to print tool versions in the container for
-  the README file using `json-file` . Default: `True`.
-- `json-file`: Relative path to JSON file for printing tool versions. If
-  not provided and print-versions is true, a default JSON file in
-  ccbr_actions will be used. . Default:
-  `scripts/tool_version_commands.json`.
+  the README file using `config-file` . Default: `True`.
+- `config-file`: Relative path to config file for tool version commands
+  (text format with :: delimiters). If not provided and print-versions
+  is true, the default config file from ccbr_actions will be used. .
+  Default: `scripts/tool_version_commands.txt`.
 - `gh-merge-args`: arguments for `gh pr merge` . Default: `-ds --admin`.

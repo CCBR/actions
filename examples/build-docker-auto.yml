@@ -60,7 +60,7 @@ jobs:
         id: matrix
         run: |
           echo "matched files:"
-          echo "${{ steps.changed-files.outputs.matched_files }}" | sed 's/^/  /'
+          echo "${{ steps.changed-files.outputs.matched_files }}" | sed 's|^|  |'
 
   build-docker:
     needs: [get-files]
@@ -89,7 +89,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref_name }} # branch name of push
 
-      - uses: CCBR/actions/build-docker@v0.3
+      - uses: CCBR/actions/build-docker@v0.5
         with:
           dockerfile: ${{ matrix.file }}
           dockerhub-namespace: nciccbr
@@ -99,4 +99,4 @@ jobs:
           push: true
           ccbr-actions-version: v0.3
           github-token: ${{ github.token }}
-          json-file: "scripts/tool_version_commands.json"
+          config-file: "scripts/tool_version_commands.txt"

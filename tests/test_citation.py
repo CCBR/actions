@@ -51,8 +51,7 @@ def test_update_citation_symlink():
 
 def test_write_citation_codemeta():
     with tempfile.TemporaryDirectory() as tmp_dir:
-        # codemeta_filename = pathlib.Path(tmp_dir) / "codemeta.json"
-        codemeta_filename = "test.codemeta.json"
+        codemeta_filename = pathlib.Path(tmp_dir) / "test.codemeta.json"
         write_citation(
             citation_file=pathlib.Path("tests") / "data" / "CITATION.cff",
             output_file=codemeta_filename,

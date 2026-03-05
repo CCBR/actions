@@ -3,7 +3,7 @@ import pathlib
 import shutil
 import tempfile
 
-from ccbr_actions.util import date_today, precommit_run, path_resolve
+from ccbr_actions.util import precommit_run, path_resolve
 
 
 def test_precommit():

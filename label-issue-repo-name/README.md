@@ -32,7 +32,7 @@ jobs:
   add-label:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/label-issue-repo-name@main
+      - uses: CCBR/actions/label-issue-repo-name@v0.5
         with:
           github-token: ${{ github.token }}
 ```

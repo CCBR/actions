@@ -1,6 +1,14 @@
 ## actions development version
 
+## actions 0.5.0
+
+- fix `build-docker` - refactor the print versions script to use bash so it can run even if python isn't installed. (#111, @kelly-sovacool)
+- `post-release` - update sliding tags instead of branches. (#119, @kelly-sovacool)
+
+## actions 0.4.1
+
 - `check-links` - only open an issue if there are broken links. (#105, @kelly-sovacool)
+- fix `build-docker` - use everything after the first dot in the dockerfile name as the version tag. (#109, @kelly-sovacool)
 
 ## actions 0.4.0
 

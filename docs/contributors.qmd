@@ -7,24 +7,8 @@ title: Contributors
 ```{python}
 #| echo: false
 #| output: asis
-import requests
-
-def get_url_json(url):
-    r = requests.get(url)
-    data = r.json() if r.status_code == 200 else dict()
-    return data
-
-
-repo = 'actions'
-contribs = get_url_json(f'https://api.github.com/repos/CCBR/{repo}/contributors')
-
-for contrib in contribs:
-    user_login = contrib['login']
-    user_info = get_url_json(f"https://api.github.com/users/{user_login}")
-    user_name = user_info['name'] if user_info['name'] else user_login
-    avatar_url = contrib['avatar_url']
-    profile_url = contrib['html_url']
-    print(f"[![{user_name}]({avatar_url})]({profile_url}){{width=80px height=80px}}\n")
+from ccbr_tools.github import print_contributor_images
+print_contributor_images(repo = 'actions', org = 'CCBR')
 ```
 
 :::
