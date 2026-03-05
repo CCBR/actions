@@ -108,6 +108,7 @@ jobs:
           sparse-checkout: |
             ${{ steps.cfg.outputs.source_file }}
           sparse-checkout-cone-mode: false
+          persist-credentials: false
 
       - name: Update local file when changed
         id: update
