@@ -121,8 +121,8 @@ jobs:
           fi
 
           mkdir -p "$(dirname "$TARGET_FILE")"
-          if [[ ! -f "$TARGET_FILE" ]] || ! cmp -s "$CANONICAL_SOURCE_FILE" "$TARGET_FILE"; then
-            cp "$CANONICAL_SOURCE_FILE" "$TARGET_FILE"
+          if [[ ! -f "$TARGET_FILE" ]] || ! cmp -s "$SOURCE_FILE" "$TARGET_FILE"; then
+            cp "$SOURCE_FILE" "$TARGET_FILE"
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
