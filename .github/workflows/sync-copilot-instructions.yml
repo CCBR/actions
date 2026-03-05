@@ -70,6 +70,9 @@ jobs:
     steps:
       - name: Checkout target repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Resolve workflow inputs
         id: cfg
