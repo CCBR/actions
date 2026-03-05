@@ -85,7 +85,7 @@ jobs:
           INPUT_SOURCE_REF: ${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}
           INPUT_SOURCE_FILE: ${{ inputs.source_file || github.event.inputs.source_file || '.github/copilot-instructions.md' }}
           INPUT_TARGET_FILE: ${{ inputs.target_file || github.event.inputs.target_file || '.github/copilot-instructions.md' }}
-          INPUT_COMMIT_MESSAGE: ${{ inputs.commit_message || github.event.inputs.commit_message || 'chore(ci): sync copilot instructions' }}
+          INPUT_COMMIT_MESSAGE: "${{ inputs.commit_message || github.event.inputs.commit_message || 'chore(ci): sync copilot instructions' }}"
         run: |
           echo "source_repository=$INPUT_SOURCE_REPOSITORY" >> "$GITHUB_OUTPUT"
           echo "source_ref=$INPUT_SOURCE_REF" >> "$GITHUB_OUTPUT"
