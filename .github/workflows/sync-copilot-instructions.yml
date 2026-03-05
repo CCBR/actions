@@ -28,6 +28,10 @@ on:
         required: false
         default: "chore(ci): sync copilot instructions"
         type: string
+    secrets:
+      source_token:
+        description: Token with read access to the source repository (required if source repository is private)
+        required: false
   workflow_dispatch:
     inputs:
       source_repository:
@@ -99,6 +103,7 @@ jobs:
         with:
           repository: ${{ steps.cfg.outputs.source_repository }}
           ref: ${{ steps.cfg.outputs.source_ref }}
+          token: ${{ secrets.source_token || github.token }}
           path: canonical
           sparse-checkout: |
             ${{ steps.cfg.outputs.source_file }}
