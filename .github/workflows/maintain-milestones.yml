@@ -1,0 +1,245 @@
+name: Maintain Milestones
+
+on:
+  workflow_call:
+    inputs:
+      target_repo:
+        description: Target repository in owner/repo format
+        required: false
+        default: ""
+        type: string
+      dry_run:
+        description: If true, report changes without applying them
+        required: false
+        default: true
+        type: boolean
+      max_updates_per_run:
+        description: Maximum milestone updates/creates/closes/reopens per run
+        required: false
+        default: 100
+        type: number
+    secrets:
+      repo_token:
+        description: Token with milestone write access to the target repository
+        required: false
+
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: Target repository in owner/repo format (defaults to current repo)
+        required: false
+        default: ""
+        type: string
+      dry_run:
+        description: If true, report changes without applying them
+        required: false
+        default: true
+        type: boolean
+      max_updates_per_run:
+        description: Maximum milestone updates/creates/closes/reopens per run
+        required: false
+        default: 100
+        type: number
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  maintain-milestones:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Archive old milestones and ensure current cadence
+        uses: actions/github-script@v7
+        env:
+          TARGET_REPO: ${{ inputs.target_repo }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          MAX_UPDATES: ${{ inputs.max_updates_per_run }}
+        with:
+          github-token: ${{ secrets.repo_token || github.token }}
+          script: |
+            const target = (process.env.TARGET_REPO || context.repo.owner + '/' + context.repo.repo).trim();
+            const dryRun = String(process.env.DRY_RUN).toLowerCase() === 'true';
+            const maxUpdatesRaw = Number(process.env.MAX_UPDATES || '100');
+            const maxUpdates = Number.isFinite(maxUpdatesRaw) && maxUpdatesRaw > 0
+              ? Math.floor(maxUpdatesRaw)
+              : 100;
+
+            const [owner, repo] = target.split('/');
+            if (!owner || !repo) {
+              core.setFailed(`Invalid target_repo: "${target}". Use owner/repo.`);
+              return;
+            }
+
+            const now = new Date();
+            const currentYear = now.getUTCFullYear();
+            const nextYear = currentYear + 1;
+
+            const toTitle = (year, month) => `${year}-${String(month).padStart(2, '0')}`;
+            const isMonthlyTitle = (title) => /^\d{4}-\d{2}$/.test(title || '');
+            const getYearMonth = (title) => {
+              const [y, m] = title.split('-').map((v) => Number(v));
+              return { year: y, month: m };
+            };
+            const isValidMonth = (month) => month >= 1 && month <= 12;
+            const lastDayOfMonth = (year, month) => {
+              // month is 1..12; Date.UTC month index is 0..11; day 0 gives previous month's last day.
+              return new Date(Date.UTC(year, month, 0)).getUTCDate();
+            };
+            const dueDateOnly = (year, month) => {
+              const day = String(lastDayOfMonth(year, month)).padStart(2, '0');
+              return `${year}-${String(month).padStart(2, '0')}-${day}`;
+            };
+            const dueOnPayload = (dateOnly) => `${dateOnly}T00:00:00Z`;
+            const dueOnDateOnly = (dueOn) => (dueOn ? String(dueOn).slice(0, 10) : null);
+
+            const desiredTitles = new Set();
+            for (let month = 1; month <= 12; month += 1) {
+              desiredTitles.add(toTitle(currentYear, month));
+            }
+            desiredTitles.add(toTitle(nextYear, 1));
+
+            const milestones = await github.paginate(github.rest.issues.listMilestones, {
+              owner,
+              repo,
+              state: 'all',
+              per_page: 100,
+            });
+
+            const byTitle = new Map();
+            for (const ms of milestones) {
+              byTitle.set(ms.title, ms);
+            }
+
+            const plan = [];
+            const addPlan = (kind, title, details = {}) => {
+              plan.push({ kind, title, ...details });
+            };
+
+            for (const ms of milestones) {
+              if (!isMonthlyTitle(ms.title)) {
+                continue;
+              }
+              const { year, month } = getYearMonth(ms.title);
+              if (!Number.isInteger(year) || !Number.isInteger(month) || !isValidMonth(month)) {
+                continue;
+              }
+
+              if (year < currentYear && ms.state === 'open') {
+                addPlan('close_old', ms.title, { milestone_number: ms.number });
+              }
+            }
+
+            for (const title of desiredTitles) {
+              const { year, month } = getYearMonth(title);
+              const expectedDueDate = dueDateOnly(year, month);
+              const expectedDueOn = dueOnPayload(expectedDueDate);
+              const existing = byTitle.get(title);
+
+              if (!existing) {
+                addPlan('create', title, { due_on: expectedDueOn });
+                continue;
+              }
+
+              if (existing.state === 'closed') {
+                addPlan('reopen', title, { milestone_number: existing.number });
+              }
+
+              const existingDateOnly = dueOnDateOnly(existing.due_on);
+              if (existingDateOnly !== expectedDueDate) {
+                addPlan('set_due_date', title, {
+                  milestone_number: existing.number,
+                  due_on: expectedDueOn,
+                  from_due_on: existing.due_on,
+                });
+              }
+            }
+
+            if (plan.length > maxUpdates) {
+              core.setFailed(
+                `Planned ${plan.length} updates, exceeding max_updates_per_run=${maxUpdates}. ` +
+                'Increase input or run again after partial cleanup.'
+              );
+              return;
+            }
+
+            const results = [];
+            const runOrLog = async (action, fn) => {
+              if (dryRun) {
+                results.push({ ...action, status: 'planned' });
+                return;
+              }
+              await fn();
+              results.push({ ...action, status: 'applied' });
+            };
+
+            for (const action of plan) {
+              if (action.kind === 'close_old') {
+                await runOrLog(action, async () => {
+                  await github.rest.issues.updateMilestone({
+                    owner,
+                    repo,
+                    milestone_number: action.milestone_number,
+                    state: 'closed',
+                  });
+                });
+                continue;
+              }
+
+              if (action.kind === 'create') {
+                await runOrLog(action, async () => {
+                  await github.rest.issues.createMilestone({
+                    owner,
+                    repo,
+                    title: action.title,
+                    due_on: action.due_on,
+                    state: 'open',
+                  });
+                });
+                continue;
+              }
+
+              if (action.kind === 'reopen') {
+                await runOrLog(action, async () => {
+                  await github.rest.issues.updateMilestone({
+                    owner,
+                    repo,
+                    milestone_number: action.milestone_number,
+                    state: 'open',
+                  });
+                });
+                continue;
+              }
+
+              if (action.kind === 'set_due_date') {
+                await runOrLog(action, async () => {
+                  await github.rest.issues.updateMilestone({
+                    owner,
+                    repo,
+                    milestone_number: action.milestone_number,
+                    due_on: action.due_on,
+                  });
+                });
+              }
+            }
+
+            const lines = [];
+            lines.push(`Target repository: ${owner}/${repo}`);
+            lines.push(`Current UTC year: ${currentYear}`);
+            lines.push(`Dry run: ${dryRun}`);
+            lines.push(`Max updates per run: ${maxUpdates}`);
+            lines.push(`Planned changes: ${plan.length}`);
+            lines.push('');
+
+            if (results.length === 0) {
+              lines.push('No changes needed.');
+            } else {
+              lines.push('| Action | Milestone | Status |');
+              lines.push('|---|---|---|');
+              for (const r of results) {
+                lines.push(`| ${r.kind} | ${r.title} | ${r.status} |`);
+              }
+            }
+
+            core.summary.addCodeBlock(lines.join('\n')).write();
+            core.info(lines.join('\n'));
