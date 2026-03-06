@@ -158,8 +158,8 @@ runs:
           cp "$config_src" "${{ github.workspace }}"
           CONFIG_FILE=tool_version_commands.txt
         fi
-        docker run --rm -v "${{ github.workspace }}:/ws" "${{ env.IMAGENAME }}" \
-          bash /ws/print_versions.sh --config /ws/"${CONFIG_FILE}" --output /ws/"${{ env.MDFILE }}"
+        docker run --rm --entrypoint /bin/bash -v "${{ github.workspace }}:/ws" "${{ env.IMAGENAME }}" -lc \
+          "bash /ws/print_versions.sh --config /ws/${CONFIG_FILE} --output /ws/${{ env.MDFILE }}"
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
