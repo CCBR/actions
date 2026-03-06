@@ -2,4 +2,4 @@
 Get information from git tags, commit hashes, and GitHub releases.
 """
 
-from ccbr_tools.versions import *
+from ccbr_tools.versions import *  # noqa: F401, F403
