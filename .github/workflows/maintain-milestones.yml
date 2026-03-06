@@ -1,3 +1,60 @@
+#
+# Workflow: Maintain Milestones
+#
+# Purpose
+# - Keep monthly milestones aligned to a rolling cadence for a target repository.
+# - Ensure milestones exist for all months in the current UTC year plus January of next year.
+# - Archive stale monthly milestones from prior years by closing them if still open.
+#
+# Milestone Naming and Scope
+# - Managed milestones follow strict title format: YYYY-MM (example: 2026-07).
+# - Only titles matching YYYY-MM are managed by this workflow.
+# - Non-monthly milestone titles are ignored.
+#
+# Triggers
+# - workflow_dispatch: manual trigger from Actions UI or API.
+# - workflow_call: reusable workflow trigger from other workflows.
+#
+# Inputs
+# - target_repo (string, optional): owner/repo to manage.
+#   - Default: current repository running the workflow.
+# - dry_run (boolean, optional):
+#   - true: compute/report planned actions only (no writes).
+#   - false: apply actions to milestones via GitHub API.
+#   - Default: true.
+# - max_updates_per_run (number, optional):
+#   - Safety limit for number of planned actions in a single run.
+#   - Workflow fails if planned actions exceed this value.
+#   - Default: 100.
+#
+# Secrets / Auth
+# - repo_token (optional): token with milestone write access for target_repo.
+# - Fallback: github.token if repo_token is not supplied.
+#
+# Required Permissions
+# - contents: read
+# - issues: write (required for create/update/close/reopen milestones)
+#
+# Due Date Behavior
+# - Expected due date for each monthly milestone is the last calendar day of that month.
+# - `due_on` is set to 12:00:00 UTC on the due date to avoid timezone rendering shifts
+#   that can show the date as one day early in western time zones.
+#
+# Planned Action Types
+# - close_old: close open YYYY-MM milestones where year < current UTC year.
+# - create: create missing expected milestones with computed due date.
+# - reopen: reopen expected milestones found in closed state.
+# - set_due_date: update due date if existing due date differs from expected.
+#
+# Output / Reporting
+# - Writes a summary table with target repo, current UTC year, dry-run mode,
+#   max updates, planned action count, and per-milestone action rows.
+# - Logs same summary via core.info for run logs.
+#
+# Notes
+# - Idempotent by design: repeated runs should converge to zero planned changes.
+# - Uses UTC year/month calculations to avoid host-timezone variability.
+#
 name: Maintain Milestones
 
 on:
@@ -90,7 +147,8 @@ jobs:
               const day = String(lastDayOfMonth(year, month)).padStart(2, '0');
               return `${year}-${String(month).padStart(2, '0')}-${day}`;
             };
-            const dueOnPayload = (dateOnly) => `${dateOnly}T00:00:00Z`;
+            // Use midday UTC to avoid date shifting to the previous day in western timezones.
+            const dueOnPayload = (dateOnly) => `${dateOnly}T12:00:00Z`;
             const dueOnDateOnly = (dueOn) => (dueOn ? String(dueOn).slice(0, 10) : null);
 
             const desiredTitles = new Set();
