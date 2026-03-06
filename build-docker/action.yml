@@ -151,15 +151,21 @@ runs:
       id: run_script_in_container
       if: ${{ inputs.print-versions == 'true' }}
       run: |
+        script_src=$(command -v print_versions.sh)
+        EXTRA_MOUNTS=""
         if [ -f "${{ inputs.config-file }}" ]; then
-          CONFIG_FILE="${{ inputs.config-file }}"
+          CONFIG_FILE="/ws/${{ inputs.config-file }}"
         else
           config_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.txt"))')
-          cp "$config_src" "${{ github.workspace }}"
-          CONFIG_FILE=tool_version_commands.txt
+          CONFIG_FILE="/ws/tool_version_commands.txt"
+          EXTRA_MOUNTS="-v ${config_src}:/ws/tool_version_commands.txt:ro"
         fi
-        docker run --rm -v "${{ github.workspace }}:/ws" "${{ env.IMAGENAME }}" \
-          bash /ws/print_versions.sh --config /ws/"${CONFIG_FILE}" --output /ws/"${{ env.MDFILE }}"
+        docker run --rm --entrypoint /bin/bash \
+          -v "${{ github.workspace }}:/ws" \
+          -v "${script_src}:/ws/print_versions.sh:ro" \
+          ${EXTRA_MOUNTS} \
+          "${{ env.IMAGENAME }}" -lc \
+          "bash /ws/print_versions.sh --config ${CONFIG_FILE} --output /ws/${{ env.MDFILE }}"
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description

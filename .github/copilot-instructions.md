@@ -1,24 +1,24 @@
 ---
-
 # Reviewer guidance (what to look for in PRs)
 - Reviewers MUST validate enforcement rules: no secrets, container specified, and reproducibility pins.
 - If code is AI-generated, reviewers MUST ensure the author documents what was changed and why, and that the PR is labeled `generated-by-AI`.
 - Reviewers SHOULD verify license headers and ownership metadata (for example, `CODEOWNERS`) are present.
-
 ---
 
 # CI & enforcement suggestions (automatable)
+
 1. **PR template**: include optional AI-assistance disclosure fields (model used, high-level prompt intent, manual review confirmation).
 2. **Pre-merge check (GitHub Action)**: verify `.github/copilot-instructions.md` is present in the repository and that new pipeline files include a `# CRAFT:` header.
 3. **Lint jobs**: `flake8`/`black` for Python, `shellcheck` for shell, and `nf-core lint` or Snakemake lint checks where applicable.
 4. **Secrets scan**: run `TruffleHog` or `Gitleaks` on PRs to detect accidental credentials.
-5. **AI usage label**: if AI usage is declared, an Action SHOULD add `generated-by-AI` label (create this label if it does not exist); the PR body SHOULD end with the italicized Markdown line: *Generated using AI*, and any associated commit messages SHOULD end with the plain footer line: `Generated using AI`.
+5. **AI usage label**: if AI usage is declared, an Action SHOULD add `generated-by-AI` label (create this label if it does not exist); the PR body SHOULD end with the italicized Markdown line: _Generated using AI_, and any associated commit messages SHOULD end with the plain footer line: `Generated using AI`.
 
 _Sample GH Action check (concept): if AI usage is declared, require an AI-assistance disclosure field in the PR body._
 
 ---
 
 # Security & compliance (mandatory)
+
 - Developers MUST NOT send PHI or sensitive NIH internal identifiers to unapproved external AI services; use synthetic examples.
 - Repository content MUST only be sent to model providers approved by NCI/NIH policy (for example, Copilot for Business or approved internal proxies).
 - For AI-assisted actions, teams MUST keep an auditable record including: user, repository, action, timestamp, model name, and endpoint.
@@ -28,12 +28,14 @@ _Sample GH Action check (concept): if AI usage is declared, require an AI-assist
 ---
 
 # Operational notes (practical)
+
 - `copilot-instructions.md` SHOULD remain concise and prescriptive; keep only high-value rules and edge-case examples.
 - Developers SHOULD include the CRAFT block in edited files when requesting substantial generated code to improve context quality.
 
 ---
 
 # Pipeline authoring guidance
+
 - For Snakemake pipelines, authors MUST review existing CCBR pipelines first: <https://github.com/CCBR>.
 - New pipelines SHOULD follow established CCBR conventions for folder layout, rule/process naming, config structure, and test patterns.
 - For Nextflow pipelines, authors MUST follow nf-core patterns and references: <https://nf-co.re>.
@@ -46,6 +48,7 @@ _Sample GH Action check (concept): if AI usage is declared, require an AI-assist
 ---
 
 # Python and R script standards
+
 - Python and R scripts MUST include module and function/class docstrings.
 - Where a standard CLI framework is adopted, Python CLIs SHOULD use `typer` or `click` for consistency with existing components.
 - R CLIs MUST use the `argparse` package.
@@ -58,13 +61,14 @@ _Sample GH Action check (concept): if AI usage is declared, require an AI-assist
 ---
 
 # AI-generated commit messages (Conventional Commits)
+
 - Commit messages MUST follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (as enforced in `CONTRIBUTING.md`).
 - Generate messages from staged changes only (`git diff --staged`); do not include unrelated work.
 - Commits SHOULD be atomic: one logical change per commit.
 - If mixed changes are present, split into multiple logical commits; the number of commits does not need to equal the number of files changed.
 - Subject format MUST be: `<type>(optional-scope): short imperative summary` (<=72 chars), e.g., `fix(profile): update release table parser`.
 - Add a body only when needed to explain **why** and notable impact; never include secrets, tokens, PHI, or large diffs.
-- For AI-assisted commits, add this final italicized footer line in the commit message body: *commit message is ai-generated*
+- For AI-assisted commits, add this final italicized footer line in the commit message body: _commit message is ai-generated_
 
 Suggested prompt for AI tools:
 
@@ -81,12 +85,14 @@ Rules:
 ---
 
 # Onboarding checklist for new developers
-- [ ] Read `.github/ai-agent-instructions.md` and CONTRIBUTING.md.  
-- [ ] Configure VSCode workspace to open `ai-agent-instructions.md` by default (so Copilot Chat sees it).  
+
+- [ ] Read `.github/ai-agent-instructions.md` and CONTRIBUTING.md.
+- [ ] Configure VSCode workspace to open `ai-agent-instructions.md` by default (so Copilot Chat sees it).
 
 ---
 
 # Appendix: VSCode snippet (drop into `.vscode/snippets/craft.code-snippets`)
+
 ```json
 {
   "Insert CRAFT prompt": {
@@ -102,3 +108,4 @@ Rules:
     "description": "Insert CRAFT prompt and place cursor at Actions"
   }
 }
+```
