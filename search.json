@@ -601,22 +601,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "fix build-docker to properly use the path to the print versions script and support dockerfiles with entrypoints set. (#126, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.5.1",
     "href": "CHANGELOG.html#actions-0.5.1",
     "title": "CCBR actions",
-    "section": "",
-    "text": "fix build-docker to properly use the path to the print versions script and support dockerfiles with entrypoints set. (#126, @kelly-sovacool)",
+    "section": "actions 0.5.1",
+    "text": "actions 0.5.1\n\nfix build-docker to properly use the path to the print versions script and support dockerfiles with entrypoints set. (#126, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
