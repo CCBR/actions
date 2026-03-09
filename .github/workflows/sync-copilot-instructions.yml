@@ -88,12 +88,16 @@ jobs:
           SOURCE_URL: https://raw.githubusercontent.com/${{ steps.cfg.outputs.source_repository }}/${{ steps.cfg.outputs.source_ref }}/${{ steps.cfg.outputs.source_file }}
           TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
           COMMIT_MESSAGE: ${{ steps.cfg.outputs.commit_message }}
-          token: ${{ steps.generate-token.outputs.token }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          BRANCH: update-copilot-instructions
         run: |
-          git switch -c update-copilot-instructions
+          git config --global user.name "CCBR-bot"
+          git config --global user.email "CCBR-bot@users.noreply.github.com"
+
+          git switch -c $BRANCH
           mkdir -p "$(dirname "$TARGET_FILE")"
           wget $SOURCE_URL -O $TARGET_FILE
           git add "$TARGET_FILE"
           git commit -m "$COMMIT_MESSAGE" || echo "nothing to commit"
-          git push || echo "nothing to push"
-          gh pr create --title "$COMMIT_MESSAGE" --body "Sync Copilot instructions from $SOURCE_URL" || echo "PR already exists"
+          git push -u origin $BRANCH || echo "nothing to push"
+          gh pr create --title "$COMMIT_MESSAGE" --body "Sync Copilot instructions from $SOURCE_URL" || echo "PR unsuccessful"
