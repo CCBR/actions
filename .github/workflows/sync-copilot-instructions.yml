@@ -91,8 +91,8 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
           BRANCH: update-copilot-instructions
         run: |
-          git config --global user.name "CCBR-bot"
-          git config --global user.email "CCBR-bot@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           git switch -c $BRANCH
           mkdir -p "$(dirname "$TARGET_FILE")"
