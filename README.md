@@ -34,6 +34,7 @@ them for your needs.
 - [docs-quarto](examples/docs-quarto.yml)
 - [draft-release](examples/draft-release.yml)
 - [label-issues-repo-name](examples/label-issues-repo-name.yml)
+- [maintain-milestones](examples/maintain-milestones.yml)
 - [post-release](examples/post-release.yml)
 - [techdev-project](examples/techdev-project.yml)
 - [update-cff-R](examples/update-cff-R.yml)
@@ -53,6 +54,8 @@ Custom actions used in our github workflows.
   pak
 - [label-issue-repo-name](label-issue-repo-name) - Label issues & PRs
   with the repository name
+- [maintain-milestones](maintain-milestones) - Maintain rolling monthly
+  milestones in a target repository
 - [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
