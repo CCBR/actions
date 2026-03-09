@@ -72,7 +72,7 @@ jobs:
         with:
           app-id: ${{ vars.CCBR_BOT_APP_ID }}
           private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
-          owner: CCBR
+          owner: ${{ matrix.OWNER }}
 
       - name: Checkout target repo
         uses: actions/checkout@v4
@@ -86,7 +86,6 @@ jobs:
         id: update
         env:
           SOURCE_URL: https://raw.githubusercontent.com/${{ steps.cfg.outputs.source_repository }}/${{ steps.cfg.outputs.source_ref }}/${{ steps.cfg.outputs.source_file }}
-          SOURCE_FILE: ${{ steps.cfg.outputs.target_file }}
           TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
           COMMIT_MESSAGE: ${{ steps.cfg.outputs.commit_message }}
         run: |
