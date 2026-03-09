@@ -1,37 +1,8 @@
 name: Sync Copilot Instructions
 
 on:
-  workflow_call:
-    inputs:
-      source_repository:
-        description: Source repository containing canonical Copilot instructions
-        required: false
-        default: CCBR/.github
-        type: string
-      source_ref:
-        description: Branch, tag, or SHA to sync from
-        required: false
-        default: main
-        type: string
-      source_file:
-        description: Path to canonical instructions file in source repository
-        required: false
-        default: .github/copilot-instructions.md
-        type: string
-      target_file:
-        description: Path to destination instructions file in current repository
-        required: false
-        default: .github/copilot-instructions.md
-        type: string
-      commit_message:
-        description: Commit message used when sync updates are detected
-        required: false
-        default: "chore(ci): sync copilot instructions"
-        type: string
-    secrets:
-      source_token:
-        description: Token with read access to the source repository (required if source repository is private)
-        required: false
+  schedule:
+    - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
       source_repository:
@@ -57,10 +28,8 @@ on:
       commit_message:
         description: Commit message used when sync updates are detected
         required: false
-        default: "chore(ci): sync copilot instructions"
+        default: "chore: 🤖 sync copilot instructions"
         type: string
-  schedule:
-    - cron: "0 3 * * *" # run every day
 
 permissions:
   contents: write
@@ -68,16 +37,20 @@ permissions:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
+
 jobs:
   sync-copilot-instructions:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        OWNER: [CCBR]
+        REPO:
+          - actions
+          - Tools
+          # - parkit
+          # - CHAMPAGNE
     steps:
-      - name: Checkout target repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
       - name: Resolve workflow inputs
         id: cfg
         env:
@@ -85,7 +58,7 @@ jobs:
           INPUT_SOURCE_REF: ${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}
           INPUT_SOURCE_FILE: ${{ inputs.source_file || github.event.inputs.source_file || '.github/copilot-instructions.md' }}
           INPUT_TARGET_FILE: ${{ inputs.target_file || github.event.inputs.target_file || '.github/copilot-instructions.md' }}
-          INPUT_COMMIT_MESSAGE: "${{ inputs.commit_message || github.event.inputs.commit_message || 'chore(ci): sync copilot instructions' }}"
+          INPUT_COMMIT_MESSAGE: "${{ inputs.commit_message || github.event.inputs.commit_message || 'chore: 🤖 sync copilot instructions' }}"
         run: |
           echo "source_repository=$INPUT_SOURCE_REPOSITORY" >> "$GITHUB_OUTPUT"
           echo "source_ref=$INPUT_SOURCE_REF" >> "$GITHUB_OUTPUT"
@@ -93,48 +66,34 @@ jobs:
           echo "target_file=$INPUT_TARGET_FILE" >> "$GITHUB_OUTPUT"
           echo "commit_message=$INPUT_COMMIT_MESSAGE" >> "$GITHUB_OUTPUT"
 
-      - name: Configure git identity
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+          owner: CCBR
 
-      - name: Checkout source repository
+      - name: Checkout target repo
         uses: actions/checkout@v4
         with:
-          repository: ${{ steps.cfg.outputs.source_repository }}
-          ref: ${{ steps.cfg.outputs.source_ref }}
-          token: ${{ secrets.source_token || github.token }}
-          path: canonical
-          sparse-checkout: |
-            ${{ steps.cfg.outputs.source_file }}
-          sparse-checkout-cone-mode: false
-          persist-credentials: false
+          fetch-depth: 0
+          persist-credentials: true
+          repository: ${{ matrix.OWNER }}/${{ matrix.REPO }}
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Update local file when changed
         id: update
         env:
-          SOURCE_FILE: canonical/${{ steps.cfg.outputs.source_file }}
-          TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
-        run: |
-          if [[ ! -f "$SOURCE_FILE" ]]; then
-            echo "Source file not found: $SOURCE_FILE"
-            exit 1
-          fi
-
-          mkdir -p "$(dirname "$TARGET_FILE")"
-          if [[ ! -f "$TARGET_FILE" ]] || ! cmp -s "$SOURCE_FILE" "$TARGET_FILE"; then
-            cp "$SOURCE_FILE" "$TARGET_FILE"
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Commit and push updates
-        if: steps.update.outputs.changed == 'true'
-        env:
+          SOURCE_URL: https://raw.githubusercontent.com/${{ steps.cfg.outputs.source_repository }}/${{ steps.cfg.outputs.source_ref }}/${{ steps.cfg.outputs.source_file }}
+          SOURCE_FILE: ${{ steps.cfg.outputs.target_file }}
           TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
           COMMIT_MESSAGE: ${{ steps.cfg.outputs.commit_message }}
         run: |
+          git switch -c update-copilot-instructions
+          mkdir -p "$(dirname "$TARGET_FILE")"
+          wget $SOURCE_URL -O $TARGET_FILE
           git add "$TARGET_FILE"
-          git commit -m "$COMMIT_MESSAGE"
-          git push
+          git commit -m "$COMMIT_MESSAGE" || echo "nothing to commit"
+          git push || echo "nothing to push"
+          gh pr create --title "$COMMIT_MESSAGE" --body "Sync Copilot instructions from $SOURCE_URL" || echo "PR already exists"
