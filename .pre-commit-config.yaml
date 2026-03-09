@@ -40,7 +40,7 @@ repos:
         additional_dependencies:
           - prettier@3.2.5
   - repo: https://github.com/CCBR/Tools
-    rev: v0.5.1
+    rev: v0.5
     hooks:
       - id: detect-absolute-paths
         exclude: |
