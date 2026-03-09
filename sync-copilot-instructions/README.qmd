@@ -1,0 +1,33 @@
+---
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+# sync-copilot-instructions
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+## Usage
+
+### Basic example
+
+[sync-copilot-instructions.yml](/examples/sync-copilot-instructions.yml)
+
+```{python}
+yml_file='../examples/sync-copilot-instructions.yml'
+print('```yaml')
+with open(yml_file, 'r') as infile:
+  print(infile.read())
+print('```\n')
+```
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```
