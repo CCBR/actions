@@ -21,9 +21,32 @@ jobs:
         OWNER: [CCBR]
         REPO:
           - actions
-          #- Tools
-          # - parkit
-          # - CHAMPAGNE
+          - ASPEN
+          - CARLISLE
+          - CCBR_tobias
+          - ccbrpipeliner
+          - CHAMPAGNE
+          - CHARLIE
+          - CRISPIN
+          - dockers2
+          - ESCAPE
+          - HowTos
+          - journal-club
+          - LOGAN
+          - MOSuite
+          - MOSuite-Nextflow
+          - nf-modules
+          - parkit
+          - RENEE
+          - SCOT
+          - SINCLAIR
+          - spacesavers2
+          - SPENCER
+          - spook
+          - Tools
+          - TRANQUIL
+          - XAVIER
+
     steps:
       - name: Checkout actions repo
         uses: actions/checkout@v4
