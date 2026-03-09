@@ -88,6 +88,7 @@ jobs:
           SOURCE_URL: https://raw.githubusercontent.com/${{ steps.cfg.outputs.source_repository }}/${{ steps.cfg.outputs.source_ref }}/${{ steps.cfg.outputs.source_file }}
           TARGET_FILE: ${{ steps.cfg.outputs.target_file }}
           COMMIT_MESSAGE: ${{ steps.cfg.outputs.commit_message }}
+          token: ${{ steps.generate-token.outputs.token }}
         run: |
           git switch -c update-copilot-instructions
           mkdir -p "$(dirname "$TARGET_FILE")"
