@@ -21,7 +21,7 @@ permissions:
   issues: write
 
 jobs:
-  maintain:
+  maintain-milestones:
     runs-on: ubuntu-latest
     steps:
       - uses: CCBR/actions/maintain-milestones@main
