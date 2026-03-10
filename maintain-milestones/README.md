@@ -63,7 +63,7 @@ after repeated runs. All date calculations are performed in UTC.
 
 [maintain-milestones.yml](/examples/maintain-milestones.yml)
 
-``` yaml
+```yaml
 name: maintain-milestones
 
 on:
@@ -100,14 +100,14 @@ jobs:
 
 ### Customized inputs
 
-``` yaml
-    steps:
-      - uses: CCBR/actions/maintain-milestones@main
-        with:
-          github-token: ${{ secrets.repo_token || github.token }}
-          target_repo: CCBR/actions
-          dry_run: false
-          max_updates_per_run: 50
+```yaml
+steps:
+  - uses: CCBR/actions/maintain-milestones@main
+    with:
+      github-token: ${{ secrets.repo_token || github.token }}
+      target_repo: CCBR/actions
+      dry_run: false
+      max_updates_per_run: 50
 ```
 
 ## Inputs
