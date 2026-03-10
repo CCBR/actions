@@ -71,6 +71,9 @@ to use the example workflows, as the actions install their dependencies
 as needed. However, you can install the package if you wish to use it
 outside of GitHub Actions or contribute changes.
 
+View the package documentation
+[here](https://CCBR.github.io/actions/package).
+
 ### Installation
 
 You will need the GitHub CLI installed (this is pre-installed on all
@@ -88,8 +91,42 @@ Or install it from a specific version or branch with:
 pip install git+https://github.com/CCBR/actions@v0.5
 ```
 
-View the package documentation
-[here](https://CCBR.github.io/actions/package).
+### Command line interface
+
+    Usage: ccbr_actions [OPTIONS] COMMAND [ARGS]...
+
+      GitHub Actions Workflows for CCBR repositories
+
+      For more options, run: ccbr_actions [command] --help
+
+      https://ccbr.github.io/actions/
+
+    Options:
+      -v, --version   Show the version and exit.
+      -c, --citation  Print the citation in bibtex format and exit.
+      -h, --help      Show this message and exit.
+
+    Commands:
+      use-example  Use a GitHub Actions workflow file from CCBR/actions.
+
+#### use-example
+
+    Usage: ccbr_actions use-example [OPTIONS] NAME
+
+      Use a GitHub Actions workflow file from CCBR/actions.
+
+      Args:
+          name (str): The name of the example workflow file to download.
+
+      Examples:
+          ccbr_actions use-example docs-mkdocs
+          ccbr_actions use-example build-nextflow
+
+      See list of workflow files here:
+      https://ccbr.github.io/actions/examples.html
+
+    Options:
+      -h, --help  Show this message and exit.
 
 ## Help & Contributing
 
