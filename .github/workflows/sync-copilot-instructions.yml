@@ -64,4 +64,4 @@ jobs:
           source-ref: "main"
           source-file: ".github/copilot-instructions.md"
           target-file: ".github/copilot-instructions.md"
-          commit-message: "chore: 🤖 sync copilot instructions"
+          commit-message: "chore: 🤖 sync copilot instructions - $(date +'%Y-%m-%d')"
