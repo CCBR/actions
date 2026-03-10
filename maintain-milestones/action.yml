@@ -4,7 +4,11 @@ author: "Vishal Koparde"
 
 inputs:
   target_repo:
-    description: "Target repository in owner/repo format (defaults to current repo)"
+    description: "Target repository (excluding the owner). Defaults to the current repo."
+    required: false
+    default: ""
+  owner:
+    description: "Owner of the repository. Defaults to the current repository owner."
     required: false
     default: ""
   dry_run:
@@ -16,31 +20,78 @@ inputs:
     required: false
     default: "100"
   github-token:
-    description: "GitHub Actions token (e.g. github.token or secrets.repo_token)"
-    required: true
+    description: "GitHub Actions token with access to organization projects. Optional - set the app-id and app-private-key instead."
+    required: false
+    default: ""
+  app-id:
+    description: "GitHub App ID for authentication. Optional - Use this instead of a token."
+    required: false
+    default: ""
+  app-private-key:
+    description: "Private key for the GitHub App used for authentication. Optional - Use this instead of a token. Must be set if app-id is set."
+    required: false
+    default: ""
 
 runs:
   using: composite
   steps:
+    - name: set owner & repo
+      shell: bash
+      run: |
+        TARGET_REPO="${{ inputs.target_repo }}"
+        OWNER="${{ inputs.owner }}"
+
+        if [ -z "$TARGET_REPO" ]; then
+          TARGET_REPO="${{ github.event.repository.name }}"
+        fi
+
+        if [ -z "$OWNER" ]; then
+          OWNER="${{ github.repository_owner }}"
+        fi
+
+        echo "TARGET_REPO=$TARGET_REPO" >> $GITHUB_ENV
+        echo "OWNER=$OWNER" >> $GITHUB_ENV
+
+    - name: Generate a token
+      id: generate-token
+      if: ${{ inputs.github-token == '' }}
+      uses: actions/create-github-app-token@v2
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-private-key }}
+        owner: ${{ env.OWNER }}
+
     - name: Archive old milestones and ensure current cadence
       uses: actions/github-script@v7
       env:
-        TARGET_REPO: ${{ inputs.target_repo }}
+        TARGET_REPO: ${{ env.TARGET_REPO }}
+        OWNER: ${{ env.OWNER }}
         DRY_RUN: ${{ inputs.dry_run }}
         MAX_UPDATES: ${{ inputs.max_updates_per_run }}
       with:
-        github-token: ${{ inputs.github-token }}
+        github-token: ${{ inputs.github-token != '' && inputs.github-token || steps.generate-token.outputs.token }}
         script: |
-          const target = (process.env.TARGET_REPO || context.repo.owner + '/' + context.repo.repo).trim();
+          const owner = (process.env.OWNER || context.repo.owner).trim();
+          const repo = (process.env.TARGET_REPO || context.repo.repo).trim();
           const dryRun = String(process.env.DRY_RUN).toLowerCase() === 'true';
           const maxUpdatesRaw = Number(process.env.MAX_UPDATES || '100');
           const maxUpdates = Number.isFinite(maxUpdatesRaw) && maxUpdatesRaw > 0
             ? Math.floor(maxUpdatesRaw)
             : 100;
 
-          const [owner, repo] = target.split('/');
           if (!owner || !repo) {
-            core.setFailed(`Invalid target_repo: "${target}". Use owner/repo.`);
+            core.setFailed(
+              `Invalid inputs. owner="${owner}" repo="${repo}". ` +
+              'Set owner and target_repo to non-empty values.'
+            );
+            return;
+          }
+
+          if (repo.includes('/')) {
+            core.setFailed(
+              `Invalid target_repo: "${repo}". ` +
+              'Use repo name only (for example: actions), not owner/repo.'
+            );
             return;
           }
 
