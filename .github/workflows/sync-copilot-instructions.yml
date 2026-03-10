@@ -48,11 +48,6 @@ jobs:
           - XAVIER
 
     steps:
-      - name: Checkout actions repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
       - name: Sync Copilot instructions
         uses: ./sync-copilot-instructions
         with:
