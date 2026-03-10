@@ -1,0 +1,22 @@
+### Command line interface
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+help_msg = shell_run("ccbr_actions --help")
+print("```")
+print(help_msg)
+print("```", end = '\n\n')
+
+# get list of ccbr_actions commands from the help message
+help_lst = help_msg.split('\n\n')
+commands_idx = [idx for idx,ele in enumerate(help_lst) if ele.startswith('Commands:')][0]
+commands = [cmd.split()[0] for cmd in help_lst[commands_idx].split('\n')[1:] if cmd]
+for cmd in commands:
+    print(f"### {cmd}", end = '\n\n')
+    print("```")
+    print(shell_run(f"ccbr_actions {cmd} --help"))
+    print("```", end = '\n\n')
+
+```

@@ -6,24 +6,24 @@ author: "[Kelly Sovacool](https://github.com/kelly-sovacool)"
 
 ## Overview
 
-The [CCBR Bot](http://github.com/apps/CCBR-bot) is a GitHub App that provides secure authentication for automated workflows without requiring personal access tokens. This approach offers better security, granular permissions, and easier token management for organization-wide automation.
-
-## Motivation
-
-- **Enhanced Security**: Short-lived tokens that expire automatically
-- **Granular Permissions**: Grant only the permissions needed for each workflow
-- **Better Auditability**: Actions are clearly attributed to the bot
+The [CCBR Bot](http://github.com/apps/CCBR-bot) is a GitHub App that provides
+secure authentication for automated workflows without requiring personal access
+tokens. This approach offers better security, granular permissions, and easier
+token management for organization-wide automation.
 
 ## Setting Up the CCBR Bot
 
-An organization admin should store these in your organization's variables and secrets:
+An admin should [install the app](http://github.com/apps/CCBR-bot) in the
+organization, then store each of these in your organization's variables and
+secrets:
 
 - **`CCBR_BOT_APP_ID`** (variable): The GitHub App ID
 - **`CCBR_BOT_PRIVATE_KEY`** (secret): The GitHub App private key
 
 ## Using GitHub App Authentication in Workflows
 
-When using actions that support GitHub App authentication, pass the app ID and private key as inputs:
+When using actions that support GitHub App authentication, pass the app ID and
+private key as inputs:
 
 ```yaml
 with:
@@ -66,7 +66,9 @@ jobs:
 
 ### Implementation Details
 
-The `user-projects` action supports **both authentication methods**: provide a `github-token` directly, or provide `app-id` and `app-private-key` for on-demand generation. Here's the relevant configuration:
+The `user-projects` action supports **both authentication methods**: provide a
+`github-token` directly, or provide `app-id` and `app-private-key` for on-demand
+generation. Here's the relevant configuration:
 
 ```yaml
 inputs:

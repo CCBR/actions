@@ -6,6 +6,13 @@ subtitle: Example workflows used in CCBR repositories
 You can copy these to your own repository in the `.github/workflows/` directory
 and modify them for your needs.
 
+If you've [installed the package](./install.qmd), you can use the CLI to copy
+them to your repo:
+
+```sh
+ccbr_actions use-example draft-release
+```
+
 ```{python}
 #| echo: false
 #| output: asis
