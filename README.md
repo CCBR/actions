@@ -105,7 +105,7 @@ pip install git+https://github.com/CCBR/actions@v0.5
     Commands:
       use-example  Use a GitHub Actions workflow file from CCBR/actions.
 
-### use-example
+#### use-example
 
     Usage: ccbr_actions use-example [OPTIONS] NAME
 
