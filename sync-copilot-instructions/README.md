@@ -61,10 +61,6 @@ jobs:
           - actions
           - Tools
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
       - uses: CCBR/actions/sync-copilot-instructions@latest
         with:
           owner: ${{ matrix.OWNER }}
