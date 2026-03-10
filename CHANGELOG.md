@@ -1,6 +1,7 @@
 ## actions development version
 
 - Improve documentation for the CLI. (#135, @kelly-sovacool)
+- New action `maintain-milestones` manages issue milestones across repositories. (#127, @kopardev, @kelly-sovacool)
 
 ## actions 0.5.1
 
