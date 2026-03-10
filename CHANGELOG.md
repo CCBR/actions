@@ -1,5 +1,11 @@
 ## actions development version
 
+- Improve documentation for the CLI. (#135, @kelly-sovacool)
+
+## actions 0.5.1
+
+- fix `build-docker` to properly use the path to the print versions script and support dockerfiles with entrypoints set. (#126, @kelly-sovacool)
+
 ## actions 0.5.0
 
 - fix `build-docker` - refactor the print versions script to use bash so it can run even if python isn't installed. (#111, @kelly-sovacool)

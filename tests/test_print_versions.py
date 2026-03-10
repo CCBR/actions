@@ -17,7 +17,7 @@ def test_print_versions_sh_errors():
 def test_print_versions_sh_missing_file():
     """Test that bash version errors on missing config file."""
     with pytest.raises(Exception):
-        shell_run("bash scripts/print_versions.sh --config /nonexistent/file.txt")
+        shell_run("bash scripts/print_versions.sh --config nonexistent/file.txt")
 
 
 def test_print_versions_sh_header():

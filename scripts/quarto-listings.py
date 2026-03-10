@@ -25,7 +25,8 @@ def create_actions_listing():
             readme_body = (
                 infile.read()
                 .replace(
-                    "/examples/", "https://github.com/CCBR/actions/blob/main/examples/"
+                    "/examples/",  # abs-path:ignore
+                    "https://github.com/CCBR/actions/blob/main/examples/",
                 )
                 .replace(f"# {action_yml['name']}\n", "")
             )

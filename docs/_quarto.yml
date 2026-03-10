@@ -33,6 +33,8 @@ website:
           contents:
             - text: Installation
               href: install.qmd
+            - text: CLI
+              href: cli.qmd
             - section: API reference
               href: reference/index.qmd
               contents:
