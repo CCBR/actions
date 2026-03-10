@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ccbr_actions – CCBR actions</title>
+<title>cli – CCBR actions</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./install.html" rel="next">
-<link href="./gh-app-auth.html" rel="prev">
+<link href="./reference/index.html" rel="next">
+<link href="./install.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -330,7 +330,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./package.html">Python package</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./package.html">Python package</a></li><li class="breadcrumb-item"><a href="./cli.html">CLI</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -432,7 +432,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./package.html" class="sidebar-item-text sidebar-link active">
+            <a href="./package.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Python package</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -447,7 +447,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./cli.html" class="sidebar-item-text sidebar-link">
+  <a href="./cli.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">CLI</span></a>
   </div>
 </li>
@@ -565,9 +565,9 @@ ul.task-list li input[type="checkbox"] {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./package.html">Python package</a></li><li class="breadcrumb-item"><a href="./cli.html">CLI</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">ccbr_actions</h1>
+<h1 class="title">Command line interface</h1>
 </div>
 
 
@@ -584,10 +584,44 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><code>ccbr_actions</code> is a Python package with helper functions used by our custom GitHub Actions. You do not need to install the package in order to use the example workflows, as the actions install their dependencies as needed. However, you can <a href="./install.html">install the package</a> if you wish to use it outside of GitHub Actions or contribute changes.</p>
-<p>See detailed usage information in the <a href="./reference/index.html">API reference</a>.</p>
+<pre><code>Usage: ccbr_actions [OPTIONS] COMMAND [ARGS]...
+
+  GitHub Actions Workflows for CCBR repositories
+
+  For more options, run: ccbr_actions [command] --help
+
+  https://ccbr.github.io/actions/
+
+Options:
+  -v, --version   Show the version and exit.
+  -c, --citation  Print the citation in bibtex format and exit.
+  -h, --help      Show this message and exit.
+
+Commands:
+  use-example  Use a GitHub Actions workflow file from CCBR/actions.
+</code></pre>
+<section id="use-example" class="level4">
+<h4 class="anchored" data-anchor-id="use-example">use-example</h4>
+<pre><code>Usage: ccbr_actions use-example [OPTIONS] NAME
+
+  Use a GitHub Actions workflow file from CCBR/actions.
+
+  Args:
+      name (str): The name of the example workflow file to download.
+
+  Examples:
+      ccbr_actions use-example docs-mkdocs
+      ccbr_actions use-example build-nextflow
+
+  See list of workflow files here:
+  https://ccbr.github.io/actions/examples.html
+
+Options:
+  -h, --help  Show this message and exit.
+</code></pre>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1005,13 +1039,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./gh-app-auth.html" class="pagination-link" aria-label="GitHub App Authentication">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">GitHub App Authentication</span>
+      <a href="./install.html" class="pagination-link" aria-label="Installation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Installation</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./install.html" class="pagination-link" aria-label="Installation">
-        <span class="nav-page-text">Installation</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./reference/index.html" class="pagination-link" aria-label="API reference">
+        <span class="nav-page-text">API reference</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1023,7 +1057,7 @@ ul.task-list li input[type="checkbox"] {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/package.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/cli.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

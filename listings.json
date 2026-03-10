@@ -1,6 +1,6 @@
 [
   {
-    "listing": "/index.html",
+    "listing": "/actions.html",
     "items": [
       "/actions/install-r-pak/index.html",
       "/actions/add-issue-label-list/index.html",
@@ -13,7 +13,7 @@
     ]
   },
   {
-    "listing": "/actions.html",
+    "listing": "/index.html",
     "items": [
       "/actions/install-r-pak/index.html",
       "/actions/add-issue-label-list/index.html",

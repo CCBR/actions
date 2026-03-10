@@ -320,6 +320,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Installation</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./cli.html">
+ <span class="dropdown-text">CLI</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./reference/actions.html">
  <span class="dropdown-text">API reference</span></a>
   </li>  
@@ -479,6 +483,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Installation</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cli.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CLI</span></a>
+  </div>
+</li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="./reference/index.html" class="sidebar-item-text sidebar-link">
@@ -592,7 +602,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
-  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">Motivation</a></li>
   <li><a href="#setting-up-the-ccbr-bot" id="toc-setting-up-the-ccbr-bot" class="nav-link" data-scroll-target="#setting-up-the-ccbr-bot">Setting Up the CCBR Bot</a></li>
   <li><a href="#using-github-app-authentication-in-workflows" id="toc-using-github-app-authentication-in-workflows" class="nav-link" data-scroll-target="#using-github-app-authentication-in-workflows">Using GitHub App Authentication in Workflows</a></li>
   <li><a href="#example-workflows" id="toc-example-workflows" class="nav-link" data-scroll-target="#example-workflows">Example Workflows</a>
@@ -639,17 +648,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
 <p>The <a href="http://github.com/apps/CCBR-bot">CCBR Bot</a> is a GitHub App that provides secure authentication for automated workflows without requiring personal access tokens. This approach offers better security, granular permissions, and easier token management for organization-wide automation.</p>
 </section>
-<section id="motivation" class="level2">
-<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<ul>
-<li><strong>Enhanced Security</strong>: Short-lived tokens that expire automatically</li>
-<li><strong>Granular Permissions</strong>: Grant only the permissions needed for each workflow</li>
-<li><strong>Better Auditability</strong>: Actions are clearly attributed to the bot</li>
-</ul>
-</section>
 <section id="setting-up-the-ccbr-bot" class="level2">
 <h2 class="anchored" data-anchor-id="setting-up-the-ccbr-bot">Setting Up the CCBR Bot</h2>
-<p>An organization admin should store these in your organization’s variables and secrets:</p>
+<p>An admin should <a href="http://github.com/apps/CCBR-bot">install the app</a> in the organization, then store each of these in your organization’s variables and secrets:</p>
 <ul>
 <li><strong><code>CCBR_BOT_APP_ID</code></strong> (variable): The GitHub App ID</li>
 <li><strong><code>CCBR_BOT_PRIVATE_KEY</code></strong> (secret): The GitHub App private key</li>
