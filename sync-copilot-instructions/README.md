@@ -9,7 +9,7 @@ source repository to a target repository and open a PR
 
 [sync-copilot-instructions.yml](/examples/sync-copilot-instructions.yml)
 
-``` yaml
+```yaml
 name: sync-copilot-instructions
 
 on:
