@@ -70,17 +70,21 @@ on:
   workflow_dispatch:
     inputs:
       target_repo:
-        description: Target repository in owner/repo format (defaults to current repo)
+        description: "Target repository. Defaults to the current repo."
+        required: false
+        default: ""
+      owner:
+        description: "Owner of the repository. Defaults to the current repository owner."
         required: false
         default: ""
       dry_run:
         description: If true, report changes without applying them
         required: false
-        default: true
+        default: "true"
       max_updates_per_run:
         description: Maximum milestone updates/creates/closes/reopens per run
         required: false
-        default: 100
+        default: "100"
 
 permissions:
   contents: read
@@ -92,10 +96,13 @@ jobs:
     steps:
       - uses: CCBR/actions/maintain-milestones@main
         with:
-          github-token: ${{ secrets.repo_token || github.token }}
+          github-token: ${{ secrets.repo_token || '' }}
+          owner: ${{ inputs.owner }}
           target_repo: ${{ inputs.target_repo }}
           dry_run: ${{ inputs.dry_run }}
           max_updates_per_run: ${{ inputs.max_updates_per_run }}
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
 ```
 
 ### Customized inputs
@@ -112,11 +119,18 @@ steps:
 
 ## Inputs
 
-- `target_repo`: Target repository in owner/repo format (defaults to
-  current repo).
+- `target_repo`: Target repository (excluding the owner). Defaults to
+  the current repo..
+- `owner`: Owner of the repository. Defaults to the current repository
+  owner..
 - `dry_run`: If true, report changes without applying them. Default:
   `true`.
 - `max_updates_per_run`: Maximum milestone
   updates/creates/closes/reopens per run. Default: `100`.
-- `github-token`: GitHub Actions token (e.g. github.token or
-  secrets.repo_token). **Required.**
+- `github-token`: GitHub Actions token with access to organization
+  projects. Optional - set the app-id and app-private-key instead..
+- `app-id`: GitHub App ID for authentication. Optional - Use this
+  instead of a token..
+- `app-private-key`: Private key for the GitHub App used for
+  authentication. Optional - Use this instead of a token. Must be set if
+  app-id is set..
