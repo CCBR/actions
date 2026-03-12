@@ -41,7 +41,7 @@ jobs:
           echo "value=chore: 🤖 sync copilot instructions - $(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
 
       - name: Sync Copilot instructions
-        uses: CCBR/actions/sync-copilot-instructions@sync-copilot-cron
+        uses: CCBR/actions/sync-copilot-instructions@main
         with:
           owner: ${{ matrix.OWNER }}
           repo: ${{ matrix.REPO }}
