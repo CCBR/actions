@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Kelly Sovacool &amp; Vishal Koparde">
 
-<title>cli – CCBR actions</title>
+<title>sync-copilot-instructions – CCBR actions</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,31 +21,66 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./reference/index.html" rel="next">
-<link href="./install.html" rel="prev">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-65803ac9f8b9a226f900d64efc7d6e1f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-6c43f866430f66231ec7948ae9cfb461.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-85852208b203cf8c068383434339e5e8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-5ac7761693d1b71433da9b2eb5750642.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../actions/user-projects/index.html" rel="next">
+<link href="../../actions/label-issue-repo-name/index.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-65803ac9f8b9a226f900d64efc7d6e1f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-6c43f866430f66231ec7948ae9cfb461.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-85852208b203cf8c068383434339e5e8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-5ac7761693d1b71433da9b2eb5750642.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -242,7 +278,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">CCBR actions</span>
     </a>
   </div>
@@ -258,57 +294,57 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-docs">    
         <li>
-    <a class="dropdown-item" href="./index.html">
+    <a class="dropdown-item" href="../../index.html">
  <span class="dropdown-text">Home</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">GitHub Actions</li>
         <li>
-    <a class="dropdown-item" href="./actions/add-issue-label-list/index.html">
+    <a class="dropdown-item" href="../../actions/add-issue-label-list/index.html">
  <span class="dropdown-text">Actions</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./examples.html">
+    <a class="dropdown-item" href="../../examples.html">
  <span class="dropdown-text">Example Workflows</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./gh-app-auth.html">
+    <a class="dropdown-item" href="../../gh-app-auth.html">
  <span class="dropdown-text">GitHub App Authentication</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">Python package</li>
         <li>
-    <a class="dropdown-item" href="./install.html">
+    <a class="dropdown-item" href="../../install.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./cli.html">
+    <a class="dropdown-item" href="../../cli.html">
  <span class="dropdown-text">CLI</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./reference/actions.html">
+    <a class="dropdown-item" href="../../reference/actions.html">
  <span class="dropdown-text">API reference</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">Project information</li>
         <li>
-    <a class="dropdown-item" href="./cite.html">
+    <a class="dropdown-item" href="../../cite.html">
  <span class="dropdown-text">Citation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./CONTRIBUTING.html">
+    <a class="dropdown-item" href="../../CONTRIBUTING.html">
  <span class="dropdown-text">Contributing</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./contributors.html">
+    <a class="dropdown-item" href="../../contributors.html">
  <span class="dropdown-text">Contributors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./LICENSE.html">
+    <a class="dropdown-item" href="../../LICENSE.html">
  <span class="dropdown-text">License</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./CHANGELOG.html">
+    <a class="dropdown-item" href="../../CHANGELOG.html">
  <span class="dropdown-text">Changelog</span></a>
   </li>  
     </ul>
@@ -330,7 +366,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./package.html">Python package</a></li><li class="breadcrumb-item"><a href="./cli.html">CLI</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../gh-actions.html">GitHub Actions</a></li><li class="breadcrumb-item"><a href="../../actions.html">Actions</a></li><li class="breadcrumb-item"><a href="../../actions/sync-copilot-instructions/index.html">sync-copilot-instructions</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -344,13 +380,13 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Home</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./gh-actions.html" class="sidebar-item-text sidebar-link">
+            <a href="../../gh-actions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub Actions</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -359,64 +395,64 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./actions.html" class="sidebar-item-text sidebar-link">
+            <a href="../../actions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Actions</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/add-issue-label-list/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/add-issue-label-list/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">add-issue-label-list</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/post-release/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/post-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">post-release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">label-issue-repo-name</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/sync-copilot-instructions/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/sync-copilot-instructions/index.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">sync-copilot-instructions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/user-projects/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/user-projects/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">user-projects</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/install-r-pak/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/install-r-pak/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install R + pak</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">build-docker</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">mkdocs-mike</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">draft-release</span></a>
   </div>
 </li>
@@ -424,13 +460,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./examples.html" class="sidebar-item-text sidebar-link">
+  <a href="../../examples.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Example Workflows</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./gh-app-auth.html" class="sidebar-item-text sidebar-link">
+  <a href="../../gh-app-auth.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub App Authentication</span></a>
   </div>
 </li>
@@ -438,7 +474,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./package.html" class="sidebar-item-text sidebar-link">
+            <a href="../../package.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Python package</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -447,19 +483,19 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./install.html" class="sidebar-item-text sidebar-link">
+  <a href="../../install.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Installation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./cli.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../cli.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">CLI</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./reference/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">API reference</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -468,49 +504,49 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/actions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/actions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">actions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/citation.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/citation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">citation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/docker.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/docker.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">docker</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/docs.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/docs.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">docs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/release.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/release.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/util.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/util.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">util</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./reference/versions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/versions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">versions</span></a>
   </div>
 </li>
@@ -529,31 +565,31 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./cite.html" class="sidebar-item-text sidebar-link">
+  <a href="../../cite.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Citation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
+  <a href="../../CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contributing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./contributors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../contributors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contributors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./LICENSE.html" class="sidebar-item-text sidebar-link">
+  <a href="../../LICENSE.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">License</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./CHANGELOG.html" class="sidebar-item-text sidebar-link">
+  <a href="../../CHANGELOG.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
@@ -564,22 +600,39 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#usage" id="toc-usage" class="nav-link active" data-scroll-target="#usage">Usage</a>
+  <ul class="collapse">
+  <li><a href="#basic-example" id="toc-basic-example" class="nav-link" data-scroll-target="#basic-example">Basic example</a></li>
+  <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">Inputs</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/actions/sync-copilot-instructions/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./package.html">Python package</a></li><li class="breadcrumb-item"><a href="./cli.html">CLI</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../gh-actions.html">GitHub Actions</a></li><li class="breadcrumb-item"><a href="../../actions.html">Actions</a></li><li class="breadcrumb-item"><a href="../../actions/sync-copilot-instructions/index.html">sync-copilot-instructions</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Command line interface</h1>
+<h1 class="title">sync-copilot-instructions</h1>
+<p class="subtitle lead">Sync Copilot instructions from a source repository to a target repository and open a PR</p>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Kelly Sovacool &amp; Vishal Koparde </p>
+          </div>
+  </div>
     
   
     
@@ -590,43 +643,92 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<pre><code>Usage: ccbr_actions [OPTIONS] COMMAND [ARGS]...
+<section id="usage" class="level1">
+<h1>Usage</h1>
+<p><strong><code>sync-copilot-instructions</code></strong> - Sync Copilot instructions from a source repository to a target repository and open a PR</p>
+<section id="basic-example" class="level3">
+<h3 class="anchored" data-anchor-id="basic-example">Basic example</h3>
+<p><a href=".https://github.com/CCBR/actions/blob/main/examples/sync-copilot-instructions.yml">sync-copilot-instructions.yml</a></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> sync-copilot-instructions</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">schedule</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">cron</span><span class="kw">:</span><span class="at"> </span><span class="st">"0 3 * * *"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">workflow_dispatch</span><span class="kw">:</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source_repository</span><span class="kw">:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Source repository containing canonical Copilot instructions</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">default</span><span class="kw">:</span><span class="at"> CCBR/.github</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> string</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source_ref</span><span class="kw">:</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Branch, tag, or SHA to sync from</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">default</span><span class="kw">:</span><span class="at"> main</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> string</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">source_file</span><span class="kw">:</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Path to canonical instructions file in source repository</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">default</span><span class="kw">:</span><span class="at"> .github/copilot-instructions.md</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> string</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">target_file</span><span class="kw">:</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Path to destination instructions file in current repository</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">default</span><span class="kw">:</span><span class="at"> .github/copilot-instructions.md</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> string</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">commit_message</span><span class="kw">:</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">description</span><span class="kw">:</span><span class="at"> Commit message used when sync updates are detected</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">required</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">default</span><span class="kw">:</span><span class="at"> </span><span class="st">"chore: 🤖 sync copilot instructions"</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">type</span><span class="kw">:</span><span class="at"> string</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="fu">permissions</span><span class="kw">:</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> write</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu">concurrency</span><span class="kw">:</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">group</span><span class="kw">:</span><span class="at"> ${{ github.workflow }}-${{ github.ref }}</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">cancel-in-progress</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sync-copilot-instructions</span><span class="kw">:</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">strategy</span><span class="kw">:</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">fail-fast</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">matrix</span><span class="kw">:</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">OWNER</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">CCBR</span><span class="kw">]</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">REPO</span><span class="kw">:</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> actions</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> Tools</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/sync-copilot-instructions@latest</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">owner</span><span class="kw">:</span><span class="at"> ${{ matrix.OWNER }}</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">repo</span><span class="kw">:</span><span class="at"> ${{ matrix.REPO }}</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">app-id</span><span class="kw">:</span><span class="at"> ${{ vars.CCBR_BOT_APP_ID }}</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">app-private-key</span><span class="kw">:</span><span class="at"> ${{ secrets.CCBR_BOT_PRIVATE_KEY }}</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">source-repository</span><span class="kw">:</span><span class="at"> ${{ inputs.source_repository || github.event.inputs.source_repository || 'CCBR/.github' }}</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">source-ref</span><span class="kw">:</span><span class="at"> ${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">source-file</span><span class="kw">:</span><span class="at"> ${{ inputs.source_file || github.event.inputs.source_file || '.github/copilot-instructions.md' }}</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">target-file</span><span class="kw">:</span><span class="at"> ${{ inputs.target_file || github.event.inputs.target_file || '.github/copilot-instructions.md' }}</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">commit-message</span><span class="kw">:</span><span class="at"> </span><span class="st">"${{ inputs.commit_message || github.event.inputs.commit_message || 'chore: 🤖 sync copilot instructions' }}"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="inputs" class="level2">
+<h2 class="anchored" data-anchor-id="inputs">Inputs</h2>
+<ul>
+<li><code>owner</code>: Owner of the target repository. <strong>Required.</strong></li>
+<li><code>repo</code>: Name of the target repository. <strong>Required.</strong></li>
+<li><code>app-id</code>: GitHub App ID used to generate an installation token. <strong>Required.</strong></li>
+<li><code>app-private-key</code>: GitHub App private key used to generate an installation token. <strong>Required.</strong></li>
+<li><code>source-repository</code>: Source repository containing canonical Copilot instructions. <strong>Required.</strong> Default: <code>CCBR/.github</code>.</li>
+<li><code>source-ref</code>: Branch, tag, or SHA in source repository. <strong>Required.</strong> Default: <code>main</code>.</li>
+<li><code>source-file</code>: Path to canonical instructions file in source repository. <strong>Required.</strong> Default: <code>.github/copilot-instructions.md</code>.</li>
+<li><code>target-file</code>: Path to destination instructions file in target repository. <strong>Required.</strong> Default: <code>.github/copilot-instructions.md</code>.</li>
+<li><code>commit-message</code>: Commit message used when sync updates are detected. <strong>Required.</strong> Default: <code>chore: 🤖 sync copilot instructions</code>.</li>
+<li><code>branch</code>: Branch name to use for the sync pull request. <strong>Required.</strong> Default: <code>update-copilot-instructions</code>.</li>
+</ul>
 
-  GitHub Actions Workflows for CCBR repositories
 
-  For more options, run: ccbr_actions [command] --help
-
-  https://ccbr.github.io/actions/
-
-Options:
-  -v, --version   Show the version and exit.
-  -c, --citation  Print the citation in bibtex format and exit.
-  -h, --help      Show this message and exit.
-
-Commands:
-  use-example  Use a GitHub Actions workflow file from CCBR/actions.
-</code></pre>
-<section id="use-example" class="level4">
-<h4 class="anchored" data-anchor-id="use-example">use-example</h4>
-<pre><code>Usage: ccbr_actions use-example [OPTIONS] NAME
-
-  Use a GitHub Actions workflow file from CCBR/actions.
-
-  Args:
-      name (str): The name of the example workflow file to download.
-
-  Examples:
-      ccbr_actions use-example docs-mkdocs
-      ccbr_actions use-example build-nextflow
-
-  See list of workflow files here:
-  https://ccbr.github.io/actions/examples.html
-
-Options:
-  -h, --help  Show this message and exit.
-</code></pre>
-
-
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1045,13 +1147,13 @@ Options:
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./install.html" class="pagination-link" aria-label="Installation">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Installation</span>
+      <a href="../../actions/label-issue-repo-name/index.html" class="pagination-link" aria-label="label-issue-repo-name">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">label-issue-repo-name</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./reference/index.html" class="pagination-link" aria-label="API reference">
-        <span class="nav-page-text">API reference</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../actions/user-projects/index.html" class="pagination-link" aria-label="user-projects">
+        <span class="nav-page-text">user-projects</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1063,7 +1165,7 @@ Options:
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/cli.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/actions/edit/main/actions/sync-copilot-instructions/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

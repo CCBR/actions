@@ -9,6 +9,7 @@
       "/actions/label-issue-repo-name/index.html",
       "/actions/mkdocs-mike/index.html",
       "/actions/post-release/index.html",
+      "/actions/sync-copilot-instructions/index.html",
       "/actions/user-projects/index.html"
     ]
   },
@@ -22,6 +23,7 @@
       "/actions/label-issue-repo-name/index.html",
       "/actions/mkdocs-mike/index.html",
       "/actions/post-release/index.html",
+      "/actions/sync-copilot-instructions/index.html",
       "/actions/user-projects/index.html"
     ]
   }
