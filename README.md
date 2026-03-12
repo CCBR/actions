@@ -35,6 +35,7 @@ them for your needs.
 - [draft-release](examples/draft-release.yml)
 - [label-issues-repo-name](examples/label-issues-repo-name.yml)
 - [post-release](examples/post-release.yml)
+- [sync-copilot-instructions](examples/sync-copilot-instructions.yml)
 - [techdev-project](examples/techdev-project.yml)
 - [update-cff-R](examples/update-cff-R.yml)
 - [user-projects](examples/user-projects.yml)
@@ -57,6 +58,9 @@ Custom actions used in our github workflows.
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [sync-copilot-instructions](sync-copilot-instructions) - Sync Copilot
+  instructions from a source repository to a target repository and open
+  a PR
 - [user-projects](user-projects) - Add issue/PR to user’s project
 
 ## Package

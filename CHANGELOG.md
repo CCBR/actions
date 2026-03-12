@@ -1,5 +1,6 @@
 ## actions development version
 
+- New action `sync-copilot-instructions` synchronized the copilot instructions file across CCBR repos. (#132, @kelly-sovacool, @kopardev)
 - Improve documentation for the CLI. (#135, @kelly-sovacool)
 
 ## actions 0.5.1
