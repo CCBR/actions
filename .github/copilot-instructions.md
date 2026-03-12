@@ -30,6 +30,7 @@ _Sample GH Action check (concept): if AI usage is declared, require an AI-assist
 - `copilot-instructions.md` SHOULD remain concise and prescriptive; keep only high-value rules and edge-case examples.
 - Developers SHOULD include the CRAFT block in edited files when requesting substantial generated code to improve context quality.
 - CoPilot must ask the user for permission before deleting any file unless the file was created by CoPilot for a temporary run or test.
+- CoPilot must not edit any files outside of the current open workspace.
 
 ## Code authoring guidance
 
