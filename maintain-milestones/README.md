@@ -18,10 +18,11 @@ and ignores any non-monthly titles.
 
 ## Triggers
 
-Use this action in a workflow that you run manually or on a schedule. It
-is designed for:
+Use this action in a workflow that you run manually or on a schedule.
+Common triggers include:
 
 - `workflow_dispatch`
+- `schedule`
 
 ## Inputs
 
@@ -30,11 +31,16 @@ below for details.
 
 ## Auth and permissions
 
-- Requires `issues: write` and `contents: read` permissions.
-- Use `github-token` with milestone write access to the target
-  repository.
-- Use a custom repository token by mapping `secrets.REPO_TOKEN` to
-  `github-token`.
+- Requires permission to read and write milestones (`issues: write`) in
+  the target repository.
+- Authentication options:
+  - Set `github-token` directly.
+  - Or set both `app-id` and `app-private-key` to mint a GitHub App
+    token.
+- If `target_repo` is omitted, the action defaults to the current
+  repository name.
+- If `owner` is omitted, the action defaults to
+  `${{ github.repository_owner }}`.
 
 ## Planned action types
 
@@ -112,7 +118,8 @@ steps:
   - uses: CCBR/actions/maintain-milestones@main
     with:
       github-token: ${{ secrets.repo_token || github.token }}
-      target_repo: CCBR/actions
+      owner: CCBR
+      target_repo: actions
       dry_run: false
       max_updates_per_run: 50
 ```
