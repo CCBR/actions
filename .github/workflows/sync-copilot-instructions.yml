@@ -13,39 +13,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.load-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Load matrix from ${{ github.workspace }}/.github/repos.json
+        id: load-matrix
+        run: |
+          matrix=$(jq -c '{include: [(.owners | to_entries[] | .key as $owner | .value[] | {OWNER: $owner, REPO: .})]}' .github/repos.json)
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
   sync-copilot-instructions:
+    needs: prepare-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        OWNER: [CCBR]
-        REPO:
-          - actions
-          - ASPEN
-          - CARLISLE
-          - CCBR_tobias
-          - ccbrpipeliner
-          - CHAMPAGNE
-          - CHARLIE
-          - CRISPIN
-          - dockers2
-          - ESCAPE
-          - HowTos
-          - journal-club
-          - LOGAN
-          - MOSuite
-          - MOSuite-Nextflow
-          - nf-modules
-          - parkit
-          - RENEE
-          - SCOT
-          - SINCLAIR
-          - spacesavers2
-          - SPENCER
-          - spook
-          - Tools
-          - TRANQUIL
-          - XAVIER
+      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
 
     steps:
       - name: Sync Copilot instructions
