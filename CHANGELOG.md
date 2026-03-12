@@ -1,6 +1,6 @@
 ## actions development version
 
-- New action `sync-copilot-instructions` synchronized the copilot instructions file across CCBR repos. (#132, @kelly-sovacool, @kopardev)
+- New action `sync-copilot-instructions` synchronizes the copilot instructions file across CCBR repos. (#132, @kelly-sovacool, @kopardev)
 - New action `maintain-milestones` manages issue milestones across repositories. (#127, @kopardev, @kelly-sovacool)
 - Improve documentation for the CLI. (#135, @kelly-sovacool)
 
