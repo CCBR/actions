@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Sync Copilot instructions
-        uses: ./sync-copilot-instructions
+        uses: CCBR/actions/sync-copilot-instructions@sync-copilot-cron
         with:
           owner: ${{ matrix.OWNER }}
           repo: ${{ matrix.REPO }}
