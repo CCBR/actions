@@ -3,14 +3,6 @@ name: maintain-milestones
 on:
   workflow_dispatch:
     inputs:
-      target_repo:
-        description: "Target repository. Defaults to the current repo."
-        required: false
-        default: ""
-      owner:
-        description: "Owner of the repository. Defaults to the current repository owner."
-        required: false
-        default: ""
       dry_run:
         description: If true, report changes without applying them
         required: false
@@ -25,14 +17,32 @@ permissions:
   issues: write
 
 jobs:
-  maintain-milestones:
+  prepare-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.load-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Load matrix from ${{ github.workspace }}/.github/repos.json
+        id: load-matrix
+        run: |
+          matrix=$(jq -c '{include: [(.owners | to_entries[] | .key as $owner | .value[] | {OWNER: $owner, REPO: .})]}' .github/repos.json)
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  maintain-milestones:
+    needs: prepare-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
     steps:
       - uses: CCBR/actions/maintain-milestones@main
         with:
           github-token: ${{ secrets.repo_token || '' }}
-          owner: ${{ inputs.owner }}
-          target_repo: ${{ inputs.target_repo }}
+          owner: ${{ matrix.OWNER }}
+          target_repo: ${{ matrix.REPO }}
           dry_run: ${{ inputs.dry_run }}
           max_updates_per_run: ${{ inputs.max_updates_per_run }}
           app-id: ${{ vars.CCBR_BOT_APP_ID }}
