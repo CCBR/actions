@@ -35,6 +35,11 @@ jobs:
       matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
 
     steps:
+      - name: Set commit message
+        id: commit_message
+        run: |
+          echo "value=chore: 🤖 sync copilot instructions - $(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
       - name: Sync Copilot instructions
         uses: CCBR/actions/sync-copilot-instructions@sync-copilot-cron
         with:
@@ -46,4 +51,4 @@ jobs:
           source-ref: "main"
           source-file: ".github/copilot-instructions.md"
           target-file: ".github/copilot-instructions.md"
-          commit-message: "chore: 🤖 sync copilot instructions - $(date +'%Y-%m-%d')"
+          commit-message: ${{ steps.commit_message.outputs.value }}
