@@ -19,7 +19,7 @@ jobs:
       matrix: ${{ steps.load-matrix.outputs.matrix }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Load matrix from ${{ github.workspace }}/.github/repos.json
         id: load-matrix
