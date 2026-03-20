@@ -39,54 +39,54 @@ can review and choose to publish.
 name: draft-release
 
 on:
-    workflow_dispatch:
-        inputs:
-            version-tag:
-                description: |
-                    Semantic version tag for next release.
-                    If not provided, it will be determined based on conventional commit history.
-                    Example: v2.5.11
-                required: false
-                type: string
-                default: ""
+  workflow_dispatch:
+    inputs:
+      version-tag:
+        description: |
+          Semantic version tag for next release.
+          If not provided, it will be determined based on conventional commit history.
+          Example: v2.5.11
+        required: false
+        type: string
+        default: ""
 
 permissions:
-    contents: write
-    pull-requests: write
-    actions: write
+  contents: write
+  pull-requests: write
+  actions: write
 
 jobs:
-    draft-release:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0 # required to include tags
-            - uses: CCBR/actions/draft-release@v0.5
-              with:
-                  github-token: ${{ github.token }}
-                  version-tag: ${{ github.event.inputs.version-tag }}
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required to include tags
+      - uses: CCBR/actions/draft-release@v0.5
+        with:
+          github-token: ${{ github.token }}
+          version-tag: ${{ github.event.inputs.version-tag }}
 ```
 
 ### Customized inputs
 
 ```yaml
 steps:
-    - uses: actions/checkout@v4
-      with:
-          fetch-depth: 0 # required to include tags
-    - uses: CCBR/actions/draft-release@main
-      with:
-          github-token: ${{ github.token }}
-          version-tag: ${{ github.event.inputs.version-tag }}
-          ccbr-actions-version: main
-          python-verson: 3.11
-          draft-branch: "release-draft"
-          version-filepath: VERSION
-          changelog-filepath: CHANGELOG.md
-          citation-filepath: CITATION.cff
-          dev-header: "development version"
-          github-actor: "41898282+github-actions[bot]"
+  - uses: actions/checkout@v4
+    with:
+      fetch-depth: 0 # required to include tags
+  - uses: CCBR/actions/draft-release@main
+    with:
+      github-token: ${{ github.token }}
+      version-tag: ${{ github.event.inputs.version-tag }}
+      ccbr-actions-version: main
+      python-verson: 3.11
+      draft-branch: "release-draft"
+      version-filepath: VERSION
+      changelog-filepath: CHANGELOG.md
+      citation-filepath: CITATION.cff
+      dev-header: "development version"
+      github-actor: "41898282+github-actions[bot]"
 ```
 
 ## Inputs

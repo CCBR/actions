@@ -13,31 +13,31 @@ issues of a given label
 name: add-issue-label-list
 
 on:
-    workflow_dispatch:
-        inputs:
-            issue-num:
-                required: true
-                type: string
-                description: "Number of the issue to update (issue should already exist!)"
-            label-name:
-                required: true
-                type: string
-                description: "Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)"
+  workflow_dispatch:
+    inputs:
+      issue-num:
+        required: true
+        type: string
+        description: "Number of the issue to update (issue should already exist!)"
+      label-name:
+        required: true
+        type: string
+        description: "Name of the label to create a task list for (eg. RENEE, ccbr1310, etc.)"
 
 permissions:
-    contents: read
-    issues: write
-    pull-requests: write
+  contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
-    add-list:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: CCBR/actions/add-issue-label-list@v0.5
-              with:
-                  github-token: ${{ github.token }}
-                  issue-num: ${{ inputs.issue-num }}
-                  label-name: ${{ inputs.label-name }}
+  add-list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/add-issue-label-list@v0.5
+        with:
+          github-token: ${{ github.token }}
+          issue-num: ${{ inputs.issue-num }}
+          label-name: ${{ inputs.label-name }}
 ```
 
 ## Inputs

@@ -17,9 +17,9 @@ automatically adds it to their corresponding project board.
 
 ```yaml
 steps:
-    - uses: CCBR/actions/user-projects@main
-      with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+  - uses: CCBR/actions/user-projects@main
+    with:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### Example with GitHub App authentication
@@ -30,11 +30,11 @@ store the app ID and private key as organization variables or secrets.
 
 ```yaml
 steps:
-    - uses: CCBR/actions/user-projects@main
-      with:
-          app-id: ${{ vars.CCBR_BOT_APP_ID }}
-          app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
-          token-owner: CCBR
+  - uses: CCBR/actions/user-projects@main
+    with:
+      app-id: ${{ vars.CCBR_BOT_APP_ID }}
+      app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+      token-owner: CCBR
 ```
 
 For a complete example workflow, see

@@ -47,19 +47,19 @@ cd actions
 
 - Install the python dependencies with pip
 
-    ```sh
-    pip install .[[dev,test]]
-    ```
+  ```sh
+  pip install .[[dev,test]]
+  ```
 
 - Install [`pre-commit`](https://pre-commit.com/#install) if you don't already
   have it. Then from the repo's root directory, run
 
-    ```sh
-    pre-commit install
-    ```
+  ```sh
+  pre-commit install
+  ```
 
-    This will install the repo's pre-commit hooks.
-    You'll only need to do this step the first time you clone the repo.
+  This will install the repo's pre-commit hooks.
+  You'll only need to do this step the first time you clone the repo.
 
 ### Create a branch
 
