@@ -17,24 +17,24 @@ repos.
 name: label-issues-repo-name
 
 on:
-    issues:
-        types:
-            - opened
-    pull_request:
-        types:
-            - opened
+  issues:
+    types:
+      - opened
+  pull_request:
+    types:
+      - opened
 
 permissions:
-    issues: write
-    pull-requests: write
+  issues: write
+  pull-requests: write
 
 jobs:
-    add-label:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: CCBR/actions/label-issue-repo-name@v0.5
-              with:
-                  github-token: ${{ github.token }}
+  add-label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/label-issue-repo-name@v0.5
+        with:
+          github-token: ${{ github.token }}
 ```
 
 ## Inputs

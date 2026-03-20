@@ -34,9 +34,9 @@ below for details.
 - Requires permission to read and write milestones (`issues: write`) in
   the target repository.
 - Authentication options:
-    - Set `github-token` directly.
-    - Or set both `app-id` and `app-private-key` to mint a GitHub App
-      token.
+  - Set `github-token` directly.
+  - Or set both `app-id` and `app-private-key` to mint a GitHub App
+    token.
 - If `target_repo` is omitted, the action defaults to the current
   repository name.
 - If `owner` is omitted, the action defaults to
@@ -73,55 +73,55 @@ after repeated runs. All date calculations are performed in UTC.
 name: maintain-milestones
 
 on:
-    workflow_dispatch:
-        inputs:
-            target_repo:
-                description: "Target repository. Defaults to the current repo."
-                required: false
-                default: ""
-            owner:
-                description: "Owner of the repository. Defaults to the current repository owner."
-                required: false
-                default: ""
-            dry_run:
-                description: If true, report changes without applying them
-                required: false
-                default: "true"
-            max_updates_per_run:
-                description: Maximum milestone updates/creates/closes/reopens per run
-                required: false
-                default: "100"
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: "Target repository. Defaults to the current repo."
+        required: false
+        default: ""
+      owner:
+        description: "Owner of the repository. Defaults to the current repository owner."
+        required: false
+        default: ""
+      dry_run:
+        description: If true, report changes without applying them
+        required: false
+        default: "true"
+      max_updates_per_run:
+        description: Maximum milestone updates/creates/closes/reopens per run
+        required: false
+        default: "100"
 
 permissions:
-    contents: read
-    issues: write
+  contents: read
+  issues: write
 
 jobs:
-    maintain-milestones:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: CCBR/actions/maintain-milestones@main
-              with:
-                  github-token: ${{ secrets.repo_token || '' }}
-                  owner: ${{ inputs.owner }}
-                  target_repo: ${{ inputs.target_repo }}
-                  dry_run: ${{ inputs.dry_run }}
-                  max_updates_per_run: ${{ inputs.max_updates_per_run }}
-                  app-id: ${{ vars.CCBR_BOT_APP_ID }}
-                  app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+  maintain-milestones:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/maintain-milestones@main
+        with:
+          github-token: ${{ secrets.repo_token || '' }}
+          owner: ${{ inputs.owner }}
+          target_repo: ${{ inputs.target_repo }}
+          dry_run: ${{ inputs.dry_run }}
+          max_updates_per_run: ${{ inputs.max_updates_per_run }}
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
 ```
 
 ### Customized inputs
 
 ```yaml
 steps:
-    - uses: CCBR/actions/maintain-milestones@main
-      with:
-          github-token: ${{ secrets.repo_token || github.token }}
-          owner: CCBR
-          target_repo: actions
-          dry_run: false
-          max_updates_per_run: 50
+  - uses: CCBR/actions/maintain-milestones@main
+    with:
+      github-token: ${{ secrets.repo_token || github.token }}
+      owner: CCBR
+      target_repo: actions
+      dry_run: false
+      max_updates_per_run: 50
 ```
 
 ## Inputs
