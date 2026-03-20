@@ -29,7 +29,7 @@
 
 - New example workflow: `check-links` -- automatically checks all links in the repository and reports broken links. (#80, @kelly-sovacool)
 - New function `write_citation()` to write citation.cff files to other formats, e.g. codemeta. (#87,#89, @kelly-sovacool)
-  - Now performed in `draft-release` action and in `auto-format` example workflow.
+    - Now performed in `draft-release` action and in `auto-format` example workflow.
 
 ## actions 0.2.7
 
@@ -52,9 +52,9 @@
 - fix `post-release` to make sure the sliding branch is created from the latest release tag. (#53, @kelly-sovacool)
 - fix `build-docker` to set `$DOCKERFILE_BASENAME` for copying the Dockerfile inside the container. (#59, @kelly-sovacool)
 - improvements to documentation website:
-  - add contributors page. (#54, @kelly-sovacool)
-  - list example workflows and improve navigation. (#55, @kelly-sovacool)
-  - use FNL theme from ccbr_tools. (#57, @kelly-sovacool)
+    - add contributors page. (#54, @kelly-sovacool)
+    - list example workflows and improve navigation. (#55, @kelly-sovacool)
+    - use FNL theme from ccbr_tools. (#57, @kelly-sovacool)
 - New CLI and command `ccbr_actions use-example` to copy example GitHub Actions workflows to a repository. (#58, @kelly-sovacool)
 
 ## actions 0.2.3
@@ -67,7 +67,7 @@
 ### enhancements
 
 - make citation files optional for `draft-release` and `post-release`. (#44, @kelly-sovacool)
-  - these actions will no longer error when a repository lacks a citation file.
+    - these actions will no longer error when a repository lacks a citation file.
 - new documentation website: <https://CCBR.github.io/actions>. (#48, #49, @kelly-sovacool)
 
 ## actions 0.2.2
@@ -81,16 +81,16 @@
 ## actions 0.2.0
 
 - new actions & example workflows:
-  - `label-issue-repo-name` - Label issues & PRs with the repository name
-  - `add-issue-label-list` - Update issue description with a list of issues of a given label
-  - `update-cff-R` - For R packages: update the CITATION.cff file based on the DESCRIPTION file.
-  - `build-docker` - Build docker containers for [CCBR/Dockers2](https://github.com/CCBR/dockers2). (#31, #33, @kelly-sovacool)
+    - `label-issue-repo-name` - Label issues & PRs with the repository name
+    - `add-issue-label-list` - Update issue description with a list of issues of a given label
+    - `update-cff-R` - For R packages: update the CITATION.cff file based on the DESCRIPTION file.
+    - `build-docker` - Build docker containers for [CCBR/Dockers2](https://github.com/CCBR/dockers2). (#31, #33, @kelly-sovacool)
 - minor documentation improvements.
 
 ## actions 0.1.3
 
 - fix: make sure `get_latest_release_hash()` and `get_current_hash()` strip newlines in hash strings. (@kelly-sovacool)
-  - this bug caused a malformed command string in `is_ancestor()`, which caused `mkdocs-mike` to fail.
+    - this bug caused a malformed command string in `is_ancestor()`, which caused `mkdocs-mike` to fail.
 - set `update-sliding-branch` to false by default in `post-release` action. (#18, @kelly-sovacool)
 - fix bug that prevented `mkdocs-mike` from working on repos with no release. (#20, @kelly-sovacool)
 - fix: resolve symlinks when writing files. (#23, #24, @kelly-sovacool)
