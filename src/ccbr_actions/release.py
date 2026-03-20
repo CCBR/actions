@@ -203,7 +203,14 @@ def post_release_cleanup(
     )
 
     commit_cmd = f'git add {changed_files} && git commit -m "chore: bump changelog & version after release of {release_tag}" && git push --set-upstream origin {pr_branch}'
-    pr_cmd = f"gh pr create --title 'chore: post-release cleanup for {release_tag}' --reviewer {pr_reviewer}"
+    pr_cmd = (
+        "gh pr create "
+        f"--title 'chore: post-release cleanup for {release_tag}' "
+        "--body 'Automated post-release cleanup.' "
+        "--base main "
+        f"--head {pr_branch} "
+        f"--reviewer {pr_reviewer}"
+    )
     delete_cmd = f'git push origin --delete {draft_branch} || echo "No {draft_branch} branch to delete"'
 
     if debug:

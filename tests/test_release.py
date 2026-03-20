@@ -220,7 +220,7 @@ def test_post_release_cleanup():
             "tests/data/CITATION.cff" in output,
             "tests/data/example_changelog.md" in output,
             "tests/data/VERSION" in output,
-            "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' --reviewer ${{ github.triggering_actor }}"
+            "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' --body 'Automated post-release cleanup.' --base main --head ${{ inputs.branch }} --reviewer ${{ github.triggering_actor }}"
             in output,
             "git push origin --delete release-draft || echo" in output,
         ]
@@ -240,7 +240,7 @@ def test_post_release_cleanup_no_citation():
             "CITATION.cff" not in output,
             "tests/data/example_changelog.md" in output,
             "tests/data/VERSION" in output,
-            "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' --reviewer ${{ github.triggering_actor }}"
+            "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' --body 'Automated post-release cleanup.' --base main --head ${{ inputs.branch }} --reviewer ${{ github.triggering_actor }}"
             in output,
             "git push origin --delete release-draft || echo" in output,
         ]
