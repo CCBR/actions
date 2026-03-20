@@ -24,21 +24,21 @@ This action:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
-  - uses: CCBR/actions/build-docker@main
-    with:
-      dockerfile: Dockerfile.v1
-      dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
-      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
-      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
-      suffix: dev
-      push: true
-      ccbr-actions-version: v0.2
-      github-token: ${{ github.token }}
-      github-actor: ${{ github.actor }}
-      config-file: "scripts/tool_version_commands.txt"
+    - uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+    - uses: CCBR/actions/build-docker@main
+      with:
+          dockerfile: Dockerfile.v1
+          dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          suffix: dev
+          push: true
+          ccbr-actions-version: v0.2
+          github-token: ${{ github.token }}
+          github-actor: ${{ github.actor }}
+          config-file: "scripts/tool_version_commands.txt"
 ```
 
 For an example to manually trigger the workflow for a single docker

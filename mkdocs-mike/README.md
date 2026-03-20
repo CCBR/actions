@@ -20,34 +20,34 @@ complete these one-time steps:
 
 - delete all files in `gh-pages` if the branch exists already
 
-  ```sh
-  git switch gh-pages
-  git rm -rf $(git ls-files)
-  git commit -m 'docs: delete gh-pages files to prepare for mike'
-  ```
+    ```sh
+    git switch gh-pages
+    git rm -rf $(git ls-files)
+    git commit -m 'docs: delete gh-pages files to prepare for mike'
+    ```
 
 - check out the previous release tag and deploy it
 
-  ```sh
-  git checkout v1.0.0
-  mike deploy 1.0 latest --push --update-aliases --branch gh-pages
-  ```
+    ```sh
+    git checkout v1.0.0
+    mike deploy 1.0 latest --push --update-aliases --branch gh-pages
+    ```
 
-  We recommend using just the major and minor components of the version
-  without the leading v.
+    We recommend using just the major and minor components of the version
+    without the leading v.
 
 - set the default landing page:
 
-  ```sh
-  mike set-default latest
-  ```
+    ```sh
+    mike set-default latest
+    ```
 
 - deploy the dev version from main
 
-  ```sh
-  git switch main
-  mike deploy dev --push --update-aliases --branch gh-pages
-  ```
+    ```sh
+    git switch main
+    mike deploy dev --push --update-aliases --branch gh-pages
+    ```
 
 ### Basic example
 
@@ -55,28 +55,28 @@ complete these one-time steps:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
-  - uses: CCBR/actions/mkdocs-mike@main
-    with:
-      github-token: ${{ github.token }}
+    - uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+    - uses: CCBR/actions/mkdocs-mike@main
+      with:
+          github-token: ${{ github.token }}
 ```
 
 ### Customized inputs
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
-  - uses: CCBR/actions/mkdocs-mike@main
-    with:
-      github-token: ${{ github.token }}
-      ccbr-actions-version: 0.1
-      python-version: 3.12
-      docs-branch: gh-pages
-      github-actor: "41898282+github-actions[bot]"
+    - uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+    - uses: CCBR/actions/mkdocs-mike@main
+      with:
+          github-token: ${{ github.token }}
+          ccbr-actions-version: 0.1
+          python-version: 3.12
+          docs-branch: gh-pages
+          github-actor: "41898282+github-actions[bot]"
 ```
 
 ## Inputs

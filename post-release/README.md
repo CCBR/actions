@@ -28,48 +28,48 @@ Required files:
 name: post-release
 
 on:
-  release:
-    types:
-      - published
+    release:
+        types:
+            - published
 
 permissions:
-  contents: write
-  pull-requests: write
-  actions: write
+    contents: write
+    pull-requests: write
+    actions: write
 
 jobs:
-  cleanup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: CCBR/actions/post-release@v0.5
-        with:
-          github-token: ${{ github.token }}
-          update-sliding-tags: false
+    cleanup:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: CCBR/actions/post-release@v0.5
+              with:
+                  github-token: ${{ github.token }}
+                  update-sliding-tags: false
 ```
 
 ### Customized inputs
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
-  - uses: CCBR/actions/post-release@main
-    with:
-      github-token: ${{ github.token }}
-      ccbr-actions-version: main
-      python-version: 3.11
-      pr-branch: release/${{ github.ref_name }}
-      draft-branch: release-draft
-      version-filepath: VERSION
-      changelog-filepath: CHANGELOG.md
-      citation-filepath: CITATION.cff
-      dev-header: "development version"
-      github-actor: "41898282+github-actions[bot]"
-      update-sliding-tags: false
+    - uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+    - uses: CCBR/actions/post-release@main
+      with:
+          github-token: ${{ github.token }}
+          ccbr-actions-version: main
+          python-version: 3.11
+          pr-branch: release/${{ github.ref_name }}
+          draft-branch: release-draft
+          version-filepath: VERSION
+          changelog-filepath: CHANGELOG.md
+          citation-filepath: CITATION.cff
+          dev-header: "development version"
+          github-actor: "41898282+github-actions[bot]"
+          update-sliding-tags: false
 ```
 
 ## Inputs

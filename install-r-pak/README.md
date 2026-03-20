@@ -19,10 +19,10 @@ which will be read and passed along to the `extra-packages` argument of
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
-  - uses: CCBR/actions/install-r-pak@main
-    with:
-      extra-packages: local::.
+    - uses: actions/checkout@v4
+    - uses: CCBR/actions/install-r-pak@main
+      with:
+          extra-packages: local::.
 ```
 
 ### Customized inputs
@@ -31,26 +31,26 @@ steps:
 
 ```yaml
 jobs:
-  R-CMD-check:
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - { os: ubuntu-latest, r: "release" }
-          - { os: ubuntu-latest, r: "oldrel-1" }
+    R-CMD-check:
+        strategy:
+            fail-fast: false
+            matrix:
+                config:
+                    - { os: ubuntu-latest, r: "release" }
+                    - { os: ubuntu-latest, r: "oldrel-1" }
 
-    runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-    steps:
-      - uses: actions/checkout@v4
+        runs-on: ${{ matrix.config.os }}
+        name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: CCBR/actions/install-r-pak@main
-        with:
-          versions-file: .github/package-versions.txt
-          extra-packages: local::.
-          needs: dev
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
+            - uses: CCBR/actions/install-r-pak@main
+              with:
+                  versions-file: .github/package-versions.txt
+                  extra-packages: local::.
+                  needs: dev
+                  r-version: ${{ matrix.config.r }}
+                  http-user-agent: ${{ matrix.config.http-user-agent }}
 ```
 
 ## Inputs
