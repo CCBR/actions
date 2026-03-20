@@ -30,6 +30,7 @@ def cli():
     For more options, run:
     ccbr_actions [command] --help
 
+    https://ccbr.github.io/actions/
     """
     pass
 
@@ -50,7 +51,7 @@ def use_example(name):
         ccbr_actions use-example build-nextflow
 
     See list of workflow files here:
-    <https://ccbr.github.io/actions/examples.html>
+    https://ccbr.github.io/actions/examples.html
     """
     use_github_action(name)
 

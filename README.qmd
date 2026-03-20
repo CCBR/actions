@@ -51,11 +51,13 @@ You do not need to install the package in order to use the example workflows,
 as the actions install their dependencies as needed.
 However, you can install the package if you wish to use it outside of GitHub Actions or contribute changes.
 
+View the package documentation [here](https://CCBR.github.io/actions/package).
+
 ### Installation
 
 {{< include docs/install.qmd >}}
 
-View the package documentation [here](https://CCBR.github.io/actions/package).
+{{< include docs/cli.qmd >}}
 
 ## Help & Contributing
 

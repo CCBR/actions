@@ -34,7 +34,9 @@ them for your needs.
 - [docs-quarto](examples/docs-quarto.yml)
 - [draft-release](examples/draft-release.yml)
 - [label-issues-repo-name](examples/label-issues-repo-name.yml)
+- [maintain-milestones](examples/maintain-milestones.yml)
 - [post-release](examples/post-release.yml)
+- [sync-copilot-instructions](examples/sync-copilot-instructions.yml)
 - [techdev-project](examples/techdev-project.yml)
 - [update-cff-R](examples/update-cff-R.yml)
 - [user-projects](examples/user-projects.yml)
@@ -53,10 +55,15 @@ Custom actions used in our github workflows.
   pak
 - [label-issue-repo-name](label-issue-repo-name) - Label issues & PRs
   with the repository name
+- [maintain-milestones](maintain-milestones) - Maintain rolling monthly
+  milestones in a target repository
 - [mkdocs-mike](mkdocs-mike) - Deploy documentation to github pages
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [sync-copilot-instructions](sync-copilot-instructions) - Sync Copilot
+  instructions from a source repository to a target repository and open
+  a PR
 - [user-projects](user-projects) - Add issue/PR to user’s project
 
 ## Package
@@ -66,6 +73,9 @@ custom GitHub Actions. You do not need to install the package in order
 to use the example workflows, as the actions install their dependencies
 as needed. However, you can install the package if you wish to use it
 outside of GitHub Actions or contribute changes.
+
+View the package documentation
+[here](https://CCBR.github.io/actions/package).
 
 ### Installation
 
@@ -81,11 +91,45 @@ pip install git+https://github.com/CCBR/actions
 Or install it from a specific version or branch with:
 
 ```bash
-pip install git+https://github.com/CCBR/actions@v0.4
+pip install git+https://github.com/CCBR/actions@v0.5
 ```
 
-View the package documentation
-[here](https://CCBR.github.io/actions/package).
+### Command line interface
+
+    Usage: ccbr_actions [OPTIONS] COMMAND [ARGS]...
+
+      GitHub Actions Workflows for CCBR repositories
+
+      For more options, run: ccbr_actions [command] --help
+
+      https://ccbr.github.io/actions/
+
+    Options:
+      -v, --version   Show the version and exit.
+      -c, --citation  Print the citation in bibtex format and exit.
+      -h, --help      Show this message and exit.
+
+    Commands:
+      use-example  Use a GitHub Actions workflow file from CCBR/actions.
+
+#### use-example
+
+    Usage: ccbr_actions use-example [OPTIONS] NAME
+
+      Use a GitHub Actions workflow file from CCBR/actions.
+
+      Args:
+          name (str): The name of the example workflow file to download.
+
+      Examples:
+          ccbr_actions use-example docs-mkdocs
+          ccbr_actions use-example build-nextflow
+
+      See list of workflow files here:
+      https://ccbr.github.io/actions/examples.html
+
+    Options:
+      -h, --help  Show this message and exit.
 
 ## Help & Contributing
 
@@ -104,7 +148,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.4.1). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.5.1). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry

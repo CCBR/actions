@@ -1,0 +1,54 @@
+name: sync-copilot-instructions
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.load-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Load matrix from ${{ github.workspace }}/.github/repos.json
+        id: load-matrix
+        run: |
+          matrix=$(jq -c '{include: [(.owners | to_entries[] | .key as $owner | .value[] | {OWNER: $owner, REPO: .})]}' .github/repos.json)
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  sync-copilot-instructions:
+    needs: prepare-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Set commit message
+        id: commit_message
+        run: |
+          echo "value=chore: 🤖 sync copilot instructions - $(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Sync Copilot instructions
+        uses: CCBR/actions/sync-copilot-instructions@main
+        with:
+          owner: ${{ matrix.OWNER }}
+          repo: ${{ matrix.REPO }}
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+          source-repository: "CCBR/.github"
+          source-ref: "main"
+          source-file: ".github/copilot-instructions.md"
+          target-file: ".github/copilot-instructions.md"
+          commit-message: ${{ steps.commit_message.outputs.value }}

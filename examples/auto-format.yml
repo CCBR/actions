@@ -20,12 +20,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: github.event_name == 'pull_request'
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: github.event_name != 'pull_request'
         with:
           fetch-depth: 0
@@ -36,13 +36,17 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - id: changed-files
+        name: Check changed files
+        uses: knu/changed-files@v1
+        with:
+          paths: |
+            CITATION.cff
+
       - uses: citation-file-format/cffconvert-github-action@2.0.0
-        if: ${{ hashFiles('CITATION.cff') != ''}}
+        if: ${{ hashFiles('CITATION.cff') != '' && steps.changed-files.outputs.matched_files != '' }}
         with:
           args: "--format codemeta --outfile codemeta.json"
-
-      - name: Format R code with air
-        uses: rstudio/shiny-workflows/format-r-code@v1
 
       - name: format
         uses: pre-commit/action@v3.0.1
@@ -50,8 +54,6 @@ jobs:
 
       - name: commit & push
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "ci: 🤖 auto-format" || echo "nothing to commit"
           git push || echo "nothing to push"
