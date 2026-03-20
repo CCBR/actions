@@ -158,22 +158,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
+    "objectID": "CHANGELOG.html#actions-0.5.2",
+    "href": "CHANGELOG.html#actions-0.5.2",
     "title": "CCBR actions",
-    "section": "",
-    "text": "New action sync-copilot-instructions synchronizes the copilot instructions file across CCBR repos. (#132, @kelly-sovacool, @kopardev)\nNew action maintain-milestones manages issue milestones across repositories. (#127, @kopardev, @kelly-sovacool)\nImprove documentation for the CLI. (#135, @kelly-sovacool)\nImprove post-release PR title. (#142, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "New action sync-copilot-instructions synchronizes the copilot instructions file across CCBR repos. (#132, @kelly-sovacool, @kopardev)\nNew action maintain-milestones manages issue milestones across repositories. (#127, @kopardev, @kelly-sovacool)\nImprove documentation for the CLI. (#135, @kelly-sovacool)\nImprove post-release PR title. (#142, @kelly-sovacool)",
+    "section": "actions 0.5.2",
+    "text": "actions 0.5.2\n\nNew action sync-copilot-instructions synchronizes the copilot instructions file across CCBR repos. (#132, @kelly-sovacool, @kopardev)\nNew action maintain-milestones manages issue milestones across repositories. (#127, @kopardev, @kelly-sovacool)\nImprove documentation for the CLI. (#135, @kelly-sovacool)\nImprove post-release PR title. (#142, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -921,7 +910,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.5.1). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {3},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.5.2). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {3},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
     "crumbs": [
       "Project information",
       "Citation"
