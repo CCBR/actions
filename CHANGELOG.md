@@ -1,5 +1,7 @@
 ## actions development version
 
+- Improve `maintain-milestones` to only close the immediately prior year's milestones after May of the current year for performance reviews. (#145, @kelly-sovacool)
+
 ## actions 0.5.2
 
 - New action `sync-copilot-instructions` synchronizes the copilot instructions file across CCBR repos. (#132, @kelly-sovacool, @kopardev)
