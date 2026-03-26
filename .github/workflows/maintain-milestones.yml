@@ -7,9 +7,10 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: If true, report changes without applying them
+        description: Toggle dry run mode. If true, report changes without applying them.
+        type: boolean
         required: false
-        default: "true"
+        default: true
       max_updates_per_run:
         description: Maximum milestone updates/creates/closes/reopens per run
         required: false
@@ -46,7 +47,7 @@ jobs:
           github-token: ${{ secrets.repo_token || '' }}
           owner: ${{ matrix.OWNER }}
           target_repo: ${{ matrix.REPO }}
-          dry_run: ${{ inputs.dry_run }}
-          max_updates_per_run: ${{ inputs.max_updates_per_run }}
+          dry_run: ${{ inputs.dry_run && 'true' || 'false' }}
+          max_updates_per_run: ${{ inputs.max_updates_per_run || '100' }}
           app-id: ${{ vars.CCBR_BOT_APP_ID }}
           app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}

@@ -12,9 +12,9 @@ inputs:
     required: false
     default: ""
   dry_run:
-    description: "If true, report changes without applying them"
+    description: "Toggle dry run mode. If true, report changes without applying them."
     required: false
-    default: "true"
+    default: "false"
   max_updates_per_run:
     description: "Maximum milestone updates/creates/closes/reopens per run"
     required: false
@@ -73,7 +73,15 @@ runs:
         script: |
           const owner = (process.env.OWNER || context.repo.owner).trim();
           const repo = (process.env.TARGET_REPO || context.repo.repo).trim();
-          const dryRun = String(process.env.DRY_RUN).toLowerCase() === 'true';
+          const dryRunRaw = String(process.env.DRY_RUN || 'false').trim().toLowerCase();
+          if (dryRunRaw !== 'true' && dryRunRaw !== 'false') {
+            core.setFailed(
+              `Invalid dry_run value: "${process.env.DRY_RUN}". ` +
+              'Use one of: true, false.'
+            );
+            return;
+          }
+          const dryRun = dryRunRaw === 'true';
           const maxUpdatesRaw = Number(process.env.MAX_UPDATES || '100');
           const maxUpdates = Number.isFinite(maxUpdatesRaw) && maxUpdatesRaw > 0
             ? Math.floor(maxUpdatesRaw)
