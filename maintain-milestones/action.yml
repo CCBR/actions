@@ -151,7 +151,12 @@ runs:
             }
 
             if (year < currentYear && ms.state === 'open') {
-              addPlan('close_old', ms.title, { milestone_number: ms.number });
+              // Keep milestones from the immediately prior year open until May of the current year for Performance Reviews.
+              const currentMonth = now.getUTCMonth() + 1; // getUTCMonth() is 0-indexed
+              const isPriorYear = year === currentYear - 1;
+              if (!isPriorYear || currentMonth >= 5) {
+                addPlan('close_old', ms.title, { milestone_number: ms.number });
+              }
             }
           }
 
