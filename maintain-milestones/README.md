@@ -11,7 +11,9 @@ and ignores any non-monthly titles.
 
 - Ensures milestones exist for all months in the current UTC year plus
   January of next year.
-- Closes open monthly milestones from prior years.
+- Closes open monthly milestones from the immediately prior year on or
+  after May (to allow time for performance reviews); milestones from
+  earlier years are closed unconditionally.
 - Reopens expected monthly milestones that are closed.
 - Sets due dates to the last day of each month at 12:00 UTC to avoid
   timezone shifts.
@@ -45,7 +47,9 @@ below for details.
 ## Planned action types
 
 - `close_old`: close open YYYY-MM milestones where the year is before
-  the current UTC year.
+  the current UTC year. Milestones from the immediately prior year are
+  exempt until May of the current year; milestones from earlier years
+  are always closed.
 - `create`: create missing expected milestones with the computed due
   date.
 - `reopen`: reopen expected milestones found in closed state.
