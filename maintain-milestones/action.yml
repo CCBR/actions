@@ -55,14 +55,14 @@ runs:
     - name: Generate a token
       id: generate-token
       if: ${{ inputs.github-token == '' }}
-      uses: actions/create-github-app-token@v2
+      uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.app-private-key }}
         owner: ${{ env.OWNER }}
 
     - name: Archive old milestones and ensure current cadence
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         TARGET_REPO: ${{ env.TARGET_REPO }}
         OWNER: ${{ env.OWNER }}
