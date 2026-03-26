@@ -12,9 +12,10 @@ on:
         required: false
         default: ""
       dry_run:
-        description: If true, report changes without applying them
+        description: Toggle dry run mode. If true, report changes without applying them.
+        type: boolean
         required: false
-        default: "true"
+        default: true
       max_updates_per_run:
         description: Maximum milestone updates/creates/closes/reopens per run
         required: false
