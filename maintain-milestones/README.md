@@ -88,9 +88,10 @@ on:
         required: false
         default: ""
       dry_run:
-        description: If true, report changes without applying them
+        description: Toggle dry run mode. If true, report changes without applying them.
+        type: boolean
         required: false
-        default: "true"
+        default: true
       max_updates_per_run:
         description: Maximum milestone updates/creates/closes/reopens per run
         required: false
@@ -134,8 +135,8 @@ steps:
   the current repo..
 - `owner`: Owner of the repository. Defaults to the current repository
   owner..
-- `dry_run`: If true, report changes without applying them. Default:
-  `true`.
+- `dry_run`: Toggle dry run mode. If true, report changes without
+  applying them.. Default: `false`.
 - `max_updates_per_run`: Maximum milestone
   updates/creates/closes/reopens per run. Default: `100`.
 - `github-token`: GitHub Actions token with access to organization
