@@ -23,13 +23,12 @@ jobs:
         python-version: ["3.11"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: github.event_name == 'pull_request'
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      - uses: actions/checkout@v4
+          ref: ${{ github.head_ref }}
+      - uses: actions/checkout@v6
         if: github.event_name != 'pull_request'
         with:
           fetch-depth: 0
