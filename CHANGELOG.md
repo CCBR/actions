@@ -4,6 +4,7 @@
 - Improve `maintain-milestones`:
   - Only close the immediately prior year's milestones after May of the current year for performance reviews. (#145, @kelly-sovacool)
   - Use a toggle to control dry-run mode. (#146, @kelly-sovacool)
+- Improve build-docker example workflows to prevent excessive docker updates. (#153, @kelly-sovacool)
 
 ## actions 0.5.2
 
