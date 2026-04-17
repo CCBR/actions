@@ -21,7 +21,7 @@ Get all changed files:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
 
@@ -36,7 +36,7 @@ Filter changed files by `.gitignore`-style patterns:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
@@ -55,7 +55,7 @@ Exclude specific files using negation patterns:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
@@ -74,7 +74,7 @@ Specify Python version and ccbr-actions version:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
@@ -91,7 +91,8 @@ steps:
 
 - `paths`: Pattern list in the .gitignore syntax to match against
   changed files.
-- `token`: . Default: `${{ github.token }}`.
+- `token`: GitHub token used for `gh api` calls. Default:
+  `${{ github.token }}`.
 - `python-version`: The version of Python to install. Default: `3.11`.
 - `ccbr-actions-version`: The version of ccbr_actions to use. Default:
   `main`.
@@ -99,11 +100,11 @@ steps:
 ## Outputs
 
 - `changed_files`: A multi-line string containing the list of changed
-  files.
+  files..
 - `changed_files_json`: A JSON string containing the list of changed
-  files.
+  files..
 - `matched_files`: A multi-line string containing the list of changed
-  files matching `paths` patterns. Empty (`""`) if `paths` is not given.
+  files matching `paths` patterns. Empty (““) if `paths` is not given..
 - `matched_files_json`: A JSON string containing the list of changed
-  files matching `paths` patterns. Empty (`"[]"`) if `paths` is not
-  given.
+  files matching `paths` patterns. Empty (“\[\]”) if `paths` is not
+  given..
