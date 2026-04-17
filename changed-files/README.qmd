@@ -28,7 +28,7 @@ Get all changed files:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
 
@@ -43,7 +43,7 @@ Filter changed files by `.gitignore`-style patterns:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
@@ -62,7 +62,7 @@ Exclude specific files using negation patterns:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
@@ -81,7 +81,7 @@ Specify Python version and ccbr-actions version:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
