@@ -1,0 +1,82 @@
+name: "Changed Files"
+# Adapted from https://github.com/knu/changed-files/tree/67e0b182dc3c38aec6b2ea31748f1b413c0dda7d
+
+description: |
+  Get a list of changed files and filter them by a list of path patterns similar to .gitignore
+
+branding:
+  icon: list
+  color: purple
+
+inputs:
+  paths:
+    type: string
+    description: Pattern list in the .gitignore syntax to match against changed files
+    required: false
+  token:
+    type: string
+    required: false
+    default: "${{ github.token }}"
+  python-version:
+    type: string
+    description: The version of Python to install
+    required: false
+    default: "3.11"
+  ccbr-actions-version:
+    type: string
+    description: The version of ccbr_actions to use
+    required: false
+    default: "main"
+
+outputs:
+  changed_files:
+    description: A multi-line string containing the list of changed files.
+    value: ${{ fromJson(steps.match-paths.outputs.result).changed_files }}
+  changed_files_json:
+    description: A JSON string containing the list of changed files.
+    value: ${{ fromJson(steps.match-paths.outputs.result).changed_files_json }}
+  matched_files:
+    description: A multi-line string containing the list of changed files matching `paths` patterns.  Empty ("") if `paths` is not given.
+    value: ${{ fromJson(steps.match-paths.outputs.result).matched_files }}
+  matched_files_json:
+    description: A JSON string containing the list of changed files matching `paths` patterns.  Empty ([]) if `paths` is not given.
+    value: ${{ fromJson(steps.match-paths.outputs.result).matched_files_json }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "pip"
+
+    - name: Install ccbr_actions
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - id: get-changed-files
+      name: Get Changed Files
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
+      run: |
+        EOS=$(openssl rand -hex 64)
+        {
+          echo "changed_file_list<<$EOS"
+          if [ "${{github.event_name}}" = "pull_request" ]; then
+            gh api 'repos/${{github.event.pull_request.base.repo.full_name}}/compare/${{github.event.pull_request.base.sha}}...${{github.event.pull_request.head.label}}' --jq '.files[].filename'
+          else
+            gh api 'repos/${{github.repository}}/compare/${{github.event.before}}...${{github.event.after}}' --jq .files[].filename
+          fi
+          echo "$EOS"
+        } >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Match Paths
+      id: match-paths
+      env:
+        CHANGED_FILE_LIST: ${{ steps.get-changed-files.outputs.changed_file_list }}
+        PATHS: ${{ inputs.paths }}
+      run: |
+        from ccbr_actions.changed_files import get_changed_files
+        get_changed_files()
+      shell: python

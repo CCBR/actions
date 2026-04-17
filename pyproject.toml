@@ -38,6 +38,7 @@ dependencies = [
     "cffconvert>=2.0.0",
     "mkdocs",
     "mike",
+    "pathspec",
     "pre-commit",
     "pyyaml",
     "requests"
