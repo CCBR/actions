@@ -29,6 +29,7 @@ them for your needs.
 - [build-nextflow](examples/build-nextflow.yml)
 - [build-python](examples/build-python.yml)
 - [build-snakemake](examples/build-snakemake.yml)
+- [changed-files](examples/changed-files.yml)
 - [check-links](examples/check-links.yml)
 - [docs-mkdocs](examples/docs-mkdocs.yml)
 - [docs-quarto](examples/docs-quarto.yml)
@@ -49,6 +50,8 @@ Custom actions used in our github workflows.
   description with a list of issues of a given label
 - [build-docker](build-docker) - Build a docker container using CCBR
   guidelines
+- [Changed Files](changed-files) - Get a list of changed files and
+  filter them by a list of path patterns similar to .gitignore
 - [draft-release](draft-release) - Draft a new release based on
   conventional commits and prepare release notes
 - [Install R + pak](install-r-pak) - Install R package dependencies with
