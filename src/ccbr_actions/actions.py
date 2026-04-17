@@ -20,25 +20,32 @@ def set_output(name, value, environ="GITHUB_OUTPUT"):
     environment file specified by the `GITHUB_OUTPUT` environment variable.
     You can then access the variable in GitHub Actions using `${{ steps.<step_id>.outputs.<name> }}`.
 
-
     Args:
         name (str): The name of the output variable to set.
         value (str): The value of the output variable to set.
         environ (str, optional): The environment variable that specifies the
             GitHub Actions environment file. Defaults to "GITHUB_OUTPUT".
 
+    Raises:
+        RuntimeError: If the GitHub Actions output environment file variable
+            is not set.
+
     Examples:
         >>> set_output("VERSION", "1.0.0")
         >>> set_output("ALIAS", "latest")
     """
-    if os.environ.get(environ):
-        with open(os.environ[environ], "a") as fh:
-            delimiter = str(uuid.uuid4())
+    output_file = os.environ.get(environ)
+    if output_file:
+        with open(output_file, "a") as fh:
+            delimiter = uuid.uuid1()
             print(f"{name}<<{delimiter}", file=fh)
             print(value, file=fh)
             print(delimiter, file=fh)
     else:
-        print(f"::set-output name={name}::{value}")
+        raise RuntimeError(
+            f"{environ} is not set. set_output() is only supported when "
+            "running in a GitHub Actions environment with an output file."
+        )
 
 
 def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions"):
