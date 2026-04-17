@@ -27,6 +27,6 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/mkdocs-mike@v0.5
+      - uses: CCBR/actions/mkdocs-mike@latest
         with:
           github-token: ${{ github.token }}
