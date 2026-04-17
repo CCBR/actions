@@ -26,7 +26,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -53,7 +53,7 @@ jobs:
           cff_write(keys = mykeys)
 
         shell: Rscript {0}
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
         with:
           extra_args: --files CITATION.cff
         continue-on-error: true
