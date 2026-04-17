@@ -19,7 +19,7 @@ library for pattern matching.
 
 Get all changed files:
 
-``` yaml
+```yaml
 steps:
   - uses: actions/checkout@v4
   - uses: CCBR/actions/changed-files@main
@@ -34,7 +34,7 @@ steps:
 
 Filter changed files by `.gitignore`-style patterns:
 
-``` yaml
+```yaml
 steps:
   - uses: actions/checkout@v4
   - uses: CCBR/actions/changed-files@main
@@ -53,7 +53,7 @@ steps:
 
 Exclude specific files using negation patterns:
 
-``` yaml
+```yaml
 steps:
   - uses: actions/checkout@v4
   - uses: CCBR/actions/changed-files@main
@@ -72,7 +72,7 @@ steps:
 
 Specify Python version and ccbr-actions version:
 
-``` yaml
+```yaml
 steps:
   - uses: actions/checkout@v4
   - uses: CCBR/actions/changed-files@main
