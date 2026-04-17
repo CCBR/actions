@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.5.3
 
 - Improve `maintain-milestones`:
   - Only close the immediately prior year's milestones after May of the current year for performance reviews. (#145, @kelly-sovacool)
