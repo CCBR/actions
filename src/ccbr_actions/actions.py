@@ -33,7 +33,7 @@ def set_output(name, value, environ="GITHUB_OUTPUT"):
     """
     if os.environ.get(environ):
         with open(os.environ[environ], "a") as fh:
-            delimiter = uuid.uuid1()
+            delimiter = str(uuid.uuid4())
             print(f"{name}<<{delimiter}", file=fh)
             print(value, file=fh)
             print(delimiter, file=fh)

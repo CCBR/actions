@@ -99,11 +99,11 @@ steps:
 ## Outputs
 
 - `changed_files`: A multi-line string containing the list of changed
-  files..
+  files.
 - `changed_files_json`: A JSON string containing the list of changed
-  files..
+  files.
 - `matched_files`: A multi-line string containing the list of changed
-  files matching `paths` patterns. Empty (““) if `paths` is not given..
+  files matching `paths` patterns. Empty (`""`) if `paths` is not given.
 - `matched_files_json`: A JSON string containing the list of changed
-  files matching `paths` patterns. Empty (\[\]) if `paths` is not
-  given..
+  files matching `paths` patterns. Empty (`"[]"`) if `paths` is not
+  given.
