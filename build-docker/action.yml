@@ -89,7 +89,7 @@ runs:
     - name: Login to DockerHub
       id: login_dockerhub
       if: ${{ inputs.push == 'true' }}
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         username: ${{ inputs.dockerhub-username }}
         password: ${{ inputs.dockerhub-token }}
@@ -127,7 +127,7 @@ runs:
 
     - name: Build and push Docker image
       id: build_and_push
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v7
       with:
         file: ${{ env.DOCKERFILE_PATH }}
         context: ${{ env.CONTEXT }}
@@ -170,7 +170,7 @@ runs:
     - name: Update Docker Hub Description
       id: update_dockerhub_description
       if: ${{ (inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
-      uses: peter-evans/dockerhub-description@v4
+      uses: peter-evans/dockerhub-description@v5
       with:
         username: ${{ inputs.dockerhub-username }}
         password: ${{ inputs.dockerhub-token }}
@@ -179,7 +179,7 @@ runs:
 
     - name: Create Pull Request
       id: create-pr
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@v8
       if: ${{ steps.update_dockerhub_description.outcome == 'success' }}
       with:
         token: ${{ github.token }}
@@ -202,7 +202,7 @@ runs:
         PR: ${{ steps.create-pr.outputs.pull-request-number }}
 
     - name: upload readme file
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: ${{ failure() || steps.approve-pr.outcome != 'success'}}
       with:
         name: ${{ env.ARTIFACT_NAME }}

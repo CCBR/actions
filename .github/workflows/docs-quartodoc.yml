@@ -24,10 +24,10 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.11
           cache: "pip"
@@ -69,7 +69,7 @@ jobs:
           python -m quartodoc interlinks
           quarto render
       - name: save docs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docs-html
           path: docs/_site

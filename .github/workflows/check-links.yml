@@ -19,11 +19,13 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           fail: false
-          args: --base ${{ github.workspace}} --verbose --no-progress --exclude-path './**/*.md' './**/*.html' './**/*.rst'
+          args:
+            --base ${{ github.workspace}} --verbose --no-progress --exclude-path
+            './**/*.md' './**/*.html' './**/*.rst'
 
       - name: Create Issue From File
         if: steps.lychee.outputs.exit_code != 0
-        uses: peter-evans/create-issue-from-file@v5
+        uses: peter-evans/create-issue-from-file@v6
         with:
           title: Link Checker Report
           content-filepath: ./lychee/out.md

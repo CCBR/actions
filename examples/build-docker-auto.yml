@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Checkout repository
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - id: changed-files
         name: Check changed files
@@ -75,21 +75,21 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         name: "checkout PR ${{ github.head_ref }}"
         if: github.event_name == 'pull_request'
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }} # branch name of PR
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         name: "checkout push ${{ github.ref_name }}"
         if: github.event_name == 'push'
         with:
           fetch-depth: 0
           ref: ${{ github.ref_name }} # branch name of push
 
-      - uses: CCBR/actions/build-docker@v0.5
+      - uses: CCBR/actions/build-docker@latest
         with:
           dockerfile: ${{ matrix.file }}
           dockerhub-namespace: nciccbr

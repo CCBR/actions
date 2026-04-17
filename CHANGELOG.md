@@ -1,5 +1,6 @@
 ## actions development version
 
+- Bump actions versions to the latest release in anticipation of the node.js 20 deprecation. (#149, @kelly-sovacool)
 - Improve `maintain-milestones`:
   - Only close the immediately prior year's milestones after May of the current year for performance reviews. (#145, @kelly-sovacool)
   - Use a toggle to control dry-run mode. (#146, @kelly-sovacool)
