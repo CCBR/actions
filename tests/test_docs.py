@@ -1,6 +1,5 @@
 import os
 import pytest
-import tempfile
 
 from ccbr_actions.docs import (
     get_docs_version,
@@ -14,11 +13,10 @@ from ccbr_actions.actions import use_github_action
 from ccbr_tools.shell import exec_in_context
 
 
-def test_parse_action_yaml():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        yml_filepath = os.path.join(tmpdir, "docs-mkdocs.yml")
-        use_github_action(name="docs-mkdocs", save_as=yml_filepath)
-        action_dict = parse_action_yaml(yml_filepath)
+def test_parse_action_yaml(tmp_path):
+    yml_filepath = tmp_path / "docs-mkdocs.yml"
+    use_github_action(name="docs-mkdocs", save_as=yml_filepath)
+    action_dict = parse_action_yaml(yml_filepath)
 
     assert action_dict.get("name") == "docs"
 

@@ -1,7 +1,6 @@
 import os
 import pathlib
 import pytest
-import tempfile
 import warnings
 
 from ccbr_actions.release import (
@@ -17,46 +16,46 @@ from ccbr_actions.release import (
 from ccbr_tools.shell import exec_in_context, shell_run
 
 
-def test_write_lines():
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        tmp_file = pathlib.Path(tmp_dir) / "tmp.txt"
-        write_lines(tmp_file, ["hello\n", "world"], debug=False)
-        with open(tmp_file, "r") as fh:
-            assert fh.read() == "hello\nworld"
+def test_write_lines(tmp_path):
+    tmp_file = tmp_path / "tmp.txt"
+    write_lines(tmp_file, ["hello\n", "world"], debug=False)
+    with open(tmp_file, "r") as fh:
+        assert fh.read() == "hello\nworld"
 
 
 def test_prepare_draft_release(tmp_path):
     output_file = tmp_path / "github_output.txt"
     os.environ["GITHUB_OUTPUT"] = str(output_file)
     data_dir = pathlib.Path(__file__).resolve().parent / "data"
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        original_cwd = os.getcwd()
-        os.chdir(tmp_dir)
-        # Initialize a git repository to avoid git rev-parse errors
-        shell_run("git init > /dev/null 2>&1")
-        shell_run(
-            "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+    repo_dir = tmp_path / "repo"
+    repo_dir.mkdir()
+    original_cwd = os.getcwd()
+    os.chdir(repo_dir)
+    # Initialize a git repository to avoid git rev-parse errors
+    shell_run("git init > /dev/null 2>&1")
+    shell_run(
+        "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+    )
+    try:
+        output = exec_in_context(
+            prepare_draft_release,
+            next_version_manual="v1.0.0",
+            next_version_convco="v1.0.0",
+            current_version="v0.9.10",
+            gh_event_name="push",
+            changelog_filepath=str(data_dir / "example_changelog.md"),
+            dev_header="development version",
+            release_notes_filepath=str(data_dir / "latest-release.md"),
+            version_filepath=str(data_dir / "VERSION"),
+            citation_filepath=str(data_dir / "CITATION.cff"),
+            release_branch="release-draft",
+            pr_ref_name="PR_BRANCH_NAME",
+            repo="CCBR/actions",
+            debug=True,
         )
-        try:
-            output = exec_in_context(
-                prepare_draft_release,
-                next_version_manual="v1.0.0",
-                next_version_convco="v1.0.0",
-                current_version="v0.9.10",
-                gh_event_name="push",
-                changelog_filepath=str(data_dir / "example_changelog.md"),
-                dev_header="development version",
-                release_notes_filepath=str(data_dir / "latest-release.md"),
-                version_filepath=str(data_dir / "VERSION"),
-                citation_filepath=str(data_dir / "CITATION.cff"),
-                release_branch="release-draft",
-                pr_ref_name="PR_BRANCH_NAME",
-                repo="CCBR/actions",
-                debug=True,
-            )
-        finally:
-            os.chdir(original_cwd)
-            del os.environ["GITHUB_OUTPUT"]
+    finally:
+        os.chdir(original_cwd)
+        del os.environ["GITHUB_OUTPUT"]
     assert all(
         [
             "gh release create v1.0.0 --draft --notes-file " in output,
