@@ -1,0 +1,59 @@
+name: changed-files
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  changed-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: CCBR/actions/changed-files@main
+        id: changed-files
+
+      - name: Print all changed files
+        run: |
+          echo "Changed files:"
+          echo "${{ steps.changed-files.outputs.changed_files }}"
+
+  filter-by-pattern:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: CCBR/actions/changed-files@main
+        id: changed-files
+        with:
+          paths: |
+            src/**
+            tests/**
+
+      - name: Print matched files
+        run: |
+          echo "Files in src/ or tests/:"
+          echo "${{ steps.changed-files.outputs.matched_files }}"
+
+  docs-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: CCBR/actions/changed-files@main
+        id: changed-files
+        with:
+          paths: |
+            docs/**
+            *.md
+            !README.md
+
+      - name: Print documentation changes
+        run: |
+          echo "Documentation files changed:"
+          echo "${{ steps.changed-files.outputs.matched_files }}"

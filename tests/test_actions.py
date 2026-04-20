@@ -19,10 +19,22 @@ def test_use_github_action_error():
     assert "Failed to download" in str(exc_info.value)
 
 
-def test_set_output():
-    assert exec_in_context(set_output, "NAME", "VALUE", environ="ABC").startswith(
-        "::set-output name=NAME::VALUE\n"
-    )
+def test_set_output(tmp_path):
+    output_file = tmp_path / "github_output.txt"
+    os.environ["TEST_GITHUB_OUTPUT"] = str(output_file)
+    try:
+        exec_in_context(
+            set_output,
+            "NAME",
+            "VALUE",
+            environ="TEST_GITHUB_OUTPUT",
+        )
+    finally:
+        del os.environ["TEST_GITHUB_OUTPUT"]
+
+    output_text = output_file.read_text()
+    assert "NAME<<" in output_text
+    assert "VALUE" in output_text
 
 
 def test_trigger_workflow_debug():

@@ -77,6 +77,17 @@ def test_get_docs_version_nonsemantic():
     assert all([tag1 == "1.0", alias1 == ""])
 
 
-def test_set_docs_version():
-    output = exec_in_context(set_docs_version, repo="CCBR/Tools", environ="ABC")
-    assert output == "::set-output name=VERSION::dev\n::set-output name=ALIAS::\n"
+def test_set_docs_version(tmp_path):
+    output_file = tmp_path / "github_output.txt"
+    os.environ["TEST_GITHUB_OUTPUT"] = str(output_file)
+    try:
+        exec_in_context(
+            set_docs_version,
+            repo="CCBR/Tools",
+            environ="TEST_GITHUB_OUTPUT",
+        )
+    finally:
+        del os.environ["TEST_GITHUB_OUTPUT"]
+
+    output_text = output_file.read_text()
+    assert all(["VERSION<<" in output_text, "ALIAS<<" in output_text])
