@@ -1,4 +1,3 @@
-import pathlib
 import pytest
 import shutil
 
@@ -19,42 +18,40 @@ def test_print_versions_sh_missing_file():
         shell_run("bash scripts/print_versions.sh --config nonexistent/file.txt")
 
 
-def test_print_versions_sh_header():
+def test_print_versions_sh_header(data_dir_rel):
     """Test that bash version outputs correct header with config input."""
-    out = shell_run(
-        "bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt"
-    )
+    config_path = data_dir_rel / "tool_version_commands.txt"
+    out = shell_run(f"bash scripts/print_versions.sh --config {config_path}")
     assert "| Tool | Version |" in out
     assert "|---------|---------|" in out
 
 
-def test_print_versions_sh_legacy_json_option():
+def test_print_versions_sh_legacy_json_option(data_dir_rel):
     """Test that bash version accepts legacy --json option for compatibility."""
-    out = shell_run(
-        "bash scripts/print_versions.sh --json tests/data/tool_version_commands.txt"
-    )
+    config_path = data_dir_rel / "tool_version_commands.txt"
+    out = shell_run(f"bash scripts/print_versions.sh --json {config_path}")
     assert "| Tool | Version |" in out
 
 
-def test_print_versions_sh_outfile(tmp_path):
+def test_print_versions_sh_outfile(tmp_path, data_dir_rel):
     """Test that bash version writes to output file correctly."""
+    config_path = data_dir_rel / "tool_version_commands.txt"
     filename = tmp_path / "table.md"
     # print to stdout
-    out_print = shell_run(
-        "bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt"
-    )
+    out_print = shell_run(f"bash scripts/print_versions.sh --config {config_path}")
     # write to file
     shell_run(
-        f"bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt --output {filename}"
+        f"bash scripts/print_versions.sh --config {config_path} --output {filename}"
     )
     with open(filename, "r") as md_file:
         out_file = md_file.read()
     assert out_print.strip() == out_file.strip()
 
 
-def test_print_versions_sh_append(tmp_path):
+def test_print_versions_sh_append(tmp_path, data_dir_rel):
     """Test that bash version appends to existing file."""
-    infilename = pathlib.Path("tests") / "data" / "example_readme.md"
+    config_path = data_dir_rel / "tool_version_commands.txt"
+    infilename = data_dir_rel / "example_readme.md"
     with open(infilename, "r") as md_file:
         in_text = md_file.read()
 
@@ -62,7 +59,7 @@ def test_print_versions_sh_append(tmp_path):
     shutil.copyfile(infilename, outfilename)
 
     shell_run(
-        f"bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt --output {outfilename}"
+        f"bash scripts/print_versions.sh --config {config_path} --output {outfilename}"
     )
     with open(outfilename, "r") as md_file:
         out_text = md_file.read()

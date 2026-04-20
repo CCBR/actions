@@ -1,5 +1,4 @@
 import os
-import pathlib
 import pytest
 import warnings
 
@@ -65,19 +64,17 @@ def test_prepare_draft_release(tmp_path, github_output_file, data_dir):
     )
 
 
-def test_prepare_draft_release_no_citation(github_output_file):
+def test_prepare_draft_release_no_citation(github_output_file, data_dir_rel):
     output = exec_in_context(
         prepare_draft_release,
         next_version_manual="v1.0.0",
         next_version_convco="v1.0.0",
         current_version="v0.9.10",
         gh_event_name="push",
-        changelog_filepath=str(pathlib.Path("tests") / "data" / "example_changelog.md"),
+        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
         dev_header="development version",
-        release_notes_filepath=str(
-            pathlib.Path("tests") / "data" / "latest-release.md"
-        ),
-        version_filepath=str(pathlib.Path("tests") / "data" / "VERSION"),
+        release_notes_filepath=str(data_dir_rel / "latest-release.md"),
+        version_filepath=str(data_dir_rel / "VERSION"),
         citation_filepath="not/a/file.cff",
         release_branch="release-draft",
         pr_ref_name="PR_BRANCH_NAME",
@@ -88,36 +85,34 @@ def test_prepare_draft_release_no_citation(github_output_file):
     assert ".cff" not in output
 
 
-def test_create_release_draft():
+def test_create_release_draft(data_dir_rel):
     assert exec_in_context(
         create_release_draft,
         release_branch="release-draft",
         next_version="v1",
-        release_notes_filepath=str(
-            pathlib.Path("tests") / "data" / "example_changelog.md"
-        ),
+        release_notes_filepath=str(data_dir_rel / "example_changelog.md"),
         release_target="HEAD",
         repo="CCBR/actions",
         debug=True,
     ).startswith(
-        "gh release create v1 --draft --notes-file tests/data/example_changelog.md --title 'actions 1' --repo CCBR/actions --target HEAD\n"
+        f"gh release create v1 --draft --notes-file {data_dir_rel / 'example_changelog.md'} --title 'actions 1' --repo CCBR/actions --target HEAD\n"
     )
 
 
-def test_push_release_draft_branch():
+def test_push_release_draft_branch(data_dir_rel):
     assert exec_in_context(
         push_release_draft_branch,
         release_branch="release-draft",
         pr_ref_name="v1",
         next_version="v1",
-        files=[str(pathlib.Path("tests") / "data" / "example_changelog.md")],
+        files=[str(data_dir_rel / "example_changelog.md")],
         debug=True,
     ).startswith(
-        """git push origin --delete release-draft || echo "No release-draft branch to delete"
+        f"""git push origin --delete release-draft || echo "No release-draft branch to delete"
 git switch -c release-draft || git switch release-draft
 git merge --ff-only v1
 
-git add tests/data/example_changelog.md
+git add {data_dir_rel / "example_changelog.md"}
 git commit -m 'chore: 🤖 prepare release v1'
 git push --set-upstream origin release-draft
 
@@ -125,44 +120,38 @@ git push --set-upstream origin release-draft
     )
 
 
-def test_get_changelog_lines():
+def test_get_changelog_lines(data_dir_rel):
     new_changelog, release_notes = get_changelog_lines(
         "0.1.0",
         "0.2.0",
-        changelog_filepath=str(pathlib.Path("tests") / "data" / "example_changelog.md"),
+        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
     )
     assert new_changelog[0] == "## actions 0.2.0\n"
     assert release_notes == ["\n", "development version notes go here\n", "\n"]
 
 
-def test_get_changelog_lines_sinclair():
+def test_get_changelog_lines_sinclair(data_dir_rel):
     new_changelog, release_notes = get_changelog_lines(
         "0.3.0",
         "0.3.1",
-        changelog_filepath=str(
-            pathlib.Path("tests") / "data" / "sinclair_changelog.md"
-        ),
+        changelog_filepath=str(data_dir_rel / "sinclair_changelog.md"),
     )
     assert isinstance(new_changelog, list)
     assert isinstance(release_notes, list)
 
 
-def test_get_changelog_lines_error():
+def test_get_changelog_lines_error(data_dir_rel):
     with pytest.raises(ValueError) as exc_info1:
         get_changelog_lines(
             "0.1..9000",
             "0.2.0",
-            changelog_filepath=str(
-                pathlib.Path("tests") / "data" / "example_changelog.md"
-            ),
+            changelog_filepath=str(data_dir_rel / "example_changelog.md"),
         )
     with pytest.raises(ValueError) as exc_info2:
         get_changelog_lines(
             "0.1.0",
             "alpha-0.2.0",
-            changelog_filepath=str(
-                pathlib.Path("tests") / "data" / "example_changelog.md"
-            ),
+            changelog_filepath=str(data_dir_rel / "example_changelog.md"),
         )
     assert "Version 0.1..9000 does not match semantic versioning pattern" in str(
         exc_info1.value
@@ -224,32 +213,32 @@ def test_get_release_version_semver_error():
     )
 
 
-def test_post_release_cleanup(github_output_file):
+def test_post_release_cleanup(github_output_file, data_dir_rel):
     output = exec_in_context(
         post_release_cleanup,
-        changelog_filepath="tests/data/example_changelog.md",
-        version_filepath="tests/data/VERSION",
-        citation_filepath="tests/data/CITATION.cff",
+        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+        version_filepath=str(data_dir_rel / "VERSION"),
+        citation_filepath=str(data_dir_rel / "CITATION.cff"),
         debug=True,
     )
-    assert "tests/data/CITATION.cff" in output
-    assert "tests/data/example_changelog.md" in output
-    assert "tests/data/VERSION" in output
+    assert str(data_dir_rel / "CITATION.cff") in output
+    assert str(data_dir_rel / "example_changelog.md") in output
+    assert str(data_dir_rel / "VERSION") in output
     assert POST_RELEASE_PR_CREATE_COMMAND in output
     assert "git push origin --delete release-draft || echo" in output
 
 
-def test_post_release_cleanup_no_citation(github_output_file):
+def test_post_release_cleanup_no_citation(github_output_file, data_dir_rel):
     output = exec_in_context(
         post_release_cleanup,
-        changelog_filepath="tests/data/example_changelog.md",
-        version_filepath="tests/data/VERSION",
+        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+        version_filepath=str(data_dir_rel / "VERSION"),
         citation_filepath="not/a/file/CITATION.cff",
         debug=True,
     )
     assert "CITATION.cff" not in output
-    assert "tests/data/example_changelog.md" in output
-    assert "tests/data/VERSION" in output
+    assert str(data_dir_rel / "example_changelog.md") in output
+    assert str(data_dir_rel / "VERSION") in output
     assert POST_RELEASE_PR_CREATE_COMMAND in output
     assert "git push origin --delete release-draft || echo" in output
 

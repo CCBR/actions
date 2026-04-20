@@ -1,6 +1,5 @@
 import json
 import os
-import pathlib
 import shutil
 
 from ccbr_actions.citation import print_citation, update_citation, write_citation
@@ -26,8 +25,8 @@ def test_update_citation():
     assert "title: 'CCBR actions: GitHub Actions for CCBR repos'" in print_out
 
 
-def test_update_citation_symlink(tmp_path):
-    shutil.copy(pathlib.Path("tests") / "data" / "CITATION.cff", tmp_path)
+def test_update_citation_symlink(tmp_path, data_dir):
+    shutil.copy(data_dir / "CITATION.cff", tmp_path)
     src_path = tmp_path / "CITATION.cff"
     link_path = tmp_path / "citation_link"
     os.symlink(src_path, link_path)
