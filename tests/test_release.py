@@ -25,7 +25,9 @@ def test_write_lines():
             assert fh.read() == "hello\nworld"
 
 
-def test_prepare_draft_release():
+def test_prepare_draft_release(tmp_path):
+    output_file = tmp_path / "github_output.txt"
+    os.environ["GITHUB_OUTPUT"] = str(output_file)
     data_dir = pathlib.Path(__file__).resolve().parent / "data"
     with tempfile.TemporaryDirectory() as tmp_dir:
         original_cwd = os.getcwd()
@@ -54,6 +56,7 @@ def test_prepare_draft_release():
             )
         finally:
             os.chdir(original_cwd)
+            del os.environ["GITHUB_OUTPUT"]
     assert all(
         [
             "gh release create v1.0.0 --draft --notes-file " in output,
@@ -63,23 +66,27 @@ def test_prepare_draft_release():
     )
 
 
-def test_prepare_draft_release_no_citation():
-    output = exec_in_context(
-        prepare_draft_release,
-        next_version_manual="v1.0.0",
-        next_version_convco="v1.0.0",
-        current_version="v0.9.10",
-        gh_event_name="push",
-        changelog_filepath="tests/data/example_changelog.md",
-        dev_header="development version",
-        release_notes_filepath="tests/data/latest-release.md",
-        version_filepath="tests/data/VERSION",
-        citation_filepath="not/a/file.cff",
-        release_branch="release-draft",
-        pr_ref_name="PR_BRANCH_NAME",
-        repo="CCBR/actions",
-        debug=True,
-    )
+def test_prepare_draft_release_no_citation(tmp_path):
+    os.environ["GITHUB_OUTPUT"] = str(tmp_path / "github_output.txt")
+    try:
+        output = exec_in_context(
+            prepare_draft_release,
+            next_version_manual="v1.0.0",
+            next_version_convco="v1.0.0",
+            current_version="v0.9.10",
+            gh_event_name="push",
+            changelog_filepath="tests/data/example_changelog.md",
+            dev_header="development version",
+            release_notes_filepath="tests/data/latest-release.md",
+            version_filepath="tests/data/VERSION",
+            citation_filepath="not/a/file.cff",
+            release_branch="release-draft",
+            pr_ref_name="PR_BRANCH_NAME",
+            repo="CCBR/actions",
+            debug=True,
+        )
+    finally:
+        del os.environ["GITHUB_OUTPUT"]
     assert all(["git add" in output, ".cff" not in output])
 
 
@@ -207,14 +214,18 @@ def test_get_release_version_semver_error():
     )
 
 
-def test_post_release_cleanup():
-    output = exec_in_context(
-        post_release_cleanup,
-        changelog_filepath="tests/data/example_changelog.md",
-        version_filepath="tests/data/VERSION",
-        citation_filepath="tests/data/CITATION.cff",
-        debug=True,
-    )
+def test_post_release_cleanup(tmp_path):
+    os.environ["GITHUB_OUTPUT"] = str(tmp_path / "github_output.txt")
+    try:
+        output = exec_in_context(
+            post_release_cleanup,
+            changelog_filepath="tests/data/example_changelog.md",
+            version_filepath="tests/data/VERSION",
+            citation_filepath="tests/data/CITATION.cff",
+            debug=True,
+        )
+    finally:
+        del os.environ["GITHUB_OUTPUT"]
     assert all(
         [
             "tests/data/CITATION.cff" in output,
@@ -227,14 +238,18 @@ def test_post_release_cleanup():
     )
 
 
-def test_post_release_cleanup_no_citation():
-    output = exec_in_context(
-        post_release_cleanup,
-        changelog_filepath="tests/data/example_changelog.md",
-        version_filepath="tests/data/VERSION",
-        citation_filepath="not/a/file/CITATION.cff",
-        debug=True,
-    )
+def test_post_release_cleanup_no_citation(tmp_path):
+    os.environ["GITHUB_OUTPUT"] = str(tmp_path / "github_output.txt")
+    try:
+        output = exec_in_context(
+            post_release_cleanup,
+            changelog_filepath="tests/data/example_changelog.md",
+            version_filepath="tests/data/VERSION",
+            citation_filepath="not/a/file/CITATION.cff",
+            debug=True,
+        )
+    finally:
+        del os.environ["GITHUB_OUTPUT"]
     assert all(
         [
             "CITATION.cff" not in output,
@@ -247,31 +262,25 @@ def test_post_release_cleanup_no_citation():
     )
 
 
-def test_set_release_version():
-    output = exec_in_context(
-        set_release_version,
-        next_version_manual="v1.0.0",
-        next_version_convco="v1.0.0",
-        current_version="v0.9.10",
-        gh_event_name="push",
-    )
-    assertions = []
-    if os.environ.get("GITHUB_ACTIONS"):
-        with open(os.environ["GITHUB_OUTPUT"], "r") as fh:
-            output = fh.read()
-        assertions.extend(
-            [
-                "NEXT_VERSION" in output,
-                "v1.0.0" in output,
-                "NEXT_STRICT" in output,
-                "1.0.0" in output,
-            ]
+def test_set_release_version(tmp_path):
+    output_file = tmp_path / "github_output.txt"
+    os.environ["GITHUB_OUTPUT"] = str(output_file)
+    try:
+        output = exec_in_context(
+            set_release_version,
+            next_version_manual="v1.0.0",
+            next_version_convco="v1.0.0",
+            current_version="v0.9.10",
+            gh_event_name="push",
         )
-    else:
-        assertions.extend(
-            [
-                "::set-output name=NEXT_VERSION::v1.0.0" in output,
-                "::set-output name=NEXT_STRICT::1.0.0" in output,
-            ]
-        )
+    finally:
+        del os.environ["GITHUB_OUTPUT"]
+    with open(output_file, "r") as fh:
+        output = fh.read()
+    assertions = [
+        "NEXT_VERSION" in output,
+        "v1.0.0" in output,
+        "NEXT_STRICT" in output,
+        "1.0.0" in output,
+    ]
     assert all(assertions)
