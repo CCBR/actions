@@ -1,16 +1,13 @@
 import os
 import pytest
-import tempfile
 from ccbr_tools.shell import exec_in_context
 from ccbr_actions.actions import use_github_action, set_output, trigger_workflow
 
 
-def test_use_github_action():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        use_github_action(
-            name="docs-mkdocs", save_as=os.path.join(tmpdir, "docs-mkdocs.yml")
-        )
-        assert os.path.exists(os.path.join(tmpdir, "docs-mkdocs.yml"))
+def test_use_github_action(tmp_path):
+    yml_path = tmp_path / "docs-mkdocs.yml"
+    use_github_action(name="docs-mkdocs", save_as=yml_path)
+    assert yml_path.exists()
 
 
 def test_use_github_action_error():

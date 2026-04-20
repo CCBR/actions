@@ -1,7 +1,5 @@
-import pathlib
 import pytest
 import shutil
-import tempfile
 
 from ccbr_tools.shell import shell_run
 
@@ -20,53 +18,50 @@ def test_print_versions_sh_missing_file():
         shell_run("bash scripts/print_versions.sh --config nonexistent/file.txt")
 
 
-def test_print_versions_sh_header():
+def test_print_versions_sh_header(data_dir_rel):
     """Test that bash version outputs correct header with config input."""
-    out = shell_run(
-        "bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt"
-    )
+    config_path = data_dir_rel / "tool_version_commands.txt"
+    out = shell_run(f"bash scripts/print_versions.sh --config {config_path}")
     assert "| Tool | Version |" in out
     assert "|---------|---------|" in out
 
 
-def test_print_versions_sh_legacy_json_option():
+def test_print_versions_sh_legacy_json_option(data_dir_rel):
     """Test that bash version accepts legacy --json option for compatibility."""
-    out = shell_run(
-        "bash scripts/print_versions.sh --json tests/data/tool_version_commands.txt"
-    )
+    config_path = data_dir_rel / "tool_version_commands.txt"
+    out = shell_run(f"bash scripts/print_versions.sh --json {config_path}")
     assert "| Tool | Version |" in out
 
 
-def test_print_versions_sh_outfile():
+def test_print_versions_sh_outfile(tmp_path, data_dir_rel):
     """Test that bash version writes to output file correctly."""
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        filename = pathlib.Path(tmp_dir) / "table.md"
-        # print to stdout
-        out_print = shell_run(
-            "bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt"
-        )
-        # write to file
-        shell_run(
-            f"bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt --output {filename}"
-        )
-        with open(filename, "r") as md_file:
-            out_file = md_file.read()
-        assert out_print.strip() == out_file.strip()
+    config_path = data_dir_rel / "tool_version_commands.txt"
+    filename = tmp_path / "table.md"
+    # print to stdout
+    out_print = shell_run(f"bash scripts/print_versions.sh --config {config_path}")
+    # write to file
+    shell_run(
+        f"bash scripts/print_versions.sh --config {config_path} --output {filename}"
+    )
+    with open(filename, "r") as md_file:
+        out_file = md_file.read()
+    assert out_print.strip() == out_file.strip()
 
 
-def test_print_versions_sh_append():
+def test_print_versions_sh_append(tmp_path, data_dir_rel):
     """Test that bash version appends to existing file."""
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        infilename = pathlib.Path("tests") / "data" / "example_readme.md"
-        with open(infilename, "r") as md_file:
-            in_text = md_file.read()
+    config_path = data_dir_rel / "tool_version_commands.txt"
+    infilename = data_dir_rel / "example_readme.md"
+    with open(infilename, "r") as md_file:
+        in_text = md_file.read()
 
-        outfilename = pathlib.Path(tmp_dir) / "example_readme.md"
-        shutil.copyfile(infilename, outfilename)
+    outfilename = tmp_path / "example_readme.md"
+    shutil.copyfile(infilename, outfilename)
 
-        shell_run(
-            f"bash scripts/print_versions.sh --config tests/data/tool_version_commands.txt --output {outfilename}"
-        )
-        with open(outfilename, "r") as md_file:
-            out_text = md_file.read()
-        assert all([out_text.startswith(in_text), len(out_text) > len(in_text)])
+    shell_run(
+        f"bash scripts/print_versions.sh --config {config_path} --output {outfilename}"
+    )
+    with open(outfilename, "r") as md_file:
+        out_text = md_file.read()
+    assert out_text.startswith(in_text)
+    assert len(out_text) > len(in_text)
