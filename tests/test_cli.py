@@ -17,7 +17,6 @@ def test_use_example(tmp_path):
     try:
         os.chdir(tmp_path)
         shell_run("ccbr_actions use-example build-nextflow")
-        assertions = [outfile.exists()]
     finally:
         os.chdir(current_wd)
-    assert all(assertions)
+    assert outfile.exists()

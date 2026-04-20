@@ -66,4 +66,5 @@ def test_print_versions_sh_append(tmp_path):
     )
     with open(outfilename, "r") as md_file:
         out_text = md_file.read()
-    assert all([out_text.startswith(in_text), len(out_text) > len(in_text)])
+    assert out_text.startswith(in_text)
+    assert len(out_text) > len(in_text)

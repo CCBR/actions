@@ -16,17 +16,20 @@ from ccbr_actions.release import (
 from ccbr_tools.shell import exec_in_context, shell_run
 
 
+POST_RELEASE_PR_CREATE_COMMAND = (
+    "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' "
+    "--body 'Automated post-release cleanup.' --base main --head ${{ inputs.branch }} "
+    "--reviewer ${{ github.triggering_actor }}"
+)
+
+
 def test_write_lines(tmp_path):
     tmp_file = tmp_path / "tmp.txt"
     write_lines(tmp_file, ["hello\n", "world"], debug=False)
-    with open(tmp_file, "r") as fh:
-        assert fh.read() == "hello\nworld"
+    assert tmp_file.read_text() == "hello\nworld"
 
 
-def test_prepare_draft_release(tmp_path):
-    output_file = tmp_path / "github_output.txt"
-    os.environ["GITHUB_OUTPUT"] = str(output_file)
-    data_dir = pathlib.Path(__file__).resolve().parent / "data"
+def test_prepare_draft_release(tmp_path, github_output_file, data_dir):
     repo_dir = tmp_path / "repo"
     repo_dir.mkdir()
     original_cwd = os.getcwd()
@@ -55,38 +58,34 @@ def test_prepare_draft_release(tmp_path):
         )
     finally:
         os.chdir(original_cwd)
-        del os.environ["GITHUB_OUTPUT"]
-    assert all(
-        [
-            "gh release create v1.0.0 --draft --notes-file " in output,
-            "latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
-            in output,
-        ]
+    assert "gh release create v1.0.0 --draft --notes-file " in output
+    assert (
+        "latest-release.md --title 'actions 1.0.0' --repo CCBR/actions --target "
+        in output
     )
 
 
-def test_prepare_draft_release_no_citation(tmp_path):
-    os.environ["GITHUB_OUTPUT"] = str(tmp_path / "github_output.txt")
-    try:
-        output = exec_in_context(
-            prepare_draft_release,
-            next_version_manual="v1.0.0",
-            next_version_convco="v1.0.0",
-            current_version="v0.9.10",
-            gh_event_name="push",
-            changelog_filepath="tests/data/example_changelog.md",
-            dev_header="development version",
-            release_notes_filepath="tests/data/latest-release.md",
-            version_filepath="tests/data/VERSION",
-            citation_filepath="not/a/file.cff",
-            release_branch="release-draft",
-            pr_ref_name="PR_BRANCH_NAME",
-            repo="CCBR/actions",
-            debug=True,
-        )
-    finally:
-        del os.environ["GITHUB_OUTPUT"]
-    assert all(["git add" in output, ".cff" not in output])
+def test_prepare_draft_release_no_citation(github_output_file):
+    output = exec_in_context(
+        prepare_draft_release,
+        next_version_manual="v1.0.0",
+        next_version_convco="v1.0.0",
+        current_version="v0.9.10",
+        gh_event_name="push",
+        changelog_filepath=str(pathlib.Path("tests") / "data" / "example_changelog.md"),
+        dev_header="development version",
+        release_notes_filepath=str(
+            pathlib.Path("tests") / "data" / "latest-release.md"
+        ),
+        version_filepath=str(pathlib.Path("tests") / "data" / "VERSION"),
+        citation_filepath="not/a/file.cff",
+        release_branch="release-draft",
+        pr_ref_name="PR_BRANCH_NAME",
+        repo="CCBR/actions",
+        debug=True,
+    )
+    assert "git add" in output
+    assert ".cff" not in output
 
 
 def test_create_release_draft():
@@ -94,7 +93,9 @@ def test_create_release_draft():
         create_release_draft,
         release_branch="release-draft",
         next_version="v1",
-        release_notes_filepath="tests/data/example_changelog.md",
+        release_notes_filepath=str(
+            pathlib.Path("tests") / "data" / "example_changelog.md"
+        ),
         release_target="HEAD",
         repo="CCBR/actions",
         debug=True,
@@ -109,7 +110,7 @@ def test_push_release_draft_branch():
         release_branch="release-draft",
         pr_ref_name="v1",
         next_version="v1",
-        files=["tests/data/example_changelog.md"],
+        files=[str(pathlib.Path("tests") / "data" / "example_changelog.md")],
         debug=True,
     ).startswith(
         """git push origin --delete release-draft || echo "No release-draft branch to delete"
@@ -126,82 +127,92 @@ git push --set-upstream origin release-draft
 
 def test_get_changelog_lines():
     new_changelog, release_notes = get_changelog_lines(
-        "0.1.0", "0.2.0", changelog_filepath="tests/data/example_changelog.md"
+        "0.1.0",
+        "0.2.0",
+        changelog_filepath=str(pathlib.Path("tests") / "data" / "example_changelog.md"),
     )
-    assert all(
-        [
-            new_changelog[0] == "## actions 0.2.0\n",
-            release_notes == ["\n", "development version notes go here\n", "\n"],
-        ]
-    )
+    assert new_changelog[0] == "## actions 0.2.0\n"
+    assert release_notes == ["\n", "development version notes go here\n", "\n"]
 
 
 def test_get_changelog_lines_sinclair():
     new_changelog, release_notes = get_changelog_lines(
-        "0.3.0", "0.3.1", changelog_filepath="tests/data/sinclair_changelog.md"
+        "0.3.0",
+        "0.3.1",
+        changelog_filepath=str(
+            pathlib.Path("tests") / "data" / "sinclair_changelog.md"
+        ),
     )
+    assert isinstance(new_changelog, list)
+    assert isinstance(release_notes, list)
 
 
 def test_get_changelog_lines_error():
     with pytest.raises(ValueError) as exc_info1:
         get_changelog_lines(
-            "0.1..9000", "0.2.0", changelog_filepath="tests/data/example_changelog.md"
+            "0.1..9000",
+            "0.2.0",
+            changelog_filepath=str(
+                pathlib.Path("tests") / "data" / "example_changelog.md"
+            ),
         )
     with pytest.raises(ValueError) as exc_info2:
         get_changelog_lines(
-            "0.1.0", "alpha-0.2.0", changelog_filepath="tests/data/example_changelog.md"
+            "0.1.0",
+            "alpha-0.2.0",
+            changelog_filepath=str(
+                pathlib.Path("tests") / "data" / "example_changelog.md"
+            ),
         )
-    assert all(
-        [
-            "Version 0.1..9000 does not match semantic versioning pattern"
-            in str(exc_info1.value),
-            "Version alpha-0.2.0 does not match semantic versioning pattern"
-            in str(exc_info2.value),
-        ]
+    assert "Version 0.1..9000 does not match semantic versioning pattern" in str(
+        exc_info1.value
+    )
+    assert "Version alpha-0.2.0 does not match semantic versioning pattern" in str(
+        exc_info2.value
     )
 
 
 def test_get_release_version():
-    assert all(
-        [
-            get_release_version(
-                next_version_manual="",
-                next_version_convco="v1.10.0",
-                current_version="v1.9.10",
-            )
-            == "v1.10.0",
-            get_release_version(
-                next_version_manual="v1.10.0",
-                next_version_convco="v1.9.11",
-                current_version="v1.9.10",
-            )
-            == "v1.10.0",
-        ]
+    assert (
+        get_release_version(
+            next_version_manual="",
+            next_version_convco="v1.10.0",
+            current_version="v1.9.10",
+        )
+        == "v1.10.0"
+    )
+    assert (
+        get_release_version(
+            next_version_manual="v1.10.0",
+            next_version_convco="v1.9.11",
+            current_version="v1.9.10",
+        )
+        == "v1.10.0"
     )
 
 
 def test_get_release_version_warning():
-    warnings.filterwarnings("error")
-    with pytest.raises(UserWarning) as exc_info1:
-        get_release_version(
-            next_version_manual="v2.0.0",
-            next_version_convco="v1.10.0",
-            current_version="v1.9.10",
-        )
-    warnings.resetwarnings()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        with pytest.raises(UserWarning) as exc_info1:
+            get_release_version(
+                next_version_manual="v2.0.0",
+                next_version_convco="v1.10.0",
+                current_version="v1.9.10",
+            )
     with pytest.raises(ValueError) as exc_info2:
         get_release_version(
             next_version_manual="v3.0.0",
             next_version_convco="v1.10.0",
             current_version="v1.9.10",
         )
-    assert all(
-        [
-            "Manual version (v2.0.0) not equal to version determined by conventional commit history (v1.10.0)"
-            in str(exc_info1.value),
-            "Next version must only increment one number at a time. Current version: v1.9.10. Proposed next version: v3.0.0."
-            in str(exc_info2.value),
-        ]
+    assert (
+        "Manual version (v2.0.0) not equal to version determined by conventional commit history (v1.10.0)"
+        in str(exc_info1.value)
+    )
+    assert (
+        "Next version must only increment one number at a time. Current version: v1.9.10. Proposed next version: v3.0.0."
+        in str(exc_info2.value)
     )
 
 
@@ -213,73 +224,46 @@ def test_get_release_version_semver_error():
     )
 
 
-def test_post_release_cleanup(tmp_path):
-    os.environ["GITHUB_OUTPUT"] = str(tmp_path / "github_output.txt")
-    try:
-        output = exec_in_context(
-            post_release_cleanup,
-            changelog_filepath="tests/data/example_changelog.md",
-            version_filepath="tests/data/VERSION",
-            citation_filepath="tests/data/CITATION.cff",
-            debug=True,
-        )
-    finally:
-        del os.environ["GITHUB_OUTPUT"]
-    assert all(
-        [
-            "tests/data/CITATION.cff" in output,
-            "tests/data/example_changelog.md" in output,
-            "tests/data/VERSION" in output,
-            "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' --body 'Automated post-release cleanup.' --base main --head ${{ inputs.branch }} --reviewer ${{ github.triggering_actor }}"
-            in output,
-            "git push origin --delete release-draft || echo" in output,
-        ]
+def test_post_release_cleanup(github_output_file):
+    output = exec_in_context(
+        post_release_cleanup,
+        changelog_filepath="tests/data/example_changelog.md",
+        version_filepath="tests/data/VERSION",
+        citation_filepath="tests/data/CITATION.cff",
+        debug=True,
     )
+    assert "tests/data/CITATION.cff" in output
+    assert "tests/data/example_changelog.md" in output
+    assert "tests/data/VERSION" in output
+    assert POST_RELEASE_PR_CREATE_COMMAND in output
+    assert "git push origin --delete release-draft || echo" in output
 
 
-def test_post_release_cleanup_no_citation(tmp_path):
-    os.environ["GITHUB_OUTPUT"] = str(tmp_path / "github_output.txt")
-    try:
-        output = exec_in_context(
-            post_release_cleanup,
-            changelog_filepath="tests/data/example_changelog.md",
-            version_filepath="tests/data/VERSION",
-            citation_filepath="not/a/file/CITATION.cff",
-            debug=True,
-        )
-    finally:
-        del os.environ["GITHUB_OUTPUT"]
-    assert all(
-        [
-            "CITATION.cff" not in output,
-            "tests/data/example_changelog.md" in output,
-            "tests/data/VERSION" in output,
-            "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' --body 'Automated post-release cleanup.' --base main --head ${{ inputs.branch }} --reviewer ${{ github.triggering_actor }}"
-            in output,
-            "git push origin --delete release-draft || echo" in output,
-        ]
+def test_post_release_cleanup_no_citation(github_output_file):
+    output = exec_in_context(
+        post_release_cleanup,
+        changelog_filepath="tests/data/example_changelog.md",
+        version_filepath="tests/data/VERSION",
+        citation_filepath="not/a/file/CITATION.cff",
+        debug=True,
     )
+    assert "CITATION.cff" not in output
+    assert "tests/data/example_changelog.md" in output
+    assert "tests/data/VERSION" in output
+    assert POST_RELEASE_PR_CREATE_COMMAND in output
+    assert "git push origin --delete release-draft || echo" in output
 
 
-def test_set_release_version(tmp_path):
-    output_file = tmp_path / "github_output.txt"
-    os.environ["GITHUB_OUTPUT"] = str(output_file)
-    try:
-        output = exec_in_context(
-            set_release_version,
-            next_version_manual="v1.0.0",
-            next_version_convco="v1.0.0",
-            current_version="v0.9.10",
-            gh_event_name="push",
-        )
-    finally:
-        del os.environ["GITHUB_OUTPUT"]
-    with open(output_file, "r") as fh:
-        output = fh.read()
-    assertions = [
-        "NEXT_VERSION" in output,
-        "v1.0.0" in output,
-        "NEXT_STRICT" in output,
-        "1.0.0" in output,
-    ]
-    assert all(assertions)
+def test_set_release_version(github_output_file):
+    exec_in_context(
+        set_release_version,
+        next_version_manual="v1.0.0",
+        next_version_convco="v1.0.0",
+        current_version="v0.9.10",
+        gh_event_name="push",
+    )
+    output = github_output_file.read_text()
+    assert "NEXT_VERSION" in output
+    assert "v1.0.0" in output
+    assert "NEXT_STRICT" in output
+    assert "1.0.0" in output

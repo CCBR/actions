@@ -21,41 +21,31 @@ def test_update_citation():
         date="2024-08-13",
         debug=True,
     )
-    assert all(
-        [
-            "version: v99" in print_out,
-            "date-released: '2024-08-13'" in print_out,
-            "title: 'CCBR actions: GitHub Actions for CCBR repos'" in print_out,
-        ]
-    )
+    assert "version: v99" in print_out
+    assert "date-released: '2024-08-13'" in print_out
+    assert "title: 'CCBR actions: GitHub Actions for CCBR repos'" in print_out
 
 
 def test_update_citation_symlink(tmp_path):
-    shutil.copy("tests/data/CITATION.cff", tmp_path)
+    shutil.copy(pathlib.Path("tests") / "data" / "CITATION.cff", tmp_path)
     src_path = tmp_path / "CITATION.cff"
     link_path = tmp_path / "citation_link"
     os.symlink(src_path, link_path)
     update_citation(citation_file=link_path, version="v99", date="2024-08-13")
-    with open(src_path, "r") as infile:
-        citation = infile.read()
-    assert all(
-        [
-            "version: v99" in citation,
-            "date-released: '2024-08-13'" in citation,
-            "title: 'CCBR actions: GitHub Actions for CCBR repos'" in citation,
-        ]
-    )
+    citation = src_path.read_text()
+    assert "version: v99" in citation
+    assert "date-released: '2024-08-13'" in citation
+    assert "title: 'CCBR actions: GitHub Actions for CCBR repos'" in citation
 
 
-def test_write_citation_codemeta(tmp_path):
+def test_write_citation_codemeta(tmp_path, data_dir):
     codemeta_filename = tmp_path / "test.codemeta.json"
     write_citation(
-        citation_file=pathlib.Path("tests") / "data" / "CITATION.cff",
+        citation_file=data_dir / "CITATION.cff",
         output_file=codemeta_filename,
         output_format="codemeta",
     )
-    with open(codemeta_filename, "r") as infile:
-        codemeta_content = json.load(infile)
+    codemeta_content = json.loads(codemeta_filename.read_text())
     assert codemeta_content == {
         "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
         "@type": "SoftwareSourceCode",

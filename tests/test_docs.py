@@ -37,24 +37,16 @@ def test_action_markdown_header():
 
 def test_action_markdown_io():
     action_md = action_markdown_io(parse_action_yaml("mkdocs-mike/action.yml"))
-    assert all(
-        [
-            "## Inputs\n" in action_md,
-            "## Outputs\n" in action_md,
-            "The version of the docs being deployed." in action_md,
-        ]
-    )
+    assert "## Inputs\n" in action_md
+    assert "## Outputs\n" in action_md
+    assert "The version of the docs being deployed." in action_md
 
 
 def test_get_docs_version():
     with pytest.warns(UserWarning) as record1:
         result1 = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
-    assert all(
-        [
-            result1 == ("dev", ""),
-            "No latest release found" in str(record1[0].message.args[0]),
-        ]
-    )
+    assert result1 == ("dev", "")
+    assert "No latest release found" in str(record1[0].message.args[0])
 
 
 def test_get_docs_version_strict():
@@ -72,7 +64,8 @@ def test_get_docs_version_nonsemantic():
     tag1, alias1 = get_docs_version(
         repo="CCBR/HowTos", release_tag="1.0", strict_semver=False
     )
-    assert all([tag1 == "1.0", alias1 == ""])
+    assert tag1 == "1.0"
+    assert alias1 == ""
 
 
 def test_set_docs_version(tmp_path):
@@ -88,4 +81,5 @@ def test_set_docs_version(tmp_path):
         del os.environ["TEST_GITHUB_OUTPUT"]
 
     output_text = output_file.read_text()
-    assert all(["VERSION<<" in output_text, "ALIAS<<" in output_text])
+    assert "VERSION<<" in output_text
+    assert "ALIAS<<" in output_text
