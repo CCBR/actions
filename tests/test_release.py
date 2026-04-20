@@ -14,7 +14,6 @@ from ccbr_actions.release import (
 )
 from ccbr_tools.shell import exec_in_context, shell_run
 
-
 POST_RELEASE_PR_CREATE_COMMAND = (
     "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' "
     "--body 'Automated post-release cleanup.' --base main --head ${{ inputs.branch }} "
