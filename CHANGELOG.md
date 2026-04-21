@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions 0.6.0
+
 - New action: `changed-files` to detect files that changed matching a pattern. (#152, @kelly-sovacool)
   - Can compare the most recent commit only or the entire PR changes by setting the `comparison-mode` option. (#156, @kelly-sovacool)
 - Bump actions versions to the latest release in anticipation of the node.js 20 deprecation. (#149, @kelly-sovacool)
