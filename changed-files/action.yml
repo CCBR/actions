@@ -28,8 +28,8 @@ inputs:
   comparison-mode:
     description: |
       Comparison mode for collecting changed files.
-      - latest-commit: for pull_request, compare head^...head (latest commit only)
-      - event (default): compare full event range (PR base...head or push before...after)
+      - latest-commit (default): for pull_request, compare head^...head (latest commit only)
+      - event: compare full event range (PR base...head or push before...after)
     required: false
     default: "latest-commit"
 
