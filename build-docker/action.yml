@@ -86,9 +86,27 @@ runs:
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
+    - name: Resolve push mode
+      id: resolve_push
+      shell: bash
+      env:
+        INPUT_PUSH: ${{ inputs.push }}
+        INPUT_DOCKERHUB_USERNAME: ${{ inputs.dockerhub-username }}
+        INPUT_DOCKERHUB_TOKEN: ${{ inputs.dockerhub-token }}
+      run: |
+        push_enabled=false
+        if [[ "${INPUT_PUSH}" == "true" ]]; then
+          if [[ -n "${INPUT_DOCKERHUB_USERNAME}" && -n "${INPUT_DOCKERHUB_TOKEN}" ]]; then
+            push_enabled=true
+          else
+            echo "::warning::DockerHub credentials are missing. Building image without push."
+          fi
+        fi
+        echo "push_enabled=${push_enabled}" >> "$GITHUB_OUTPUT"
+
     - name: Login to DockerHub
       id: login_dockerhub
-      if: ${{ inputs.push == 'true' }}
+      if: ${{ steps.resolve_push.outputs.push_enabled == 'true' }}
       uses: docker/login-action@v4
       with:
         username: ${{ inputs.dockerhub-username }}
@@ -131,7 +149,7 @@ runs:
       with:
         file: ${{ env.DOCKERFILE_PATH }}
         context: ${{ env.CONTEXT }}
-        push: ${{ inputs.push }}
+        push: ${{ steps.resolve_push.outputs.push_enabled }}
         tags: ${{ env.IMAGENAME }}
         build-args: |
           DOCKERFILE=${{ env.DOCKERFILE_BASENAME }}
@@ -140,11 +158,6 @@ runs:
           REPONAME=${{ env.REPONAME }}
           IMAGENAME=${{ env.IMAGENAME }}
           BASEIMAGENAME=${{ env.BASEIMAGENAME }}
-
-    - name: List Docker images
-      shell: bash
-      id: list_docker_images
-      run: docker images
 
     - name: Run print_versions.sh inside Docker container
       shell: bash
@@ -169,7 +182,7 @@ runs:
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
-      if: ${{ (inputs.push == 'true') && (steps.build_and_push.outcome == 'success') }}
+      if: ${{ (steps.resolve_push.outputs.push_enabled == 'true') && (steps.build_and_push.outcome == 'success') }}
       uses: peter-evans/dockerhub-description@v5
       with:
         username: ${{ inputs.dockerhub-username }}
