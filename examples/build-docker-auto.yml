@@ -10,7 +10,7 @@
 # Jobs:
 #   - Runs on the latest Ubuntu environment.
 #   - Steps:
-#     1. Check out the repository using actions/checkout@v4.
+#     1. Check out the repository using actions/checkout@v6.
 #     2. Identify modified Dockerfiles using git diff and store them in the environment variable 'dockerfiles'.
 #     3. For each modified Dockerfile, trigger the 'build-docker-manual' workflow with the Dockerfile path and additional parameters.
 #
