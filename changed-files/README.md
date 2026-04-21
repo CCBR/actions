@@ -8,22 +8,27 @@ filter them using `.gitignore`-style patterns.
 
 This action retrieves the list of files changed in a pull request or
 push event, and can filter the results by one or more patterns. It uses
-the GitHub CLI to fetch the list of changed files and the `pathspec`
-library for pattern matching.
+the GitHub API (via Python) to fetch changed files and `pathspec` for
+pattern matching.
+
+By default, `comparison-mode` is `latest-commit`, which compares only
+the latest commit for pull requests and uses the full `before...after`
+range for push events.
 
 ## Usage
 
 ### Basic example
 
-[changed-files.yml](/examples/changed-files.yml)
+[changed-files.yml](./examples/changed-files.yml)
 
 Get all changed files:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
+    with:
+      comparison-mode: latest-commit
 
   - run: |
       echo "Changed files:"
@@ -36,10 +41,10 @@ Filter changed files by `.gitignore`-style patterns:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
+      comparison-mode: event
       paths: |
         src/**
         tests/**
@@ -55,10 +60,10 @@ Exclude specific files using negation patterns:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
+      comparison-mode: latest-commit
       paths: |
         *.py
         !tests/**
@@ -74,13 +79,13 @@ Specify Python version and ccbr-actions version:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v6
   - uses: CCBR/actions/changed-files@main
     id: changed-files
     with:
       paths: "docs/**"
       python-version: "3.12"
       ccbr-actions-version: "v1.0.0"
+      comparison-mode: latest-commit
 
   - run: |
       echo "Documentation files changed:"
@@ -108,6 +113,26 @@ steps:
       echo "${{ steps.changed-files.outputs.matched_files }}"
 ```
 
+### Full event range mode
+
+Use `comparison-mode: event` when you need all files changed across the
+full event range.
+
+```yaml
+steps:
+  - uses: CCBR/actions/changed-files@main
+    id: changed-files
+    with:
+      comparison-mode: event
+      paths: |
+        src/**
+        tests/**
+
+  - run: |
+      echo "Files changed across full event range:"
+      echo "${{ steps.changed-files.outputs.matched_files }}"
+```
+
 ## Inputs
 
 - `paths`: Pattern list in the .gitignore syntax to match against
@@ -118,11 +143,10 @@ steps:
 - `ccbr-actions-version`: The version of ccbr_actions to use. Default:
   `main`.
 - `comparison-mode`: Comparison mode for collecting changed files.
+- latest-commit (default): for pull_request, compare head^…head (latest
+  commit only)
+- event: compare full event range (PR base…head or push before…after) .
   Default: `latest-commit`.
-  - `latest-commit`: for pull_request, compare head^...head (latest
-    commit only).
-  - `event`: compare full event range (PR base...head or push
-    before...after).
 
 ## Outputs
 

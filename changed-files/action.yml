@@ -36,16 +36,16 @@ inputs:
 outputs:
   changed_files:
     description: A multi-line string containing the list of changed files.
-    value: ${{ fromJson(steps.match-paths.outputs.result).changed_files }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result).changed_files }}
   changed_files_json:
     description: A JSON string containing the list of changed files.
-    value: ${{ fromJson(steps.match-paths.outputs.result).changed_files_json }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result).changed_files_json }}
   matched_files:
     description: A multi-line string containing the list of changed files matching `paths` patterns.  Empty ("") if `paths` is not given.
-    value: ${{ fromJson(steps.match-paths.outputs.result).matched_files }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result).matched_files }}
   matched_files_json:
     description: A JSON string containing the list of changed files matching `paths` patterns.  Empty ("[]") if `paths` is not given.
-    value: ${{ fromJson(steps.match-paths.outputs.result).matched_files_json }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result).matched_files_json }}
 
 runs:
   using: composite
@@ -63,47 +63,33 @@ runs:
       name: Get Changed Files
       env:
         GH_TOKEN: "${{ inputs.token }}"
-      run: |
-        # Validate comparison mode
-        comparison_mode="${{ inputs.comparison-mode }}"
-        if [ "$comparison_mode" != "event" ] && [ "$comparison_mode" != "latest-commit" ]; then
-          echo "::error::Invalid comparison mode: '$comparison_mode'. Must be 'event' or 'latest-commit'."
-          exit 1
-        fi
-
-        EOS=$(openssl rand -hex 64)
-        {
-          echo "changed_file_list<<$EOS"
-          if [ "${{ github.event_name }}" = "pull_request" ] && [ "$comparison_mode" = "latest-commit" ]; then
-            head_repo='${{ github.event.pull_request.head.repo.full_name }}'
-            head_sha='${{ github.event.pull_request.head.sha }}'
-            parent_sha=$(gh api "repos/${head_repo}/commits/${head_sha}" --jq '.parents[0].sha // empty')
-
-            # Fallback to full PR diff when the head commit has no parent.
-            if [ -n "$parent_sha" ]; then
-              gh api "repos/${head_repo}/compare/${parent_sha}...${head_sha}" --jq '.files[].filename'
-            else
-              gh api 'repos/${{ github.event.pull_request.base.repo.full_name}}/compare/${{ github.event.pull_request.base.sha}}...${{ github.event.pull_request.head.label}}' --jq '.files[].filename'
-            fi
-          elif [ "${{ github.event_name }}" = "pull_request" ] && [ "$comparison_mode" = "event" ]; then
-            gh api 'repos/${{ github.event.pull_request.base.repo.full_name}}/compare/${{ github.event.pull_request.base.sha}}...${{ github.event.pull_request.head.label}}' --jq '.files[].filename'
-          else
-            gh api 'repos/${{ github.repository}}/compare/${{ github.event.before}}...${{ github.event.after}}' --jq '.files[].filename'
-          fi
-          echo "$EOS"
-        } >> "$GITHUB_OUTPUT"
-      shell: bash
-
-    - name: Match Paths
-      id: match-paths
-      env:
-        CHANGED_FILE_LIST: ${{ steps.get-changed-files.outputs.changed_file_list }}
         PATHS: ${{ inputs.paths }}
+        EVENT_NAME: ${{ github.event_name }}
+        COMPARISON_MODE: ${{ inputs.comparison-mode }}
+        REPOSITORY: ${{ github.repository }}
+        BEFORE: ${{ github.event.before }}
+        AFTER: ${{ github.event.after }}
+        PR_BASE_REPO_FULL_NAME: ${{ github.event.pull_request.base.repo.full_name }}
+        PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        PR_HEAD_LABEL: ${{ github.event.pull_request.head.label }}
+        PR_HEAD_REPO_FULL_NAME: ${{ github.event.pull_request.head.repo.full_name }}
+        PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       run: |
         import os
         from ccbr_actions.changed_files import get_changed_files
 
-        changed_file_list = os.environ.get("CHANGED_FILE_LIST", "")
-        paths = os.environ.get("PATHS", "")
-        get_changed_files(changed_file_list=changed_file_list, paths=paths)
+        get_changed_files(
+            paths=os.environ.get("PATHS", ""),
+            event_name=os.environ.get("EVENT_NAME", ""),
+            comparison_mode=os.environ.get("COMPARISON_MODE", "latest-commit"),
+            repository=os.environ.get("REPOSITORY", ""),
+            before=os.environ.get("BEFORE", ""),
+            after=os.environ.get("AFTER", ""),
+            pr_base_repo_full_name=os.environ.get("PR_BASE_REPO_FULL_NAME", ""),
+            pr_base_sha=os.environ.get("PR_BASE_SHA", ""),
+            pr_head_label=os.environ.get("PR_HEAD_LABEL", ""),
+            pr_head_repo_full_name=os.environ.get("PR_HEAD_REPO_FULL_NAME", ""),
+            pr_head_sha=os.environ.get("PR_HEAD_SHA", ""),
+            token=os.environ.get("GH_TOKEN", ""),
+        )
       shell: python
