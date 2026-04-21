@@ -71,7 +71,7 @@ after repeated runs. All date calculations are performed in UTC.
 
 ### Basic example
 
-[maintain-milestones.yml](./examples/maintain-milestones.yml)
+[maintain-milestones.yml](/examples/maintain-milestones.yml)
 
 ```yaml
 name: maintain-milestones

@@ -46,11 +46,11 @@ steps:
 
 For an example to manually trigger the workflow for a single docker
 container, see
-[build-docker-manual.yml](./examples/build-docker-manual.yml).
+[build-docker-manual.yml](/examples/build-docker-manual.yml).
 
 For an advanced example to automatically build docker containers when
 files change, see
-[build-docker-auto.yml](./examples/build-docker-auto.yml).
+[build-docker-auto.yml](/examples/build-docker-auto.yml).
 
 ## Inputs
 

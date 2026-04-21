@@ -15,7 +15,7 @@ which will be read and passed along to the `extra-packages` argument of
 
 ### Basic example
 
-[R-CMD-check.yaml](./examples/R-CMD-check.yaml)
+[R-CMD-check.yaml](/examples/R-CMD-check.yaml)
 
 ```yaml
 steps:
@@ -27,7 +27,7 @@ steps:
 
 ### Customized inputs
 
-[R-CMD-check.yaml](./examples/R-CMD-check.yaml)
+[R-CMD-check.yaml](/examples/R-CMD-check.yaml)
 
 ```yaml
 jobs:

@@ -7,7 +7,7 @@ This action is designed to be triggered by publishing a release. On
 completion, it will open a pull request to merge post-release clean up
 chores such as bumping the development version in the version file and
 changelog. It works best when used in conjunction with
-[`draft-release`](./draft-release) to help automate parts of the release
+[`draft-release`](/draft-release) to help automate parts of the release
 process.
 
 ## Usage
@@ -22,7 +22,7 @@ Required files:
 
 ### Basic example
 
-[post-release.yml](./examples/post-release.yml)
+[post-release.yml](/examples/post-release.yml)
 
 ```yaml
 name: post-release

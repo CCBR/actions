@@ -38,7 +38,7 @@ steps:
 ```
 
 For a complete example workflow, see
-[user-projects.yml](./examples/user-projects.yml).
+[user-projects.yml](/examples/user-projects.yml).
 
 ## Inputs
 

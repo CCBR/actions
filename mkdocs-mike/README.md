@@ -51,7 +51,7 @@ complete these one-time steps:
 
 ### Basic example
 
-[docs-mkdocs.yml](./examples/docs-mkdocs.yml)
+[docs-mkdocs.yml](/examples/docs-mkdocs.yml)
 
 ```yaml
 steps:
