@@ -118,11 +118,10 @@ steps:
 - `ccbr-actions-version`: The version of ccbr_actions to use. Default:
   `main`.
 - `comparison-mode`: Comparison mode for collecting changed files.
+- latest-commit (default): for pull_request, compare head^…head (latest
+  commit only)
+- event: compare full event range (PR base…head or push before…after) .
   Default: `latest-commit`.
-  - `latest-commit`: for pull_request, compare head^...head (latest
-    commit only).
-  - `event`: compare full event range (PR base...head or push
-    before...after).
 
 ## Outputs
 
