@@ -17,6 +17,8 @@ jobs:
 
       - uses: CCBR/actions/changed-files@main
         id: changed-files
+        with:
+          comparison-mode: latest-commit
 
       - name: Print all changed files
         run: |
@@ -31,6 +33,7 @@ jobs:
       - uses: CCBR/actions/changed-files@main
         id: changed-files
         with:
+          comparison-mode: event
           paths: |
             src/**
             tests/**
@@ -48,6 +51,7 @@ jobs:
       - uses: CCBR/actions/changed-files@main
         id: changed-files
         with:
+          comparison-mode: latest-commit
           paths: |
             docs/**
             *.md
