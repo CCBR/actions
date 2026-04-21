@@ -159,3 +159,5 @@ steps:
 - `matched_files_json`: A JSON string containing the list of changed
   files matching `paths` patterns. Empty (“\[\]”) if `paths` is not
   given..
+- `error`: Error message if changed file collection fails. Empty on
+  success..
