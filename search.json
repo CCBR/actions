@@ -36,7 +36,7 @@
     "href": "install.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.5",
+    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.6",
     "crumbs": [
       "Python package",
       "Installation"
@@ -77,7 +77,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.5.2). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {3},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.6.0). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {4},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
     "crumbs": [
       "Project information",
       "Citation"
@@ -911,8 +911,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.6.0",
+    "href": "CHANGELOG.html#actions-0.6.0",
     "title": "CCBR actions",
     "section": "",
     "text": "New action: changed-files to detect files that changed matching a pattern. (#152, @kelly-sovacool)\n\nCan compare the most recent commit only or the entire PR changes by setting the comparison-mode option. (#156, @kelly-sovacool)\n\nBump actions versions to the latest release in anticipation of the node.js 20 deprecation. (#149, @kelly-sovacool)\nImprove maintain-milestones:\n\nOnly close the immediately prior year’s milestones after May of the current year for performance reviews. (#145, @kelly-sovacool)\nUse a toggle to control dry-run mode. (#146, @kelly-sovacool)\n\nImprove build-docker example workflows to prevent excessive docker updates. (#153, @kelly-sovacool)",
