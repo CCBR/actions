@@ -508,7 +508,7 @@
     "href": "CHANGELOG.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)",
+    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)\nFix build-docker behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -519,7 +519,7 @@
     "href": "CHANGELOG.html#actions-development-version",
     "title": "CCBR actions",
     "section": "",
-    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)",
+    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)\nFix build-docker behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
