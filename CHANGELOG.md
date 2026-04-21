@@ -1,6 +1,7 @@
 ## actions development version
 
 - Fix `changed-files` JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)
+- Fix `build-docker` behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)
 
 ## actions 0.6.1
 
