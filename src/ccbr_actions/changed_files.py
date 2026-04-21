@@ -3,14 +3,11 @@ Helpers for changed-files action matching logic.
 """
 
 import json
-import requests
 
 from pathspec import GitIgnoreSpec
 
 from .actions import set_output
-
-
-GITHUB_API_URL = "https://api.github.com"
+from .github import GITHUB_API_URL, github_api_get
 
 
 def validate_comparison_mode(comparison_mode):
@@ -32,30 +29,6 @@ def validate_comparison_mode(comparison_mode):
             f"Invalid comparison mode: {comparison_mode!r}. Must be one of: {sorted(allowed_modes)}"
         )
     return comparison_mode
-
-
-def github_api_get(url, token=None, session=requests):
-    """
-    Perform an authenticated GET request against the GitHub API.
-
-    Args:
-        url (str): API URL to fetch.
-        token (str, optional): GitHub token.
-        session: Object with a requests-compatible ``get`` method.
-
-    Returns:
-        dict: Parsed JSON response.
-    """
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-    }
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-
-    response = session.get(url, headers=headers)
-    response.raise_for_status()
-    return response.json()
 
 
 def format_multiline_file_list(files):
@@ -84,7 +57,7 @@ def get_pull_request_changed_file_list(
     pr_head_repo_full_name,
     pr_head_sha,
     token=None,
-    session=requests,
+    session=None,
 ):
     """
     Get changed files for a pull request event.
@@ -146,7 +119,7 @@ def get_changed_file_list(
     pr_head_repo_full_name="",
     pr_head_sha="",
     token=None,
-    session=requests,
+    session=None,
 ):
     """
     Get the changed file list for the current GitHub Actions event.
@@ -239,7 +212,7 @@ def get_changed_files(
     pr_head_repo_full_name="",
     pr_head_sha="",
     token=None,
-    session=requests,
+    session=None,
 ):
     """
     Compute and emit the `result` output for the changed-files action.
