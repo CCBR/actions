@@ -36,20 +36,31 @@ inputs:
 outputs:
   changed_files:
     description: A multi-line string containing the list of changed files.
-    value: ${{ fromJson(steps.get-changed-files.outputs.result).changed_files }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result || steps.init-result.outputs.result).changed_files }}
   changed_files_json:
     description: A JSON string containing the list of changed files.
-    value: ${{ fromJson(steps.get-changed-files.outputs.result).changed_files_json }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result || steps.init-result.outputs.result).changed_files_json }}
   matched_files:
     description: A multi-line string containing the list of changed files matching `paths` patterns.  Empty ("") if `paths` is not given.
-    value: ${{ fromJson(steps.get-changed-files.outputs.result).matched_files }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result || steps.init-result.outputs.result).matched_files }}
   matched_files_json:
     description: A JSON string containing the list of changed files matching `paths` patterns.  Empty ("[]") if `paths` is not given.
-    value: ${{ fromJson(steps.get-changed-files.outputs.result).matched_files_json }}
+    value: ${{ fromJson(steps.get-changed-files.outputs.result || steps.init-result.outputs.result).matched_files_json }}
+  error:
+    description: Error message if changed file collection fails. Empty on success.
+    value: ${{ fromJson(steps.get-changed-files.outputs.result || steps.init-result.outputs.result).error }}
 
 runs:
   using: composite
   steps:
+    - id: init-result
+      name: Initialize default result output
+      shell: bash
+      run: |
+        cat <<'EOF' >> "$GITHUB_OUTPUT"
+        result={"changed_files":"","changed_files_json":"[]","matched_files":"","matched_files_json":"[]","error":""}
+        EOF
+
     - uses: actions/setup-python@v6
       with:
         python-version: "${{ inputs.python-version }}"
@@ -74,10 +85,14 @@ runs:
         PR_HEAD_REPO_FULL_NAME: ${{ github.event.pull_request.head.repo.full_name }}
         PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       run: |
+        import json
         import os
+        import traceback
+        from ccbr_actions.actions import set_output
         from ccbr_actions.changed_files import get_changed_files
 
-        get_changed_files(
+        try:
+          get_changed_files(
             paths=os.environ.get("PATHS", ""),
             event_name=os.environ.get("EVENT_NAME", ""),
             comparison_mode=os.environ.get("COMPARISON_MODE", "latest-commit"),
@@ -90,5 +105,26 @@ runs:
             pr_head_repo_full_name=os.environ.get("PR_HEAD_REPO_FULL_NAME", ""),
             pr_head_sha=os.environ.get("PR_HEAD_SHA", ""),
             token=os.environ.get("GH_TOKEN", ""),
-        )
+          )
+        except Exception as exc:
+          event_name = os.environ.get("EVENT_NAME", "")
+          comparison_mode = os.environ.get("COMPARISON_MODE", "")
+          repository = os.environ.get("REPOSITORY", "")
+          error_message = (
+            "changed-files action failed while collecting changed files. "
+            f"event_name={event_name}, comparison_mode={comparison_mode}, repository={repository}. "
+            "Check token permissions and that base/head refs are accessible. "
+            f"Original error: {exc}"
+          )
+          fallback = {
+            "changed_files": "",
+            "changed_files_json": "[]",
+            "matched_files": "",
+            "matched_files_json": "[]",
+            "error": error_message,
+          }
+          set_output("result", json.dumps(fallback))
+          print(f"::error::{error_message}")
+          print(traceback.format_exc())
+          raise
       shell: python
