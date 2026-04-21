@@ -1,5 +1,6 @@
 ## actions development version
 
+- Fix `changed-files`: do not use pip cache with `setup-python` since the repo is not checked out. (#158, @kelly-sovacool)
 - Fix forgotten actions that were missed when previously bumping to the latest versions in anticipation of the node.js 20 deprecation. (#159, @kelly-sovacool)
 
 ## actions 0.6.0
