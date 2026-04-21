@@ -29,5 +29,5 @@
   "license": "https://spdx.org/licenses/MIT",
   "name": "CCBR actions: GitHub Actions for CCBR repos",
   "url": "https://ccbr.github.io/actions/",
-  "version": "v0.6.0"
+  "version": "v0.6.1"
 }
