@@ -74,7 +74,7 @@ runs:
         EOS=$(openssl rand -hex 64)
         {
           echo "changed_file_list<<$EOS"
-          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ inputs.comparison-mode }}" = "latest-commit" ]; then
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "$comparison_mode" = "latest-commit" ]; then
             head_repo='${{ github.event.pull_request.head.repo.full_name }}'
             head_sha='${{ github.event.pull_request.head.sha }}'
             parent_sha=$(gh api "repos/${head_repo}/commits/${head_sha}" --jq '.parents[0].sha // empty')
