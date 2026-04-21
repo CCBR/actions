@@ -7,16 +7,19 @@ format used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
 
 This action:
 
-- Logs in to DockerHub if the ‘push’ input is set to ‘true’.
+- Resolves an effective push mode: pushing is enabled only when ‘push’
+  is ‘true’ and both DockerHub credentials are provided.
+- Logs in to DockerHub only when effective push mode is enabled.
 - Prepares build-time variables by running a custom script.
 - Checks variables and creates a README file with build details in the
   same directory as the dockerfile.
-- Builds and optionally pushes the Docker image using the
-  docker/build-push-action.
+- Builds the Docker image in all cases; pushes only when effective push
+  mode is enabled.
 - Lists Docker images on the runner.
 - Updates the DockerHub description with the contents of the README file
-  if the image was successfully pushed.
-- Opens and merges a PR with the updates to the README file.
+  only if the image was successfully pushed.
+- Opens and merges a PR with the README updates only when the DockerHub
+  description update step runs successfully.
 
 ## Usage
 
