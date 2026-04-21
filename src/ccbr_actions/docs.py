@@ -191,6 +191,27 @@ def action_markdown_io(action_dict):
     Returns:
         str: A markdown formatted string documenting the inputs and outputs of the action.
     """
+
+    def format_description(description, continuation_indent="    "):
+        """
+        Preserve multiline descriptions so continuation lines remain part of
+        the same markdown list item.
+        """
+        if description is None:
+            return ""
+
+        lines = str(description).splitlines()
+        if not lines:
+            return ""
+
+        first_line = lines[0].strip()
+        continuation_lines = [
+            f"{continuation_indent}{line.lstrip()}" for line in lines[1:]
+        ]
+        if continuation_lines:
+            return "\n".join([first_line] + continuation_lines)
+        return first_line
+
     markdown = []
     inputs = action_dict.get("inputs", {})
     if inputs:
@@ -202,12 +223,12 @@ def action_markdown_io(action_dict):
                 if details.get("default", None)
                 else ""
             )
-            markdown.append(
-                f"  - `{name}`: {details.get('description', '')}.{required}{default}"
-            )
+            description = format_description(details.get("description", ""))
+            markdown.append(f"  - `{name}`: {description}{required}{default}")
     outputs = action_dict.get("outputs", {})
     if outputs:
         markdown.append("\n## Outputs\n\n")
         for name, details in outputs.items():
-            markdown.append(f"  - `{name}`: {details.get('description', '')}.")
+            description = format_description(details.get("description", ""))
+            markdown.append(f"  - `{name}`: {description}")
     return "\n".join(markdown)

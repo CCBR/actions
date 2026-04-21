@@ -11,25 +11,25 @@ branding:
 
 inputs:
   paths:
-    description: Pattern list in the .gitignore syntax to match against changed files
+    description: Pattern list in the .gitignore syntax to match against changed files.
     required: false
   token:
-    description: GitHub token used for `gh api` calls
+    description: GitHub token used for `gh api` calls.
     required: false
     default: "${{ github.token }}"
   python-version:
-    description: The version of Python to install
+    description: The version of Python to install.
     required: false
     default: "3.11"
   ccbr-actions-version:
-    description: The version of ccbr_actions to use
+    description: The version of ccbr_actions to use.
     required: false
     default: "main"
   comparison-mode:
     description: |
       Comparison mode for collecting changed files.
-      - latest-commit (default): for pull_request, compare head^...head (latest commit only)
-      - event: compare full event range (PR base...head or push before...after)
+        - latest-commit (default): for pull_request, compare head^...head (latest commit only)
+        - event: compare full event range (PR base...head or push before...after).
     required: false
     default: "latest-commit"
 

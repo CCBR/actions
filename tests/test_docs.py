@@ -42,6 +42,21 @@ def test_action_markdown_io():
     assert "The version of the docs being deployed." in action_md
 
 
+def test_action_markdown_io_preserves_multiline_input_description():
+    action_md = action_markdown_io(parse_action_yaml("changed-files/action.yml"))
+    assert (
+        "`comparison-mode`: Comparison mode for collecting changed files." in action_md
+    )
+    assert (
+        "\n    - latest-commit (default): for pull_request, compare head^...head (latest commit only)"
+        in action_md
+    )
+    assert (
+        "\n    - event: compare full event range (PR base...head or push before...after)"
+        in action_md
+    )
+
+
 def test_get_docs_version():
     with pytest.warns(UserWarning) as record1:
         result1 = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
