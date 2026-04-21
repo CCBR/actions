@@ -4,7 +4,6 @@ Shared utilities for interacting with the GitHub API.
 
 import requests
 
-
 GITHUB_API_URL = "https://api.github.com"
 
 
