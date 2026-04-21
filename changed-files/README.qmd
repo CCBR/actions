@@ -94,6 +94,27 @@ steps:
       echo "${{ steps.changed-files.outputs.matched_files }}"
 ```
 
+### Latest commit only (fork-safe PRs)
+
+Compare only the latest commit in pull requests (`head^...head`) so
+updates to older commits in a PR do not keep re-matching files from
+earlier pushes. This mode is API-based and works for both same-repo and
+fork pull requests.
+
+```yaml
+steps:
+  - uses: CCBR/actions/changed-files@main
+    id: changed-files
+    with:
+      paths: |
+        **/Dockerfile.*
+      comparison-mode: latest-commit
+
+  - run: |
+      echo "Dockerfiles changed in latest commit:"
+      echo "${{ steps.changed-files.outputs.matched_files }}"
+```
+
 ```{python}
 print(ccbr_actions.docs.action_markdown_io(action))
 ```

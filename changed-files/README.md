@@ -15,7 +15,7 @@ library for pattern matching.
 
 ### Basic example
 
-[changed-files.yml](/examples/changed-files.yml)
+[changed-files.yml](./examples/changed-files.yml)
 
 Get all changed files:
 
@@ -87,6 +87,27 @@ steps:
       echo "${{ steps.changed-files.outputs.matched_files }}"
 ```
 
+### Latest commit only (fork-safe PRs)
+
+Compare only the latest commit in pull requests (`head^...head`) so
+updates to older commits in a PR do not keep re-matching files from
+earlier pushes. This mode is API-based and works for both same-repo and
+fork pull requests.
+
+```yaml
+steps:
+  - uses: CCBR/actions/changed-files@main
+    id: changed-files
+    with:
+      paths: |
+        **/Dockerfile.*
+      comparison-mode: latest-commit
+
+  - run: |
+      echo "Dockerfiles changed in latest commit:"
+      echo "${{ steps.changed-files.outputs.matched_files }}"
+```
+
 ## Inputs
 
 - `paths`: Pattern list in the .gitignore syntax to match against
@@ -96,6 +117,11 @@ steps:
 - `python-version`: The version of Python to install. Default: `3.11`.
 - `ccbr-actions-version`: The version of ccbr_actions to use. Default:
   `main`.
+- `comparison-mode`: Comparison mode for collecting changed files.
+- latest-commit: for pull_request, compare head^…head (latest commit
+  only)
+- event (default): compare full event range (PR base…head or push
+  before…after) . Default: `latest-commit`.
 
 ## Outputs
 

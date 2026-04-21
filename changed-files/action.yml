@@ -11,24 +11,27 @@ branding:
 
 inputs:
   paths:
-    type: string
     description: Pattern list in the .gitignore syntax to match against changed files
     required: false
   token:
-    type: string
     description: GitHub token used for `gh api` calls
     required: false
     default: "${{ github.token }}"
   python-version:
-    type: string
     description: The version of Python to install
     required: false
     default: "3.11"
   ccbr-actions-version:
-    type: string
     description: The version of ccbr_actions to use
     required: false
     default: "main"
+  comparison-mode:
+    description: |
+      Comparison mode for collecting changed files.
+      - latest-commit: for pull_request, compare head^...head (latest commit only)
+      - event (default): compare full event range (PR base...head or push before...after)
+    required: false
+    default: "latest-commit"
 
 outputs:
   changed_files:
@@ -61,13 +64,31 @@ runs:
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
+        # Validate comparison mode
+        comparison_mode="${{ inputs.comparison-mode }}"
+        if [ "$comparison_mode" != "event" ] && [ "$comparison_mode" != "latest-commit" ]; then
+          echo "::error::Invalid comparison mode: '$comparison_mode'. Must be 'event' or 'latest-commit'."
+          exit 1
+        fi
+
         EOS=$(openssl rand -hex 64)
         {
           echo "changed_file_list<<$EOS"
-          if [ "${{github.event_name}}" = "pull_request" ]; then
-            gh api 'repos/${{github.event.pull_request.base.repo.full_name}}/compare/${{github.event.pull_request.base.sha}}...${{github.event.pull_request.head.label}}' --jq '.files[].filename'
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ inputs.comparison-mode }}" = "latest-commit" ]; then
+            head_repo='${{ github.event.pull_request.head.repo.full_name }}'
+            head_sha='${{ github.event.pull_request.head.sha }}'
+            parent_sha=$(gh api "repos/${head_repo}/commits/${head_sha}" --jq '.parents[0].sha // empty')
+
+            # Fallback to full PR diff when the head commit has no parent.
+            if [ -n "$parent_sha" ]; then
+              gh api "repos/${head_repo}/compare/${parent_sha}...${head_sha}" --jq '.files[].filename'
+            else
+              gh api 'repos/${{ github.event.pull_request.base.repo.full_name}}/compare/${{ github.event.pull_request.base.sha}}...${{ github.event.pull_request.head.label}}' --jq '.files[].filename'
+            fi
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            gh api 'repos/${{ github.event.pull_request.base.repo.full_name}}/compare/${{ github.event.pull_request.base.sha}}...${{ github.event.pull_request.head.label}}' --jq '.files[].filename'
           else
-            gh api 'repos/${{github.repository}}/compare/${{github.event.before}}...${{github.event.after}}' --jq '.files[].filename'
+            gh api 'repos/${{ github.repository}}/compare/${{ github.event.before}}...${{ github.event.after}}' --jq '.files[].filename'
           fi
           echo "$EOS"
         } >> "$GITHUB_OUTPUT"
@@ -79,6 +100,10 @@ runs:
         CHANGED_FILE_LIST: ${{ steps.get-changed-files.outputs.changed_file_list }}
         PATHS: ${{ inputs.paths }}
       run: |
+        import os
         from ccbr_actions.changed_files import get_changed_files
-        get_changed_files()
+
+        changed_file_list = os.environ.get("CHANGED_FILE_LIST", "")
+        paths = os.environ.get("PATHS", "")
+        get_changed_files(changed_file_list=changed_file_list, paths=paths)
       shell: python

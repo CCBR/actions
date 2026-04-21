@@ -58,10 +58,8 @@ def test_match_paths_json_matches_python_payload():
 def test_get_changed_files_sets_result_output(monkeypatch, tmp_path):
     output_file = tmp_path / "github_output.txt"
     monkeypatch.setenv("GITHUB_OUTPUT", str(output_file))
-    monkeypatch.setenv("CHANGED_FILE_LIST", "a.txt\n")
-    monkeypatch.setenv("PATHS", "*.txt")
 
-    result_json = get_changed_files()
+    result_json = get_changed_files(changed_file_list="a.txt\n", paths="*.txt")
 
     payload = json.loads(result_json)
     assert payload["matched_files"] == "a.txt\n"

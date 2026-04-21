@@ -3,7 +3,6 @@ Helpers for changed-files action matching logic.
 """
 
 import json
-import os
 
 from pathspec import GitIgnoreSpec
 
@@ -50,25 +49,17 @@ def match_paths_json(changed_file_list, paths=None):
     return json.dumps(match_paths(changed_file_list=changed_file_list, paths=paths))
 
 
-def get_changed_files(changed_file_list=None, paths=None):
+def get_changed_files(changed_file_list, paths=""):
     """
     Compute and emit the `result` output for the changed-files action.
 
     Args:
-        changed_file_list (str, optional): Newline-separated changed file paths.
-            When omitted, this is read from CHANGED_FILE_LIST.
+        changed_file_list (str): Newline-separated changed file paths.
         paths (str, optional): .gitignore-style pattern list.
-            When omitted, this is read from PATHS.
 
     Returns:
         str: JSON-encoded payload written to the `result` output.
     """
-    changed_file_list = (
-        os.environ.get("CHANGED_FILE_LIST", "")
-        if changed_file_list is None
-        else changed_file_list
-    )
-    paths = os.environ.get("PATHS", "") if paths is None else paths
     result = match_paths_json(changed_file_list=changed_file_list, paths=paths)
     set_output("result", result)
     return result
