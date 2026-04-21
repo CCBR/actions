@@ -13,10 +13,11 @@ jobs:
   changed-files:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
       - uses: CCBR/actions/changed-files@main
         id: changed-files
+        with:
+          # Default mode; shown explicitly for clarity.
+          comparison-mode: latest-commit
 
       - name: Print all changed files
         run: |
@@ -26,11 +27,11 @@ jobs:
   filter-by-pattern:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
       - uses: CCBR/actions/changed-files@main
         id: changed-files
         with:
+          # Full event range mode.
+          comparison-mode: event
           paths: |
             src/**
             tests/**
@@ -43,11 +44,11 @@ jobs:
   docs-only:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-
       - uses: CCBR/actions/changed-files@main
         id: changed-files
         with:
+          # Latest-commit mode is useful for incremental PR checks.
+          comparison-mode: latest-commit
           paths: |
             docs/**
             *.md
