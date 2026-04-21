@@ -7,7 +7,7 @@ issues of a given label
 
 ### Basic example
 
-[add-issue-label-list.yml](/examples/add-issue-label-list.yml)
+[add-issue-label-list.yml](./examples/add-issue-label-list.yml)
 
 ```yaml
 name: add-issue-label-list

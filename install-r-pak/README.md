@@ -15,7 +15,7 @@ which will be read and passed along to the `extra-packages` argument of
 
 ### Basic example
 
-[R-CMD-check.yaml](/examples/R-CMD-check.yaml)
+[R-CMD-check.yaml](./examples/R-CMD-check.yaml)
 
 ```yaml
 steps:
@@ -27,7 +27,7 @@ steps:
 
 ### Customized inputs
 
-[R-CMD-check.yaml](/examples/R-CMD-check.yaml)
+[R-CMD-check.yaml](./examples/R-CMD-check.yaml)
 
 ```yaml
 jobs:
@@ -56,8 +56,8 @@ jobs:
 ## Inputs
 
 - `r-version`: The version of R to install. Default: `release`.
-- `http-user-agent`: .
-- `use-public-rspm`: . Default: `True`.
+- `http-user-agent`:
+- `use-public-rspm`: Default: `True`.
 - `versions-file`: File with content to pass to the extra-packages
   argument of setup-r-dependencies.
 - `extra-packages`: More packages to install in addition to those

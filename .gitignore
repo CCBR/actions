@@ -166,3 +166,5 @@ cython_debug/
 /objects.json
 /reference
 /_sidebar.yml
+
+**/*.quarto_ipynb

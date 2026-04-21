@@ -11,7 +11,7 @@ repos.
 
 ### Basic example
 
-[label-issues-reponame.yml](/examples/label-issues-repo-name.yml)
+[label-issues-reponame.yml](./examples/label-issues-repo-name.yml)
 
 ```yaml
 name: label-issues-repo-name

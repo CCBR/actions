@@ -51,7 +51,7 @@ complete these one-time steps:
 
 ### Basic example
 
-[docs-mkdocs.yml](/examples/docs-mkdocs.yml)
+[docs-mkdocs.yml](./examples/docs-mkdocs.yml)
 
 ```yaml
 steps:
@@ -97,5 +97,5 @@ steps:
 
 ## Outputs
 
-- `version`: The version of the docs being deployed..
-- `alias`: The alias of the version being deployed..
+- `version`: The version of the docs being deployed.
+- `alias`: The alias of the version being deployed.

@@ -5,11 +5,11 @@ author: "Kelly Sovacool"
 inputs:
   username:
     required: false
-    description: "GitHub username of the person assigned to the Issue or PR"
+    description: "GitHub username of the person assigned to the Issue or PR."
     default: ${{ github.event.assignee.login }}
   user_projects:
     required: false
-    description: "URL of a yaml file mapping usernames to project boards"
+    description: "URL of a yaml file mapping usernames to project boards."
     default: https://raw.githubusercontent.com/CCBR/.github/main/assets/user-kanbans.yml
   github-token:
     description: "GitHub Actions token with access to organization projects. Optional - set the app-id and app-private-key instead."
