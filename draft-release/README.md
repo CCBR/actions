@@ -93,7 +93,7 @@ steps:
 
 - `version-tag`: Semantic version tag for next release. If not provided,
   it will be determined based on conventional commit history. Example:
-  v2.5.11 .
+  v2.5.11.
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
 - `ccbr-actions-version`: The version of ccbr_actions to use.
@@ -101,7 +101,7 @@ steps:
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.11`.
 - `draft-branch`: The branch name to push changes to for the release
-  draft.. **Required.** Default: `release-draft`.
+  draft. **Required.** Default: `release-draft`.
 - `version-filepath`: Path to the file containing the current version.
   Default: `VERSION`.
 - `changelog-filepath`: Path to the changelog or news file. Default:

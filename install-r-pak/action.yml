@@ -4,7 +4,7 @@ description: |
 author: "Kelly Sovacool"
 inputs:
   r-version:
-    description: "The version of R to install"
+    description: "The version of R to install."
     default: "release"
   http-user-agent:
     default: ""
@@ -12,13 +12,13 @@ inputs:
     default: true
   versions-file:
     default: ""
-    description: "File with content to pass to the extra-packages argument of setup-r-dependencies"
+    description: "File with content to pass to the extra-packages argument of setup-r-dependencies."
   extra-packages:
     default: ""
-    description: "More packages to install in addition to those specified in versions-file"
+    description: "More packages to install in addition to those specified in versions-file."
   needs:
     default: ""
-    description: "Config/Needs field from DESCRIPTION to pass along to setup-r-dependencies"
+    description: "Config/Needs field from DESCRIPTION to pass along to setup-r-dependencies."
 
 runs:
   using: "composite"

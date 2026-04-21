@@ -16,7 +16,7 @@ inputs:
     required: false
     default: "false"
   max_updates_per_run:
-    description: "Maximum milestone updates/creates/closes/reopens per run"
+    description: "Maximum milestone updates/creates/closes/reopens per run."
     required: false
     default: "100"
   github-token:

@@ -143,21 +143,21 @@ steps:
 - `ccbr-actions-version`: The version of ccbr_actions to use. Default:
   `main`.
 - `comparison-mode`: Comparison mode for collecting changed files.
-- latest-commit (default): for pull_request, compare head^…head (latest
-  commit only)
-- event: compare full event range (PR base…head or push before…after) .
-  Default: `latest-commit`.
+  - latest-commit (default): for pull_request, compare head^…head
+    (latest commit only)
+  - event: compare full event range (PR base…head or push before…after).
+    Default: `latest-commit`.
 
 ## Outputs
 
 - `changed_files`: A multi-line string containing the list of changed
-  files..
+  files.
 - `changed_files_json`: A JSON string containing the list of changed
-  files..
+  files.
 - `matched_files`: A multi-line string containing the list of changed
-  files matching `paths` patterns. Empty (““) if `paths` is not given..
+  files matching `paths` patterns. Empty (““) if `paths` is not given.
 - `matched_files_json`: A JSON string containing the list of changed
   files matching `paths` patterns. Empty (“\[\]”) if `paths` is not
-  given..
+  given.
 - `error`: Error message if changed file collection fails. Empty on
-  success..
+  success.

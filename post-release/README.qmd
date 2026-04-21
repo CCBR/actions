@@ -1,11 +1,11 @@
 ---
+title: post-release
 format: gfm
 execute:
   echo: false
   output: asis
 ---
 
-# post-release
 
 ```{python}
 import ccbr_actions.docs

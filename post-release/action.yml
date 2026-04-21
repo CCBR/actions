@@ -4,42 +4,42 @@ author: "Kelly Sovacool"
 
 inputs:
   github-token:
-    description: "GitHub Actions token (e.g. github.token)"
+    description: "GitHub Actions token (e.g. github.token)."
     required: true
   ccbr-actions-version:
-    description: "The version of CCBR/actions to use"
+    description: "The version of CCBR/actions to use."
     required: true
     default: "main"
   python-version:
-    description: "The version of Python to install"
+    description: "The version of Python to install."
     required: true
     default: "3.11"
   pr-branch:
-    description: "Branch to use for the post-release chores, from where a PR will be opened. Recommended to use 'release/{TAG_NAME}'"
+    description: "Branch to use for the post-release chores, from where a PR will be opened. Recommended to use 'release/{TAG_NAME}'."
     default: "release/${{ github.ref_name }}"
     required: true
   draft-branch:
-    description: "Branch used for the prior release draft (see `draft-release` action)"
+    description: "Branch used for the prior release draft (see `draft-release` action)."
     default: "release-draft"
     required: true
   version-filepath:
-    description: "Path to the file containing the current version"
+    description: "Path to the file containing the current version."
     default: "VERSION"
   changelog-filepath:
-    description: "Path to the changelog or news file"
+    description: "Path to the changelog or news file."
     default: "CHANGELOG.md"
   citation-filepath:
-    description: "Path to the citation file"
+    description: "Path to the citation file."
     default: "CITATION.cff"
   dev-header:
-    description: "Header string to match to find the development version entry in the changelog, typically of the form '## <software name> development version'"
+    description: "Header string to match to find the development version entry in the changelog, typically of the form '## <software name> development version'."
     default: "development version"
   github-actor:
-    description: "Username of GitHub actor for the git commit when the docs branch is deployed"
+    description: "Username of GitHub actor for the git commit when the docs branch is deployed."
     required: true
     default: "41898282+github-actions[bot]"
   update-sliding-tags:
-    description: "Whether to update the sliding tags (major.minor & latest) to the new patch version"
+    description: "Whether to update the sliding tags (major.minor & latest) to the new patch version."
     default: "false"
 
 runs:

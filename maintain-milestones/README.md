@@ -132,17 +132,17 @@ steps:
 ## Inputs
 
 - `target_repo`: Target repository (excluding the owner). Defaults to
-  the current repo..
+  the current repo.
 - `owner`: Owner of the repository. Defaults to the current repository
-  owner..
+  owner.
 - `dry_run`: Toggle dry run mode. If true, report changes without
-  applying them.. Default: `false`.
+  applying them. Default: `false`.
 - `max_updates_per_run`: Maximum milestone
   updates/creates/closes/reopens per run. Default: `100`.
 - `github-token`: GitHub Actions token with access to organization
-  projects. Optional - set the app-id and app-private-key instead..
+  projects. Optional - set the app-id and app-private-key instead.
 - `app-id`: GitHub App ID for authentication. Optional - Use this
-  instead of a token..
+  instead of a token.
 - `app-private-key`: Private key for the GitHub App used for
   authentication. Optional - Use this instead of a token. Must be set if
-  app-id is set..
+  app-id is set.

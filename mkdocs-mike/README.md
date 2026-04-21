@@ -97,5 +97,5 @@ steps:
 
 ## Outputs
 
-- `version`: The version of the docs being deployed..
-- `alias`: The alias of the version being deployed..
+- `version`: The version of the docs being deployed.
+- `alias`: The alias of the version being deployed.

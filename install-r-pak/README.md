@@ -56,8 +56,8 @@ jobs:
 ## Inputs
 
 - `r-version`: The version of R to install. Default: `release`.
-- `http-user-agent`: .
-- `use-public-rspm`: . Default: `True`.
+- `http-user-agent`:
+- `use-public-rspm`: Default: `True`.
 - `versions-file`: File with content to pass to the extra-packages
   argument of setup-r-dependencies.
 - `extra-packages`: More packages to install in addition to those

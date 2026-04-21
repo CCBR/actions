@@ -1,11 +1,11 @@
 ---
+title: changed-files
 format: gfm
 execute:
   echo: false
   output: asis
 ---
 
-# changed-files
 
 ```{python}
 import ccbr_actions.docs

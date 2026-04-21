@@ -1,11 +1,11 @@
 ---
+title: label-issue-repo-name
 format: gfm
 execute:
   echo: false
   output: asis
 ---
 
-# label-issue-repo-name
 
 ```{python}
 import ccbr_actions.docs

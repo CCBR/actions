@@ -4,39 +4,39 @@ author: "Kelly Sovacool & Vishal Koparde"
 
 inputs:
   owner:
-    description: "Owner of the target repository"
+    description: "Owner of the target repository."
     required: true
   repo:
-    description: "Name of the target repository"
+    description: "Name of the target repository."
     required: true
   app-id:
-    description: "GitHub App ID used to generate an installation token"
+    description: "GitHub App ID used to generate an installation token."
     required: true
   app-private-key:
-    description: "GitHub App private key used to generate an installation token"
+    description: "GitHub App private key used to generate an installation token."
     required: true
   source-repository:
-    description: "Source repository containing canonical Copilot instructions"
+    description: "Source repository containing canonical Copilot instructions."
     required: true
     default: CCBR/.github
   source-ref:
-    description: "Branch, tag, or SHA in source repository"
+    description: "Branch, tag, or SHA in source repository."
     required: true
     default: main
   source-file:
-    description: "Path to canonical instructions file in source repository"
+    description: "Path to canonical instructions file in source repository."
     required: true
     default: .github/copilot-instructions.md
   target-file:
-    description: "Path to destination instructions file in target repository"
+    description: "Path to destination instructions file in target repository."
     required: true
     default: .github/copilot-instructions.md
   commit-message:
-    description: "Commit message used when sync updates are detected"
+    description: "Commit message used when sync updates are detected."
     required: true
     default: "chore: 🤖 sync copilot instructions"
   branch:
-    description: "Branch name to use for the sync pull request"
+    description: "Branch name to use for the sync pull request."
     required: true
     default: update-copilot-instructions
 
