@@ -1,6 +1,6 @@
 ## actions development version
 
-- Improve error message for `changed-files` when output is not set. (#162, @kelly-sovacool)
+- Fix `changed-files` JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)
 
 ## actions 0.6.1
 
