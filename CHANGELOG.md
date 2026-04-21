@@ -1,5 +1,7 @@
 ## actions development version
 
+- Fix forgotten actions that were missed when previously bumping to the latest versions in anticipation of the node.js 20 deprecation. (@kelly-sovacool)
+
 ## actions 0.6.0
 
 - New action: `changed-files` to detect files that changed matching a pattern. (#152, @kelly-sovacool)
