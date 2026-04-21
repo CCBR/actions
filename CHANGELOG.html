@@ -375,6 +375,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./actions/changed-files/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changed Files</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">mkdocs-mike</span></a>
   </div>
@@ -576,7 +582,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#actions-0.5.3" id="toc-actions-0.5.3" class="nav-link active" data-scroll-target="#actions-0.5.3">actions 0.5.3</a></li>
+  <li><a href="#actions-development-version" id="toc-actions-development-version" class="nav-link active" data-scroll-target="#actions-development-version">actions development version</a></li>
+  <li><a href="#actions-0.6.1" id="toc-actions-0.6.1" class="nav-link" data-scroll-target="#actions-0.6.1">actions 0.6.1</a></li>
+  <li><a href="#actions-0.6.0" id="toc-actions-0.6.0" class="nav-link" data-scroll-target="#actions-0.6.0">actions 0.6.0</a></li>
+  <li><a href="#actions-0.5.3" id="toc-actions-0.5.3" class="nav-link" data-scroll-target="#actions-0.5.3">actions 0.5.3</a></li>
   <li><a href="#actions-0.5.2" id="toc-actions-0.5.2" class="nav-link" data-scroll-target="#actions-0.5.2">actions 0.5.2</a></li>
   <li><a href="#actions-0.5.1" id="toc-actions-0.5.1" class="nav-link" data-scroll-target="#actions-0.5.1">actions 0.5.1</a></li>
   <li><a href="#actions-0.5.0" id="toc-actions-0.5.0" class="nav-link" data-scroll-target="#actions-0.5.0">actions 0.5.0</a></li>
@@ -614,6 +623,27 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<section id="actions-development-version" class="level2">
+<h2 class="anchored" data-anchor-id="actions-development-version">actions development version</h2>
+</section>
+<section id="actions-0.6.1" class="level2">
+<h2 class="anchored" data-anchor-id="actions-0.6.1">actions 0.6.1</h2>
+<ul>
+<li>Fix <code>changed-files</code>: do not use pip cache with <code>setup-python</code> since the repo is not checked out. (#158, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+<li>Fix forgotten actions that were missed when previously bumping to the latest versions in anticipation of the node.js 20 deprecation. (#159, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+</ul>
+</section>
+<section id="actions-0.6.0" class="level2">
+<h2 class="anchored" data-anchor-id="actions-0.6.0">actions 0.6.0</h2>
+<ul>
+<li>New action: <code>changed-files</code> to detect files that changed matching a pattern. (#152, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)
+<ul>
+<li>Can compare the most recent commit only or the entire PR changes by setting the <code>comparison-mode</code> option. (#156, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+</ul></li>
+<li>Bump actions versions to the latest release in anticipation of the node.js 20 deprecation. (#149, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+<li>Improve build-docker example workflows to prevent excessive docker updates. (#153, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+</ul>
+</section>
 <section id="actions-0.5.3" class="level2">
 <h2 class="anchored" data-anchor-id="actions-0.5.3">actions 0.5.3</h2>
 <ul>

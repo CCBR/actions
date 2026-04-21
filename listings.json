@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/actions/changed-files/index.html",
       "/actions/install-r-pak/index.html",
       "/actions/add-issue-label-list/index.html",
       "/actions/build-docker/index.html",
@@ -17,6 +18,7 @@
   {
     "listing": "/actions.html",
     "items": [
+      "/actions/changed-files/index.html",
       "/actions/install-r-pak/index.html",
       "/actions/add-issue-label-list/index.html",
       "/actions/build-docker/index.html",
