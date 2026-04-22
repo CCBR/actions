@@ -35,6 +35,12 @@ inputs:
       Push to DockerHub (leave unchecked to just build the container without pushing).
     required: true
     default: false
+  force_build:
+    type: boolean
+    description: |
+      Force docker image build even when the Docker Hub tag is up-to-date.
+    required: true
+    default: false
   ccbr-actions-version:
     type: string
     description: |
@@ -143,8 +149,29 @@ runs:
         echo -ne "Base image: $BASEIMAGENAME \n\n" >> $MDFILE
         echo -ne "Dockerfile path in repo: $DOCKERFILE_PATH \n\n" >> $MDFILE
 
+    - name: Check whether image tag is stale
+      id: check_tag_staleness
+      shell: python
+      run: |
+        from ccbr_actions.actions import set_output
+        from ccbr_actions.docker import evaluate_docker_build_staleness_and_set_outputs
+
+        force_build = "${{ inputs.force_build }}".lower() == "true"
+        if force_build:
+          set_output("should_build", "true")
+          set_output("reason", "force_build_requested")
+          print("::notice::Force build requested. Skipping Docker Hub staleness check.")
+        else:
+          evaluate_docker_build_staleness_and_set_outputs(
+            dockerfile_path="${{ env.DOCKERFILE_PATH }}",
+            image_name="${{ env.IMAGENAME }}",
+            dockerhub_namespace="${{ inputs.dockerhub-namespace }}",
+            repo_name="${{ env.REPONAME }}",
+          )
+
     - name: Build and push Docker image
       id: build_and_push
+      if: ${{ steps.check_tag_staleness.outputs.should_build == 'true' }}
       uses: docker/build-push-action@v7
       with:
         file: ${{ env.DOCKERFILE_PATH }}
@@ -162,7 +189,7 @@ runs:
     - name: Run print_versions.sh inside Docker container
       shell: bash
       id: run_script_in_container
-      if: ${{ inputs.print-versions == 'true' }}
+      if: ${{ (inputs.print-versions == 'true') && (steps.check_tag_staleness.outputs.should_build == 'true') }}
       run: |
         script_src=$(command -v print_versions.sh)
         EXTRA_MOUNTS=""
@@ -182,7 +209,7 @@ runs:
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
-      if: ${{ (steps.resolve_push.outputs.push_enabled == 'true') && (steps.build_and_push.outcome == 'success') }}
+      if: ${{ (steps.check_tag_staleness.outputs.should_build == 'true') && (steps.resolve_push.outputs.push_enabled == 'true') && (steps.build_and_push.outcome == 'success') }}
       uses: peter-evans/dockerhub-description@v5
       with:
         username: ${{ inputs.dockerhub-username }}
@@ -216,7 +243,7 @@ runs:
 
     - name: upload readme file
       uses: actions/upload-artifact@v7
-      if: ${{ failure() || steps.approve-pr.outcome != 'success'}}
+      if: ${{ (steps.check_tag_staleness.outputs.should_build == 'true') && (failure() || steps.approve-pr.outcome != 'success') }}
       with:
         name: ${{ env.ARTIFACT_NAME }}
         path: ${{ env.MDFILE }}
