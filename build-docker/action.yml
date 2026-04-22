@@ -199,7 +199,7 @@ runs:
       uses: peter-evans/create-pull-request@v8
       if: ${{ steps.update_dockerhub_description.outcome == 'success' }}
       with:
-        token: ${{ github.token }}
+        token: ${{ inputs.github-token }}
         add-paths: ${{ env.MDFILE }}
         commit-message: "docs: 🤖 update readme for ${{ env.DOCKERFILE_PATH }}"
         author: "${{ inputs.github-actor }} <${{ inputs.github-actor }}@users.noreply.github.com>"
