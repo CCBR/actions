@@ -235,6 +235,18 @@
     ]
   },
   {
+    "objectID": "actions/build-docker/index.html#outputs",
+    "href": "actions/build-docker/index.html#outputs",
+    "title": "build-docker",
+    "section": "Outputs",
+    "text": "Outputs\n\npush_success: Whether Docker succeeded for this run",
+    "crumbs": [
+      "GitHub Actions",
+      "Actions",
+      "build-docker"
+    ]
+  },
+  {
     "objectID": "actions/mkdocs-mike/index.html",
     "href": "actions/mkdocs-mike/index.html",
     "title": "mkdocs-mike",
@@ -928,7 +940,7 @@
     "href": "CHANGELOG.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)\nFix build-docker behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)\nMinor documentation improvements. (#165, @kelly-sovacool)",
+    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)\nFix build-docker behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)\nNew output from build-docker: push_success reports whether the docker image was pushed successfully. (#167, @kelly-sovacool)\nMinor documentation improvements. (#165, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -939,7 +951,7 @@
     "href": "CHANGELOG.html#actions-development-version",
     "title": "CCBR actions",
     "section": "",
-    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)\nFix build-docker behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)\nMinor documentation improvements. (#165, @kelly-sovacool)",
+    "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)\nFix build-docker behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)\nNew output from build-docker: push_success reports whether the docker image was pushed successfully. (#167, @kelly-sovacool)\nMinor documentation improvements. (#165, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"

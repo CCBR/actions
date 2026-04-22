@@ -624,6 +624,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#basic-example" id="toc-basic-example" class="nav-link" data-scroll-target="#basic-example">Basic example</a></li>
   </ul></li>
   <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">Inputs</a></li>
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">Outputs</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/actions/build-docker/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -710,6 +711,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>print-versions</code>: Whether to print tool versions in the container for the README file using <code>config-file</code>. Default: <code>True</code>.</li>
 <li><code>config-file</code>: Relative path to config file for tool version commands (text format with :: delimiters). If not provided and print-versions is true, the default config file from ccbr_actions will be used. Default: <code>scripts/tool_version_commands.txt</code>.</li>
 <li><code>gh-merge-args</code>: arguments for <code>gh pr merge</code>. Default: <code>-ds --admin</code>.</li>
+</ul>
+</section>
+<section id="outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs">Outputs</h2>
+<ul>
+<li><code>push_success</code>: Whether Docker succeeded for this run</li>
 </ul>
 
 
