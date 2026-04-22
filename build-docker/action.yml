@@ -74,6 +74,10 @@ inputs:
     description: |
       arguments for `gh pr merge`.
     default: "-ds --admin"
+outputs:
+  push_success:
+    description: "Whether Docker succeeded for this run"
+    value: ${{ steps.resolve_push.outputs.push_enabled && steps.build_and_push.outcome == 'success' }}
 
 runs:
   using: "composite"
