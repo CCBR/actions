@@ -85,3 +85,7 @@ files change, see
   is true, the default config file from ccbr_actions will be used.
   Default: `scripts/tool_version_commands.txt`.
 - `gh-merge-args`: arguments for `gh pr merge`. Default: `-ds --admin`.
+
+## Outputs
+
+- `push_success`: Whether Docker succeeded for this run
