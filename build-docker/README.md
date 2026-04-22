@@ -13,9 +13,9 @@ This action:
 - Prepares build-time variables by running a custom script.
 - Checks variables and creates a README file with build details in the
   same directory as the dockerfile.
-- Builds the Docker image in all cases; pushes only when effective push
-  mode is enabled.
-- Lists Docker images on the runner.
+- Checks whether the DockerHub tag is stale before building.
+- Builds the Docker image only when a build is needed; pushes only when
+  effective push mode is enabled.
 - Updates the DockerHub description with the contents of the README file
   only if the image was successfully pushed.
 - Opens and merges a PR with the README updates only when the DockerHub
