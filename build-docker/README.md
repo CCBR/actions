@@ -67,6 +67,8 @@ files change, see
   **Required.** Default: `feat`.
 - `push`: Push to DockerHub (leave unchecked to just build the container
   without pushing). **Required.**
+- `force_build`: Force docker image build even when the Docker Hub tag
+  is up-to-date. **Required.**
 - `ccbr-actions-version`: The version of ccbr_actions to use.
   **Required.** Default: `main`.
 - `python-version`: The version of Python to install. **Required.**
