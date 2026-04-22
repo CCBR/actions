@@ -700,15 +700,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><code>dockerfile</code>: path to the Dockerfile in the repo (e.g.&nbsp;common/ccbr_bwa/Dockerfile). <strong>Required.</strong></li>
 <li><code>dockerhub-namespace</code>: dockerhub namespace or org name (e.g.&nbsp;nciccbr). <strong>Required.</strong> Default: <code>nciccbr</code>.</li>
-<li><code>dockerhub-username</code>: dockerhub username of a user with admin permissions for <code>dockerhub-namespace</code>. Recommend using secrets, e.g.&nbsp;secrets.DOCKERHUB_USERNAME. <strong>Required.</strong></li>
+<li><code>dockerhub-username</code>: dockerhub username of a user with admin permissions for <code>dockerhub-namespace</code>. Recommend using secrets, e.g.&nbsp;secrets.DOCKERHUB_USERNAME.</li>
 <li><code>dockerhub-token</code>: dockerhub token with read &amp; write permissions. Strongly recommend using secrets, e.g.&nbsp;secrets.DOCKERHUB_TOKEN.</li>
 <li><code>suffix</code>: Suffix to add to image tag eg. “dev” to add “-dev”. <strong>Required.</strong> Default: <code>feat</code>.</li>
-<li><code>push</code>: Push to DockerHub (leave unchecked to just build the container without pushing). <strong>Required.</strong></li>
+<li><code>push</code>: Push to DockerHub (if false, just build the container without pushing). <strong>Required.</strong> Default: <code>false</code>.</li>
 <li><code>ccbr-actions-version</code>: The version of ccbr_actions to use. <strong>Required.</strong> Default: <code>main</code>.</li>
 <li><code>python-version</code>: The version of Python to install. <strong>Required.</strong> Default: <code>3.11</code>.</li>
-<li><code>github-actor</code>: Username of GitHub actor for the git commit when the README is updated. <strong>Required.</strong> Default: <code>41898282+github-actions[bot]</code>.</li>
+<li><code>github-actor</code>: Username of GitHub actor for the git commit when the README is updated. <strong>Required.</strong> Default: <code>258092125+CCBR-bot[bot]</code>.</li>
 <li><code>github-token</code>: GitHub Actions token (e.g.&nbsp;github.token). <strong>Required.</strong></li>
-<li><code>print-versions</code>: Whether to print tool versions in the container for the README file using <code>config-file</code>. Default: <code>True</code>.</li>
+<li><code>print-versions</code>: Whether to print tool versions in the container for the README file using <code>config-file</code>. Default: <code>true</code>.</li>
 <li><code>config-file</code>: Relative path to config file for tool version commands (text format with :: delimiters). If not provided and print-versions is true, the default config file from ccbr_actions will be used. Default: <code>scripts/tool_version_commands.txt</code>.</li>
 <li><code>gh-merge-args</code>: arguments for <code>gh pr merge</code>. Default: <code>-ds --admin</code>.</li>
 </ul>
