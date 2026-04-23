@@ -145,12 +145,18 @@ def dockerfile_last_commit_iso(dockerfile_path: str) -> str:
         dockerfile_path (str): Path to the Dockerfile in the repository.
 
     Returns:
-        str: ISO8601 timestamp from git ``%cI`` format.
+        str: ISO8601 timestamp from git ``%cI`` format, or an empty string
+        when the file is missing, untracked, or has no git history.
     """
-    return subprocess.check_output(
-        ["git", "log", "-1", "--format=%cI", "--", dockerfile_path],
-        text=True,
-    ).strip()
+    last_commit_iso = ""
+    try:
+        last_commit_iso = subprocess.check_output(
+            ["git", "log", "-1", "--format=%cI", "--", dockerfile_path],
+            text=True,
+        ).strip()
+    except subprocess.CalledProcessError:
+        last_commit_iso = ""
+    return last_commit_iso
 
 
 def dockerhub_tag_last_updated(
