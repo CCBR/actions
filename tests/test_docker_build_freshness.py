@@ -1,3 +1,5 @@
+import subprocess
+
 import requests
 
 
@@ -64,6 +66,18 @@ def test_dockerfile_last_commit_iso_empty(monkeypatch):
     monkeypatch.setattr(docker_module.subprocess, "check_output", fake_check_output)
 
     result = docker_module.dockerfile_last_commit_iso("untracked/Dockerfile.v1")
+    assert result == ""
+
+
+def test_dockerfile_last_commit_iso_called_process_error(monkeypatch):
+    """Test that CalledProcessError is handled and returns an empty string."""
+
+    def fake_check_output(*args, **kwargs):
+        raise subprocess.CalledProcessError(128, "git")
+
+    monkeypatch.setattr(docker_module.subprocess, "check_output", fake_check_output)
+
+    result = docker_module.dockerfile_last_commit_iso("missing/Dockerfile.v1")
     assert result == ""
 
 
@@ -141,6 +155,8 @@ def test_image_tag_from_image_name():
         docker_module.image_tag_from_image_name("localhost:5000/myrepo/mytool:latest")
         == "latest"
     )
+    # registry with port but no explicit tag should return empty string
+    assert docker_module.image_tag_from_image_name("localhost:5000/myrepo/image") == ""
 
 
 def test_evaluate_docker_build_staleness_skip_when_tag_is_newer(monkeypatch):
