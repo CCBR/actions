@@ -1,8 +1,10 @@
 ## actions development version
 
 - Fix `changed-files` JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)
-- Fix `build-docker` behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)
-- New output from `build-docker`: `push_success` reports whether the docker image was pushed successfully. (#167, @kelly-sovacool)
+- `build-docker` updates:
+  - Fix when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)
+  - New output: `push_success` reports whether the docker image was pushed successfully. (#167, @kelly-sovacool)
+  - Only build if the image on dockerhub does not exist or is older than the dockerfile timestamp. (#166, @kelly-sovacool)
 - Minor documentation improvements. (#165, @kelly-sovacool)
 
 ## actions 0.6.1
