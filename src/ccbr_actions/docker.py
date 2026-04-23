@@ -127,14 +127,18 @@ def image_tag_from_image_name(image_name: str) -> str:
     Extract the tag suffix from a Docker image name.
 
     Args:
-        image_name (str): Docker image name in ``repo/image:tag`` format.
+        image_name (str): Docker image reference, optionally including a tag.
 
     Returns:
         str: Tag string, or an empty string if no tag is present.
     """
-    if ":" not in image_name:
-        return ""
-    return image_name.rsplit(":", 1)[1]
+    reference = image_name.split("@", 1)[0]
+    last_slash = reference.rfind("/")
+    last_colon = reference.rfind(":")
+    tag = ""
+    if last_colon > last_slash:
+        tag = reference[last_colon + 1 :]
+    return tag
 
 
 def dockerfile_last_commit_iso(dockerfile_path: str) -> str:
