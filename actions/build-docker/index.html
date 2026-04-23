@@ -666,8 +666,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Logs in to DockerHub only when effective push mode is enabled.</li>
 <li>Prepares build-time variables by running a custom script.</li>
 <li>Checks variables and creates a README file with build details in the same directory as the dockerfile.</li>
-<li>Builds the Docker image in all cases; pushes only when effective push mode is enabled.</li>
-<li>Lists Docker images on the runner.</li>
+<li>Checks whether the DockerHub tag is stale before building.</li>
+<li>Builds the Docker image only when a build is needed; pushes only when effective push mode is enabled.</li>
 <li>Updates the DockerHub description with the contents of the README file only if the image was successfully pushed.</li>
 <li>Opens and merges a PR with the README updates only when the DockerHub description update step runs successfully.</li>
 </ul>
@@ -704,6 +704,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>dockerhub-token</code>: dockerhub token with read &amp; write permissions. Strongly recommend using secrets, e.g.&nbsp;secrets.DOCKERHUB_TOKEN.</li>
 <li><code>suffix</code>: Suffix to add to image tag eg. “dev” to add “-dev”. <strong>Required.</strong> Default: <code>feat</code>.</li>
 <li><code>push</code>: Push to DockerHub (if false, just build the container without pushing). <strong>Required.</strong> Default: <code>false</code>.</li>
+<li><code>force_build</code>: Force docker image build even when the Docker Hub tag is up-to-date. <strong>Required.</strong> Default: <code>false</code>.</li>
 <li><code>ccbr-actions-version</code>: The version of ccbr_actions to use. <strong>Required.</strong> Default: <code>main</code>.</li>
 <li><code>python-version</code>: The version of Python to install. <strong>Required.</strong> Default: <code>3.11</code>.</li>
 <li><code>github-actor</code>: Username of GitHub actor for the git commit when the README is updated. <strong>Required.</strong> Default: <code>258092125+CCBR-bot[bot]</code>.</li>

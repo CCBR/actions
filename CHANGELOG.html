@@ -627,8 +627,12 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="actions-development-version">actions development version</h2>
 <ul>
 <li>Fix <code>changed-files</code> JSON output handling and improve error messages. (#162, #163, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
-<li>Fix <code>build-docker</code> behavior when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
-<li>New output from <code>build-docker</code>: <code>push_success</code> reports whether the docker image was pushed successfully. (#167, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+<li><code>build-docker</code> updates:
+<ul>
+<li>Fix when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+<li>New output: <code>push_success</code> reports whether the docker image was pushed successfully. (#167, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+<li>Only build if the image on dockerhub does not exist or is older than the dockerfile timestamp. (#166, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+</ul></li>
 <li>Minor documentation improvements. (#165, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
 </ul>
 </section>
