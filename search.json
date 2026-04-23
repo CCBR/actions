@@ -77,7 +77,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.6.1). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {4},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.6.2). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {4},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
     "crumbs": [
       "Project information",
       "Citation"
@@ -947,8 +947,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.6.2",
+    "href": "CHANGELOG.html#actions-0.6.2",
     "title": "CCBR actions",
     "section": "",
     "text": "Fix changed-files JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)\nbuild-docker updates:\n\nFix when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)\nNew output: push_success reports whether the docker image was pushed successfully. (#167, @kelly-sovacool)\nOnly build if the image on dockerhub does not exist or is older than the dockerfile timestamp. (#166, @kelly-sovacool)\n\nMinor documentation improvements. (#165, @kelly-sovacool)",
