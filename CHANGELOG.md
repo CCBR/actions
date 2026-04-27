@@ -1,5 +1,8 @@
 ## actions development version
 
+- Bump actions versions.
+- Minor documentation improvements.
+
 ## actions 0.6.2
 
 - Fix `changed-files` JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)
