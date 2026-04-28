@@ -25,6 +25,7 @@ them for your needs.
 - [add-issue-label-list](examples/add-issue-label-list.yml)
 - [auto-format](examples/auto-format.yml)
 - [build-docker-auto](examples/build-docker-auto.yml)
+- [build-docker-dispatch](examples/build-docker-dispatch.yml)
 - [build-docker-manual](examples/build-docker-manual.yml)
 - [build-nextflow](examples/build-nextflow.yml)
 - [build-python](examples/build-python.yml)
@@ -39,6 +40,7 @@ them for your needs.
 - [post-release](examples/post-release.yml)
 - [sync-copilot-instructions](examples/sync-copilot-instructions.yml)
 - [techdev-project](examples/techdev-project.yml)
+- [trigger-docker-dispatch](examples/trigger-docker-dispatch.yml)
 - [update-cff-R](examples/update-cff-R.yml)
 - [user-projects](examples/user-projects.yml)
 
