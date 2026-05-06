@@ -104,6 +104,8 @@ steps:
   draft. **Required.** Default: `release-draft`.
 - `version-filepath`: Path to the file containing the current version.
   Default: `VERSION`.
+- `description-filepath`: Path to the R DESCRIPTION file, used when an R
+  package is detected. Default: `DESCRIPTION`.
 - `changelog-filepath`: Path to the changelog or news file. Default:
   `CHANGELOG.md`.
 - `citation-filepath`: Path to the citation file. Default:
