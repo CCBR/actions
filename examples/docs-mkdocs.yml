@@ -20,6 +20,10 @@ permissions:
   contents: write
   pages: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   mkdocs:
     runs-on: ubuntu-latest
