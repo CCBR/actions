@@ -1,5 +1,6 @@
 ## actions development version
 
+- Update example workflows to limit concurrency which saves runtime. (#172, @kelly-sovacool)
 - Bump actions versions.
 - Minor documentation improvements.
 
