@@ -2,6 +2,7 @@
 
 - Bump actions versions.
 - Minor documentation improvements.
+- Use the CCBR-bot as the committer in `auto-format` so changes will trigger other workflows. (#171, @kelly-sovacool)
 
 ## actions 0.6.2
 
