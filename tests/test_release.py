@@ -9,6 +9,7 @@ from ccbr_actions.release import (
     push_release_draft_branch,
     get_changelog_lines,
     get_release_version,
+    get_r_dev_version,
     post_release_cleanup,
     set_release_version,
     is_r_package,
@@ -213,6 +214,19 @@ def test_get_release_version_semver_error():
     )
 
 
+def test_get_r_dev_version():
+    assert get_r_dev_version("0.2.0") == "0.2.0.9000"
+    assert get_r_dev_version("v0.2.0") == "0.2.0.9000"
+
+
+def test_get_r_dev_version_error():
+    with pytest.raises(ValueError) as exc_info:
+        get_r_dev_version("0.2.0.9000")
+    assert "R package release version must follow semantic versioning" in str(
+        exc_info.value
+    )
+
+
 def test_is_r_package(tmp_path):
     desc = tmp_path / "DESCRIPTION"
     desc.write_text("Package: mypkg\nVersion: 0.1.0\n")
@@ -319,7 +333,7 @@ def test_post_release_cleanup_r_package(github_output_file, tmp_path, monkeypatc
         None,
     )
     assert version_line is not None, f"No Version line found in {description_file}"
-    assert version_line == "Version: 0.2.0-dev"
+    assert version_line == "Version: 0.2.0.9000"
     assert any("Rscript -e" in command for command in commands)
 
 

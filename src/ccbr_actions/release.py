@@ -3,6 +3,7 @@ Helpers for drafting releases and cleaning up after releases are published.
 """
 
 import os
+import re
 import shlex
 import warnings
 from ccbr_tools.shell import shell_run
@@ -109,6 +110,25 @@ def regenerate_citation_from_description(citation_filepath="CITATION.cff", debug
         print(cmd)
     else:
         shell_run(cmd)
+
+
+def get_r_dev_version(version):
+    """
+    Get the next R package development version.
+
+    Args:
+        version (str): Current released version, with or without leading 'v'.
+
+    Returns:
+        str: R package development version in the form X.Y.Z.9000.
+    """
+    version_strict = version.lstrip("v")
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version_strict):
+        raise ValueError(
+            "R package release version must follow semantic versioning before "
+            f"bumping to development version. Got: {version}"
+        )
+    return f"{version_strict}.9000"
 
 
 def prepare_draft_release(
@@ -356,7 +376,8 @@ def post_release_cleanup(
             outfile.writelines(lines)
         if use_r_package_structure:
             write_description_version(
-                description_filepath=version_filepath, version=f"{version}-dev"
+                description_filepath=version_filepath,
+                version=get_r_dev_version(version),
             )
             if citation_filepath.is_file():
                 regenerate_citation_from_description(
