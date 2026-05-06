@@ -16,6 +16,84 @@ from .versions import (
 )
 
 
+def is_r_package(description_filepath="DESCRIPTION"):
+    """
+    Detect whether this repository appears to be an R package.
+
+    Args:
+        description_filepath (str): Path to the R DESCRIPTION file.
+
+    Returns:
+        bool: True if the DESCRIPTION file exists and includes Package and Version keys.
+    """
+    description_filepath = path_resolve(description_filepath)
+    if not description_filepath.is_file():
+        return False
+    with open(description_filepath, "r") as infile:
+        description_lines = infile.readlines()
+    has_package = any(line.startswith("Package:") for line in description_lines)
+    has_version = any(line.startswith("Version:") for line in description_lines)
+    return has_package and has_version
+
+
+def get_news_filepath():
+    """
+    Get the NEWS filepath for an R package.
+
+    Returns:
+        str: "NEWS.md" if it exists, else "NEWS" if it exists, otherwise "NEWS.md".
+    """
+    for filepath in ("NEWS.md", "NEWS"):
+        if path_resolve(filepath).is_file():
+            return filepath
+    return "NEWS.md"
+
+
+def write_description_version(
+    description_filepath="DESCRIPTION", version="0.0.0", debug=False
+):
+    """
+    Update Version in an R DESCRIPTION file.
+
+    Args:
+        description_filepath (str): Path to DESCRIPTION file.
+        version (str): Version string to write.
+        debug (bool): If True, print updates instead of writing to file.
+    """
+    description_filepath = path_resolve(description_filepath)
+    with open(description_filepath, "r") as infile:
+        description_lines = infile.readlines()
+    for i, line in enumerate(description_lines):
+        if line.startswith("Version:"):
+            description_lines[i] = f"Version: {version}\n"
+            break
+    if debug:
+        print("".join(description_lines))
+    else:
+        with open(description_filepath, "w") as outfile:
+            outfile.writelines(description_lines)
+
+
+def regenerate_citation_from_description(citation_filepath="CITATION.cff", debug=False):
+    """
+    Regenerate CITATION.cff from DESCRIPTION using cffr.
+
+    Args:
+        citation_filepath (str): Path to output CITATION.cff.
+        debug (bool): If True, print command instead of running it.
+    """
+    cmd = (
+        "Rscript -e "
+        '"if (!requireNamespace(\\"cffr\\", quietly = TRUE)) '
+        'install.packages(\\"cffr\\", repos=\\"https://cloud.r-project.org\\"); '
+        f'cffr::cff_write(cff_file = \\"{citation_filepath}\\")"'
+    )
+    if debug:
+        print(cmd)
+    else:
+        shell_run(cmd)
+
+
 def prepare_draft_release(
     next_version_manual="${{ github.event.inputs.version_tag }}",
     next_version_convco="${{ steps.semver.outputs.next }}",
@@ -29,6 +107,7 @@ def prepare_draft_release(
     release_branch="release-draft",
     pr_ref_name="${{ github.ref_name }}",
     repo="${{ github.repository }}",
+    description_filepath="DESCRIPTION",
     debug=False,
 ):
     """
@@ -54,6 +133,13 @@ def prepare_draft_release(
         >>> prepare_release()
         >>> prepare_release(dev_header="dev version", debug=True)
     """
+    use_r_package_structure = is_r_package(description_filepath=description_filepath)
+    if use_r_package_structure:
+        if changelog_filepath == "CHANGELOG.md":
+            changelog_filepath = get_news_filepath()
+        if version_filepath == "VERSION":
+            version_filepath = description_filepath
+
     release_notes_filepath = path_resolve(release_notes_filepath)
     changelog_filepath = path_resolve(changelog_filepath)
     version_filepath = path_resolve(version_filepath)
@@ -78,12 +164,24 @@ def prepare_draft_release(
 
     write_lines(release_notes_filepath, next_release_lines, debug=debug)
     write_lines(changelog_filepath, changelog_lines, debug=debug)
-    write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
+    if use_r_package_structure:
+        write_description_version(
+            description_filepath=version_filepath,
+            version=next_version_strict,
+            debug=debug,
+        )
+    else:
+        write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
 
     if citation_filepath.is_file():
-        update_citation(
-            citation_file=citation_filepath, version=next_version, debug=debug
-        )
+        if use_r_package_structure:
+            regenerate_citation_from_description(
+                citation_filepath=citation_filepath, debug=debug
+            )
+        else:
+            update_citation(
+                citation_file=citation_filepath, version=next_version, debug=debug
+            )
         write_citation(
             citation_file=citation_filepath,
             output_file="codemeta.json",
@@ -160,6 +258,7 @@ def post_release_cleanup(
     dev_header="development version",
     version_filepath="VERSION",
     citation_filepath="CITATION.cff",
+    description_filepath="DESCRIPTION",
     debug=False,
 ):
     """
@@ -183,6 +282,13 @@ def post_release_cleanup(
         >>> post_release_cleanup()
         >>> post_release_cleanup(changelog_filepath="docs/CHANGELOG.md", pr_branch="main")
     """
+    use_r_package_structure = is_r_package(description_filepath=description_filepath)
+    if use_r_package_structure:
+        if changelog_filepath == "CHANGELOG.md":
+            changelog_filepath = get_news_filepath()
+        if version_filepath == "VERSION":
+            version_filepath = description_filepath
+
     changelog_filepath = path_resolve(changelog_filepath)
     version_filepath = path_resolve(version_filepath)
     citation_filepath = path_resolve(citation_filepath)
@@ -191,8 +297,16 @@ def post_release_cleanup(
         lines = infile.readlines()
     lines.insert(0, f"## {os.path.basename(repo)} {dev_header}\n\n")
 
-    with open(version_filepath, "r") as infile:
-        version = infile.read().strip()
+    if use_r_package_structure:
+        version = ""
+        with open(version_filepath, "r") as infile:
+            for line in infile.readlines():
+                if line.startswith("Version:"):
+                    version = line.removeprefix("Version:").strip()
+                    break
+    else:
+        with open(version_filepath, "r") as infile:
+            version = infile.read().strip()
 
     changed_files = " ".join(
         [
@@ -219,8 +333,17 @@ def post_release_cleanup(
     else:
         with open(path_resolve(changelog_filepath), "w") as outfile:
             outfile.writelines(lines)
-        with open(path_resolve(version_filepath), "w") as outfile:
-            outfile.write(f"{version}-dev\n")
+        if use_r_package_structure:
+            write_description_version(
+                description_filepath=version_filepath, version=f"{version}-dev"
+            )
+            if citation_filepath.is_file():
+                regenerate_citation_from_description(
+                    citation_filepath=citation_filepath
+                )
+        else:
+            with open(path_resolve(version_filepath), "w") as outfile:
+                outfile.write(f"{version}-dev\n")
         precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)
         pr_url = shell_run(pr_cmd)

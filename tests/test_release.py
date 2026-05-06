@@ -11,6 +11,7 @@ from ccbr_actions.release import (
     get_release_version,
     post_release_cleanup,
     set_release_version,
+    is_r_package,
 )
 from ccbr_tools.shell import exec_in_context, shell_run
 
@@ -212,6 +213,51 @@ def test_get_release_version_semver_error():
     )
 
 
+def test_is_r_package(tmp_path):
+    desc = tmp_path / "DESCRIPTION"
+    desc.write_text("Package: mypkg\nVersion: 0.1.0\n")
+    assert is_r_package(description_filepath=desc)
+
+
+def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir):
+    repo_dir = tmp_path / "repo"
+    repo_dir.mkdir()
+    original_cwd = os.getcwd()
+    os.chdir(repo_dir)
+    shell_run("git init > /dev/null 2>&1")
+    shell_run(
+        "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+    )
+    (repo_dir / "NEWS.md").write_text(
+        "## mypkg development version\n\nnotes\n\n## mypkg 0.1.0\n\nolder notes\n"
+    )
+    (repo_dir / "DESCRIPTION").write_text(
+        "Package: mypkg\nVersion: 0.1.0\nTitle: Example\n"
+    )
+    (repo_dir / "CITATION.cff").write_text((data_dir / "CITATION.cff").read_text())
+    try:
+        output = exec_in_context(
+            prepare_draft_release,
+            next_version_manual="v0.2.0",
+            next_version_convco="v0.2.0",
+            current_version="v0.1.0",
+            gh_event_name="push",
+            changelog_filepath="CHANGELOG.md",
+            release_notes_filepath=".github/latest-release.md",
+            version_filepath="VERSION",
+            citation_filepath="CITATION.cff",
+            repo="CCBR/mypkg",
+            debug=True,
+        )
+    finally:
+        os.chdir(original_cwd)
+    assert "git add" in output
+    assert "NEWS.md" in output
+    assert "DESCRIPTION" in output
+    assert "Version: 0.2.0" in output
+    assert "Rscript -e" in output
+
+
 def test_post_release_cleanup(github_output_file, data_dir_rel):
     output = exec_in_context(
         post_release_cleanup,
@@ -225,6 +271,47 @@ def test_post_release_cleanup(github_output_file, data_dir_rel):
     assert str(data_dir_rel / "VERSION") in output
     assert POST_RELEASE_PR_CREATE_COMMAND in output
     assert "git push origin --delete release-draft || echo" in output
+
+
+def test_post_release_cleanup_r_package(github_output_file, tmp_path, monkeypatch):
+    news_file = tmp_path / "NEWS.md"
+    description_file = tmp_path / "DESCRIPTION"
+    citation_file = tmp_path / "CITATION.cff"
+    news_file.write_text("## mypkg 0.2.0\n\nnotes\n")
+    description_file.write_text("Package: mypkg\nVersion: 0.2.0\nTitle: Example\n")
+    citation_file.write_text("cff-version: 1.2.0\ntitle: test\n")
+
+    monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *_: None)
+
+    commands = []
+
+    def _shell_run(command):
+        commands.append(command)
+        return "https://example.com/pr" if "gh pr create" in command else ""
+
+    monkeypatch.setattr("ccbr_actions.release.shell_run", _shell_run)
+    monkeypatch.setattr("ccbr_actions.release.set_output", lambda *_: None)
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        post_release_cleanup(
+            changelog_filepath="CHANGELOG.md",
+            version_filepath="VERSION",
+            citation_filepath=str(citation_file),
+            description_filepath=str(description_file),
+            repo="CCBR/mypkg",
+            release_tag="v0.2.0",
+            pr_branch="release/v0.2.0",
+            pr_reviewer="reviewer",
+            draft_branch="release-draft",
+            debug=False,
+        )
+    finally:
+        os.chdir(original_cwd)
+
+    assert description_file.read_text().splitlines()[1] == "Version: 0.2.0-dev"
+    assert any("Rscript -e" in command for command in commands)
 
 
 def test_post_release_cleanup_no_citation(github_output_file, data_dir_rel):
