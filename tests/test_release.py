@@ -281,7 +281,7 @@ def test_post_release_cleanup_r_package(github_output_file, tmp_path, monkeypatc
     description_file.write_text("Package: mypkg\nVersion: 0.2.0\nTitle: Example\n")
     citation_file.write_text("cff-version: 1.2.0\ntitle: test\n")
 
-    monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *_: None)
+    monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *args: None)
 
     commands = []
 
@@ -310,7 +310,16 @@ def test_post_release_cleanup_r_package(github_output_file, tmp_path, monkeypatc
     finally:
         os.chdir(original_cwd)
 
-    assert description_file.read_text().splitlines()[1] == "Version: 0.2.0-dev"
+    version_line = next(
+        (
+            line
+            for line in description_file.read_text().splitlines()
+            if line.startswith("Version:")
+        ),
+        None,
+    )
+    assert version_line is not None, f"No Version line found in {description_file}"
+    assert version_line == "Version: 0.2.0-dev"
     assert any("Rscript -e" in command for command in commands)
 
 

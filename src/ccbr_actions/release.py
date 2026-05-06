@@ -3,6 +3,7 @@ Helpers for drafting releases and cleaning up after releases are published.
 """
 
 import os
+import shlex
 import warnings
 from ccbr_tools.shell import shell_run
 
@@ -29,10 +30,16 @@ def is_r_package(description_filepath="DESCRIPTION"):
     description_filepath = path_resolve(description_filepath)
     if not description_filepath.is_file():
         return False
-    with open(description_filepath, "r") as infile:
-        description_lines = infile.readlines()
-    has_package = any(line.startswith("Package:") for line in description_lines)
-    has_version = any(line.startswith("Version:") for line in description_lines)
+    has_package = False
+    has_version = False
+    with description_filepath.open("r") as infile:
+        for line in infile:
+            if line.startswith("Package:"):
+                has_package = True
+            elif line.startswith("Version:"):
+                has_version = True
+            if has_package and has_version:
+                break
     return has_package and has_version
 
 
@@ -61,16 +68,22 @@ def write_description_version(
         debug (bool): If True, print updates instead of writing to file.
     """
     description_filepath = path_resolve(description_filepath)
-    with open(description_filepath, "r") as infile:
+    found_version = False
+    with description_filepath.open("r") as infile:
         description_lines = infile.readlines()
     for i, line in enumerate(description_lines):
         if line.startswith("Version:"):
             description_lines[i] = f"Version: {version}\n"
+            found_version = True
             break
+    if not found_version:
+        raise ValueError(
+            f"No Version field found in DESCRIPTION file: {description_filepath}"
+        )
     if debug:
         print("".join(description_lines))
     else:
-        with open(description_filepath, "w") as outfile:
+        with description_filepath.open("w") as outfile:
             outfile.writelines(description_lines)
 
 
@@ -82,11 +95,15 @@ def regenerate_citation_from_description(citation_filepath="CITATION.cff", debug
         citation_filepath (str): Path to output CITATION.cff.
         debug (bool): If True, print command instead of running it.
     """
+    r_expression = (
+        'if (!requireNamespace("cffr", quietly = TRUE)) '
+        'stop("Missing required R package: cffr. Install it in workflow setup (e.g. setup-r-dependencies)."); '
+        'cffr::cff_write(cff_file = Sys.getenv("CITATION_FILE"))'
+    )
+    citation_filepath_quoted = shlex.quote(str(citation_filepath))
     cmd = (
-        "Rscript -e "
-        '"if (!requireNamespace(\\"cffr\\", quietly = TRUE)) '
-        'install.packages(\\"cffr\\", repos=\\"https://cloud.r-project.org\\"); '
-        f'cffr::cff_write(cff_file = \\"{citation_filepath}\\")"'
+        f"CITATION_FILE={citation_filepath_quoted} "
+        f"Rscript -e {shlex.quote(r_expression)}"
     )
     if debug:
         print(cmd)
@@ -299,11 +316,15 @@ def post_release_cleanup(
 
     if use_r_package_structure:
         version = ""
-        with open(version_filepath, "r") as infile:
-            for line in infile.readlines():
+        with version_filepath.open("r") as infile:
+            for line in infile:
                 if line.startswith("Version:"):
                     version = line.removeprefix("Version:").strip()
                     break
+        if not version:
+            raise ValueError(
+                f"No Version field found in DESCRIPTION file: {version_filepath}"
+            )
     else:
         with open(version_filepath, "r") as infile:
             version = infile.read().strip()
