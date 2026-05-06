@@ -138,7 +138,7 @@ def get_r_dev_version(version):
     return f"{version_strict}.9000"
 
 
-def is_strict_semver(version_str, with_leading_v=False):
+def is_strict_semver(version_str: str, with_leading_v: bool = False) -> bool:
     """
     Check whether a version string fully matches semantic versioning.
 
@@ -148,6 +148,12 @@ def is_strict_semver(version_str, with_leading_v=False):
 
     Returns:
         bool: True if the entire string matches semantic versioning.
+
+    Examples:
+        >>> is_strict_semver("v1.2.3", with_leading_v=True)
+        True
+        >>> is_strict_semver("v1.2.3.9000", with_leading_v=True)
+        False
     """
     semver_match = match_semver(version_str, with_leading_v=with_leading_v)
     return bool(semver_match and semver_match.group(0) == version_str)
@@ -457,11 +463,8 @@ def get_release_version(
     else:
         next_version = next_version_convco
     if not is_strict_semver(next_version, with_leading_v=with_leading_v):
-        extra_msg = ""
-        if with_leading_v and not next_version.startswith("v"):
-            extra_msg = "The tag does not start with 'v'."
         raise ValueError(
-            f"Tag {next_version} does not match semantic versioning guidelines. {extra_msg}\nView the guidelines here: https://semver.org/"
+            f"Tag {next_version} does not match semantic versioning guidelines.\nView the guidelines here: https://semver.org/"
         )
     # assert semantic version pattern
     check_version_increments_by_one(

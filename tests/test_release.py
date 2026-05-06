@@ -10,6 +10,7 @@ from ccbr_actions.release import (
     get_changelog_lines,
     get_release_version,
     get_r_dev_version,
+    is_strict_semver,
     post_release_cleanup,
     set_release_version,
     is_r_package,
@@ -207,15 +208,15 @@ def test_get_release_version_warning():
 
 
 def test_get_release_version_semver_error():
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(ValueError) as exc_info:
         get_release_version(next_version_manual="v2", current_version="v1")
     assert "Tag v2 does not match semantic versioning guidelines." in str(
         exc_info.value
     )
-    with pytest.raises(Exception) as exc_info_extra:
+    with pytest.raises(ValueError) as exc_info:
         get_release_version(next_version_manual="v1.2.3.9000", current_version="v1.2.2")
     assert "Tag v1.2.3.9000 does not match semantic versioning guidelines." in str(
-        exc_info_extra.value
+        exc_info.value
     )
 
 
@@ -234,6 +235,21 @@ def test_get_r_dev_version_error(version):
     assert "R package release version must follow semantic versioning" in str(
         exc_info.value
     )
+
+
+@pytest.mark.parametrize(
+    ("version", "with_leading_v", "expected"),
+    [
+        ("1.2.3", False, True),
+        ("v1.2.3", True, True),
+        ("1.2.3.9000", False, False),
+        ("v1.2.3.9000", True, False),
+        ("v1.2", True, False),
+        ("1.2", False, False),
+    ],
+)
+def test_is_strict_semver(version, with_leading_v, expected):
+    assert is_strict_semver(version, with_leading_v=with_leading_v) is expected
 
 
 def test_is_r_package(tmp_path):
