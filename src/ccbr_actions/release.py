@@ -121,6 +121,13 @@ def get_r_dev_version(version):
 
     Returns:
         str: R package development version in the form X.Y.Z.9000.
+
+    Raises:
+        ValueError: If version is not in X.Y.Z semantic version format.
+
+    Examples:
+        >>> get_r_dev_version("0.2.0")
+        '0.2.0.9000'
     """
     version_strict = version.lstrip("v")
     if not re.fullmatch(r"\d+\.\d+\.\d+", version_strict):

@@ -219,9 +219,13 @@ def test_get_r_dev_version():
     assert get_r_dev_version("v0.2.0") == "0.2.0.9000"
 
 
-def test_get_r_dev_version_error():
+@pytest.mark.parametrize(
+    "version",
+    ["", " 1.2.3 ", "0.2.0.9000", "1.0", "v1.0", "1.2.a", "1.2.3-alpha", "1.2.3.4"],
+)
+def test_get_r_dev_version_error(version):
     with pytest.raises(ValueError) as exc_info:
-        get_r_dev_version("0.2.0.9000")
+        get_r_dev_version(version)
     assert "R package release version must follow semantic versioning" in str(
         exc_info.value
     )
