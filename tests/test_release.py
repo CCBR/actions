@@ -212,6 +212,11 @@ def test_get_release_version_semver_error():
     assert "Tag v2 does not match semantic versioning guidelines." in str(
         exc_info.value
     )
+    with pytest.raises(Exception) as exc_info_extra:
+        get_release_version(next_version_manual="v1.2.3.9000", current_version="v1.2.2")
+    assert "Tag v1.2.3.9000 does not match semantic versioning guidelines." in str(
+        exc_info_extra.value
+    )
 
 
 def test_get_r_dev_version():
