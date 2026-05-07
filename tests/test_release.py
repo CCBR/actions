@@ -260,21 +260,37 @@ def test_is_r_package(tmp_path):
     assert is_r_package(description_filepath=desc)
 
 
-def test_get_news_filepath_default(tmp_path):
-    original_cwd = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        assert get_news_filepath() == "NEWS.md"
-    finally:
-        os.chdir(original_cwd)
+def test_get_news_filepath_default(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert get_news_filepath() == "NEWS.md"
 
 
-def test_write_description_version_missing_version(tmp_path):
+def test_get_news_filepath_prefers_news_md(tmp_path, monkeypatch):
+    (tmp_path / "NEWS").write_text("plain")
+    (tmp_path / "NEWS.md").write_text("markdown")
+    monkeypatch.chdir(tmp_path)
+    assert get_news_filepath() == "NEWS.md"
+
+
+def test_get_news_filepath_falls_back_to_news(tmp_path, monkeypatch):
+    (tmp_path / "NEWS").write_text("plain")
+    monkeypatch.chdir(tmp_path)
+    assert get_news_filepath() == "NEWS"
+
+
+def test_write_description_version_missing_version_field(tmp_path):
     description = tmp_path / "DESCRIPTION"
     description.write_text("Package: mypkg\nTitle: Example\n")
     with pytest.raises(ValueError) as exc_info:
         write_description_version(description_filepath=description, version="1.2.3")
     assert "No Version field found in DESCRIPTION file" in str(exc_info.value)
+
+
+def test_write_description_version_updates_field(tmp_path):
+    description = tmp_path / "DESCRIPTION"
+    description.write_text("Package: mypkg\nVersion: 0.1.0\nTitle: Example\n")
+    write_description_version(description_filepath=description, version="1.2.3")
+    assert "Version: 1.2.3\n" in description.read_text()
 
 
 def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir):
@@ -337,9 +353,12 @@ def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
         lambda **_: "https://example.com/release",
     )
     monkeypatch.setattr("ccbr_actions.release.set_output", lambda *_: None)
+
+    def _trigger_workflow_raises(**_):
+        raise RuntimeError("boom")
+
     monkeypatch.setattr(
-        "ccbr_actions.release.trigger_workflow",
-        lambda **_: (_ for _ in ()).throw(RuntimeError("boom")),
+        "ccbr_actions.release.trigger_workflow", _trigger_workflow_raises
     )
 
     with pytest.warns(UserWarning, match="Failed to trigger workflow"):
@@ -426,33 +445,29 @@ def test_post_release_cleanup_r_package(github_output_file, tmp_path, monkeypatc
     assert any("Rscript -e" in command for command in commands)
 
 
-def test_post_release_cleanup_r_package_missing_description_version(
-    github_output_file, tmp_path
+def test_post_release_cleanup_r_package_no_version_field(
+    github_output_file, tmp_path, monkeypatch
 ):
     news_file = tmp_path / "NEWS.md"
-    description_file = tmp_path / "DESCRIPTION"
-    bad_version_file = tmp_path / "DESCRIPTION.bad"
+    r_package_description = tmp_path / "DESCRIPTION"
+    version_source_missing_version_field = tmp_path / "DESCRIPTION.bad"
     news_file.write_text("## mypkg 0.2.0\n\nnotes\n")
-    description_file.write_text("Package: mypkg\nVersion: 0.2.0\nTitle: Example\n")
-    bad_version_file.write_text("Package: mypkg\nTitle: Example\n")
+    r_package_description.write_text("Package: mypkg\nVersion: 0.2.0\nTitle: Example\n")
+    version_source_missing_version_field.write_text("Package: mypkg\nTitle: Example\n")
 
-    original_cwd = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        with pytest.raises(ValueError) as exc_info:
-            post_release_cleanup(
-                changelog_filepath="CHANGELOG.md",
-                version_filepath=str(bad_version_file),
-                description_filepath=str(description_file),
-                repo="CCBR/mypkg",
-                release_tag="v0.2.0",
-                pr_branch="release/v0.2.0",
-                pr_reviewer="reviewer",
-                draft_branch="release-draft",
-                debug=False,
-            )
-    finally:
-        os.chdir(original_cwd)
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(ValueError) as exc_info:
+        post_release_cleanup(
+            changelog_filepath="CHANGELOG.md",
+            version_filepath=str(version_source_missing_version_field),
+            description_filepath=str(r_package_description),
+            repo="CCBR/mypkg",
+            release_tag="v0.2.0",
+            pr_branch="release/v0.2.0",
+            pr_reviewer="reviewer",
+            draft_branch="release-draft",
+            debug=False,
+        )
 
     assert "No Version field found in DESCRIPTION file" in str(exc_info.value)
 
@@ -465,31 +480,35 @@ def test_post_release_cleanup_non_r_writes_dev_suffix(
     changelog_file.write_text("## actions 0.2.0\n\nnotes\n")
     version_file.write_text("0.2.0\n")
 
+    commands = []
+
+    def _shell_run(command):
+        commands.append(command)
+        if command.startswith("gh pr create "):
+            return "https://example.com/pr"
+        return ""
+
     monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *_: None)
-    monkeypatch.setattr(
-        "ccbr_actions.release.shell_run",
-        lambda command: "https://example.com/pr" if "gh pr create" in command else "",
-    )
+    monkeypatch.setattr("ccbr_actions.release.shell_run", _shell_run)
     monkeypatch.setattr("ccbr_actions.release.set_output", lambda *_: None)
 
-    original_cwd = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        post_release_cleanup(
-            changelog_filepath=str(changelog_file),
-            version_filepath=str(version_file),
-            citation_filepath="not/a/file/CITATION.cff",
-            repo="CCBR/actions",
-            release_tag="v0.2.0",
-            pr_branch="release/v0.2.0",
-            pr_reviewer="reviewer",
-            draft_branch="release-draft",
-            debug=False,
-        )
-    finally:
-        os.chdir(original_cwd)
+    monkeypatch.chdir(tmp_path)
+    post_release_cleanup(
+        changelog_filepath=str(changelog_file),
+        version_filepath=str(version_file),
+        citation_filepath="not/a/file/CITATION.cff",
+        repo="CCBR/actions",
+        release_tag="v0.2.0",
+        pr_branch="release/v0.2.0",
+        pr_reviewer="reviewer",
+        draft_branch="release-draft",
+        debug=False,
+    )
 
     assert version_file.read_text() == "0.2.0-dev\n"
+    assert any(cmd.startswith("gh pr create ") for cmd in commands)
+    assert any(cmd.startswith("git add ") for cmd in commands)
+    assert any("git commit -m" in cmd for cmd in commands)
 
 
 def test_post_release_cleanup_no_citation(github_output_file, data_dir_rel):
