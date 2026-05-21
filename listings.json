@@ -1,6 +1,6 @@
 [
   {
-    "listing": "/index.html",
+    "listing": "/actions.html",
     "items": [
       "/actions/changed-files/index.html",
       "/actions/install-r-pak/index.html",
@@ -16,7 +16,7 @@
     ]
   },
   {
-    "listing": "/actions.html",
+    "listing": "/index.html",
     "items": [
       "/actions/changed-files/index.html",
       "/actions/install-r-pak/index.html",
