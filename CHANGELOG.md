@@ -1,5 +1,6 @@
 ## actions development version
 
+- Add R package-aware release handling to `draft-release` and `post-release`. (#170, @kelly-sovacool, @copilot)
 - Update example workflows to limit concurrency which saves runtime. (#172, @kelly-sovacool)
 - Bump actions versions.
 - Minor documentation improvements.
