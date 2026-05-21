@@ -6,6 +6,7 @@ from ccbr_actions.release import (
     prepare_draft_release,
     write_lines,
     write_description_version,
+    regenerate_citation_from_description,
     create_release_draft,
     push_release_draft_branch,
     get_changelog_lines,
@@ -293,6 +294,19 @@ def test_write_description_version_updates_field(tmp_path):
     assert "Version: 1.2.3\n" in description.read_text()
 
 
+def test_regenerate_citation_from_description_uses_description_dir(tmp_path):
+    output = exec_in_context(
+        regenerate_citation_from_description,
+        citation_filepath=str(tmp_path / "pkg" / "CITATION.cff"),
+        description_filepath=str(tmp_path / "pkg" / "DESCRIPTION"),
+        debug=True,
+    )
+    assert "DESCRIPTION_FILE=" in output
+    assert "CITATION_FILE=" in output
+    assert str(tmp_path / "pkg" / "DESCRIPTION") in output
+    assert 'setwd(dirname(Sys.getenv("DESCRIPTION_FILE")));' in output
+
+
 def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir):
     repo_dir = tmp_path / "repo"
     repo_dir.mkdir()
@@ -305,9 +319,9 @@ def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir)
     (repo_dir / "NEWS.md").write_text(
         "## mypkg development version\n\nnotes\n\n## mypkg 0.1.0\n\nolder notes\n"
     )
-    (repo_dir / "DESCRIPTION").write_text(
-        "Package: mypkg\nVersion: 0.1.0\nTitle: Example\n"
-    )
+    description_filepath = repo_dir / "pkg" / "DESCRIPTION"
+    description_filepath.parent.mkdir()
+    description_filepath.write_text("Package: mypkg\nVersion: 0.1.0\nTitle: Example\n")
     (repo_dir / "CITATION.cff").write_text((data_dir / "CITATION.cff").read_text())
     try:
         output = exec_in_context(
@@ -320,6 +334,7 @@ def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir)
             release_notes_filepath=".github/latest-release.md",
             version_filepath="VERSION",
             citation_filepath="CITATION.cff",
+            description_filepath=str(description_filepath),
             repo="CCBR/mypkg",
             debug=True,
         )
@@ -330,6 +345,7 @@ def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir)
     assert "DESCRIPTION" in output
     assert "Version: 0.2.0" in output
     assert "Rscript -e" in output
+    assert str(description_filepath) in output
 
 
 def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
@@ -443,6 +459,9 @@ def test_post_release_cleanup_r_package(github_output_file, tmp_path, monkeypatc
     assert version_line is not None, f"No Version line found in {description_file}"
     assert version_line == "Version: 0.2.0.9000"
     assert any("Rscript -e" in command for command in commands)
+    assert any(
+        f"DESCRIPTION_FILE={description_file}" in command for command in commands
+    )
 
 
 def test_post_release_cleanup_r_package_no_version_field(

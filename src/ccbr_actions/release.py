@@ -88,21 +88,30 @@ def write_description_version(
             outfile.writelines(description_lines)
 
 
-def regenerate_citation_from_description(citation_filepath="CITATION.cff", debug=False):
+def regenerate_citation_from_description(
+    citation_filepath="CITATION.cff",
+    description_filepath="DESCRIPTION",
+    debug=False,
+):
     """
     Regenerate CITATION.cff from DESCRIPTION using cffr.
 
     Args:
         citation_filepath (str): Path to output CITATION.cff.
+        description_filepath (str): Path to DESCRIPTION file.
         debug (bool): If True, print command instead of running it.
     """
     r_expression = (
         'if (!requireNamespace("cffr", quietly = TRUE)) '
         'stop("Missing required R package: cffr. Install it in workflow setup (e.g. setup-r-dependencies)."); '
+        'setwd(dirname(Sys.getenv("DESCRIPTION_FILE"))); '
         'cffr::cff_write(cff_file = Sys.getenv("CITATION_FILE"))'
     )
     citation_filepath_quoted = shlex.quote(str(citation_filepath))
+    description_filepath = path_resolve(description_filepath)
+    description_filepath_quoted = shlex.quote(str(description_filepath))
     cmd = (
+        f"DESCRIPTION_FILE={description_filepath_quoted} "
         f"CITATION_FILE={citation_filepath_quoted} "
         f"Rscript -e {shlex.quote(r_expression)}"
     )
@@ -241,7 +250,9 @@ def prepare_draft_release(
     if citation_filepath.is_file():
         if use_r_package_structure:
             regenerate_citation_from_description(
-                citation_filepath=citation_filepath, debug=debug
+                citation_filepath=citation_filepath,
+                description_filepath=description_filepath,
+                debug=debug,
             )
         else:
             update_citation(
@@ -409,7 +420,8 @@ def post_release_cleanup(
             )
             if citation_filepath.is_file():
                 regenerate_citation_from_description(
-                    citation_filepath=citation_filepath
+                    citation_filepath=citation_filepath,
+                    description_filepath=description_filepath,
                 )
         else:
             with open(path_resolve(version_filepath), "w") as outfile:
