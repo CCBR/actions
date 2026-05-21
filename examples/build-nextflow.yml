@@ -1,5 +1,4 @@
 name: build
-# TODO replace tool_name with the name of your tool
 
 on:
   push:
@@ -10,6 +9,21 @@ on:
     branches:
       - main
       - develop
+  workflow_dispatch:
+
+env:
+  NFT_DIFF: "pdiff"
+  NFT_DIFF_ARGS: "--line-numbers --width 120 --expand-tabs=2"
+  NFT_VER: "0.9.4"
+  NFT_WORKDIR: "~"
+  NXF_ANSI_LOG: false
+  NXF_SINGULARITY_CACHEDIR: ${{ github.workspace }}/.singularity
+  NXF_SINGULARITY_LIBRARYDIR: ${{ github.workspace }}/.singularity
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number ||
+    github.ref }}"
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -17,45 +31,155 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.12"]
+        nextflow-version: ["25.10.0", "latest-stable"]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref ||
+            github.ref_name }}
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
       - name: Install nextflow
-        uses: nf-core/setup-nextflow@v1
-      - name: Install Python dependencies
+        uses: nf-core/setup-nextflow@v3
+        with:
+          version: "${{ matrix.nextflow-version }}"
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools
           pip install .[dev,test]
-      - name: Check CLI basics
+      - name: pytest
+        if: always()
         run: |
-          which tool_name
-          tool_name --help
-          tool_name --version
-          tool_name --citation
+          python -m pytest
+      - name: lint nxf
+        if: always()
+        run: |
+          nf-core pipelines schema lint
       - name: Stub run
+        if: always()
+        continue-on-error: true # temporarily set this until we create containers for every process
+        env:
+          NXF_DISABLE_DAG: "true"
         run: |
-          mkdir -p tmp && pushd tmp
+          mkdir tmp && cd tmp
           tool_name init
-          tool_name run -c conf/ci_stub.config -stub
-          popd
+          tool_name run \
+            -stub \
+            -profile ci_stub,docker,test \
+            --mode local
       - name: "Upload Artifact"
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         if: always() # run even if previous steps fail
         with:
           name: nextflow-log
           path: .nextflow.log
 
-  build-status: # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871
+  nf-test-changes:
+    name: Check for changes
     runs-on: ubuntu-latest
-    needs: [build]
+    outputs:
+      nf_test_files: ${{ steps.list.outputs.components }}
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: List nf-test files
+        id: list
+        uses: adamrtalbot/detect-nf-test-changes@v0.0.6
+        with:
+          head: ${{ github.sha }}
+          base: ${{ github.event.pull_request.base.sha ||
+            github.event.merge_group.base_sha || 'origin/master' }}
+          include: .github/include.yml
+      - name: print list of nf-test files
+        run: |
+          echo ${{ steps.list.outputs.components }}
+
+  test:
+    name: "Run tests (${{ matrix.nf_test_files }} ${{ matrix.profile }} NF-${{
+      matrix.NXF_VER }})"
+    needs: [nf-test-changes]
+    if: needs.nf-test-changes.outputs.nf_test_files != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        NXF_VER:
+          - "25.10.0"
+          - "latest-stable"
+        nf_test_files:
+          ["${{ fromJson(needs.nf-test-changes.outputs.nf_test_files) }}"]
+        profile:
+          - "docker"
+        isMaster:
+          - ${{ github.base_ref == 'master' }}
+        # Exclude conda and singularity on dev
+        exclude:
+          - isMaster: false
+            profile: "singularity"
+          - NXF_VER: "latest-everything"
+            profile: "singularity"
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v5
+      - name: Set up Nextflow
+        uses: nf-core/setup-nextflow@v3
+        with:
+          version: "${{ matrix.NXF_VER }}"
+      - name: Set up Apptainer
+        if: matrix.profile == 'singularity'
+        uses: eWaterCycle/setup-apptainer@main
+      - name: Set up Singularity
+        if: matrix.profile == 'singularity'
+        run: |
+          mkdir -p $NXF_SINGULARITY_CACHEDIR
+          mkdir -p $NXF_SINGULARITY_LIBRARYDIR
+      - name: Install nf-test
+        uses: nf-core/setup-nf-test@v1
+        with:
+          version: ${{ env.NFT_VER }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+      - name: Install pdiff to see diff between nf-test snapshots
+        run: |
+          python -m pip install --upgrade pip
+          pip install pdiff
+      - name: Clean up Disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Run nf-test
+        run: |
+          nf-test test --verbose ${{ matrix.nf_test_files }} --profile "+${{ matrix.profile }}" --junitxml=test.xml --tap=test.tap
+
+      - uses: pcolby/tap-summary@v1
+        with:
+          path: >-
+            test.tap
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always ${{ github.workspace }}/.nf-test/tests/*/meta/nextflow.log
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: test.xml
+
+  build-status:
+    # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871
+    runs-on: ubuntu-latest
+    needs: [build, test]
     if: always()
     steps:
       - name: Successful build
