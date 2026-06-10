@@ -9,6 +9,7 @@ yaml_str = YAML(typ=["rt", "string"])
 
 
 def create_actions_listing():
+    """Create Quarto listing pages for each action README."""
     listing_subdir = pathlib.Path("docs/actions/")
     for action_yml in get_yaml_glob():
         f = action_yml["filename"]
@@ -38,6 +39,7 @@ def create_actions_listing():
 
 
 def get_yaml_glob():
+    """Yield parsed metadata dictionaries from ``*/action.yml`` files."""
     for filename in pathlib.Path().glob("*/action.yml"):
         with open(filename, "r") as infile:
             yaml_meta = yaml.load(infile)
@@ -46,6 +48,7 @@ def get_yaml_glob():
 
 
 def write_yaml_object(object, outfilename):
+    """Write a Python object as YAML to an output file."""
     with open(outfilename, "w") as outfile:
         yaml.dump(object, outfile)
 

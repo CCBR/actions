@@ -48,12 +48,14 @@ def github_api_request(method, url, token=None, session=requests, **kwargs):
     provided_headers = kwargs.pop("headers", {}) or {}
     headers.update(provided_headers)
 
+    response = None
     if hasattr(session, "request"):
-        return session.request(method=method, url=url, headers=headers, **kwargs)
-
-    method_name = method.lower()
-    request_fn = getattr(session, method_name)
-    return request_fn(url, headers=headers, **kwargs)
+        response = session.request(method=method, url=url, headers=headers, **kwargs)
+    else:
+        method_name = method.lower()
+        request_fn = getattr(session, method_name)
+        response = request_fn(url, headers=headers, **kwargs)
+    return response
 
 
 def github_api_get(url, token=None, session=requests, **kwargs):

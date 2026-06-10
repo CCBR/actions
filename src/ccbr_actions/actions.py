@@ -115,10 +115,12 @@ def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
     data = {"ref": branch}
     if inputs and isinstance(inputs, dict):
         data.update(inputs)
+    result = None
     if not debug:
         response = github_api_post(url=url, token=token, json=data)
         if response.status_code != 204:
             warnings.warn(f"Failed to trigger workflow:\n{response.text}")
-        return response
+        result = response
     else:
-        return url, headers, data
+        result = url, headers, data
+    return result

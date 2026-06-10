@@ -60,6 +60,7 @@ cli.add_command(use_example)
 
 
 def main():
+    """Run the Click CLI entry point."""
     cli()
 
 

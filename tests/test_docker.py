@@ -9,13 +9,13 @@ from ccbr_actions.docker import prepare_docker_build_variables, tag_from_dockerf
 
 
 def parse_env_file(env_path):
+    """Parse ``KEY=VALUE`` lines from an env file into a dictionary."""
     values = {}
     with open(env_path, "r") as handle:
         for line in handle.read().splitlines():
-            if "=" not in line:
-                continue
-            key, value = line.split("=", 1)
-            values[key] = value
+            if "=" in line:
+                key, value = line.split("=", 1)
+                values[key] = value
     return values
 
 
