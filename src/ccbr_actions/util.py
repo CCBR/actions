@@ -23,12 +23,20 @@ def repo_base(*paths):
 
 
 def print_citation(context, param, value):
-    if not value or context.resilient_parsing:
-        return
-    ccbr_tools.pkg_util.print_citation(
-        citation_file=repo_base("CITATION.cff"), output_format="bibtex"
-    )
-    context.exit()
+    """
+    Print the package citation in bibtex format and exit.
+
+    Args:
+        context: Click context object.
+        param: Click parameter metadata for the option callback.
+        value (bool): Whether the citation flag was provided.
+    """
+    should_print = bool(value) and not context.resilient_parsing
+    if should_print:
+        ccbr_tools.pkg_util.print_citation(
+            citation_file=repo_base("CITATION.cff"), output_format="bibtex"
+        )
+        context.exit()
 
 
 def date_today():
