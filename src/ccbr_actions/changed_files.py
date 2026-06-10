@@ -79,6 +79,7 @@ def get_pull_request_changed_file_list(
     comparison_mode = validate_comparison_mode(comparison_mode)
 
     changed_files = ""
+    should_use_pr_compare = False
     if comparison_mode == "latest-commit":
         commit_payload = github_api_get(
             url=f"{GITHUB_API_URL}/repos/{pr_head_repo_full_name}/commits/{pr_head_sha}",
@@ -100,8 +101,12 @@ def get_pull_request_changed_file_list(
                 session=session,
             )
             changed_files = format_changed_files_from_api(compare_payload)
+        else:
+            should_use_pr_compare = True
+    else:
+        should_use_pr_compare = True
 
-    if not changed_files:
+    if should_use_pr_compare:
         compare_payload = github_api_get(
             url=f"{GITHUB_API_URL}/repos/{pr_base_repo_full_name}/compare/{pr_base_sha}...{pr_head_label}",
             token=token,
@@ -147,7 +152,6 @@ def get_changed_file_list(
     """
     comparison_mode = validate_comparison_mode(comparison_mode)
 
-    changed_file_list = ""
     if event_name == "pull_request":
         changed_file_list = get_pull_request_changed_file_list(
             comparison_mode=comparison_mode,
