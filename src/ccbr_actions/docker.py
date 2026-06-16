@@ -187,12 +187,13 @@ def dockerhub_tag_last_updated(
         f"https://hub.docker.com/v2/namespaces/{dockerhub_namespace}/"
         f"repositories/{repo_name}/tags/{image_tag}"
     )
+    last_updated = None
     response = session.get(tag_url, timeout=timeout)
-    if response.status_code == 404:
-        return None
-    response.raise_for_status()
-    payload = response.json()
-    return (payload.get("last_updated") or "").strip()
+    if response.status_code != 404:
+        response.raise_for_status()
+        payload = response.json()
+        last_updated = (payload.get("last_updated") or "").strip()
+    return last_updated
 
 
 def evaluate_docker_build_staleness(

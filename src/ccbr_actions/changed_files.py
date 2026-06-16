@@ -32,6 +32,7 @@ def validate_comparison_mode(comparison_mode):
 
 
 def format_multiline_file_list(files):
+    """Format a list of file paths as a newline-delimited string."""
     return "".join(f"{file}\n" for file in files)
 
 
@@ -77,6 +78,8 @@ def get_pull_request_changed_file_list(
     """
     comparison_mode = validate_comparison_mode(comparison_mode)
 
+    changed_files = ""
+    should_use_pr_compare = False
     if comparison_mode == "latest-commit":
         commit_payload = github_api_get(
             url=f"{GITHUB_API_URL}/repos/{pr_head_repo_full_name}/commits/{pr_head_sha}",
@@ -97,14 +100,20 @@ def get_pull_request_changed_file_list(
                 token=token,
                 session=session,
             )
-            return format_changed_files_from_api(compare_payload)
+            changed_files = format_changed_files_from_api(compare_payload)
+        else:
+            should_use_pr_compare = True
+    else:
+        should_use_pr_compare = True
 
-    compare_payload = github_api_get(
-        url=f"{GITHUB_API_URL}/repos/{pr_base_repo_full_name}/compare/{pr_base_sha}...{pr_head_label}",
-        token=token,
-        session=session,
-    )
-    return format_changed_files_from_api(compare_payload)
+    if should_use_pr_compare:
+        compare_payload = github_api_get(
+            url=f"{GITHUB_API_URL}/repos/{pr_base_repo_full_name}/compare/{pr_base_sha}...{pr_head_label}",
+            token=token,
+            session=session,
+        )
+        changed_files = format_changed_files_from_api(compare_payload)
+    return changed_files
 
 
 def get_changed_file_list(
@@ -144,7 +153,7 @@ def get_changed_file_list(
     comparison_mode = validate_comparison_mode(comparison_mode)
 
     if event_name == "pull_request":
-        return get_pull_request_changed_file_list(
+        changed_file_list = get_pull_request_changed_file_list(
             comparison_mode=comparison_mode,
             pr_base_repo_full_name=pr_base_repo_full_name,
             pr_base_sha=pr_base_sha,
@@ -154,13 +163,15 @@ def get_changed_file_list(
             token=token,
             session=session,
         )
+    else:
+        compare_payload = github_api_get(
+            url=f"{GITHUB_API_URL}/repos/{repository}/compare/{before}...{after}",
+            token=token,
+            session=session,
+        )
+        changed_file_list = format_changed_files_from_api(compare_payload)
 
-    compare_payload = github_api_get(
-        url=f"{GITHUB_API_URL}/repos/{repository}/compare/{before}...{after}",
-        token=token,
-        session=session,
-    )
-    return format_changed_files_from_api(compare_payload)
+    return changed_file_list
 
 
 def match_paths(changed_file_list, paths=None):

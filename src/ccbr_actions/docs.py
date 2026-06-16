@@ -197,20 +197,20 @@ def action_markdown_io(action_dict):
         Preserve multiline descriptions so continuation lines remain part of
         the same markdown list item.
         """
-        if description is None:
-            return ""
-
-        lines = str(description).splitlines()
-        if not lines:
-            return ""
-
-        first_line = lines[0].strip()
-        continuation_lines = [
-            f"{continuation_indent}{line.lstrip()}" for line in lines[1:]
-        ]
-        if continuation_lines:
-            return "\n".join([first_line] + continuation_lines)
-        return first_line
+        formatted_description = ""
+        if description is not None:
+            lines = str(description).splitlines()
+            if lines:
+                first_line = lines[0].strip()
+                continuation_lines = [
+                    f"{continuation_indent}{line.lstrip()}" for line in lines[1:]
+                ]
+                formatted_description = (
+                    "\n".join([first_line] + continuation_lines)
+                    if continuation_lines
+                    else first_line
+                )
+        return formatted_description
 
     markdown = []
     inputs = action_dict.get("inputs", {})
