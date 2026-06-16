@@ -105,7 +105,7 @@ jobs:
   maintain-milestones:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/maintain-milestones@main
+      - uses: CCBR/actions/maintain-milestones@latest
         with:
           github-token: ${{ secrets.repo_token || '' }}
           owner: ${{ inputs.owner }}
