@@ -191,6 +191,11 @@ def prepare_draft_release(
     updating the changelog and release notes, and setting the next version as an output.
 
     Args:
+        next_version_manual (str): The manually specified next version (default is "${{ github.event.inputs.version_tag }}").
+        next_version_convco (str): The next version determined by conventional commit history (default is "${{ steps.semver.outputs.next }}").
+        current_version (str): The current version of the project (default is "${{ steps.semver.outputs.current }}").
+        gh_event_name (str): The name of the GitHub event triggering the release (default is "${{ github.event_name }}").
+        changelog_filepath (str): The path to the changelog file (default is "CHANGELOG.md").
         dev_header (str): The header for the development version section in the changelog (default is "development version").
         release_notes_filepath (str): The path to the release notes file (default is ".github/latest-release.md").
         version_filepath (str): The path to the version file (default is "VERSION").
@@ -198,14 +203,15 @@ def prepare_draft_release(
         release_branch (str): The name of the release branch (default is "release-draft").
         pr_ref_name (str): The reference name of the pull request (default is "${{ github.ref_name }}").
         repo (str): The GitHub repository (default is "${{ github.repository }}").
+        description_filepath (str): Path to the R DESCRIPTION file for R packages (default is "DESCRIPTION").
         debug (bool): If True, print debug information instead of writing to files (default is False).
 
     Raises:
         AssertionError: If the changelog or version file does not exist.
 
     Examples:
-        >>> prepare_release()
-        >>> prepare_release(dev_header="dev version", debug=True)
+        >>> prepare_draft_release()
+        >>> prepare_draft_release(dev_header="dev version", debug=True)
     """
     use_r_package_structure = is_r_package(description_filepath=description_filepath)
     if use_r_package_structure:
@@ -353,6 +359,8 @@ def post_release_cleanup(
         dev_header (str): The header for the development version section in the changelog (default is "development version").
         version_filepath (str): The path to the version file (default is "VERSION").
         citation_filepath (str): The path to the citation file (default is "CITATION.cff").
+        description_filepath (str): Path to the R DESCRIPTION file for R packages (default is "DESCRIPTION").
+        debug (bool): If True, print debug information instead of executing commands (default is False).
 
     Examples:
         >>> post_release_cleanup()
