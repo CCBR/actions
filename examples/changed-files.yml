@@ -13,7 +13,7 @@ jobs:
   changed-files:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/changed-files@main
+      - uses: CCBR/actions/changed-files@latest
         id: changed-files
         with:
           # Default mode; shown explicitly for clarity.
@@ -27,7 +27,7 @@ jobs:
   filter-by-pattern:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/changed-files@main
+      - uses: CCBR/actions/changed-files@latest
         id: changed-files
         with:
           # Full event range mode.
@@ -44,7 +44,7 @@ jobs:
   docs-only:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/changed-files@main
+      - uses: CCBR/actions/changed-files@latest
         id: changed-files
         with:
           # Latest-commit mode is useful for incremental PR checks.
