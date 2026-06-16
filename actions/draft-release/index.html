@@ -700,7 +700,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v6</span></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">fetch-depth</span><span class="kw">:</span><span class="at"> </span><span class="dv">0</span><span class="co"> # required to include tags</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/draft-release@v0.5</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/draft-release@v0.7</span></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ github.token }}</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">version-tag</span><span class="kw">:</span><span class="at"> ${{ github.event.inputs.version-tag }}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -730,7 +730,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><code>version-tag</code>: Semantic version tag for next release. If not provided, it will be determined based on conventional commit history. Example: v2.5.11.</li>
 <li><code>github-token</code>: GitHub Actions token (e.g.&nbsp;github.token). <strong>Required.</strong></li>
-<li><code>ccbr-actions-version</code>: The version of ccbr_actions to use. <strong>Required.</strong> Default: <code>main</code>.</li>
+<li><code>ccbr-actions-version</code>: The version of ccbr_actions to use. <strong>Required.</strong> Default: <code>latest</code>.</li>
 <li><code>python-version</code>: The version of Python to install. <strong>Required.</strong> Default: <code>3.11</code>.</li>
 <li><code>draft-branch</code>: The branch name to push changes to for the release draft. <strong>Required.</strong> Default: <code>release-draft</code>.</li>
 <li><code>version-filepath</code>: Path to the file containing the current version. Default: <code>VERSION</code>.</li>

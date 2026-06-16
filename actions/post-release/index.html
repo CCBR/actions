@@ -690,7 +690,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v6</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">fetch-depth</span><span class="kw">:</span><span class="at"> </span><span class="dv">0</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/post-release@v0.5</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/post-release@v0.7</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ github.token }}</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">update-sliding-tags</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -720,7 +720,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="inputs">Inputs</h2>
 <ul>
 <li><code>github-token</code>: GitHub Actions token (e.g.&nbsp;github.token). <strong>Required.</strong></li>
-<li><code>ccbr-actions-version</code>: The version of CCBR/actions to use. <strong>Required.</strong> Default: <code>main</code>.</li>
+<li><code>ccbr-actions-version</code>: The version of CCBR/actions to use. <strong>Required.</strong> Default: <code>latest</code>.</li>
 <li><code>python-version</code>: The version of Python to install. <strong>Required.</strong> Default: <code>3.11</code>.</li>
 <li><code>pr-branch</code>: Branch to use for the post-release chores, from where a PR will be opened. Recommended to use ‘release/{TAG_NAME}’. <strong>Required.</strong> Default: <code>release/${{ github.ref_name }}</code>.</li>
 <li><code>draft-branch</code>: Branch used for the prior release draft (see <code>draft-release</code> action). <strong>Required.</strong> Default: <code>release-draft</code>.</li>
