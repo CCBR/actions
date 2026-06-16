@@ -31,9 +31,10 @@ Input files:
 - `CHANGELOG.md` - a changelog or news file with entries in reverse chronological order. The newest entry should contain a header with the phrase “development version”.
 - `VERSION` - a single-source version file.
 - `CITATION.cff` - a citation file.
-- For a repository's first release, set `version-tag` manually (for example
-  `v0.1.0`), because conventional-commit version detection may not have a
-  previous release to compare against.
+
+For a repository's first release, set `version-tag` manually (for example
+`v0.1.0`), because conventional-commit version detection may not have a
+previous release to compare against.
 
 When you're ready to draft a new release,
 [run the workflow manually](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow). After the workflow completes, there will be a new draft release that you can review and choose to publish.

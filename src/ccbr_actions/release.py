@@ -501,7 +501,8 @@ def get_release_version(
     if not next_version:
         raise ValueError(
             "Unable to determine next release version. "
-            "If this is the first release for this repository, provide version-tag."
+            "If this is the first release for this repository, provide a manual next version "
+            "(draft-release input: version-tag)."
         )
     if not is_strict_semver(next_version, with_leading_v=with_leading_v):
         raise ValueError(
@@ -512,7 +513,8 @@ def get_release_version(
         if not is_strict_semver(current_version, with_leading_v=with_leading_v):
             raise ValueError(
                 f"Current version {current_version} does not match semantic versioning guidelines.\n"
-                "If this is the first release for this repository, set current version to blank and provide version-tag."
+                "If this is the first release for this repository, set current version to blank "
+                "and provide a manual next version (draft-release input: version-tag)."
             )
         check_version_increments_by_one(
             current_version, next_version, with_leading_v=with_leading_v
@@ -591,7 +593,11 @@ def get_changelog_lines(
         for line in infile:
             if line.startswith("#") and dev_header in line:
                 line = line.replace(dev_header, next_version_strict)
-            elif latest_version_strict and latest_version_strict in line:
+            elif (
+                latest_version_strict
+                and line.startswith("#")
+                and latest_version_strict in line
+            ):
                 for_next = False
 
             changelog_lines.append(line)
