@@ -18,6 +18,7 @@ from ccbr_actions.release import (
     set_release_version,
     is_r_package,
 )
+from ccbr_actions.data import get_file_path
 from ccbr_tools.shell import exec_in_context, shell_run
 
 POST_RELEASE_PR_CREATE_COMMAND = (
@@ -295,6 +296,7 @@ def test_write_description_version_updates_field(tmp_path):
 
 
 def test_regenerate_citation_from_description_uses_description_dir(tmp_path):
+    script_path = get_file_path("regenerate_citation_from_description.R")
     output = exec_in_context(
         regenerate_citation_from_description,
         citation_filepath=str(tmp_path / "pkg" / "CITATION.cff"),
@@ -304,7 +306,7 @@ def test_regenerate_citation_from_description_uses_description_dir(tmp_path):
     assert "DESCRIPTION_FILE=" in output
     assert "CITATION_FILE=" in output
     assert str(tmp_path / "pkg" / "DESCRIPTION") in output
-    assert 'setwd(dirname(Sys.getenv("DESCRIPTION_FILE")));' in output
+    assert f"Rscript {script_path}" in output
 
 
 def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir):
@@ -344,7 +346,7 @@ def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir)
     assert "NEWS.md" in output
     assert "DESCRIPTION" in output
     assert "Version: 0.2.0" in output
-    assert "Rscript -e" in output
+    assert "regenerate_citation_from_description.R" in output
     assert str(description_filepath) in output
 
 
@@ -458,7 +460,9 @@ def test_post_release_cleanup_r_package(github_output_file, tmp_path, monkeypatc
     )
     assert version_line is not None, f"No Version line found in {description_file}"
     assert version_line == "Version: 0.2.0.9000"
-    assert any("Rscript -e" in command for command in commands)
+    assert any(
+        "regenerate_citation_from_description.R" in command for command in commands
+    )
     assert any(
         f"DESCRIPTION_FILE={description_file}" in command for command in commands
     )
