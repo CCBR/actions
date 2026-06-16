@@ -3,6 +3,8 @@ Helpers for drafting releases and cleaning up after releases are published.
 """
 
 import os
+import re
+import shlex
 import warnings
 from ccbr_tools.shell import shell_run
 
@@ -14,6 +16,156 @@ from .versions import (
     match_semver,
     get_current_hash,
 )
+
+
+def is_r_package(description_filepath="DESCRIPTION"):
+    """
+    Detect whether this repository appears to be an R package.
+
+    Args:
+        description_filepath (str): Path to the R DESCRIPTION file.
+
+    Returns:
+        bool: True if the DESCRIPTION file exists and includes Package and Version keys.
+    """
+    description_filepath = path_resolve(description_filepath)
+    if not description_filepath.is_file():
+        return False
+    has_package = False
+    has_version = False
+    with description_filepath.open("r") as infile:
+        for line in infile:
+            if line.startswith("Package:"):
+                has_package = True
+            elif line.startswith("Version:"):
+                has_version = True
+            if has_package and has_version:
+                break
+    return has_package and has_version
+
+
+def get_news_filepath():
+    """
+    Get the NEWS filepath for an R package.
+
+    Returns:
+        str: "NEWS.md" if it exists, else "NEWS" if it exists, otherwise "NEWS.md".
+    """
+    for filepath in ("NEWS.md", "NEWS"):
+        if path_resolve(filepath).is_file():
+            return filepath
+    return "NEWS.md"
+
+
+def write_description_version(
+    description_filepath="DESCRIPTION", version="0.0.0", debug=False
+):
+    """
+    Update Version in an R DESCRIPTION file.
+
+    Args:
+        description_filepath (str): Path to DESCRIPTION file.
+        version (str): Version string to write.
+        debug (bool): If True, print updates instead of writing to file.
+    """
+    description_filepath = path_resolve(description_filepath)
+    found_version = False
+    with description_filepath.open("r") as infile:
+        description_lines = infile.readlines()
+    for i, line in enumerate(description_lines):
+        if line.startswith("Version:"):
+            description_lines[i] = f"Version: {version}\n"
+            found_version = True
+            break
+    if not found_version:
+        raise ValueError(
+            f"No Version field found in DESCRIPTION file: {description_filepath}"
+        )
+    if debug:
+        print("".join(description_lines))
+    else:
+        with description_filepath.open("w") as outfile:
+            outfile.writelines(description_lines)
+
+
+def regenerate_citation_from_description(
+    citation_filepath="CITATION.cff",
+    description_filepath="DESCRIPTION",
+    debug=False,
+):
+    """
+    Regenerate CITATION.cff from DESCRIPTION using cffr.
+
+    Args:
+        citation_filepath (str): Path to output CITATION.cff.
+        description_filepath (str): Path to DESCRIPTION file.
+        debug (bool): If True, print command instead of running it.
+    """
+    r_expression = (
+        'if (!requireNamespace("cffr", quietly = TRUE)) '
+        'stop("Missing required R package: cffr. Install it in workflow setup (e.g. setup-r-dependencies)."); '
+        'setwd(dirname(Sys.getenv("DESCRIPTION_FILE"))); '
+        'cffr::cff_write(cff_file = Sys.getenv("CITATION_FILE"))'
+    )
+    citation_filepath_quoted = shlex.quote(str(citation_filepath))
+    description_filepath = path_resolve(description_filepath)
+    description_filepath_quoted = shlex.quote(str(description_filepath))
+    cmd = (
+        f"DESCRIPTION_FILE={description_filepath_quoted} "
+        f"CITATION_FILE={citation_filepath_quoted} "
+        f"Rscript -e {shlex.quote(r_expression)}"
+    )
+    if debug:
+        print(cmd)
+    else:
+        shell_run(cmd)
+
+
+def get_r_dev_version(version):
+    """
+    Get the next R package development version.
+
+    Args:
+        version (str): Current released version, with or without leading 'v'.
+
+    Returns:
+        str: R package development version in the form X.Y.Z.9000.
+
+    Raises:
+        ValueError: If version is not in X.Y.Z semantic version format.
+
+    Examples:
+        >>> get_r_dev_version("0.2.0")
+        '0.2.0.9000'
+    """
+    version_strict = version.lstrip("v")
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version_strict):
+        raise ValueError(
+            "R package release version must follow semantic versioning before "
+            f"bumping to development version. Got: {version}"
+        )
+    return f"{version_strict}.9000"
+
+
+def is_strict_semver(version_str: str, with_leading_v: bool = False) -> bool:
+    """
+    Check whether a version string fully matches semantic versioning.
+
+    Args:
+        version_str (str): Version string to validate.
+        with_leading_v (bool): Whether the version must include a leading 'v'.
+
+    Returns:
+        bool: True if the entire string matches semantic versioning.
+
+    Examples:
+        >>> is_strict_semver("v1.2.3", with_leading_v=True)
+        True
+        >>> is_strict_semver("v1.2.3.9000", with_leading_v=True)
+        False
+    """
+    semver_match = match_semver(version_str, with_leading_v=with_leading_v)
+    return bool(semver_match and semver_match.group(0) == version_str)
 
 
 def prepare_draft_release(
@@ -29,6 +181,7 @@ def prepare_draft_release(
     release_branch="release-draft",
     pr_ref_name="${{ github.ref_name }}",
     repo="${{ github.repository }}",
+    description_filepath="DESCRIPTION",
     debug=False,
 ):
     """
@@ -38,6 +191,11 @@ def prepare_draft_release(
     updating the changelog and release notes, and setting the next version as an output.
 
     Args:
+        next_version_manual (str): The manually specified next version (default is "${{ github.event.inputs.version_tag }}").
+        next_version_convco (str): The next version determined by conventional commit history (default is "${{ steps.semver.outputs.next }}").
+        current_version (str): The current version of the project (default is "${{ steps.semver.outputs.current }}").
+        gh_event_name (str): The name of the GitHub event triggering the release (default is "${{ github.event_name }}").
+        changelog_filepath (str): The path to the changelog file (default is "CHANGELOG.md").
         dev_header (str): The header for the development version section in the changelog (default is "development version").
         release_notes_filepath (str): The path to the release notes file (default is ".github/latest-release.md").
         version_filepath (str): The path to the version file (default is "VERSION").
@@ -45,15 +203,23 @@ def prepare_draft_release(
         release_branch (str): The name of the release branch (default is "release-draft").
         pr_ref_name (str): The reference name of the pull request (default is "${{ github.ref_name }}").
         repo (str): The GitHub repository (default is "${{ github.repository }}").
+        description_filepath (str): Path to the R DESCRIPTION file for R packages (default is "DESCRIPTION").
         debug (bool): If True, print debug information instead of writing to files (default is False).
 
     Raises:
         AssertionError: If the changelog or version file does not exist.
 
     Examples:
-        >>> prepare_release()
-        >>> prepare_release(dev_header="dev version", debug=True)
+        >>> prepare_draft_release()
+        >>> prepare_draft_release(dev_header="dev version", debug=True)
     """
+    use_r_package_structure = is_r_package(description_filepath=description_filepath)
+    if use_r_package_structure:
+        if changelog_filepath == "CHANGELOG.md":
+            changelog_filepath = get_news_filepath()
+        if version_filepath == "VERSION":
+            version_filepath = description_filepath
+
     release_notes_filepath = path_resolve(release_notes_filepath)
     changelog_filepath = path_resolve(changelog_filepath)
     version_filepath = path_resolve(version_filepath)
@@ -78,12 +244,26 @@ def prepare_draft_release(
 
     write_lines(release_notes_filepath, next_release_lines, debug=debug)
     write_lines(changelog_filepath, changelog_lines, debug=debug)
-    write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
+    if use_r_package_structure:
+        write_description_version(
+            description_filepath=version_filepath,
+            version=next_version_strict,
+            debug=debug,
+        )
+    else:
+        write_lines(version_filepath, [f"{next_version_strict}\n"], debug=debug)
 
     if citation_filepath.is_file():
-        update_citation(
-            citation_file=citation_filepath, version=next_version, debug=debug
-        )
+        if use_r_package_structure:
+            regenerate_citation_from_description(
+                citation_filepath=citation_filepath,
+                description_filepath=description_filepath,
+                debug=debug,
+            )
+        else:
+            update_citation(
+                citation_file=citation_filepath, version=next_version, debug=debug
+            )
         write_citation(
             citation_file=citation_filepath,
             output_file="codemeta.json",
@@ -160,6 +340,7 @@ def post_release_cleanup(
     dev_header="development version",
     version_filepath="VERSION",
     citation_filepath="CITATION.cff",
+    description_filepath="DESCRIPTION",
     debug=False,
 ):
     """
@@ -178,11 +359,20 @@ def post_release_cleanup(
         dev_header (str): The header for the development version section in the changelog (default is "development version").
         version_filepath (str): The path to the version file (default is "VERSION").
         citation_filepath (str): The path to the citation file (default is "CITATION.cff").
+        description_filepath (str): Path to the R DESCRIPTION file for R packages (default is "DESCRIPTION").
+        debug (bool): If True, print debug information instead of executing commands (default is False).
 
     Examples:
         >>> post_release_cleanup()
         >>> post_release_cleanup(changelog_filepath="docs/CHANGELOG.md", pr_branch="main")
     """
+    use_r_package_structure = is_r_package(description_filepath=description_filepath)
+    if use_r_package_structure:
+        if changelog_filepath == "CHANGELOG.md":
+            changelog_filepath = get_news_filepath()
+        if version_filepath == "VERSION":
+            version_filepath = description_filepath
+
     changelog_filepath = path_resolve(changelog_filepath)
     version_filepath = path_resolve(version_filepath)
     citation_filepath = path_resolve(citation_filepath)
@@ -191,8 +381,20 @@ def post_release_cleanup(
         lines = infile.readlines()
     lines.insert(0, f"## {os.path.basename(repo)} {dev_header}\n\n")
 
-    with open(version_filepath, "r") as infile:
-        version = infile.read().strip()
+    if use_r_package_structure:
+        version = ""
+        with version_filepath.open("r") as infile:
+            for line in infile:
+                if line.startswith("Version:"):
+                    version = line.removeprefix("Version:").strip()
+                    break
+        if not version:
+            raise ValueError(
+                f"No Version field found in DESCRIPTION file: {version_filepath}"
+            )
+    else:
+        with open(version_filepath, "r") as infile:
+            version = infile.read().strip()
 
     changed_files = " ".join(
         [
@@ -219,8 +421,19 @@ def post_release_cleanup(
     else:
         with open(path_resolve(changelog_filepath), "w") as outfile:
             outfile.writelines(lines)
-        with open(path_resolve(version_filepath), "w") as outfile:
-            outfile.write(f"{version}-dev\n")
+        if use_r_package_structure:
+            write_description_version(
+                description_filepath=version_filepath,
+                version=get_r_dev_version(version),
+            )
+            if citation_filepath.is_file():
+                regenerate_citation_from_description(
+                    citation_filepath=citation_filepath,
+                    description_filepath=description_filepath,
+                )
+        else:
+            with open(path_resolve(version_filepath), "w") as outfile:
+                outfile.write(f"{version}-dev\n")
         precommit_run(f"--files {changed_files}")
         shell_run(commit_cmd)
         pr_url = shell_run(pr_cmd)
@@ -269,6 +482,10 @@ def get_release_version(
             )
     else:
         next_version = next_version_convco
+    if not is_strict_semver(next_version, with_leading_v=with_leading_v):
+        raise ValueError(
+            f"Tag {next_version} does not match semantic versioning guidelines.\nView the guidelines here: https://semver.org/"
+        )
     # assert semantic version pattern
     check_version_increments_by_one(
         current_version, next_version, with_leading_v=with_leading_v
