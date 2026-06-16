@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # required to include tags
-      - uses: CCBR/actions/draft-release@v0.5
+      - uses: CCBR/actions/draft-release@v0.7
         with:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
@@ -97,7 +97,7 @@ steps:
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
 - `ccbr-actions-version`: The version of ccbr_actions to use.
-  **Required.** Default: `main`.
+  **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.11`.
 - `draft-branch`: The branch name to push changes to for the release

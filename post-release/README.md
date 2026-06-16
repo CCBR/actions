@@ -44,7 +44,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/post-release@v0.5
+      - uses: CCBR/actions/post-release@v0.7
         with:
           github-token: ${{ github.token }}
           update-sliding-tags: false
@@ -77,7 +77,7 @@ steps:
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
 - `ccbr-actions-version`: The version of CCBR/actions to use.
-  **Required.** Default: `main`.
+  **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.11`.
 - `pr-branch`: Branch to use for the post-release chores, from where a
