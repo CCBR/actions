@@ -224,7 +224,23 @@ def prepare_draft_release(
     changelog_filepath = path_resolve(changelog_filepath)
     version_filepath = path_resolve(version_filepath)
     citation_filepath = path_resolve(citation_filepath)
-    assert all([f.is_file() for f in (changelog_filepath, version_filepath)])
+    required_files = {
+        "changelog": changelog_filepath,
+        "version": version_filepath,
+        "citation": citation_filepath,
+    }
+    missing_required_files = [
+        f"{name} ({filepath})"
+        for name, filepath in required_files.items()
+        if not filepath.is_file()
+    ]
+    if missing_required_files:
+        missing_required_files_str = ", ".join(missing_required_files)
+        raise FileNotFoundError(
+            "Missing required release file(s): "
+            f"{missing_required_files_str}. "
+            "Please create these files or update draft-release inputs."
+        )
 
     next_version = get_release_version(
         next_version_manual=next_version_manual,
@@ -236,7 +252,7 @@ def prepare_draft_release(
     set_output("NEXT_VERSION", next_version)
 
     changelog_lines, next_release_lines = get_changelog_lines(
-        latest_version_strict=current_version.lstrip("v"),
+        latest_version_strict=current_version.lstrip("v") if current_version else "",
         next_version_strict=next_version_strict,
         changelog_filepath=changelog_filepath,
         dev_header=dev_header,
@@ -482,14 +498,25 @@ def get_release_version(
             )
     else:
         next_version = next_version_convco
+    if not next_version:
+        raise ValueError(
+            "Unable to determine next release version. "
+            "If this is the first release for this repository, provide version-tag."
+        )
     if not is_strict_semver(next_version, with_leading_v=with_leading_v):
         raise ValueError(
             f"Tag {next_version} does not match semantic versioning guidelines.\nView the guidelines here: https://semver.org/"
         )
     # assert semantic version pattern
-    check_version_increments_by_one(
-        current_version, next_version, with_leading_v=with_leading_v
-    )
+    if current_version:
+        if not is_strict_semver(current_version, with_leading_v=with_leading_v):
+            raise ValueError(
+                f"Current version {current_version} does not match semantic versioning guidelines.\n"
+                "If this is the first release for this repository, set current version to blank and provide version-tag."
+            )
+        check_version_increments_by_one(
+            current_version, next_version, with_leading_v=with_leading_v
+        )
     return next_version
 
 
@@ -551,6 +578,8 @@ def get_changelog_lines(
         ValueError: If any of the provided version strings do not match the semantic versioning pattern.
     """
     for version in [latest_version_strict, next_version_strict]:
+        if not version:
+            continue
         if not match_semver(version):
             raise ValueError(
                 f"Version {version} does not match semantic versioning pattern"
@@ -562,7 +591,7 @@ def get_changelog_lines(
         for line in infile:
             if line.startswith("#") and dev_header in line:
                 line = line.replace(dev_header, next_version_strict)
-            elif latest_version_strict in line:
+            elif latest_version_strict and latest_version_strict in line:
                 for_next = False
 
             changelog_lines.append(line)

@@ -69,25 +69,25 @@ def test_prepare_draft_release(tmp_path, github_output_file, data_dir):
     )
 
 
-def test_prepare_draft_release_no_citation(github_output_file, data_dir_rel):
-    output = exec_in_context(
-        prepare_draft_release,
-        next_version_manual="v1.0.0",
-        next_version_convco="v1.0.0",
-        current_version="v0.9.10",
-        gh_event_name="push",
-        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
-        dev_header="development version",
-        release_notes_filepath=str(data_dir_rel / "latest-release.md"),
-        version_filepath=str(data_dir_rel / "VERSION"),
-        citation_filepath="not/a/file.cff",
-        release_branch="release-draft",
-        pr_ref_name="PR_BRANCH_NAME",
-        repo="CCBR/actions",
-        debug=True,
-    )
-    assert "git add" in output
-    assert ".cff" not in output
+def test_prepare_draft_release_missing_required_file(github_output_file, data_dir_rel):
+    with pytest.raises(FileNotFoundError) as exc_info:
+        prepare_draft_release(
+            next_version_manual="v1.0.0",
+            next_version_convco="v1.0.0",
+            current_version="v0.9.10",
+            gh_event_name="push",
+            changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+            dev_header="development version",
+            release_notes_filepath=str(data_dir_rel / "latest-release.md"),
+            version_filepath=str(data_dir_rel / "VERSION"),
+            citation_filepath="not/a/file.cff",
+            release_branch="release-draft",
+            pr_ref_name="PR_BRANCH_NAME",
+            repo="CCBR/actions",
+            debug=True,
+        )
+    assert "Missing required release file(s)" in str(exc_info.value)
+    assert "citation" in str(exc_info.value)
 
 
 def test_create_release_draft(data_dir_rel):
@@ -135,6 +135,17 @@ def test_get_changelog_lines(data_dir_rel):
     assert release_notes == ["\n", "development version notes go here\n", "\n"]
 
 
+def test_get_changelog_lines_first_release(data_dir_rel):
+    new_changelog, release_notes = get_changelog_lines(
+        "",
+        "0.2.0",
+        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+    )
+    assert new_changelog[0] == "## actions 0.2.0\n"
+    assert release_notes[:3] == ["\n", "development version notes go here\n", "\n"]
+    assert "## actions 0.1.0\n" in release_notes
+
+
 def test_get_changelog_lines_sinclair(data_dir_rel):
     new_changelog, release_notes = get_changelog_lines(
         "0.3.0",
@@ -177,12 +188,30 @@ def test_get_release_version():
     )
     assert (
         get_release_version(
+            next_version_manual="v0.1.0",
+            next_version_convco="",
+            current_version="",
+        )
+        == "v0.1.0"
+    )
+    assert (
+        get_release_version(
             next_version_manual="v1.10.0",
             next_version_convco="v1.9.11",
             current_version="v1.9.10",
         )
         == "v1.10.0"
     )
+
+
+def test_get_release_version_first_release_missing_manual():
+    with pytest.raises(ValueError) as exc_info:
+        get_release_version(
+            next_version_manual="",
+            next_version_convco="",
+            current_version="",
+        )
+    assert "Unable to determine next release version" in str(exc_info.value)
 
 
 def test_get_release_version_warning():
@@ -349,15 +378,17 @@ def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir)
 
 
 def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
-    github_output_file, tmp_path, monkeypatch
+    github_output_file, tmp_path, monkeypatch, data_dir
 ):
     changelog_file = tmp_path / "CHANGELOG.md"
     version_file = tmp_path / "VERSION"
+    citation_file = tmp_path / "CITATION.cff"
     notes_file = tmp_path / "latest-release.md"
     changelog_file.write_text(
         "## actions development version\n\nnotes\n\n## actions 0.1.0\n"
     )
     version_file.write_text("0.1.0\n")
+    citation_file.write_text((data_dir / "CITATION.cff").read_text())
 
     monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *_: None)
     monkeypatch.setattr(
@@ -386,7 +417,7 @@ def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
             changelog_filepath=str(changelog_file),
             release_notes_filepath=str(notes_file),
             version_filepath=str(version_file),
-            citation_filepath="not/a/file/CITATION.cff",
+            citation_filepath=str(citation_file),
             release_branch="release-draft",
             pr_ref_name="feature/branch",
             repo="CCBR/actions",
