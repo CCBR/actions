@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/post-release@v0.7
+      - uses: CCBR/actions/post-release@main
         with:
           github-token: ${{ github.token }}
           update-sliding-tags: true
