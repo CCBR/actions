@@ -466,22 +466,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
+    "objectID": "CHANGELOG.html#actions-0.7.0",
+    "href": "CHANGELOG.html#actions-0.7.0",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Add R package-aware release handling to draft-release and post-release. (#170, @kelly-sovacool, @copilot)\nUpdate example workflows to limit concurrency which saves runtime. (#172, @kelly-sovacool)\nBump actions versions.\nMinor documentation improvements.\nUse the CCBR-bot as the committer in auto-format so changes will trigger other workflows. (#171, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Add R package-aware release handling to draft-release and post-release. (#170, @kelly-sovacool, @copilot)\nUpdate example workflows to limit concurrency which saves runtime. (#172, @kelly-sovacool)\nBump actions versions.\nMinor documentation improvements.\nUse the CCBR-bot as the committer in auto-format so changes will trigger other workflows. (#171, @kelly-sovacool)",
+    "section": "actions 0.7.0",
+    "text": "actions 0.7.0\n\nAdd R package-aware release handling to draft-release and post-release. (#170, @kelly-sovacool, @copilot)\nUpdate example workflows to limit concurrency which saves runtime. (#172, @kelly-sovacool)\nBump actions versions.\nMinor documentation improvements.\nUse the CCBR-bot as the committer in auto-format so changes will trigger other workflows. (#171, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -734,7 +723,7 @@
     "href": "install.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.6",
+    "text": "You will need the GitHub CLI installed (this is pre-installed on all github actions runners): https://github.com/cli/cli#installation\nThen install the ccbr_actions package with pip:\npip install git+https://github.com/CCBR/actions\nOr install it from a specific version or branch with:\npip install git+https://github.com/CCBR/actions@v0.7",
     "crumbs": [
       "Python package",
       "Installation"
@@ -898,7 +887,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.6.2). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {4},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.7.0). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {6},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
     "crumbs": [
       "Project information",
       "Citation"
