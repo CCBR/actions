@@ -113,7 +113,7 @@ steps:
 - `changelog-filepath`: Path to the changelog or news file. Default:
   `CHANGELOG.md`.
 - `citation-filepath`: Path to the citation file. Default:
-  `CITATION.cff`. This file must exist.
+  `CITATION.cff`.
 - `dev-header`: Header string to match to find the development version
   entry in the changelog, typically of the form ‘\## <software name>
   development version’. Default: `development version`.
