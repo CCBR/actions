@@ -466,22 +466,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Fix draft-release to preserve custom keys in CITATION.cff in R packages. (#180, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.7.1",
     "href": "CHANGELOG.html#actions-0.7.1",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Fix draft-release to preserve custom keys in CITATION.cff in R packages. (#180, @kelly-sovacool)",
+    "section": "actions 0.7.1",
+    "text": "actions 0.7.1\n\nFix draft-release to preserve custom keys in CITATION.cff in R packages. (#180, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
