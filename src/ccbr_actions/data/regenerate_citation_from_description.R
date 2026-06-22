@@ -7,14 +7,11 @@
 ## If the existing citation file already has an `identifiers` field, preserve it
 ## after cffr rewrites the rest of the citation metadata from DESCRIPTION.
 
-for (pkg in c("cffr", "yaml")) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    stop(
-      "Missing required R package: ",
-      pkg,
-      ". Install it in workflow setup (e.g. setup-r-dependencies)."
-    )
-  }
+if (!requireNamespace("cffr", quietly = TRUE)) {
+  stop(
+    "Missing required R package: cffr. ",
+    "Install it in workflow setup (e.g. setup-r-dependencies)."
+  )
 }
 
 citation_file <- Sys.getenv("CITATION_FILE")
@@ -28,7 +25,7 @@ if (file.exists(citation_file)) {
       }
     },
     error = function(e) {
-      message(
+      warning(
         "Unable to preserve existing CITATION.cff identifiers: ",
         conditionMessage(e)
       )
@@ -38,9 +35,12 @@ if (file.exists(citation_file)) {
 }
 
 setwd(dirname(Sys.getenv("DESCRIPTION_FILE")))
-cffr::cff_write(outfile = citation_file)
-if (!is.null(existing_identifiers)) {
-  yml <- yaml::read_yaml(citation_file)
-  yml$identifiers <- existing_identifiers
-  yaml::write_yaml(yml, citation_file)
+
+# Create citation with custom identifiers if they exist
+custom_keys <- if (is.null(existing_identifiers)) {
+  list()
+} else {
+  list(identifiers = existing_identifiers)
 }
+cf <- cffr::cff_create(keys = custom_keys)
+cffr::cff_write(cf, outfile = citation_file)
