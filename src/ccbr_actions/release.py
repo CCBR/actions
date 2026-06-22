@@ -10,7 +10,7 @@ from ccbr_tools.shell import shell_run
 
 from .actions import set_output, trigger_workflow
 from .citation import update_citation, write_citation
-from .util import precommit_run, path_resolve
+from .util import precommit_run, path_resolve, repo_base
 from .versions import (
     check_version_increments_by_one,
     match_semver,
@@ -96,24 +96,22 @@ def regenerate_citation_from_description(
     """
     Regenerate CITATION.cff from DESCRIPTION using cffr.
 
+    Preserves custom fields (e.g., identifiers) from the existing CITATION.cff file.
+
     Args:
         citation_filepath (str): Path to output CITATION.cff.
         description_filepath (str): Path to DESCRIPTION file.
         debug (bool): If True, print command instead of running it.
     """
-    r_expression = (
-        'if (!requireNamespace("cffr", quietly = TRUE)) '
-        'stop("Missing required R package: cffr. Install it in workflow setup (e.g. setup-r-dependencies)."); '
-        'setwd(dirname(Sys.getenv("DESCRIPTION_FILE"))); '
-        'cffr::cff_write(cff_file = Sys.getenv("CITATION_FILE"))'
-    )
     citation_filepath_quoted = shlex.quote(str(citation_filepath))
     description_filepath = path_resolve(description_filepath)
     description_filepath_quoted = shlex.quote(str(description_filepath))
+    script_filepath = repo_base("data", "regenerate_citation_from_description.R")
+    script_filepath_quoted = shlex.quote(str(script_filepath))
     cmd = (
         f"DESCRIPTION_FILE={description_filepath_quoted} "
         f"CITATION_FILE={citation_filepath_quoted} "
-        f"Rscript -e {shlex.quote(r_expression)}"
+        f"Rscript {script_filepath_quoted}"
     )
     if debug:
         print(cmd)
