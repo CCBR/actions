@@ -10,8 +10,7 @@ from ccbr_tools.shell import shell_run
 
 from .actions import set_output, trigger_workflow
 from .citation import update_citation, write_citation
-from .data import get_file_path
-from .util import precommit_run, path_resolve
+from .util import precommit_run, path_resolve, repo_base
 from .versions import (
     check_version_increments_by_one,
     match_semver,
@@ -107,7 +106,7 @@ def regenerate_citation_from_description(
     citation_filepath_quoted = shlex.quote(str(citation_filepath))
     description_filepath = path_resolve(description_filepath)
     description_filepath_quoted = shlex.quote(str(description_filepath))
-    script_filepath = get_file_path("regenerate_citation_from_description.R")
+    script_filepath = repo_base("data", "regenerate_citation_from_description.R")
     script_filepath_quoted = shlex.quote(str(script_filepath))
     cmd = (
         f"DESCRIPTION_FILE={description_filepath_quoted} "
