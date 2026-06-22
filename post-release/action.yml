@@ -57,7 +57,7 @@ runs:
         git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
         git checkout ${{ github.event.release.tag_name }}
         git switch -c ${{ inputs.pr-branch }}
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: "${{ inputs.python-version }}"
         cache: "pip"
