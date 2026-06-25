@@ -1,5 +1,7 @@
 ## actions development version
 
+- New command and action `copy-ruleset` for copying github rulesets between repositories. (#183, @kelly-sovacool)
+
 ## actions 0.7.1
 
 - Fix `draft-release` to preserve custom keys in `CITATION.cff` in R packages. (#180, @kelly-sovacool)
