@@ -19,7 +19,7 @@ repositories in an organisation.
 
 [copy-ruleset.yml](/examples/copy-ruleset.yml)
 
-``` yaml
+```yaml
 name: copy-ruleset
 
 on:
@@ -57,7 +57,7 @@ rulesets to a repository outside the current one, supply a personal
 access token (PAT) or a GitHub App token with `repo` scope on both
 repositories:
 
-``` yaml
+```yaml
 steps:
   - uses: CCBR/actions/copy-ruleset@main
     with:
@@ -69,7 +69,7 @@ steps:
 
 ### Pinning versions
 
-``` yaml
+```yaml
 steps:
   - uses: CCBR/actions/copy-ruleset@main
     with:
