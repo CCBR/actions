@@ -85,9 +85,9 @@ def list_rulesets_cmd(repo, token):
     rulesets = list_rulesets(repo=repo, token=token)
     if not rulesets:
         click.echo(f"No rulesets found in {repo}.")
-        return
-    for r in rulesets:
-        click.echo(f"{r['id']:>10}  {r['enforcement']:<12}  {r['name']}")
+    else:
+        for r in rulesets:
+            click.echo(f"{r['id']:>10}  {r['enforcement']:<12}  {r['name']}")
 
 
 cli.add_command(list_rulesets_cmd, name="list-rulesets")
