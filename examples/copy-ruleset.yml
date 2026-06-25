@@ -1,0 +1,28 @@
+name: copy-ruleset
+
+on:
+  workflow_dispatch:
+    inputs:
+      source-repo:
+        description: "Source repository (owner/repo) to copy the ruleset from."
+        required: true
+      target-repo:
+        description: "Target repository (owner/repo) to copy the ruleset to."
+        required: true
+      ruleset-name:
+        description: "Name of the ruleset to copy."
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  copy-ruleset:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/copy-ruleset@latest
+        with:
+          source-repo: ${{ inputs.source-repo }}
+          target-repo: ${{ inputs.target-repo }}
+          ruleset-name: ${{ inputs.ruleset-name }}
+          token: ${{ secrets.ORG_PAT }}

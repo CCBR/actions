@@ -1,0 +1,68 @@
+---
+title: copy-ruleset
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+Copy a named ruleset from one GitHub repository to another.
+This action fetches the full ruleset definition from the source repository via the GitHub API and creates an identical ruleset in the target repository.
+It is useful for standardising branch protection rules across multiple repositories in an organisation.
+
+> **Tip:** Not sure what rulesets exist in a repository?
+> Run `ccbr_actions list-rulesets owner/repo` locally to see all available ruleset names and their enforcement status.
+
+## Usage
+
+### Basic example
+
+[copy-ruleset.yml](/examples/copy-ruleset.yml)
+
+```{python}
+yml_file = '../examples/copy-ruleset.yml'
+print('```yaml')
+with open(yml_file, 'r') as infile:
+    print(infile.read())
+print('```\n')
+```
+
+### Using a PAT for cross-repository access
+
+`github.token` is scoped to the repository running the workflow.
+To copy rulesets to a repository outside the current one, supply a personal access token (PAT) or a GitHub App token with `repo` scope on both repositories:
+
+```yaml
+steps:
+  - uses: CCBR/actions/copy-ruleset@main
+    with:
+      source-repo: CCBR/actions
+      target-repo: CCBR/other-repo
+      ruleset-name: "Require PR reviews"
+      token: ${{ secrets.ORG_PAT }}
+```
+
+### Pinning versions
+
+```yaml
+steps:
+  - uses: CCBR/actions/copy-ruleset@main
+    with:
+      source-repo: CCBR/actions
+      target-repo: CCBR/other-repo
+      ruleset-name: "Require PR reviews"
+      token: ${{ secrets.ORG_PAT }}
+      python-version: "3.12"
+      ccbr-actions-version: "v1.0.0"
+```
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```
