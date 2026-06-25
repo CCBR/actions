@@ -1,6 +1,6 @@
 ## actions development version
 
-- New command and action `copy-ruleset` for copying github rulesets between repositories. (#183, @kelly-sovacool)
+- New commands `list-rulesets` and `copy-ruleset`, plus a `copy-ruleset` action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool)
 
 ## actions 0.7.1
 
