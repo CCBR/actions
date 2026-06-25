@@ -17,9 +17,6 @@ Copy a named ruleset from one GitHub repository to another.
 This action fetches the full ruleset definition from the source repository via the GitHub API and creates an identical ruleset in the target repository.
 It is useful for standardising branch protection rules across multiple repositories in an organisation.
 
-> **Tip:** Not sure what rulesets exist in a repository?
-> Run `ccbr_actions list-rulesets owner/repo` locally to see all available ruleset names and their enforcement status.
-
 ## Usage
 
 ### Basic example
@@ -49,18 +46,36 @@ steps:
       token: ${{ secrets.ORG_PAT }}
 ```
 
-### Pinning versions
+## Running locally
 
-```yaml
-steps:
-  - uses: CCBR/actions/copy-ruleset@main
-    with:
-      source-repo: CCBR/actions
-      target-repo: CCBR/other-repo
-      ruleset-name: "Require PR reviews"
-      token: ${{ secrets.ORG_PAT }}
-      python-version: "3.12"
-      ccbr-actions-version: "v1.0.0"
+Both operations can also be performed directly in the terminal using the [`gh` CLI](https://cli.github.com/) and `jq`, without installing any additional packages.
+
+**List rulesets** in a repository:
+
+```bash
+gh api repos/{owner}/{repo}/rulesets --jq '.[] | [.id, .enforcement, .name] | @tsv'
+```
+
+**Copy a ruleset** from one repository to another:
+
+```bash
+gh api repos/{source_owner}/{source_repo}/rulesets \
+  --jq '.[] | select(.name == "Require PR reviews") | .id' \
+  | xargs -I{} gh api repos/{source_owner}/{source_repo}/rulesets/{} \
+  | jq 'del(.id, .node_id, .created_at, .updated_at, ._links)' \
+  | gh api repos/{target_owner}/{target_repo}/rulesets \
+      --method POST \
+      --input -
+```
+
+Alternatively, using the `ccbr_actions` Python package:
+
+```bash
+# list rulesets
+ccbr_actions list-rulesets owner/repo
+
+# copy a ruleset
+ccbr_actions copy-ruleset CCBR/actions CCBR/other-repo "Require PR reviews"
 ```
 
 ```{python}
