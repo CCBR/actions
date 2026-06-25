@@ -103,8 +103,8 @@ def list_rulesets(repo, token=None, session=requests):
     Args:
         repo (str): Repository in ``owner/repo`` format.
         token (str, optional): GitHub token with ``repo`` scope.
-        session: Object with a requests-compatible ``request`` method.
-
+        session: Object with a requests-compatible ``request`` method, or a
+            method-only interface providing ``get``.
     Returns:
         list[dict]: Rulesets as returned by the GitHub API. Each item
             contains at minimum ``id``, ``name``, and ``enforcement``.
@@ -137,8 +137,8 @@ def copy_ruleset(
         target_repo (str): Target repository in ``owner/repo`` format.
         ruleset_name (str): Name of the ruleset to copy.
         token (str, optional): GitHub token with ``repo`` scope.
-        session: Object with a requests-compatible ``request`` method.
-
+        session: Object with a requests-compatible ``request`` method, or a
+            method-only interface providing ``get``/``post``.
     Returns:
         dict: The created ruleset as returned by the GitHub API.
 
