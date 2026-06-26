@@ -1,5 +1,7 @@
 ## actions development version
 
+- New action: `bump-actions-versions` to bump GitHub Actions versions in workflow files and open a PR. (#184, @copilot)
+
 ## actions 0.7.1
 
 - Fix `draft-release` to preserve custom keys in `CITATION.cff` in R packages. (#180, @kelly-sovacool)

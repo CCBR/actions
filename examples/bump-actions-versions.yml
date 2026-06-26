@@ -1,0 +1,23 @@
+name: bump-actions-versions
+
+on:
+  schedule:
+    - cron: "0 8 1 * *" # monthly, first of the month at 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: CCBR/actions/bump-actions-versions@v0.8
+        with:
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
