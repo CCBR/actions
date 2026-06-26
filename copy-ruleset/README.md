@@ -45,18 +45,24 @@ permissions:
 
 jobs:
   copy-ruleset:
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (vars.RULESET_SOURCE_REPO != '' && vars.RULESET_NAME != '')
+      }}
     runs-on: ubuntu-latest
     steps:
       - uses: CCBR/actions/copy-ruleset@latest
         with:
-          source-repo: ${{ inputs['source-repo'] || vars.RULESET_SOURCE_REPO }}
-          target-repo: ${{ inputs['target-repo'] || vars.RULESET_TARGET_REPO || github.repository }}
-          ruleset-name: ${{ inputs['ruleset-name'] || vars.RULESET_NAME }}
+          source-repo: ${{ github.event_name == 'workflow_dispatch' && inputs['source-repo'] || vars.RULESET_SOURCE_REPO }}
+          target-repo: ${{ github.event_name == 'workflow_dispatch' && inputs['target-repo'] || vars.RULESET_TARGET_REPO || github.repository }}
+          ruleset-name: ${{ github.event_name == 'workflow_dispatch' && inputs['ruleset-name'] || vars.RULESET_NAME }}
           token: ${{ secrets.ORG_PAT }}
 ```
 
 For non-manual triggers (`push`, `repository_dispatch`, `schedule`), set repository
-variables (`RULESET_SOURCE_REPO`, `RULESET_TARGET_REPO`, `RULESET_NAME`).
+variables (`RULESET_SOURCE_REPO`, `RULESET_NAME`, and optionally
+`RULESET_TARGET_REPO`; defaults to the current repository when unset).
 
 ### Using a PAT for cross-repository access
 
