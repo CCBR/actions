@@ -30,6 +30,15 @@ on:
       ruleset-name:
         description: "Name of the ruleset to copy."
         required: true
+  push:
+    branches:
+      - main
+      - master
+  repository_dispatch:
+    types:
+      - copy-ruleset
+  schedule:
+    - cron: "0 5 * * 1"
 
 permissions:
   contents: read
@@ -40,11 +49,14 @@ jobs:
     steps:
       - uses: CCBR/actions/copy-ruleset@latest
         with:
-          source-repo: ${{ inputs.source-repo }}
-          target-repo: ${{ inputs.target-repo }}
-          ruleset-name: ${{ inputs.ruleset-name }}
+          source-repo: ${{ inputs['source-repo'] || vars.RULESET_SOURCE_REPO }}
+          target-repo: ${{ inputs['target-repo'] || vars.RULESET_TARGET_REPO || github.repository }}
+          ruleset-name: ${{ inputs['ruleset-name'] || vars.RULESET_NAME }}
           token: ${{ secrets.ORG_PAT }}
 ```
+
+For non-manual triggers (`push`, `repository_dispatch`, `schedule`), set repository
+variables (`RULESET_SOURCE_REPO`, `RULESET_TARGET_REPO`, `RULESET_NAME`).
 
 ### Using a PAT for cross-repository access
 
