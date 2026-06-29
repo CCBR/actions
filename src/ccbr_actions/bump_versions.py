@@ -262,37 +262,28 @@ def bump_workflow_file(
     tag_cache: dict = {}
 
     for line in lines:
+        new_line = line
         m = _USES_PATTERN.match(line.rstrip())
-        if not m:
-            new_lines.append(line)
-            continue
+        comment = m.group("comment") or "" if m else ""
 
-        comment = m.group("comment") or ""
-        if LOCK_COMMENT in comment:
-            new_lines.append(line)
-            continue
+        if m and LOCK_COMMENT not in comment:
+            action_str = m.group("action")
+            try:
+                repo, current_ref = parse_action_ref(action_str)
+                if repo not in tag_cache:
+                    tag_cache[repo] = get_latest_release_tag_api(
+                        repo=repo, token=token, session=session
+                    )
+                latest_tag = tag_cache[repo]
+                new_ref = determine_new_ref(current_ref, latest_tag)
+                if new_ref != current_ref:
+                    new_action_str = f"{action_str[: action_str.index('@')]}@{new_ref}"
+                    new_line = line.replace(action_str, new_action_str, 1)
+                    changes.append(f"{filepath}: {action_str} → {new_action_str}")
+            except ValueError:
+                pass
 
-        action_str = m.group("action")
-        try:
-            repo, current_ref = parse_action_ref(action_str)
-        except ValueError:
-            new_lines.append(line)
-            continue
-
-        if repo not in tag_cache:
-            tag_cache[repo] = get_latest_release_tag_api(
-                repo=repo, token=token, session=session
-            )
-        latest_tag = tag_cache[repo]
-
-        new_ref = determine_new_ref(current_ref, latest_tag)
-        if new_ref != current_ref:
-            new_action_str = f"{action_str[: action_str.index('@')]}@{new_ref}"
-            new_line = line.replace(action_str, new_action_str, 1)
-            changes.append(f"{filepath}: {action_str} → {new_action_str}")
-            new_lines.append(new_line)
-        else:
-            new_lines.append(line)
+        new_lines.append(new_line)
 
     if changes:
         if debug:
