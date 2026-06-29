@@ -329,7 +329,9 @@ def bump_workflows(
     """
     workflows_dir = pathlib.Path(workflows_dir)
     all_changes = []
-    for filepath in sorted(workflows_dir.glob("*.yml")):
+    for filepath in sorted(
+        {*workflows_dir.glob("*.yml"), *workflows_dir.glob("*.yaml")}
+    ):
         file_changes = bump_workflow_file(
             filepath=filepath, token=token, session=session, debug=debug
         )
