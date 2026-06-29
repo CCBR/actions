@@ -167,13 +167,26 @@ def determine_new_ref(current_ref: str, latest_tag: Optional[str]) -> str:
     if ref_type in ("sha", "named"):
         return current_ref
 
-    latest_match = _FULL_SEMVER.match(latest_tag)
-    if not latest_match:
-        return current_ref
+    latest_major = latest_minor = latest_patch = None
 
-    latest_major = int(latest_match.group(2))
-    latest_minor = int(latest_match.group(3))
-    latest_patch = int(latest_match.group(4))
+    m_full = _FULL_SEMVER.match(latest_tag)
+    m_mm = _MAJOR_MINOR.match(latest_tag)
+    m_maj = _MAJOR_ONLY.match(latest_tag)
+
+    if m_full:
+        latest_major = int(m_full.group(2))
+        latest_minor = int(m_full.group(3))
+        latest_patch = int(m_full.group(4))
+    elif m_mm:
+        latest_major = int(m_mm.group(2))
+        latest_minor = int(m_mm.group(3))
+        latest_patch = 0
+    elif m_maj:
+        latest_major = int(m_maj.group(2))
+        latest_minor = 0
+        latest_patch = 0
+    else:
+        return current_ref
 
     if ref_type == "major":
         m = _MAJOR_ONLY.match(current_ref)
