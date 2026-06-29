@@ -30,13 +30,17 @@ on:
       ruleset-name:
         description: "Name of the ruleset to copy."
         required: true
+  # Push to the default branch can handle first runs in repositories
+  # created from templates (initial commit push).
   push:
     branches:
       - main
       - master
+  # Allow central automation to trigger this workflow remotely.
   repository_dispatch:
     types:
       - copy-ruleset
+  # Optional periodic sync to keep rulesets aligned over time.
   schedule:
     - cron: "0 5 * * 1"
 
@@ -59,10 +63,6 @@ jobs:
           ruleset-name: ${{ github.event_name == 'workflow_dispatch' && inputs['ruleset-name'] || vars.RULESET_NAME }}
           token: ${{ secrets.ORG_PAT }}
 ```
-
-For non-manual triggers (`push`, `repository_dispatch`, `schedule`), set repository
-variables (`RULESET_SOURCE_REPO`, `RULESET_NAME`, and optionally
-`RULESET_TARGET_REPO`; defaults to the current repository when unset).
 
 ### Using a PAT for cross-repository access
 
