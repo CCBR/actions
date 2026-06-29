@@ -579,13 +579,14 @@ def get_changelog_lines(
     """
     if not next_version_strict:
         raise ValueError("next_version_strict must not be blank")
-    for version in [latest_version_strict, next_version_strict]:
-        if not version:
-            continue
-        if not match_semver(version):
-            raise ValueError(
-                f"Version {version} does not match semantic versioning pattern"
-            )
+    if not match_semver(next_version_strict):
+        raise ValueError(
+            f"Version {next_version_strict} does not match semantic versioning pattern"
+        )
+    if latest_version_strict and not match_semver(latest_version_strict):
+        raise ValueError(
+            f"Version {latest_version_strict} does not match semantic versioning pattern"
+        )
     changelog_lines = list()
     next_release_lines = list()
     for_next = True
