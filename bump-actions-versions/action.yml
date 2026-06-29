@@ -104,7 +104,7 @@ runs:
         SUMMARY: ${{ steps.bump.outputs.summary }}
       run: |
         # Create PR only if one does not already exist for this branch
-        existing_pr=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number' 2>/dev/null || true)
+        existing_pr=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty' 2>/dev/null || true)
         if [ -n "$existing_pr" ]; then
           echo "Pull request #${existing_pr} already exists for branch ${BRANCH}."
         else
