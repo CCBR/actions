@@ -575,8 +575,10 @@ def get_changelog_lines(
             - next_release_lines (list): The list of lines that pertain to the next release.
 
     Raises:
-        ValueError: If any of the provided version strings do not match the semantic versioning pattern.
+        ValueError: If next_version_strict is blank or if any of the provided version strings do not match the semantic versioning pattern.
     """
+    if not next_version_strict:
+        raise ValueError("next_version_strict must not be blank")
     for version in [latest_version_strict, next_version_strict]:
         if not version:
             continue

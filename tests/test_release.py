@@ -170,12 +170,19 @@ def test_get_changelog_lines_error(data_dir_rel):
             "alpha-0.2.0",
             changelog_filepath=str(data_dir_rel / "example_changelog.md"),
         )
+    with pytest.raises(ValueError) as exc_info3:
+        get_changelog_lines(
+            "0.1.0",
+            "",
+            changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+        )
     assert "Version 0.1..9000 does not match semantic versioning pattern" in str(
         exc_info1.value
     )
     assert "Version alpha-0.2.0 does not match semantic versioning pattern" in str(
         exc_info2.value
     )
+    assert "next_version_strict must not be blank" in str(exc_info3.value)
 
 
 def test_get_release_version():
