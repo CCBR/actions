@@ -469,13 +469,16 @@ def test_bump_workflow_file_parse_action_ref_raises(tmp_path, monkeypatch):
     """ValueError from parse_action_ref is silently skipped (lines 283-284)."""
     import ccbr_actions.bump_versions as bv
 
+    def _raise_value_error(s):
+        raise ValueError("forced")
+
     content = """\
         steps:
           - uses: actions/checkout@v4
     """
     wf = _write_workflow(tmp_path, content)
     original = wf.read_text()
-    monkeypatch.setattr(bv, "parse_action_ref", lambda s: (_ for _ in ()).throw(ValueError("forced")))
+    monkeypatch.setattr(bv, "parse_action_ref", _raise_value_error)
     session = MockOKSession(tag_name="v5.0.0")
     changes = bv.bump_workflow_file(wf, session=session)
     assert changes == []
