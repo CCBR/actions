@@ -5,6 +5,7 @@ Helpers for reviewing pre-commit.ci autoupdate pull requests.
 import re
 import warnings
 
+import requests
 from packaging.version import InvalidVersion, Version
 
 from .github import GITHUB_API_URL, github_api_get, github_api_post, github_graphql_post
@@ -314,7 +315,7 @@ def review_pre_commit_pr(
     )
     try:
         request_reviewer(repo, pr_number, reviewer, token=token, session=session)
-    except Exception as exc:  # noqa: BLE001
+    except (requests.exceptions.RequestException, RuntimeError) as exc:
         warnings.warn(f"Could not request reviewer {reviewer!r}: {exc}")
     post_pr_comment(repo, pr_number, comment, token=token, session=session)
     return False

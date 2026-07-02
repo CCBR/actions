@@ -3,6 +3,7 @@ Tests for ccbr_actions.pre_commit module.
 """
 
 import pytest
+import requests as requests_lib
 
 from ccbr_actions.pre_commit import (
     PRE_COMMIT_CI_TITLE,
@@ -37,7 +38,7 @@ class MockResponse:
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise RuntimeError(f"HTTP {self.status_code}")
+            raise requests_lib.exceptions.HTTPError(f"HTTP {self.status_code}")
 
 
 class MockSession:

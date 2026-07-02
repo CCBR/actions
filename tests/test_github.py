@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from ccbr_actions.github import (
     github_api_get,
@@ -19,7 +20,7 @@ class MockResponse:
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise RuntimeError(f"HTTP {self.status_code}")
+            raise requests.exceptions.HTTPError(f"HTTP {self.status_code}")
 
 
 class MockRequestSession:
