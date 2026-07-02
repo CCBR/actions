@@ -1,0 +1,72 @@
+name: setup-ccbr-actions
+description: "Set up ccbr_actions by pulling a Docker image if available on DockerHub, otherwise installing via pip"
+author: "Kelly Sovacool"
+
+inputs:
+  ccbr-actions-version:
+    description: |
+      Version/tag of ccbr_actions to use (e.g. 'v0.7.0', 'main', 'latest').
+      When a matching Docker image exists at nciccbr/ccbr_actions:{version}, it is
+      pulled instead of running pip install. Otherwise ccbr_actions is installed via pip.
+    required: true
+    default: "main"
+  python-version:
+    description: |
+      The version of Python to install when falling back to pip install.
+    required: true
+    default: "3.11"
+  dockerhub-namespace:
+    description: |
+      DockerHub namespace to check for the ccbr_actions Docker image.
+    required: false
+    default: "nciccbr"
+
+outputs:
+  install-method:
+    description: "Method used to make ccbr_actions available: 'docker' or 'pip'."
+    value: ${{ steps.check-docker.outputs.install-method }}
+  docker-image:
+    description: "Full Docker image reference used (e.g. nciccbr/ccbr_actions:v0.7.0), or empty when pip was used."
+    value: ${{ steps.check-docker.outputs.docker-image }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check if Docker image exists on DockerHub
+      id: check-docker
+      shell: bash
+      run: |
+        version="${{ inputs.ccbr-actions-version }}"
+        namespace="${{ inputs.dockerhub-namespace }}"
+        repo_name="ccbr_actions"
+
+        http_code=$(curl -s -o /dev/null -w "%{http_code}" \
+          "https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repo_name}/tags/${version}" \
+          --max-time 20)
+
+        if [ "${http_code}" = "200" ]; then
+          docker_image="${namespace}/${repo_name}:${version}"
+          echo "docker-image=${docker_image}" >> "$GITHUB_OUTPUT"
+          echo "install-method=docker" >> "$GITHUB_OUTPUT"
+          echo "::notice::ccbr_actions Docker image found: ${docker_image}"
+        else
+          echo "docker-image=" >> "$GITHUB_OUTPUT"
+          echo "install-method=pip" >> "$GITHUB_OUTPUT"
+          echo "::notice::No Docker image found for '${namespace}/${repo_name}:${version}'. Installing ccbr_actions via pip."
+        fi
+
+    - name: Pull Docker image
+      if: ${{ steps.check-docker.outputs.install-method == 'docker' }}
+      shell: bash
+      run: docker pull ${{ steps.check-docker.outputs.docker-image }}
+
+    - name: Set up Python
+      if: ${{ steps.check-docker.outputs.install-method == 'pip' }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: "${{ inputs.python-version }}"
+
+    - name: Install ccbr_actions via pip
+      if: ${{ steps.check-docker.outputs.install-method == 'pip' }}
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
