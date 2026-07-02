@@ -75,13 +75,12 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v6
+    - name: Set up ccbr_actions
+      id: setup-ccbr-actions
+      uses: ./setup-ccbr-actions
       with:
-        python-version: "${{ inputs.python-version }}"
-
-    - name: Install CCBR/actions
-      shell: bash
-      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+        ccbr-actions-version: ${{ inputs.ccbr-actions-version }}
+        python-version: ${{ inputs.python-version }}
 
     - name: Resolve push mode
       id: resolve_push
@@ -110,15 +109,35 @@ runs:
         password: ${{ inputs.dockerhub-token }}
 
     - name: Prepare build-time variables
-      shell: python
+      shell: bash
       id: prepare_vars
+      env:
+        CCBR_INSTALL_METHOD: ${{ steps.setup-ccbr-actions.outputs.install-method }}
+        CCBR_DOCKER_IMAGE: ${{ steps.setup-ccbr-actions.outputs.docker-image }}
       run: |
+        script=$(mktemp /tmp/ccbr_XXXXXX.py)
+        cat > "$script" << 'PYEOF'
         from ccbr_actions.docker import prepare_docker_build_variables
         prepare_docker_build_variables(
             dockerfile="${{ inputs.dockerfile }}",
             suffix="${{ inputs.suffix }}",
             dockerhub_account="${{ inputs.dockerhub-namespace }}"
         )
+        PYEOF
+        if [ "${CCBR_INSTALL_METHOD}" = "docker" ]; then
+          docker run --rm \
+            -v "${GITHUB_ENV}:${GITHUB_ENV}" \
+            -e GITHUB_ENV \
+            -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
+            -e GITHUB_WORKSPACE \
+            -w "${GITHUB_WORKSPACE}" \
+            -v "${script}:/tmp/ccbr_script.py:ro" \
+            "${CCBR_DOCKER_IMAGE}" \
+            python /tmp/ccbr_script.py
+        else
+          python "$script"
+        fi
+        rm -f "$script"
 
     - name: Check variables and create README
       shell: bash
@@ -142,23 +161,46 @@ runs:
 
     - name: Check whether image tag is stale
       id: check_tag_staleness
-      shell: python
+      shell: bash
+      env:
+        CCBR_INSTALL_METHOD: ${{ steps.setup-ccbr-actions.outputs.install-method }}
+        CCBR_DOCKER_IMAGE: ${{ steps.setup-ccbr-actions.outputs.docker-image }}
+        INPUT_FORCE_BUILD: ${{ inputs.force_build }}
       run: |
+        script=$(mktemp /tmp/ccbr_XXXXXX.py)
+        cat > "$script" << 'PYEOF'
+        import os
         from ccbr_actions.actions import set_output
         from ccbr_actions.docker import evaluate_docker_build_staleness_and_set_outputs
 
-        force_build = "${{ inputs.force_build }}".lower() == "true"
+        force_build = os.environ.get("INPUT_FORCE_BUILD", "").lower() == "true"
         if force_build:
           set_output("should_build", "true")
           set_output("reason", "force_build_requested")
           print("::notice::Force build requested. Skipping Docker Hub staleness check.")
         else:
           evaluate_docker_build_staleness_and_set_outputs(
-            dockerfile_path="${{ env.DOCKERFILE_PATH }}",
-            image_name="${{ env.IMAGENAME }}",
+            dockerfile_path=os.environ.get("DOCKERFILE_PATH", ""),
+            image_name=os.environ.get("IMAGENAME", ""),
             dockerhub_namespace="${{ inputs.dockerhub-namespace }}",
-            repo_name="${{ env.REPONAME }}",
+            repo_name=os.environ.get("REPONAME", ""),
           )
+        PYEOF
+        if [ "${CCBR_INSTALL_METHOD}" = "docker" ]; then
+          docker run --rm \
+            -v "${GITHUB_OUTPUT}:${GITHUB_OUTPUT}" \
+            -e GITHUB_OUTPUT \
+            -e INPUT_FORCE_BUILD \
+            -e DOCKERFILE_PATH \
+            -e IMAGENAME \
+            -e REPONAME \
+            -v "${script}:/tmp/ccbr_script.py:ro" \
+            "${CCBR_DOCKER_IMAGE}" \
+            python /tmp/ccbr_script.py
+        else
+          python "$script"
+        fi
+        rm -f "$script"
 
     - name: Build and push Docker image
       id: build_and_push
@@ -181,15 +223,40 @@ runs:
       shell: bash
       id: run_script_in_container
       if: ${{ (inputs.print-versions == 'true') && (steps.check_tag_staleness.outputs.should_build == 'true') }}
+      env:
+        CCBR_INSTALL_METHOD: ${{ steps.setup-ccbr-actions.outputs.install-method }}
+        CCBR_DOCKER_IMAGE: ${{ steps.setup-ccbr-actions.outputs.docker-image }}
       run: |
-        script_src=$(command -v print_versions.sh)
         EXTRA_MOUNTS=""
-        if [ -f "${{ inputs.config-file }}" ]; then
-          CONFIG_FILE="/ws/${{ inputs.config-file }}"
+        if [ "${CCBR_INSTALL_METHOD}" = "docker" ]; then
+          # Extract print_versions.sh from the ccbr_actions Docker image
+          docker run --rm --entrypoint sh \
+            -v /tmp:/tmp \
+            "${CCBR_DOCKER_IMAGE}" \
+            -c "cp \$(command -v print_versions.sh) /tmp/print_versions.sh"
+          script_src=/tmp/print_versions.sh
+          if [ -f "${{ inputs.config-file }}" ]; then
+            CONFIG_FILE="/ws/${{ inputs.config-file }}"
+          else
+            config_src=$(docker run --rm --entrypoint python \
+              "${CCBR_DOCKER_IMAGE}" \
+              -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.txt"))')
+            docker run --rm --entrypoint sh \
+              -v /tmp:/tmp \
+              "${CCBR_DOCKER_IMAGE}" \
+              -c "cp ${config_src} /tmp/tool_version_commands.txt"
+            CONFIG_FILE="/ws/tool_version_commands.txt"
+            EXTRA_MOUNTS="-v /tmp/tool_version_commands.txt:/ws/tool_version_commands.txt:ro"
+          fi
         else
-          config_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.txt"))')
-          CONFIG_FILE="/ws/tool_version_commands.txt"
-          EXTRA_MOUNTS="-v ${config_src}:/ws/tool_version_commands.txt:ro"
+          script_src=$(command -v print_versions.sh)
+          if [ -f "${{ inputs.config-file }}" ]; then
+            CONFIG_FILE="/ws/${{ inputs.config-file }}"
+          else
+            config_src=$(python -c 'import ccbr_actions.data; print(ccbr_actions.data.get_file_path("tool_version_commands.txt"))')
+            CONFIG_FILE="/ws/tool_version_commands.txt"
+            EXTRA_MOUNTS="-v ${config_src}:/ws/tool_version_commands.txt:ro"
+          fi
         fi
         docker run --rm --entrypoint /bin/bash \
           -v "${{ github.workspace }}:/ws" \

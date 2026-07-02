@@ -1,5 +1,9 @@
 ## actions development version
 
+- Add `setup-ccbr-actions` composite action that checks whether a Docker image exists at `nciccbr/ccbr_actions:{version}` on DockerHub and uses it if available, otherwise installs `ccbr_actions` via pip. (#186, @copilot)
+- Add `Dockerfile` and `.github/workflows/build-docker-ccbr-actions.yml` to build and push `nciccbr/ccbr_actions` Docker images on release. (#186, @copilot)
+- Update `build-docker` to use `setup-ccbr-actions` for installing `ccbr_actions`. (#186, @copilot)
+
 ## actions 0.7.1
 
 - Fix `draft-release` to preserve custom keys in `CITATION.cff` in R packages. (#180, @kelly-sovacool)
