@@ -434,9 +434,7 @@ def test_prepare_draft_release_r_package_first_release(
     shell_run(
         "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
     )
-    (repo_dir / "NEWS.md").write_text(
-        "## mypkg development version\n\nnotes\n"
-    )
+    (repo_dir / "NEWS.md").write_text("## mypkg development version\n\nnotes\n")
     description_filepath = repo_dir / "DESCRIPTION"
     description_filepath.write_text("Package: mypkg\nVersion: 0.1.0\nTitle: Example\n")
     (repo_dir / "CITATION.cff").write_text((data_dir / "CITATION.cff").read_text())
