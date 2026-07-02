@@ -388,6 +388,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./actions/copy-ruleset/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Copy Ruleset</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">draft-release</span></a>
   </div>
@@ -618,7 +624,9 @@ Options:
   -h, --help      Show this message and exit.
 
 Commands:
-  use-example  Use a GitHub Actions workflow file from CCBR/actions.
+  use-example    Use a GitHub Actions workflow file from CCBR/actions.
+  list-rulesets  List all rulesets for a GitHub repository.
+  copy-ruleset   Copy a ruleset from one GitHub repository to another.
 </code></pre>
 <section id="use-example" class="level4">
 <h4 class="anchored" data-anchor-id="use-example">use-example</h4>
@@ -638,6 +646,47 @@ Commands:
 
 Options:
   -h, --help  Show this message and exit.
+</code></pre>
+</section>
+<section id="list-rulesets" class="level4">
+<h4 class="anchored" data-anchor-id="list-rulesets">list-rulesets</h4>
+<pre><code>Usage: ccbr_actions list-rulesets [OPTIONS] REPO
+
+  List all rulesets for a GitHub repository.
+
+  Args:
+      repo (str): Repository in owner/repo format.
+
+  Examples:
+      ccbr_actions list-rulesets CCBR/actions
+      ccbr_actions list-rulesets CCBR/actions --token ghp_...
+
+Options:
+  -t, --token TEXT  GitHub token with repo scope. Defaults to the GH_TOKEN
+                    environment variable.
+  -h, --help        Show this message and exit.
+</code></pre>
+</section>
+<section id="copy-ruleset" class="level4">
+<h4 class="anchored" data-anchor-id="copy-ruleset">copy-ruleset</h4>
+<pre><code>Usage: ccbr_actions copy-ruleset [OPTIONS] SOURCE_REPO TARGET_REPO
+                                 RULESET_NAME
+
+  Copy a ruleset from one GitHub repository to another.
+
+  Args:
+      source-repo (str): Source repository in owner/repo format.
+      target-repo (str): Target repository in owner/repo format.
+      ruleset-name (str): Name of the ruleset to copy.
+
+  Examples:
+      ccbr_actions copy-ruleset CCBR/actions CCBR/other-repo "Require PR reviews"
+      ccbr_actions copy-ruleset CCBR/actions CCBR/other-repo "Require PR reviews" --token ghp_...
+
+Options:
+  -t, --token TEXT  GitHub token with repo scope. Defaults to the GH_TOKEN
+                    environment variable.
+  -h, --help        Show this message and exit.
 </code></pre>
 
 
