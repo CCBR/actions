@@ -94,3 +94,31 @@ def github_api_post(url, token=None, session=requests, **kwargs):
     return github_api_request(
         method="POST", url=url, token=token, session=session, **kwargs
     )
+
+
+def github_graphql_post(query, variables=None, token=None, session=requests):
+    """
+    Perform a POST request against the GitHub GraphQL API.
+
+    Args:
+        query (str): GraphQL query or mutation string.
+        variables (dict, optional): GraphQL variables.
+        token (str, optional): GitHub token.
+        session: Object with a requests-compatible ``request`` method.
+
+    Returns:
+        dict: Parsed JSON response from the GraphQL API.
+
+    Raises:
+        RuntimeError: If the GraphQL response contains errors.
+    """
+    url = f"{GITHUB_API_URL}/graphql"
+    payload = {"query": query}
+    if variables:
+        payload["variables"] = variables
+    response = github_api_post(url=url, token=token, session=session, json=payload)
+    response.raise_for_status()
+    data = response.json()
+    if "errors" in data:
+        raise RuntimeError(f"GraphQL errors: {data['errors']}")
+    return data

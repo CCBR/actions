@@ -1,5 +1,7 @@
 ## actions development version
 
+- New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#188, @copilot)
+
 ## actions 0.7.1
 
 - Fix `draft-release` to preserve custom keys in `CITATION.cff` in R packages. (#180, @kelly-sovacool)

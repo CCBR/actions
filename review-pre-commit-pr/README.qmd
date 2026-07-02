@@ -1,0 +1,63 @@
+---
+title: review-pre-commit-pr
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+This action automates the review of pull requests opened by the
+[pre-commit.ci](https://pre-commit.ci) bot with the title
+`[pre-commit.ci] pre-commit autoupdate`.
+
+The action verifies two conditions:
+
+1. **Only `.pre-commit-config.yaml` was changed** – no other files
+   should be modified by a routine autoupdate.
+2. **The only changes are `rev:` version bumps** – no repos are added
+   or removed and no fields other than `rev:` are changed.
+
+When both conditions are satisfied the action:
+
+- Approves the PR as the token's actor (typically CCBR-bot).
+- Enables squash auto-merge so the PR merges automatically once all
+  required checks pass.
+
+When either condition is **not** satisfied the action:
+
+- Requests the configured `reviewer` as a human reviewer.
+- Posts a comment on the PR tagging the reviewer and explaining which
+  conditions were not met.
+
+## Usage
+
+You should call this action from a workflow that is triggered on
+`pull_request` events.  Generate a CCBR-bot token first (using
+`actions/create-github-app-token`) so that the approval and merge
+operations are performed as CCBR-bot.
+
+### Basic example
+
+[review-pre-commit-pr.yml](/examples/review-pre-commit-pr.yml)
+
+
+```{python}
+yml_file='../examples/review-pre-commit-pr.yml'
+print('```yaml')
+with open(yml_file, 'r') as infile:
+  print(infile.read())
+print('```\n')
+```
+
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```
