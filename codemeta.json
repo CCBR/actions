@@ -7,7 +7,7 @@
       "@type": "Person",
       "affiliation": {
         "@type": "Organization",
-        "legalName": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
+        "name": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
       },
       "familyName": "Sovacool",
       "givenName": "Kelly"
@@ -17,17 +17,16 @@
       "@type": "Person",
       "affiliation": {
         "@type": "Organization",
-        "legalName": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
+        "name": "Advanced Biomedical Computational Science, Frederick National Laboratory for Cancer Research, Frederick, MD 21702, USA"
       },
       "familyName": "Koparde",
       "givenName": "Vishal"
     }
   ],
   "codeRepository": "https://github.com/CCBR/actions",
-  "datePublished": "2026-06-22",
-  "identifier": "https://doi.org/10.5281/zenodo.13761059",
+  "datePublished": "2026-07-02",
   "license": "https://spdx.org/licenses/MIT",
   "name": "CCBR actions: GitHub Actions for CCBR repos",
   "url": "https://ccbr.github.io/actions/",
-  "version": "v0.7.1"
+  "version": "v0.2.0"
 }

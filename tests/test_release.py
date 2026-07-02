@@ -394,6 +394,74 @@ def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir)
     assert str(description_filepath) in output
 
 
+def test_prepare_draft_release_r_package_missing_news(
+    github_output_file, tmp_path, data_dir
+):
+    repo_dir = tmp_path / "repo"
+    repo_dir.mkdir()
+    description_filepath = repo_dir / "DESCRIPTION"
+    description_filepath.write_text("Package: mypkg\nVersion: 0.1.0\nTitle: Example\n")
+    (repo_dir / "CITATION.cff").write_text((data_dir / "CITATION.cff").read_text())
+    # NEWS.md intentionally absent
+    original_cwd = os.getcwd()
+    os.chdir(repo_dir)
+    try:
+        with pytest.raises(FileNotFoundError) as exc_info:
+            prepare_draft_release(
+                next_version_manual="v0.2.0",
+                current_version="v0.1.0",
+                gh_event_name="push",
+                changelog_filepath="CHANGELOG.md",
+                citation_filepath="CITATION.cff",
+                description_filepath=str(description_filepath),
+                debug=True,
+            )
+    finally:
+        os.chdir(original_cwd)
+    assert "Missing required release file(s)" in str(exc_info.value)
+    assert "changelog" in str(exc_info.value)
+    assert "NEWS" in str(exc_info.value)
+
+
+def test_prepare_draft_release_r_package_first_release(
+    github_output_file, tmp_path, data_dir
+):
+    repo_dir = tmp_path / "repo"
+    repo_dir.mkdir()
+    original_cwd = os.getcwd()
+    os.chdir(repo_dir)
+    shell_run("git init > /dev/null 2>&1")
+    shell_run(
+        "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+    )
+    (repo_dir / "NEWS.md").write_text(
+        "## mypkg development version\n\nnotes\n"
+    )
+    description_filepath = repo_dir / "DESCRIPTION"
+    description_filepath.write_text("Package: mypkg\nVersion: 0.1.0\nTitle: Example\n")
+    (repo_dir / "CITATION.cff").write_text((data_dir / "CITATION.cff").read_text())
+    try:
+        output = exec_in_context(
+            prepare_draft_release,
+            next_version_manual="v0.1.0",
+            next_version_convco="",
+            current_version="",  # first release
+            gh_event_name="push",
+            changelog_filepath="CHANGELOG.md",
+            release_notes_filepath=".github/latest-release.md",
+            version_filepath="VERSION",
+            citation_filepath="CITATION.cff",
+            description_filepath=str(description_filepath),
+            repo="CCBR/mypkg",
+            debug=True,
+        )
+    finally:
+        os.chdir(original_cwd)
+    assert "NEWS.md" in output
+    assert "DESCRIPTION" in output
+    assert "Version: 0.1.0" in output
+
+
 def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
     github_output_file, tmp_path, monkeypatch, data_dir
 ):
