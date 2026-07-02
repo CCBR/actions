@@ -38,6 +38,7 @@ them for your needs.
 - [label-issues-repo-name](examples/label-issues-repo-name.yml)
 - [maintain-milestones](examples/maintain-milestones.yml)
 - [post-release](examples/post-release.yml)
+- [review-pre-commit-pr](examples/review-pre-commit-pr.yml)
 - [sync-copilot-instructions](examples/sync-copilot-instructions.yml)
 - [techdev-project](examples/techdev-project.yml)
 - [trigger-docker-dispatch](examples/trigger-docker-dispatch.yml)
@@ -66,10 +67,13 @@ Custom actions used in our github workflows.
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [review-pre-commit-pr](review-pre-commit-pr) - Review a
+  pre-commit.ci autoupdate PR: approve and enable auto-merge when only
+  rev: versions changed, otherwise request a human reviewer
 - [sync-copilot-instructions](sync-copilot-instructions) - Sync Copilot
   instructions from a source repository to a target repository and open
   a PR
-- [user-projects](user-projects) - Add issue/PR to user’s project
+- [user-projects](user-projects) - Add issue/PR to user's project
 
 ## Package
 

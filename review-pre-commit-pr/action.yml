@@ -1,0 +1,49 @@
+name: review-pre-commit-pr
+description: "Review a pre-commit.ci autoupdate PR: approve and enable auto-merge when only rev: versions changed, otherwise request a human reviewer"
+author: "Kelly Sovacool"
+
+inputs:
+  github-token:
+    description: "GitHub API token (e.g. a CCBR-bot token generated with actions/create-github-app-token)."
+    required: true
+  pr-number:
+    description: "Pull request number to review."
+    required: true
+  repo:
+    description: "Repository full name (e.g. CCBR/actions)."
+    required: true
+    default: "${{ github.repository }}"
+  reviewer:
+    description: "GitHub username to request as reviewer when the PR requires human review."
+    required: true
+  ccbr-actions-version:
+    description: "The version of CCBR/actions to install (branch, tag, or 'latest')."
+    required: true
+    default: "latest"
+  python-version:
+    description: "Python version to use."
+    required: true
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v6
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "pip"
+    - name: Install ccbr_actions
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+    - name: Review pre-commit.ci PR
+      shell: python {0}
+      run: |
+        from ccbr_actions.pre_commit import review_pre_commit_pr
+        review_pre_commit_pr(
+          repo="${{ inputs.repo }}",
+          pr_number="${{ inputs.pr-number }}",
+          reviewer="${{ inputs.reviewer }}",
+          token="${{ inputs.github-token }}",
+        )
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
