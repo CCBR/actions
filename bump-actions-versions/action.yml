@@ -1,0 +1,125 @@
+name: bump-actions-versions
+description: "Bump GitHub Actions versions in workflow files and open a PR with the changes"
+author: "Kelly Sovacool"
+
+inputs:
+  app-id:
+    description: "GitHub App ID used to generate an installation token (e.g. CCBR bot)."
+    required: true
+  app-private-key:
+    description: "GitHub App private key used to generate an installation token."
+    required: true
+  workflows-dir:
+    description: "Directory containing workflow YAML files to update."
+    required: true
+    default: ".github/workflows"
+  branch:
+    description: "Branch name to use for the pull request."
+    required: true
+    default: "bump-actions-versions"
+  commit-message:
+    description: "Commit message for the version bump commit."
+    required: true
+    default: "chore: 🤖 bump actions versions"
+  python-version:
+    description: "Version of Python to install."
+    required: true
+    default: "3.11"
+  ccbr-actions-version:
+    description: "Version of ccbr_actions to install."
+    required: true
+    default: "latest"
+
+runs:
+  using: composite
+  steps:
+    - name: Generate a token
+      id: generate-token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-private-key }}
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ steps.generate-token.outputs.token }}
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "pip"
+
+    - name: Install ccbr_actions
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - name: Bump actions versions
+      id: bump
+      shell: python {0}
+      run: |
+        import os
+        from ccbr_actions.bump_versions import bump_workflows
+        changes = bump_workflows(
+            workflows_dir="${{ inputs.workflows-dir }}",
+            token=os.environ.get("GH_TOKEN"),
+        )
+        has_changes = "true" if changes else "false"
+        summary = "\n".join(changes) if changes else "No version bumps needed."
+        print(f"Changes detected: {has_changes}")
+        with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+            fh.write(f"has_changes={has_changes}\n")
+            fh.write(f"summary<<EOF\n{summary}\nEOF\n")
+      env:
+        GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+
+    - name: Commit and push
+      if: steps.bump.outputs.has_changes == 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        BRANCH: ${{ inputs.branch }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+      run: |
+        git config --global user.name "ccbr-bot"
+        git config --global user.email "258092125+ccbr-bot@users.noreply.github.com"
+        git switch -C "$BRANCH"
+        git add "${{ inputs.workflows-dir }}"
+        if git diff --cached --quiet; then
+          echo "Nothing to commit."
+        else
+          git commit -m "$COMMIT_MESSAGE"
+        fi
+        git push -u origin "$BRANCH" --force
+
+    - name: Create pull request
+      if: steps.bump.outputs.has_changes == 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        BRANCH: ${{ inputs.branch }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message }}
+        SUMMARY: ${{ steps.bump.outputs.summary }}
+      run: |
+        # Create PR only if one does not already exist for this branch
+        existing_pr=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty' 2>/dev/null || true)
+        if [ -n "$existing_pr" ]; then
+          echo "Pull request #${existing_pr} already exists for branch ${BRANCH}."
+        else
+          gh pr create \
+            --title "$COMMIT_MESSAGE" \
+            --body "## Changes
+
+        Automated bump of GitHub Actions versions in workflow files.
+
+        ### Updated references
+
+        ${SUMMARY}
+
+        ---
+        _Generated using AI_" \
+            --base "${{ github.ref_name }}" \
+            --head "$BRANCH"
+        fi
