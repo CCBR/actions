@@ -1,0 +1,83 @@
+---
+title: copy-ruleset
+format: gfm
+execute:
+  echo: false
+  output: asis
+---
+
+```{python}
+import ccbr_actions.docs
+
+action = ccbr_actions.docs.parse_action_yaml('action.yml')
+print(ccbr_actions.docs.action_markdown_desc(action))
+```
+
+Copy a named ruleset from one GitHub repository to another.
+This action fetches the full ruleset definition from the source repository via the GitHub API and creates an identical ruleset in the target repository.
+It is useful for standardising branch protection rules across multiple repositories in an organisation.
+
+## Usage
+
+### Basic example
+
+[copy-ruleset.yml](/examples/copy-ruleset.yml)
+
+```{python}
+yml_file = '../examples/copy-ruleset.yml'
+print('```yaml')
+with open(yml_file, 'r') as infile:
+    print(infile.read())
+print('```\n')
+```
+
+### Using a PAT for cross-repository access
+
+`github.token` is scoped to the repository running the workflow.
+To copy rulesets to a repository outside the current one, supply a personal access token (PAT) or a GitHub App token with `repo` scope on both repositories:
+
+```yaml
+steps:
+  - uses: CCBR/actions/copy-ruleset@main
+    with:
+      source-repo: CCBR/actions
+      target-repo: CCBR/other-repo
+      ruleset-name: "Require PR reviews"
+      token: ${{ secrets.ORG_PAT }}
+```
+
+## Running locally
+
+Both operations can also be performed directly in the terminal using the [`gh` CLI](https://cli.github.com/) and `jq`, without installing any additional packages.
+
+**List rulesets** in a repository:
+
+```bash
+gh api repos/{owner}/{repo}/rulesets --jq '.[] | [.id, .enforcement, .name] | @tsv'
+```
+
+**Copy a ruleset** from one repository to another:
+
+```bash
+gh api repos/{source_owner}/{source_repo}/rulesets \
+  --jq '.[] | select(.name == "Require PR reviews") | .id' \
+  | xargs -I{} gh api repos/{source_owner}/{source_repo}/rulesets/{} \
+  | jq 'del(.id, .node_id, .created_at, .updated_at, ._links)' \
+  | gh api repos/{target_owner}/{target_repo}/rulesets \
+      --method POST \
+      --input -
+```
+
+Alternatively, using the `ccbr_actions` Python package:
+
+```bash
+# list rulesets
+ccbr_actions list-rulesets owner/repo
+
+# copy a ruleset
+ccbr_actions copy-ruleset CCBR/actions CCBR/other-repo "Require PR reviews"
+```
+
+```{python}
+print(ccbr_actions.docs.action_markdown_io(action))
+```
