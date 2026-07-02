@@ -70,25 +70,25 @@ def test_prepare_draft_release(tmp_path, github_output_file, data_dir):
     )
 
 
-def test_prepare_draft_release_no_citation(github_output_file, data_dir_rel):
-    output = exec_in_context(
-        prepare_draft_release,
-        next_version_manual="v1.0.0",
-        next_version_convco="v1.0.0",
-        current_version="v0.9.10",
-        gh_event_name="push",
-        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
-        dev_header="development version",
-        release_notes_filepath=str(data_dir_rel / "latest-release.md"),
-        version_filepath=str(data_dir_rel / "VERSION"),
-        citation_filepath="not/a/file.cff",
-        release_branch="release-draft",
-        pr_ref_name="PR_BRANCH_NAME",
-        repo="CCBR/actions",
-        debug=True,
-    )
-    assert "git add" in output
-    assert ".cff" not in output
+def test_prepare_draft_release_missing_required_file(github_output_file, data_dir_rel):
+    with pytest.raises(FileNotFoundError) as exc_info:
+        prepare_draft_release(
+            next_version_manual="v1.0.0",
+            next_version_convco="v1.0.0",
+            current_version="v0.9.10",
+            gh_event_name="push",
+            changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+            dev_header="development version",
+            release_notes_filepath=str(data_dir_rel / "latest-release.md"),
+            version_filepath=str(data_dir_rel / "VERSION"),
+            citation_filepath="not/a/file.cff",
+            release_branch="release-draft",
+            pr_ref_name="PR_BRANCH_NAME",
+            repo="CCBR/actions",
+            debug=True,
+        )
+    assert "Missing required release file(s)" in str(exc_info.value)
+    assert "citation" in str(exc_info.value)
 
 
 def test_create_release_draft(data_dir_rel):
@@ -136,6 +136,17 @@ def test_get_changelog_lines(data_dir_rel):
     assert release_notes == ["\n", "development version notes go here\n", "\n"]
 
 
+def test_get_changelog_lines_first_release(data_dir_rel):
+    new_changelog, release_notes = get_changelog_lines(
+        "",
+        "0.2.0",
+        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+    )
+    assert new_changelog[0] == "## actions 0.2.0\n"
+    assert release_notes[:3] == ["\n", "development version notes go here\n", "\n"]
+    assert "## actions 0.1.0\n" in release_notes
+
+
 def test_get_changelog_lines_sinclair(data_dir_rel):
     new_changelog, release_notes = get_changelog_lines(
         "0.3.0",
@@ -159,12 +170,19 @@ def test_get_changelog_lines_error(data_dir_rel):
             "alpha-0.2.0",
             changelog_filepath=str(data_dir_rel / "example_changelog.md"),
         )
+    with pytest.raises(ValueError) as exc_info3:
+        get_changelog_lines(
+            "0.1.0",
+            "",
+            changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+        )
     assert "Version 0.1..9000 does not match semantic versioning pattern" in str(
         exc_info1.value
     )
     assert "Version alpha-0.2.0 does not match semantic versioning pattern" in str(
         exc_info2.value
     )
+    assert "next_version_strict must not be blank" in str(exc_info3.value)
 
 
 def test_get_release_version():
@@ -178,12 +196,38 @@ def test_get_release_version():
     )
     assert (
         get_release_version(
+            next_version_manual="v0.1.0",
+            next_version_convco="",
+            current_version="",
+        )
+        == "v0.1.0"
+    )
+    assert (
+        get_release_version(
+            next_version_manual="",
+            next_version_convco="v0.1.0",
+            current_version="",
+        )
+        == "v0.1.0"
+    )
+    assert (
+        get_release_version(
             next_version_manual="v1.10.0",
             next_version_convco="v1.9.11",
             current_version="v1.9.10",
         )
         == "v1.10.0"
     )
+
+
+def test_get_release_version_first_release_missing_manual():
+    with pytest.raises(ValueError) as exc_info:
+        get_release_version(
+            next_version_manual="",
+            next_version_convco="",
+            current_version="",
+        )
+    assert "Unable to determine next release version" in str(exc_info.value)
 
 
 def test_get_release_version_warning():
@@ -350,16 +394,84 @@ def test_prepare_draft_release_r_package(github_output_file, tmp_path, data_dir)
     assert str(description_filepath) in output
 
 
+def test_prepare_draft_release_r_package_missing_news(
+    github_output_file, tmp_path, data_dir
+):
+    repo_dir = tmp_path / "repo"
+    repo_dir.mkdir()
+    description_filepath = repo_dir / "DESCRIPTION"
+    description_filepath.write_text("Package: mypkg\nVersion: 0.1.0\nTitle: Example\n")
+    (repo_dir / "CITATION.cff").write_text((data_dir / "CITATION.cff").read_text())
+    # NEWS.md intentionally absent
+    original_cwd = os.getcwd()
+    os.chdir(repo_dir)
+    try:
+        with pytest.raises(FileNotFoundError) as exc_info:
+            prepare_draft_release(
+                next_version_manual="v0.2.0",
+                current_version="v0.1.0",
+                gh_event_name="push",
+                changelog_filepath="CHANGELOG.md",
+                citation_filepath="CITATION.cff",
+                description_filepath=str(description_filepath),
+                debug=True,
+            )
+    finally:
+        os.chdir(original_cwd)
+    assert "Missing required release file(s)" in str(exc_info.value)
+    assert "changelog" in str(exc_info.value)
+    assert "NEWS" in str(exc_info.value)
+
+
+def test_prepare_draft_release_r_package_first_release(
+    github_output_file, tmp_path, data_dir
+):
+    repo_dir = tmp_path / "repo"
+    repo_dir.mkdir()
+    original_cwd = os.getcwd()
+    os.chdir(repo_dir)
+    shell_run("git init > /dev/null 2>&1")
+    shell_run(
+        "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+    )
+    (repo_dir / "NEWS.md").write_text("## mypkg development version\n\nnotes\n")
+    description_filepath = repo_dir / "DESCRIPTION"
+    description_filepath.write_text("Package: mypkg\nVersion: 0.1.0\nTitle: Example\n")
+    (repo_dir / "CITATION.cff").write_text((data_dir / "CITATION.cff").read_text())
+    try:
+        output = exec_in_context(
+            prepare_draft_release,
+            next_version_manual="v0.1.0",
+            next_version_convco="",
+            current_version="",  # first release
+            gh_event_name="push",
+            changelog_filepath="CHANGELOG.md",
+            release_notes_filepath=".github/latest-release.md",
+            version_filepath="VERSION",
+            citation_filepath="CITATION.cff",
+            description_filepath=str(description_filepath),
+            repo="CCBR/mypkg",
+            debug=True,
+        )
+    finally:
+        os.chdir(original_cwd)
+    assert "NEWS.md" in output
+    assert "DESCRIPTION" in output
+    assert "Version: 0.1.0" in output
+
+
 def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
-    github_output_file, tmp_path, monkeypatch
+    github_output_file, tmp_path, monkeypatch, data_dir
 ):
     changelog_file = tmp_path / "CHANGELOG.md"
     version_file = tmp_path / "VERSION"
+    citation_file = tmp_path / "CITATION.cff"
     notes_file = tmp_path / "latest-release.md"
     changelog_file.write_text(
         "## actions development version\n\nnotes\n\n## actions 0.1.0\n"
     )
     version_file.write_text("0.1.0\n")
+    citation_file.write_text((data_dir / "CITATION.cff").read_text())
 
     monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *_: None)
     monkeypatch.setattr(
@@ -388,7 +500,7 @@ def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
             changelog_filepath=str(changelog_file),
             release_notes_filepath=str(notes_file),
             version_filepath=str(version_file),
-            citation_filepath="not/a/file/CITATION.cff",
+            citation_filepath=str(citation_file),
             release_branch="release-draft",
             pr_ref_name="feature/branch",
             repo="CCBR/actions",
