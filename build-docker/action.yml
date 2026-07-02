@@ -115,7 +115,7 @@ runs:
         CCBR_INSTALL_METHOD: ${{ steps.setup-ccbr-actions.outputs.install-method }}
         CCBR_DOCKER_IMAGE: ${{ steps.setup-ccbr-actions.outputs.docker-image }}
       run: |
-        script=$(mktemp /tmp/ccbr_XXXXXX.py)
+        script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
         cat > "$script" << 'PYEOF'
         from ccbr_actions.docker import prepare_docker_build_variables
         prepare_docker_build_variables(
@@ -131,9 +131,9 @@ runs:
             -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             -e GITHUB_WORKSPACE \
             -w "${GITHUB_WORKSPACE}" \
-            -v "${script}:/tmp/ccbr_script.py:ro" \
+            -v "${script}:${script}:ro" \
             "${CCBR_DOCKER_IMAGE}" \
-            python /tmp/ccbr_script.py
+            python "${script}"
         else
           python "$script"
         fi
@@ -167,7 +167,7 @@ runs:
         CCBR_DOCKER_IMAGE: ${{ steps.setup-ccbr-actions.outputs.docker-image }}
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
       run: |
-        script=$(mktemp /tmp/ccbr_XXXXXX.py)
+        script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
         cat > "$script" << 'PYEOF'
         import os
         from ccbr_actions.actions import set_output
@@ -194,9 +194,9 @@ runs:
             -e DOCKERFILE_PATH \
             -e IMAGENAME \
             -e REPONAME \
-            -v "${script}:/tmp/ccbr_script.py:ro" \
+            -v "${script}:${script}:ro" \
             "${CCBR_DOCKER_IMAGE}" \
-            python /tmp/ccbr_script.py
+            python "${script}"
         else
           python "$script"
         fi
