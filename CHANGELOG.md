@@ -1,6 +1,7 @@
 ## actions development version
 
-- New action: `bump-actions-versions` to bump GitHub Actions versions in workflow files and open a PR. (#184, @copilot)
+- New action `copy-ruleset` plus commands `list-rulesets` and `copy-ruleset`, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)
+- New action: `bump-actions-versions` to bump GitHub Actions versions in workflow files and open a PR. (#184, @copilot, @kelly-sovacool)
 
 ## actions 0.7.1
 

@@ -161,10 +161,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# quarto
 /.quarto/
 /_site/
 /objects.json
 /reference
 /_sidebar.yml
-
 **/*.quarto_ipynb
+
+/.posit/
