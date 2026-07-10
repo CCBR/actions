@@ -2,146 +2,146 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ccbr.github.io/actions/actions.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.466Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/actions.html</loc>
-    <lastmod>2026-07-02T16:46:13.967Z</lastmod>
+    <lastmod>2026-07-10T18:07:19.818Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/index.html</loc>
-    <lastmod>2026-07-02T16:46:13.926Z</lastmod>
+    <lastmod>2026-07-10T18:07:19.776Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/versions.html</loc>
-    <lastmod>2026-07-02T16:46:14.177Z</lastmod>
+    <lastmod>2026-07-10T18:07:20.030Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/docker.html</loc>
-    <lastmod>2026-07-02T16:46:14.035Z</lastmod>
+    <lastmod>2026-07-10T18:07:19.888Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/data.html</loc>
-    <lastmod>2026-07-02T16:46:13.992Z</lastmod>
+    <lastmod>2026-07-10T18:07:19.844Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/changed-files/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.330Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.089Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/label-issue-repo-name/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.312Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.071Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/maintain-milestones/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.300Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.060Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/sync-copilot-instructions/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.279Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.038Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/copy-ruleset/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.259Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.018Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/install-r-pak/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.231Z</lastmod>
+    <lastmod>2026-07-10T18:07:17.987Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/contributors.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/cite.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.466Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/LICENSE.html</loc>
-    <lastmod>2026-07-02T16:44:33.496Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.458Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/CONTRIBUTING.html</loc>
-    <lastmod>2026-07-02T16:44:33.495Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.456Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/examples.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/package.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/gh-app-auth.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/install.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/CHANGELOG.html</loc>
-    <lastmod>2026-07-02T16:44:33.496Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.458Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/cli.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/badges.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.466Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/help.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/add-issue-label-list/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.225Z</lastmod>
+    <lastmod>2026-07-10T18:07:17.981Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/build-docker/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.255Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.013Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/draft-release/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.269Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.028Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/post-release/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.290Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.049Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/user-projects/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.309Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.069Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/actions/mkdocs-mike/index.html</loc>
-    <lastmod>2026-07-02T16:46:12.320Z</lastmod>
+    <lastmod>2026-07-10T18:07:18.079Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/gh-actions.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/docs.html</loc>
-    <lastmod>2026-07-02T16:46:14.067Z</lastmod>
+    <lastmod>2026-07-10T18:07:19.920Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/util.html</loc>
-    <lastmod>2026-07-02T16:46:14.175Z</lastmod>
+    <lastmod>2026-07-10T18:07:20.028Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/release.html</loc>
-    <lastmod>2026-07-02T16:46:14.154Z</lastmod>
+    <lastmod>2026-07-10T18:07:20.007Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/reference/citation.html</loc>
-    <lastmod>2026-07-02T16:46:13.984Z</lastmod>
+    <lastmod>2026-07-10T18:07:19.836Z</lastmod>
   </url>
   <url>
     <loc>https://ccbr.github.io/actions/index.html</loc>
-    <lastmod>2026-07-02T16:44:33.503Z</lastmod>
+    <lastmod>2026-07-10T18:05:36.467Z</lastmod>
   </url>
 </urlset>
