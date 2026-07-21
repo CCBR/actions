@@ -1,6 +1,6 @@
 [
   {
-    "listing": "/actions.html",
+    "listing": "/index.html",
     "items": [
       "/actions/changed-files/index.html",
       "/actions/copy-ruleset/index.html",
@@ -17,7 +17,7 @@
     ]
   },
   {
-    "listing": "/index.html",
+    "listing": "/actions.html",
     "items": [
       "/actions/changed-files/index.html",
       "/actions/copy-ruleset/index.html",
