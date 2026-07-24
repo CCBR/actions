@@ -66,6 +66,9 @@ Custom actions used in our github workflows.
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [setup-ccbr-actions](setup-ccbr-actions) - Set up ccbr_actions by
+  pulling a Docker image if available on DockerHub, otherwise installing
+  via pip
 - [sync-copilot-instructions](sync-copilot-instructions) - Sync Copilot
   instructions from a source repository to a target repository and open
   a PR
