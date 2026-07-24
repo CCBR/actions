@@ -2,7 +2,6 @@
 Tests for ccbr_actions.bump_versions
 """
 
-import os
 import pathlib
 
 import requests
