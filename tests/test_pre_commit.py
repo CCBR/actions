@@ -20,7 +20,6 @@ from ccbr_actions.pre_commit import (
     review_pre_commit_pr,
 )
 
-
 # ---------------------------------------------------------------------------
 # Mock helpers
 # ---------------------------------------------------------------------------
@@ -204,12 +203,7 @@ def test_check_only_version_bumps_accepts_commit_hash_rev_change():
 
 def test_check_only_version_bumps_returns_false_for_mismatched_rev_count():
     # More removals than additions
-    patch = (
-        "@@ -1,2 +1,1 @@\n"
-        "-  rev: v1.0.0\n"
-        "-  rev: v2.0.0\n"
-        "+  rev: v1.1.0\n"
-    )
+    patch = "@@ -1,2 +1,1 @@\n-  rev: v1.0.0\n-  rev: v2.0.0\n+  rev: v1.1.0\n"
     assert check_only_version_bumps(patch) is False
 
 
@@ -230,7 +224,10 @@ def test_get_pr_files_calls_correct_url():
     result = get_pr_files("CCBR/actions", 42, token="tok", session=session)
     assert result == files
     assert session.calls[0][0] == "GET"
-    assert session.calls[0][1] == "https://api.github.com/repos/CCBR/actions/pulls/42/files"
+    assert (
+        session.calls[0][1]
+        == "https://api.github.com/repos/CCBR/actions/pulls/42/files"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -283,7 +280,9 @@ def test_request_reviewer_posts_to_requested_reviewers_endpoint():
     request_reviewer("CCBR/actions", 42, "alice", token="tok", session=session)
     method, url, kwargs = session.calls[0]
     assert method == "POST"
-    assert url == "https://api.github.com/repos/CCBR/actions/pulls/42/requested_reviewers"
+    assert (
+        url == "https://api.github.com/repos/CCBR/actions/pulls/42/requested_reviewers"
+    )
     assert kwargs["json"]["reviewers"] == ["alice"]
 
 
@@ -326,9 +325,7 @@ def _make_review_session(*, extra_files=None, patch=None):
             graphql_url: {
                 "data": {
                     "enablePullRequestAutoMerge": {
-                        "pullRequest": {
-                            "autoMergeRequest": {"enabledAt": "2024-01-01"}
-                        }
+                        "pullRequest": {"autoMergeRequest": {"enabledAt": "2024-01-01"}}
                     }
                 }
             },
@@ -376,9 +373,7 @@ def test_review_pre_commit_pr_warns_when_reviewer_request_fails(monkeypatch):
     def _fail_request(*args, **kwargs):
         raise RuntimeError("reviewer not allowed on PR")
 
-    monkeypatch.setattr(
-        "ccbr_actions.pre_commit.request_reviewer", _fail_request
-    )
+    monkeypatch.setattr("ccbr_actions.pre_commit.request_reviewer", _fail_request)
 
     with pytest.warns(UserWarning, match="Could not request reviewer"):
         result = review_pre_commit_pr(
