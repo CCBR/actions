@@ -1,16 +1,17 @@
 import os
-import pytest
 
+import pytest
+from ccbr_tools.shell import exec_in_context
+
+from ccbr_actions.actions import use_github_action
 from ccbr_actions.docs import (
-    get_docs_version,
-    set_docs_version,
-    parse_action_yaml,
     action_markdown_desc,
     action_markdown_header,
     action_markdown_io,
+    get_docs_version,
+    parse_action_yaml,
+    set_docs_version,
 )
-from ccbr_actions.actions import use_github_action
-from ccbr_tools.shell import exec_in_context
 
 
 def test_parse_action_yaml(tmp_path):

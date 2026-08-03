@@ -4,8 +4,9 @@ Utility functions for the package
 
 import datetime
 import pathlib
-import ccbr_tools.shell
+
 import ccbr_tools.pkg_util
+import ccbr_tools.shell
 
 
 def repo_base(*paths):

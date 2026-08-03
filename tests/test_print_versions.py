@@ -1,6 +1,6 @@
-import pytest
 import shutil
 
+import pytest
 from ccbr_tools.shell import shell_run
 
 

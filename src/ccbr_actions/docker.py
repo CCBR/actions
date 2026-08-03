@@ -8,7 +8,6 @@ import datetime
 import os
 import pathlib
 import subprocess
-from typing import Dict, Optional
 
 import requests
 
@@ -48,9 +47,9 @@ def prepare_docker_build_variables(
     dockerfile: str,
     suffix: str,
     dockerhub_account: str,
-    github_env: Optional[str] = None,
-    now: Optional[datetime.datetime] = None,
-) -> Dict[str, str]:
+    github_env: str | None = None,
+    now: datetime.datetime | None = None,
+) -> dict[str, str]:
     """
     Prepare Docker build variables and optionally write them to GITHUB_ENV.
 
@@ -101,8 +100,7 @@ def prepare_docker_build_variables(
     env_path = github_env or os.environ.get("GITHUB_ENV")
     if env_path:
         with open(env_path, "a") as env_handle:
-            for key, value in values.items():
-                env_handle.write(f"{key}={value}\n")
+            env_handle.writelines(f"{key}={value}\n" for key, value in values.items())
 
     return values
 
@@ -169,7 +167,7 @@ def dockerhub_tag_last_updated(
     image_tag: str,
     timeout: int = 20,
     session=requests,
-) -> Optional[str]:
+) -> str | None:
     """
     Get Docker Hub tag ``last_updated`` timestamp.
 
@@ -201,7 +199,7 @@ def evaluate_docker_build_staleness(
     image_name: str,
     dockerhub_namespace: str,
     repo_name: str,
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Decide whether to build a Docker image based on Dockerfile git history and tag freshness.
 
@@ -268,7 +266,7 @@ def evaluate_docker_build_staleness_and_set_outputs(
     image_name: str,
     dockerhub_namespace: str,
     repo_name: str,
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Evaluate Docker build staleness and set step outputs.
 

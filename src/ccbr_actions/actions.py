@@ -4,9 +4,10 @@ Download and use GitHub Actions workflow files.
 
 import os
 import pathlib
-import requests
 import uuid
 import warnings
+
+import requests
 
 from .github import GITHUB_API_URL, github_api_headers, github_api_post
 from .util import path_resolve

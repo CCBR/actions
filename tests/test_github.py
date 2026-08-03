@@ -1,11 +1,12 @@
 import pytest
+
 from ccbr_actions.github import (
+    copy_ruleset,
     github_api_get,
     github_api_headers,
     github_api_post,
     github_api_request,
     list_rulesets,
-    copy_ruleset,
 )
 
 

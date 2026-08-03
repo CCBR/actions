@@ -6,15 +6,16 @@ import os
 import re
 import shlex
 import warnings
+
 from ccbr_tools.shell import shell_run
 
 from .actions import set_output, trigger_workflow
 from .citation import update_citation, write_citation
-from .util import precommit_run, path_resolve, repo_base
+from .util import path_resolve, precommit_run, repo_base
 from .versions import (
     check_version_increments_by_one,
-    match_semver,
     get_current_hash,
+    match_semver,
 )
 
 

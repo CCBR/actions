@@ -1,7 +1,9 @@
 import os
+
 import pytest
 from ccbr_tools.shell import exec_in_context
-from ccbr_actions.actions import use_github_action, set_output, trigger_workflow
+
+from ccbr_actions.actions import set_output, trigger_workflow, use_github_action
 
 
 def test_use_github_action(tmp_path):

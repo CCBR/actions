@@ -3,12 +3,11 @@ Entry point for CCBR Actions
 """
 
 import click
+from ccbr_tools.pkg_util import CustomClickGroup, get_version
 
-from ccbr_tools.pkg_util import get_version, CustomClickGroup
-
-from .util import repo_base, print_citation
 from .actions import use_github_action
 from .github import copy_ruleset, list_rulesets
+from .util import print_citation, repo_base
 
 
 @click.group(
@@ -33,7 +32,6 @@ def cli():
 
     https://ccbr.github.io/actions/
     """
-    pass
 
 
 @click.command()
