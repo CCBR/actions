@@ -33,7 +33,7 @@ jobs:
   add-list:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/add-issue-label-list@v0.5
+      - uses: CCBR/actions/add-issue-label-list@latest
         with:
           github-token: ${{ github.token }}
           issue-num: ${{ inputs.issue-num }}

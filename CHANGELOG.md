@@ -1,5 +1,42 @@
 ## actions development version
 
+- New commands `list-rulesets` and `copy-ruleset`, plus a `copy-ruleset` action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)
+
+## actions 0.7.1
+
+- Fix `draft-release` to preserve custom keys in `CITATION.cff` in R packages. (#180, @kelly-sovacool)
+
+## actions 0.7.0
+
+- Add R package-aware release handling to `draft-release` and `post-release`. (#170, @kelly-sovacool, @copilot)
+- Update example workflows to limit concurrency which saves runtime. (#172, @kelly-sovacool)
+- Bump actions versions.
+- Minor documentation improvements.
+- Use the CCBR-bot as the committer in `auto-format` so changes will trigger other workflows. (#171, @kelly-sovacool)
+
+## actions 0.6.2
+
+- Fix `changed-files` JSON output handling and improve error messages. (#162, #163, @kelly-sovacool)
+- `build-docker` updates:
+  - Fix when run on forks: do not attempt to push to dockerhub if necessary secrets are not set. (#164, @kelly-sovacool)
+  - New output: `push_success` reports whether the docker image was pushed successfully. (#167, @kelly-sovacool)
+  - Only build if the image on dockerhub does not exist or is older than the dockerfile timestamp. (#166, @kelly-sovacool)
+- Minor documentation improvements. (#165, @kelly-sovacool)
+
+## actions 0.6.1
+
+- Fix `changed-files`: do not use pip cache with `setup-python` since the repo is not checked out. (#158, @kelly-sovacool)
+- Fix forgotten actions that were missed when previously bumping to the latest versions in anticipation of the node.js 20 deprecation. (#159, @kelly-sovacool)
+
+## actions 0.6.0
+
+- New action: `changed-files` to detect files that changed matching a pattern. (#152, @kelly-sovacool)
+  - Can compare the most recent commit only or the entire PR changes by setting the `comparison-mode` option. (#156, @kelly-sovacool)
+- Bump actions versions to the latest release in anticipation of the node.js 20 deprecation. (#149, @kelly-sovacool)
+- Improve build-docker example workflows to prevent excessive docker updates. (#153, @kelly-sovacool)
+
+## actions 0.5.3
+
 - Improve `maintain-milestones`:
   - Only close the immediately prior year's milestones after May of the current year for performance reviews. (#145, @kelly-sovacool)
   - Use a toggle to control dry-run mode. (#146, @kelly-sovacool)

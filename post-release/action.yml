@@ -4,42 +4,45 @@ author: "Kelly Sovacool"
 
 inputs:
   github-token:
-    description: "GitHub Actions token (e.g. github.token)"
+    description: "GitHub Actions token (e.g. github.token)."
     required: true
   ccbr-actions-version:
-    description: "The version of CCBR/actions to use"
+    description: "The version of CCBR/actions to use."
     required: true
-    default: "main"
+    default: "latest"
   python-version:
-    description: "The version of Python to install"
+    description: "The version of Python to install."
     required: true
     default: "3.11"
   pr-branch:
-    description: "Branch to use for the post-release chores, from where a PR will be opened. Recommended to use 'release/{TAG_NAME}'"
+    description: "Branch to use for the post-release chores, from where a PR will be opened. Recommended to use 'release/{TAG_NAME}'."
     default: "release/${{ github.ref_name }}"
     required: true
   draft-branch:
-    description: "Branch used for the prior release draft (see `draft-release` action)"
+    description: "Branch used for the prior release draft (see `draft-release` action)."
     default: "release-draft"
     required: true
   version-filepath:
-    description: "Path to the file containing the current version"
+    description: "Path to the file containing the current version."
     default: "VERSION"
+  description-filepath:
+    description: "Path to the R DESCRIPTION file, used when an R package is detected."
+    default: "DESCRIPTION"
   changelog-filepath:
-    description: "Path to the changelog or news file"
+    description: "Path to the changelog or news file."
     default: "CHANGELOG.md"
   citation-filepath:
-    description: "Path to the citation file"
+    description: "Path to the citation file."
     default: "CITATION.cff"
   dev-header:
-    description: "Header string to match to find the development version entry in the changelog, typically of the form '## <software name> development version'"
+    description: "Header string to match to find the development version entry in the changelog, typically of the form '## <software name> development version'."
     default: "development version"
   github-actor:
-    description: "Username of GitHub actor for the git commit when the docs branch is deployed"
+    description: "Username of GitHub actor for the git commit when the docs branch is deployed."
     required: true
     default: "41898282+github-actions[bot]"
   update-sliding-tags:
-    description: "Whether to update the sliding tags (major.minor & latest) to the new patch version"
+    description: "Whether to update the sliding tags (major.minor & latest) to the new patch version."
     default: "false"
 
 runs:
@@ -54,11 +57,20 @@ runs:
         git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
         git checkout ${{ github.event.release.tag_name }}
         git switch -c ${{ inputs.pr-branch }}
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: "${{ inputs.python-version }}"
         cache: "pip"
-    - name: Install
+    - uses: r-lib/actions/setup-r@v2
+      if: ${{ hashFiles(inputs.description-filepath) != '' }}
+      with:
+        r-version: "4.5"
+        use-public-rspm: true
+    - uses: r-lib/actions/setup-r-dependencies@v2
+      if: ${{ hashFiles(inputs.description-filepath) != '' }}
+      with:
+        extra-packages: any::cffr
+    - name: Install actions package
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
@@ -77,6 +89,7 @@ runs:
           dev_header="${{ inputs.dev-header }}",
           version_filepath="${{ inputs.version-filepath }}",
           citation_filepath="${{ inputs.citation-filepath }}",
+          description_filepath="${{ inputs.description-filepath }}",
         )
       env:
         GH_TOKEN: ${{ inputs.github-token }}

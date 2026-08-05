@@ -1,24 +1,23 @@
 import os
-import pytest
-import tempfile
 
+import pytest
+from ccbr_tools.shell import exec_in_context
+
+from ccbr_actions.actions import use_github_action
 from ccbr_actions.docs import (
-    get_docs_version,
-    set_docs_version,
-    parse_action_yaml,
     action_markdown_desc,
     action_markdown_header,
     action_markdown_io,
+    get_docs_version,
+    parse_action_yaml,
+    set_docs_version,
 )
-from ccbr_actions.actions import use_github_action
-from ccbr_tools.shell import exec_in_context
 
 
-def test_parse_action_yaml():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        yml_filepath = os.path.join(tmpdir, "docs-mkdocs.yml")
-        use_github_action(name="docs-mkdocs", save_as=yml_filepath)
-        action_dict = parse_action_yaml(yml_filepath)
+def test_parse_action_yaml(tmp_path):
+    yml_filepath = tmp_path / "docs-mkdocs.yml"
+    use_github_action(name="docs-mkdocs", save_as=yml_filepath)
+    action_dict = parse_action_yaml(yml_filepath)
 
     assert action_dict.get("name") == "docs"
 
@@ -39,24 +38,31 @@ def test_action_markdown_header():
 
 def test_action_markdown_io():
     action_md = action_markdown_io(parse_action_yaml("mkdocs-mike/action.yml"))
-    assert all(
-        [
-            "## Inputs\n" in action_md,
-            "## Outputs\n" in action_md,
-            "The version of the docs being deployed." in action_md,
-        ]
+    assert "## Inputs\n" in action_md
+    assert "## Outputs\n" in action_md
+    assert "The version of the docs being deployed." in action_md
+
+
+def test_action_markdown_io_preserves_multiline_input_description():
+    action_md = action_markdown_io(parse_action_yaml("changed-files/action.yml"))
+    assert (
+        "`comparison-mode`: Comparison mode for collecting changed files." in action_md
+    )
+    assert (
+        "\n    - latest-commit (default): for pull_request, compare head^...head (latest commit only)"
+        in action_md
+    )
+    assert (
+        "\n    - event: compare full event range (PR base...head or push before...after)"
+        in action_md
     )
 
 
 def test_get_docs_version():
     with pytest.warns(UserWarning) as record1:
         result1 = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
-    assert all(
-        [
-            result1 == ("dev", ""),
-            "No latest release found" in str(record1[0].message.args[0]),
-        ]
-    )
+    assert result1 == ("dev", "")
+    assert "No latest release found" in str(record1[0].message.args[0])
 
 
 def test_get_docs_version_strict():
@@ -74,9 +80,22 @@ def test_get_docs_version_nonsemantic():
     tag1, alias1 = get_docs_version(
         repo="CCBR/HowTos", release_tag="1.0", strict_semver=False
     )
-    assert all([tag1 == "1.0", alias1 == ""])
+    assert tag1 == "1.0"
+    assert alias1 == ""
 
 
-def test_set_docs_version():
-    output = exec_in_context(set_docs_version, repo="CCBR/Tools", environ="ABC")
-    assert output == "::set-output name=VERSION::dev\n::set-output name=ALIAS::\n"
+def test_set_docs_version(tmp_path):
+    output_file = tmp_path / "github_output.txt"
+    os.environ["TEST_GITHUB_OUTPUT"] = str(output_file)
+    try:
+        exec_in_context(
+            set_docs_version,
+            repo="CCBR/Tools",
+            environ="TEST_GITHUB_OUTPUT",
+        )
+    finally:
+        del os.environ["TEST_GITHUB_OUTPUT"]
+
+    output_text = output_file.read_text()
+    assert "VERSION<<" in output_text
+    assert "ALIAS<<" in output_text

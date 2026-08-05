@@ -4,12 +4,12 @@ author: "Vishal Koparde"
 inputs:
   issue-num:
     required: true
-    description: "Number of the issue to update (issue should already exist!)"
+    description: "Number of the issue to update (issue should already exist!)."
   label-name:
     required: true
-    description: "Name of the label to create a task list for (eg. RENEE or ccbr1310, etc.)"
+    description: "Name of the label to create a task list for (eg. RENEE or ccbr1310, etc.)."
   github-token:
-    description: "GitHub Actions token (e.g. { github.token })"
+    description: "GitHub Actions token (e.g. { github.token })."
     required: true
 
 runs:

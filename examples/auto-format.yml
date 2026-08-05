@@ -4,9 +4,6 @@ on:
   workflow_dispatch:
   pull_request:
 
-env:
-  GH_TOKEN: ${{ github.token }}
-
 permissions:
   contents: write
   pull-requests: write
@@ -20,21 +17,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
-        if: github.event_name == 'pull_request'
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
         with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
-      - uses: actions/checkout@v5
-        if: github.event_name != 'pull_request'
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref_name }}
+          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
 
       - name: git config
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "CCBR-bot"
+          git config --global user.email "258092125+ccbr-bot@users.noreply.github.com"
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
 
       - id: changed-files
         name: Check changed files

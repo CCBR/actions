@@ -18,11 +18,15 @@ permissions:
   pull-requests: write
   actions: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   draft-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # required to include tags
       - uses: CCBR/actions/draft-release@main

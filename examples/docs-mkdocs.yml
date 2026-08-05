@@ -20,13 +20,17 @@ permissions:
   contents: write
   pages: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   mkdocs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/mkdocs-mike@v0.5
+      - uses: CCBR/actions/mkdocs-mike@latest
         with:
           github-token: ${{ github.token }}

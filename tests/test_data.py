@@ -1,10 +1,12 @@
-from ccbr_actions.data import get_file_path
 import pytest
+
+from ccbr_actions.data import get_file_path
 
 
 def test_get_file_path():
     file = get_file_path("tool_version_commands.txt")
-    assert all([file.exists(), file.name == "tool_version_commands.txt"])
+    assert file.exists()
+    assert file.name == "tool_version_commands.txt"
 
 
 def test_get_file_path_error():

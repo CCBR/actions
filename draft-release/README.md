@@ -59,10 +59,10 @@ jobs:
   draft-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # required to include tags
-      - uses: CCBR/actions/draft-release@v0.5
+      - uses: CCBR/actions/draft-release@v0.7
         with:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
@@ -93,17 +93,19 @@ steps:
 
 - `version-tag`: Semantic version tag for next release. If not provided,
   it will be determined based on conventional commit history. Example:
-  v2.5.11 .
+  v2.5.11.
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
 - `ccbr-actions-version`: The version of ccbr_actions to use.
-  **Required.** Default: `main`.
+  **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.11`.
 - `draft-branch`: The branch name to push changes to for the release
-  draft.. **Required.** Default: `release-draft`.
+  draft. **Required.** Default: `release-draft`.
 - `version-filepath`: Path to the file containing the current version.
   Default: `VERSION`.
+- `description-filepath`: Path to the R DESCRIPTION file, used when an R
+  package is detected. Default: `DESCRIPTION`.
 - `changelog-filepath`: Path to the changelog or news file. Default:
   `CHANGELOG.md`.
 - `citation-filepath`: Path to the citation file. Default:

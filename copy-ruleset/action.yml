@@ -1,0 +1,55 @@
+name: "Copy Ruleset"
+author: "Kelly Sovacool"
+
+description: |
+  Copy a repository ruleset from one GitHub repository to another.
+
+branding:
+  icon: copy
+  color: purple
+
+inputs:
+  source-repo:
+    description: "Source repository in owner/repo format."
+    required: true
+  target-repo:
+    description: "Target repository in owner/repo format."
+    required: true
+  ruleset-name:
+    description: "Name of the ruleset to copy."
+    required: true
+  token:
+    description: "GitHub token with repo scope on both repositories."
+    required: false
+    default: "${{ github.token }}"
+
+runs:
+  using: composite
+  steps:
+    - name: Copy ruleset
+      shell: bash
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
+      run: |
+        ruleset_id=$(
+          gh api "repos/${{ inputs.source-repo }}/rulesets" \
+            --jq --arg name "${{ inputs.ruleset-name }}" \
+            '.[] | select(.name == $name) | .id'
+        )
+
+        if [ -z "$ruleset_id" ]; then
+          echo "::error::Ruleset '${{ inputs.ruleset-name }}' not found in ${{ inputs.source-repo }}."
+          echo "Available rulesets:"
+          gh api "repos/${{ inputs.source-repo }}/rulesets" --jq '.[].name'
+          exit 1
+        fi
+
+        result=$(
+          gh api "repos/${{ inputs.source-repo }}/rulesets/${ruleset_id}" \
+            | jq 'del(.id, .node_id, .created_at, .updated_at, ._links)' \
+            | gh api "repos/${{ inputs.target-repo }}/rulesets" \
+                --method POST \
+                --input -
+        )
+
+        echo "Ruleset '$(echo "$result" | jq -r '.name')' (id=$(echo "$result" | jq -r '.id')) created in ${{ inputs.target-repo }}."

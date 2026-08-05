@@ -6,16 +6,17 @@ based on the latest release tag and the current hash.
 """
 
 import warnings
+
 import yaml
 
+from .actions import set_output
 from .versions import (
-    get_latest_release_tag,
-    get_latest_release_hash,
     get_current_hash,
+    get_latest_release_hash,
+    get_latest_release_tag,
     get_major_minor_version,
     is_ancestor,
 )
-from .actions import set_output
 
 
 def get_docs_version(repo, release_args="", release_tag=None, strict_semver=True):
@@ -191,6 +192,27 @@ def action_markdown_io(action_dict):
     Returns:
         str: A markdown formatted string documenting the inputs and outputs of the action.
     """
+
+    def format_description(description, continuation_indent="    "):
+        """
+        Preserve multiline descriptions so continuation lines remain part of
+        the same markdown list item.
+        """
+        formatted_description = ""
+        if description is not None:
+            lines = str(description).splitlines()
+            if lines:
+                first_line = lines[0].strip()
+                continuation_lines = [
+                    f"{continuation_indent}{line.lstrip()}" for line in lines[1:]
+                ]
+                formatted_description = (
+                    "\n".join([first_line] + continuation_lines)
+                    if continuation_lines
+                    else first_line
+                )
+        return formatted_description
+
     markdown = []
     inputs = action_dict.get("inputs", {})
     if inputs:
@@ -202,12 +224,12 @@ def action_markdown_io(action_dict):
                 if details.get("default", None)
                 else ""
             )
-            markdown.append(
-                f"  - `{name}`: {details.get('description', '')}.{required}{default}"
-            )
+            description = format_description(details.get("description", ""))
+            markdown.append(f"  - `{name}`: {description}{required}{default}")
     outputs = action_dict.get("outputs", {})
     if outputs:
         markdown.append("\n## Outputs\n\n")
         for name, details in outputs.items():
-            markdown.append(f"  - `{name}`: {details.get('description', '')}.")
+            description = format_description(details.get("description", ""))
+            markdown.append(f"  - `{name}`: {description}")
     return "\n".join(markdown)

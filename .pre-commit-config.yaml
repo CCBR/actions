@@ -15,7 +15,7 @@ repos:
       - id: check-json
   # spell check
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: v2.4.3
     hooks:
       - id: codespell
         args: [-I, .github/WORDLIST]
@@ -27,7 +27,7 @@ repos:
   #     - id: panache-lint
   # Python formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.8
+    rev: v0.16.1
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -40,7 +40,7 @@ repos:
         additional_dependencies:
           - prettier@3.4.0
   - repo: https://github.com/CCBR/Tools
-    rev: v0.5.2
+    rev: v0.7
     hooks:
       - id: detect-absolute-paths
         exclude: |
