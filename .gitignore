@@ -170,3 +170,6 @@ cython_debug/
 **/*.quarto_ipynb
 
 /.posit/
+# pixi environments
+.pixi/*
+!.pixi/config.toml
