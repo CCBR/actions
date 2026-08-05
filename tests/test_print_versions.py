@@ -1,20 +1,21 @@
-import pytest
 import shutil
+import subprocess
 
+import pytest
 from ccbr_tools.shell import shell_run
 
 
 # Tests for Bash version (print_versions.sh)
 def test_print_versions_sh_errors():
     """Test that bash version requires --config argument."""
-    with pytest.raises(Exception):
+    with pytest.raises(subprocess.CalledProcessError):
         out = shell_run("bash scripts/print_versions.sh")
         assert "error: --config argument is required" in out
 
 
 def test_print_versions_sh_missing_file():
     """Test that bash version errors on missing config file."""
-    with pytest.raises(Exception):
+    with pytest.raises(subprocess.CalledProcessError):
         shell_run("bash scripts/print_versions.sh --config nonexistent/file.txt")
 
 
