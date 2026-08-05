@@ -62,7 +62,7 @@ runs:
         owner: ${{ env.OWNER }}
 
     - name: Archive old milestones and ensure current cadence
-      uses: actions/github-script@v8
+      uses: actions/github-script@v9
       env:
         TARGET_REPO: ${{ env.TARGET_REPO }}
         OWNER: ${{ env.OWNER }}
