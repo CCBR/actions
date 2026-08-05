@@ -52,6 +52,9 @@ For an advanced example to automatically build docker containers when
 files change, see
 [build-docker-auto.yml](/examples/build-docker-auto.yml).
 
+Suffix behavior: `dev` appends `-dev`, `main` or an empty value leaves
+the Dockerfile tag unchanged, and any other value appends `-feat`.
+
 ## Inputs
 
 - `dockerfile`: path to the Dockerfile in the repo

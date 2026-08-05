@@ -1,25 +1,26 @@
 import os
-import pytest
 import warnings
 
+import pytest
+from ccbr_tools.shell import exec_in_context, shell_run
+
+from ccbr_actions.data import get_file_path
 from ccbr_actions.release import (
-    prepare_draft_release,
-    write_lines,
-    write_description_version,
-    regenerate_citation_from_description,
     create_release_draft,
-    push_release_draft_branch,
     get_changelog_lines,
     get_news_filepath,
-    get_release_version,
     get_r_dev_version,
+    get_release_version,
+    is_r_package,
     is_strict_semver,
     post_release_cleanup,
+    prepare_draft_release,
+    push_release_draft_branch,
+    regenerate_citation_from_description,
     set_release_version,
-    is_r_package,
+    write_description_version,
+    write_lines,
 )
-from ccbr_actions.data import get_file_path
-from ccbr_tools.shell import exec_in_context, shell_run
 
 POST_RELEASE_PR_CREATE_COMMAND = (
     "gh pr create --title 'chore: post-release cleanup for ${{ github.ref_name }}' "

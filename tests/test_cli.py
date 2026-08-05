@@ -1,8 +1,10 @@
 import os
 import pathlib
 from unittest.mock import patch
-from click.testing import CliRunner
+
 from ccbr_tools.shell import shell_run
+from click.testing import CliRunner
+
 from ccbr_actions.__main__ import cli
 
 

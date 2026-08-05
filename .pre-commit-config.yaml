@@ -2,7 +2,8 @@ default_install_hook_types: [pre-commit, commit-msg]
 default_stages: [pre-commit]
 exclude: |
   (?x)(
-      ^templates/
+      ^templates/|
+      ^pixi.lock
    )
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -27,7 +28,7 @@ repos:
   #     - id: panache-lint
   # Python formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.22
+    rev: v0.16.1
     hooks:
       - id: ruff-check
         args: [--fix]

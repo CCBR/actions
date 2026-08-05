@@ -6,16 +6,17 @@ based on the latest release tag and the current hash.
 """
 
 import warnings
+
 import yaml
 
+from .actions import set_output
 from .versions import (
-    get_latest_release_tag,
-    get_latest_release_hash,
     get_current_hash,
+    get_latest_release_hash,
+    get_latest_release_tag,
     get_major_minor_version,
     is_ancestor,
 )
-from .actions import set_output
 
 
 def get_docs_version(repo, release_args="", release_tag=None, strict_semver=True):
