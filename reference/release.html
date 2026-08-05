@@ -764,7 +764,7 @@ window.Quarto = {
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    release_branch<span class="op">=</span><span class="st">'release-draft'</span>,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    next_version<span class="op">=</span><span class="st">'$</span><span class="sc">{{</span><span class="st"> steps.release.outputs.NEXT_VERSION </span><span class="sc">}}</span><span class="st">'</span>,</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    release_notes_filepath<span class="op">=</span><span class="st">'.github/latest-release.md'</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    release_target<span class="op">=</span>get_current_hash(),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    release_target<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    repo<span class="op">=</span><span class="st">'$</span><span class="sc">{{</span><span class="st"> github.repository </span><span class="sc">}}</span><span class="st">'</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    debug<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -790,7 +790,7 @@ window.Quarto = {
 <tr class="even">
 <td>next_version</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>The next version of the release. Defaults to “<span class="math inline">\({{ steps.release.outputs.NEXT_VERSION }}". | `'\)</span>{{ steps.release.outputs.NEXT_VERSION }}‘<code>| | release_notes_filepath | [str](</code>str<code>)   | The file path to the release notes. Defaults to ".github/latest-release.md".              |</code>’.github/latest-release.md’<code>| | release_target         | [str](</code>str<code>)   | The target commit hash for the release. Defaults to the current commit hash.              |</code>get_current_hash()<code>| | repo                   | [str](</code>str<code>)   | The GitHub repository in the format "owner/repo". Defaults to "${{ github.repository }}". |</code>‘${{ github.repository }}’<code>| | debug                  | [bool](</code>bool<code>) | If True, print the command instead of executing it. Defaults to False.                    |</code>False`</td>
+<td>The next version of the release. Defaults to “<span class="math inline">\({{ steps.release.outputs.NEXT_VERSION }}". | `'\)</span>{{ steps.release.outputs.NEXT_VERSION }}‘<code>| | release_notes_filepath | [str](</code>str<code>)   | The file path to the release notes. Defaults to ".github/latest-release.md".              |</code>’.github/latest-release.md’<code>| | release_target         | [str](</code>str<code>)   | The target commit hash for the release. Defaults to the current commit hash.              |</code>None<code>| | repo                   | [str](</code>str<code>)   | The GitHub repository in the format "owner/repo". Defaults to "${{ github.repository }}". |</code>‘${{ github.repository }}’<code>| | debug                  | [bool](</code>bool<code>) | If True, print the command instead of executing it. Defaults to False.                    |</code>False`</td>
 <td></td>
 </tr>
 </tbody>
@@ -1376,7 +1376,7 @@ window.Quarto = {
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    release_branch<span class="op">=</span><span class="st">'release-draft'</span>,</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    pr_ref_name<span class="op">=</span><span class="st">'$</span><span class="sc">{{</span><span class="st"> github.ref_name </span><span class="sc">}}</span><span class="st">'</span>,</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    next_version<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    files<span class="op">=</span>[<span class="st">'CHANGELOG.md'</span>, <span class="st">'VERSION'</span>, <span class="st">'CITATION.cff'</span>],</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    files<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    debug<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Pushes a release draft branch to the remote repository.</p>
@@ -1402,7 +1402,7 @@ window.Quarto = {
 <tr class="even">
 <td>pr_ref_name</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>The reference name of the pull request to merge. Defaults to “<span class="math inline">\({{ github.ref_name }}".        | `'\)</span>{{ github.ref_name }}’<code>| | next_version   | [str](</code>str<code>)   | The next version number to include in the commit message. Defaults to None.                   |</code>None<code>| | files          | [list](</code>list<code>) | A list of files to stage and commit. Defaults to ["CHANGELOG.md", "VERSION", "CITATION.cff"]. |</code>[‘CHANGELOG.md’, ‘VERSION’, ‘CITATION.cff’]<code>| | debug          | [bool](</code>bool<code>) | If True, prints the generated git commands instead of executing them. Defaults to False.      |</code>False`</td>
+<td>The reference name of the pull request to merge. Defaults to “<span class="math inline">\({{ github.ref_name }}".        | `'\)</span>{{ github.ref_name }}’<code>| | next_version   | [str](</code>str<code>)   | The next version number to include in the commit message. Defaults to None.                   |</code>None<code>| | files          | [list](</code>list<code>) | A list of files to stage and commit. Defaults to ["CHANGELOG.md", "VERSION", "CITATION.cff"]. |</code>None<code>| | debug          | [bool](</code>bool<code>) | If True, prints the generated git commands instead of executing them. Defaults to False.      |</code>False`</td>
 <td></td>
 </tr>
 </tbody>

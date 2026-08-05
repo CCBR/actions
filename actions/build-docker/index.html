@@ -702,6 +702,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">config-file</span><span class="kw">:</span><span class="at"> </span><span class="st">"scripts/tool_version_commands.txt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For an example to manually trigger the workflow for a single docker container, see <a href=".https://github.com/CCBR/actions/blob/main/examples/build-docker-manual.yml">build-docker-manual.yml</a>.</p>
 <p>For an advanced example to automatically build docker containers when files change, see <a href=".https://github.com/CCBR/actions/blob/main/examples/build-docker-auto.yml">build-docker-auto.yml</a>.</p>
+<p>Suffix behavior: <code>dev</code> appends <code>-dev</code>, <code>main</code> or an empty value leaves the Dockerfile tag unchanged, and any other value appends <code>-feat</code>.</p>
 </section>
 </section>
 <section id="inputs" class="level2">

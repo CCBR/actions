@@ -746,7 +746,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>citation.update_citation(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    citation_file<span class="op">=</span><span class="st">'CITATION.cff'</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    version<span class="op">=</span><span class="st">'$</span><span class="sc">{{</span><span class="st"> steps.set-version.output.NEXT_VERSION </span><span class="sc">}}</span><span class="st">'</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    date<span class="op">=</span>date_today(),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    date<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    debug<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Update the citation file with the specified version and date.</p>
@@ -772,7 +772,7 @@ window.Quarto = {
 <tr class="even">
 <td>version</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>The version to set in the citation file (default is “<span class="math inline">\({{ steps.set-version.output.NEXT_VERSION }}"). | `'\)</span>{{ steps.set-version.output.NEXT_VERSION }}’<code>| | date          | [str](</code>str<code>)   | The release date to set in the citation file (default is today's date).                              |</code>date_today()<code>| | debug         | [bool](</code>bool<code>) | If True, print the updated citation content instead of writing to the file (default is False).       |</code>False`</td>
+<td>The version to set in the citation file (default is “<span class="math inline">\({{ steps.set-version.output.NEXT_VERSION }}"). | `'\)</span>{{ steps.set-version.output.NEXT_VERSION }}’<code>| | date          | [str](</code>str<code>)   | The release date to set in the citation file (default is today's date).                              |</code>None<code>| | debug         | [bool](</code>bool<code>) | If True, print the updated citation content instead of writing to the file (default is False).       |</code>False`</td>
 <td></td>
 </tr>
 </tbody>
