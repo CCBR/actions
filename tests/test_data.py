@@ -1,5 +1,6 @@
-from ccbr_actions.data import get_file_path
 import pytest
+
+from ccbr_actions.data import get_file_path
 
 
 def test_get_file_path():

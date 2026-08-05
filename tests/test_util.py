@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from ccbr_actions.util import precommit_run, path_resolve
+from ccbr_actions.util import path_resolve, precommit_run
 
 
 def test_precommit():

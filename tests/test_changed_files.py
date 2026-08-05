@@ -1,5 +1,6 @@
 import json
 import pathlib
+
 import pytest
 
 from ccbr_actions.changed_files import (
