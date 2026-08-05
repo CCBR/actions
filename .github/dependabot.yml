@@ -1,7 +1,9 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/*" # find composite actions and example workflows, not just .github/workflows/
     schedule:
       interval: "monthly"
     groups:
