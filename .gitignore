@@ -169,7 +169,10 @@ cython_debug/
 /_sidebar.yml
 **/*.quarto_ipynb
 
+# IDEs
+/.vscode/
 /.posit/
+
 # pixi environments
 .pixi/*
 !.pixi/config.toml
