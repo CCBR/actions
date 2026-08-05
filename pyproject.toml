@@ -31,7 +31,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
-requires-python = ">=3.10"
+requires-python = ">3.10"
 dependencies = [
     "ccbr_tools@git+https://github.com/CCBR/Tools@v0.5",
     "Click >= 8.1.3",
@@ -46,7 +46,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black >= 23.10.0",
+    "ruff >=0.16.1,<0.17",
     "jupyter",
     "pyyaml"
 ]
@@ -95,3 +95,18 @@ script-files = [
     "scripts/print_versions.sh",
     "scripts/quarto-listings.py"
 ]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+ccbr_actions = { path = ".", editable = true }
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+docs = { features = ["docs"], solve-group = "default" }
+test = { features = ["test"], solve-group = "default" }
+
+[tool.pixi.tasks]
