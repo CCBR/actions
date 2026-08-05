@@ -1,6 +1,7 @@
 ## actions development version
 
 - New commands `list-rulesets` and `copy-ruleset`, plus a `copy-ruleset` action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)
+- Fix `build-docker` action: fix bash suffix conditional so an empty suffix (and main) leaves the docker tag unchanged. (#199, @kelly-sovacool)
 
 ## actions 0.7.1
 
