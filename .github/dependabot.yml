@@ -11,6 +11,16 @@ updates:
     cooldown:
       default-days: 7
   - package-ecosystem: "github-actions"
+    directory: "/examples"
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "github-actions"
     directory: "/add-issue-label-list"
     schedule:
       interval: "monthly"
