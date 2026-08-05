@@ -81,3 +81,19 @@ def test_prepare_docker_build_variables_matches_bash(suffix, tmp_path):
 
     assert py_values == bash_values
     assert py_file_values == bash_values
+
+
+def test_prepare_docker_build_variables_empty_suffix_has_no_extra_suffix(tmp_path):
+    repo_dir = tmp_path / "myrepo"
+    repo_dir.mkdir()
+    dockerfile = repo_dir / "Dockerfile.v2"
+    dockerfile.write_text("FROM ubuntu:22.04\n")
+
+    values = prepare_docker_build_variables(
+        dockerfile=str(dockerfile),
+        suffix="",
+        dockerhub_account="nciccbr",
+    )
+
+    assert values["BUILD_TAG"] == "v2"
+    assert values["IMAGENAME"] == "nciccbr/myrepo:v2"
