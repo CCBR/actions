@@ -49,7 +49,7 @@ runs:
     - name: Generate a token
       id: generate-token
       if: ${{ inputs.github-token == '' }}
-      uses: actions/create-github-app-token@v2
+      uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.app-private-key }}
@@ -67,7 +67,7 @@ runs:
       run: |
         echo "GITHUB_TOKEN=${{ inputs.github-token }}" >> $GITHUB_ENV
 
-    - uses: actions/add-to-project@v1.0.2
+    - uses: actions/add-to-project@v2.0.0
       if: ${{ steps.metadata.outputs[inputs.username] != '' }}
       with:
         project-url: ${{ steps.metadata.outputs[inputs.username] }}
