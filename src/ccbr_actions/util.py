@@ -47,7 +47,7 @@ def date_today():
     Returns:
         str: The current date as a string in the format YYYY-MM-DD.
     """
-    return datetime.datetime.today().strftime("%Y-%m-%d")
+    return datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d")
 
 
 def precommit_run(args):

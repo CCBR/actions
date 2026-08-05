@@ -37,7 +37,7 @@ def test_set_output(tmp_path):
 
 
 def test_trigger_workflow_debug():
-    url, headers, data = trigger_workflow(
+    url, _headers, _data = trigger_workflow(
         workflow_name="test_workflow.yml",
         branch="dev",
         repo="CCBR/actions",

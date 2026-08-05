@@ -66,7 +66,9 @@ def test_prepare_docker_build_variables_matches_bash(suffix, tmp_path):
         env_path=bash_env_path,
     )
 
-    now = datetime.datetime.strptime(bash_values["BUILD_DATE"], "%Y-%m-%d_%H:%M:%S")
+    now = datetime.datetime.strptime(
+        bash_values["BUILD_DATE"], "%Y-%m-%d_%H:%M:%S"
+    ).replace(tzinfo=datetime.timezone.utc)
     py_env_path = tmp_path / "py.env"
     py_values = prepare_docker_build_variables(
         dockerfile=str(dockerfile),

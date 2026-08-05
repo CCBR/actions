@@ -66,7 +66,9 @@ def prepare_docker_build_variables(
     print(f"Dockerfile: {dockerfile}")
     print(f"suffix: {suffix}")
 
-    dt = (now or datetime.datetime.now()).strftime("%Y-%m-%d_%H:%M:%S")
+    dt = (now or datetime.datetime.now(tz=datetime.timezone.utc)).strftime(
+        "%Y-%m-%d_%H:%M:%S"
+    )
     bn_dockerfile = os.path.basename(dockerfile)
     tag = tag_from_dockerfile(dockerfile)
     dn_dockerfile = os.path.dirname(dockerfile)
@@ -75,7 +77,7 @@ def prepare_docker_build_variables(
 
     if suffix == "dev":
         tag = f"{tag}-dev"
-    elif suffix == "main" or "suffix" == "":
+    elif suffix in ("main", ""):
         tag = f"{tag}"
     else:
         tag = f"{tag}-feat"
@@ -249,7 +251,7 @@ def evaluate_docker_build_staleness(
             except requests.HTTPError as exc:
                 status_code = getattr(exc.response, "status_code", "unknown")
                 reason = f"dockerhub_http_{status_code}"
-            except Exception as exc:
+            except (requests.RequestException, ValueError, TypeError) as exc:
                 reason = f"dockerhub_lookup_failed_{type(exc).__name__}"
 
     return {

@@ -56,7 +56,7 @@ def write_citation(
 def update_citation(
     citation_file="CITATION.cff",
     version="${{ steps.set-version.output.NEXT_VERSION }}",
-    date=date_today(),
+    date=None,
     debug=False,
 ):
     """
@@ -74,6 +74,9 @@ def update_citation(
     Examples:
         >>> update_citation(version="1.0.1", date="2023-10-01")
     """
+    if date is None:
+        date = date_today()
+
     citation = create_citation(citation_file, None)
     citation._implementation.cffobj["version"] = version
     citation._implementation.cffobj["date-released"] = date
