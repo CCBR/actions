@@ -70,6 +70,7 @@ runs:
     - name: Get current and next versions
       id: semver
       uses: ietf-tools/semver-action@v1
+      continue-on-error: true
       with:
         token: ${{ inputs.github-token }}
         branch: ${{ github.ref_name }}
