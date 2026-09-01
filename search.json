@@ -11,22 +11,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "New commands list-rulesets and copy-ruleset, plus a copy-ruleset action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)\nFix build-docker action: fix bash suffix conditional so an empty suffix (and main) leaves the docker tag unchanged. (#199, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.7.2",
     "href": "CHANGELOG.html#actions-0.7.2",
     "title": "CCBR actions",
-    "section": "",
-    "text": "New commands list-rulesets and copy-ruleset, plus a copy-ruleset action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)\nFix build-docker action: fix bash suffix conditional so an empty suffix (and main) leaves the docker tag unchanged. (#199, @kelly-sovacool)",
+    "section": "actions 0.7.2",
+    "text": "actions 0.7.2\n\nNew commands list-rulesets and copy-ruleset, plus a copy-ruleset action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)\nFix build-docker action: fix bash suffix conditional so an empty suffix (and main) leaves the docker tag unchanged. (#199, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
