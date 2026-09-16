@@ -390,7 +390,9 @@ def test_review_pre_commit_pr_warns_when_reviewer_request_fails(monkeypatch):
 
 def test_review_pre_commit_pr_falls_back_when_auto_merge_api_fails():
     session = _make_review_session(
-        graphql_payload={"errors": [{"message": "Resource not accessible by integration"}]}
+        graphql_payload={
+            "errors": [{"message": "Resource not accessible by integration"}]
+        }
     )
 
     result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
