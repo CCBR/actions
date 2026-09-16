@@ -25,12 +25,13 @@ concurrency:
 jobs:
   draft-release:
     runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # required to include tags
-      - uses: CCBR/actions/draft-release@main
+      - uses: CCBR/actions/draft-release@latest
         with:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
-          ccbr-actions-version: main
+          ccbr-actions-version: latest

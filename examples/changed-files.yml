@@ -12,6 +12,8 @@ permissions:
 jobs:
   changed-files:
     runs-on: ubuntu-latest
+    # optional: run in the ccbr_actions image to skip installing python/ccbr_actions via pip
+    container: nciccbr/ccbr_actions:latest
     steps:
       - uses: CCBR/actions/changed-files@latest
         id: changed-files

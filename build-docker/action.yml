@@ -39,7 +39,7 @@ inputs:
     description: |
       The version of ccbr_actions to use.
     required: true
-    default: "main"
+    default: "latest"
   python-version:
     description: |
       The version of Python to install.
@@ -75,11 +75,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v7
+    - name: Set up Python
+      uses: actions/setup-python@v7
       with:
         python-version: "${{ inputs.python-version }}"
+        cache: pip
 
-    - name: Install CCBR/actions
+    - name: Install ccbr_actions
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
@@ -110,15 +112,20 @@ runs:
         password: ${{ inputs.dockerhub-token }}
 
     - name: Prepare build-time variables
-      shell: python
+      shell: bash
       id: prepare_vars
       run: |
+        script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
+        cat > "$script" << 'PYEOF'
         from ccbr_actions.docker import prepare_docker_build_variables
         prepare_docker_build_variables(
             dockerfile="${{ inputs.dockerfile }}",
             suffix="${{ inputs.suffix }}",
             dockerhub_account="${{ inputs.dockerhub-namespace }}"
         )
+        PYEOF
+        python "$script"
+        rm -f "$script"
 
     - name: Check variables and create README
       shell: bash
@@ -142,23 +149,31 @@ runs:
 
     - name: Check whether image tag is stale
       id: check_tag_staleness
-      shell: python
+      shell: bash
+      env:
+        INPUT_FORCE_BUILD: ${{ inputs.force_build }}
       run: |
+        script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
+        cat > "$script" << 'PYEOF'
+        import os
         from ccbr_actions.actions import set_output
         from ccbr_actions.docker import evaluate_docker_build_staleness_and_set_outputs
 
-        force_build = "${{ inputs.force_build }}".lower() == "true"
+        force_build = os.environ.get("INPUT_FORCE_BUILD", "").lower() == "true"
         if force_build:
           set_output("should_build", "true")
           set_output("reason", "force_build_requested")
           print("::notice::Force build requested. Skipping Docker Hub staleness check.")
         else:
           evaluate_docker_build_staleness_and_set_outputs(
-            dockerfile_path="${{ env.DOCKERFILE_PATH }}",
-            image_name="${{ env.IMAGENAME }}",
+            dockerfile_path=os.environ.get("DOCKERFILE_PATH", ""),
+            image_name=os.environ.get("IMAGENAME", ""),
             dockerhub_namespace="${{ inputs.dockerhub-namespace }}",
-            repo_name="${{ env.REPONAME }}",
+            repo_name=os.environ.get("REPONAME", ""),
           )
+        PYEOF
+        python "$script"
+        rm -f "$script"
 
     - name: Build and push Docker image
       id: build_and_push
@@ -182,8 +197,8 @@ runs:
       id: run_script_in_container
       if: ${{ (inputs.print-versions == 'true') && (steps.check_tag_staleness.outputs.should_build == 'true') }}
       run: |
-        script_src=$(command -v print_versions.sh)
         EXTRA_MOUNTS=""
+        script_src=$(command -v print_versions.sh)
         if [ -f "${{ inputs.config-file }}" ]; then
           CONFIG_FILE="/ws/${{ inputs.config-file }}"
         else
