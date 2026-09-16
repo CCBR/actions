@@ -298,7 +298,7 @@ def review_pre_commit_pr(
             "only `.pre-commit-config.yaml` should be changed, "
             "but other files were modified"
         )
-    if not condition2:
+    if condition1 and not condition2:
         failed.append(
             "the only changes in `.pre-commit-config.yaml` should be "
             "`rev:` version bumps, but other modifications were found"
