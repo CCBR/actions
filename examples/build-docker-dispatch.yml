@@ -72,12 +72,12 @@ jobs:
           client-id: ${{ vars.CCBR_BOT_APP_ID }}
           private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
           owner: CCBR
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         name: Checkout Dockers2
         with:
           persist-credentials: true
           token: ${{ steps.generate-token.outputs.token }}
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         name: Checkout source repository
         with:
           fetch-depth: 0
