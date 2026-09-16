@@ -19,6 +19,14 @@ On completion, it will open a pull request to merge post-release clean up chores
 such as bumping the development version in the version file and changelog.
 It works best when used in conjunction with [`draft-release`](/draft-release) to help automate parts of the release process.
 
+> [!WARNING]
+> If your repository contains a `DESCRIPTION` file (i.e. it's an R package), do **not**
+> run this action via `jobs.<job_id>.container: nciccbr/ccbr_actions:...`. This action
+> relies on `r-lib/actions/setup-r-dependencies` to install both `cffr` and your package's
+> own dependencies declared in `DESCRIPTION`; the container only has `cffr` preinstalled,
+> so your package's dependencies would be missing. Run on a normal runner (no `container`)
+> so that step can install everything your package needs.
+
 ## Usage
 
 Required files:

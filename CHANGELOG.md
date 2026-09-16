@@ -1,5 +1,7 @@
 ## actions development version
 
+- Create `ccbr_actions` docker image and show how to use it in example workflows. (#190, @kelly-sovacool, @copilot)
+
 ## actions 0.7.2
 
 - New commands `list-rulesets` and `copy-ruleset`, plus a `copy-ruleset` action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)

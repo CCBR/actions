@@ -18,11 +18,12 @@ concurrency:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/post-release@main
+      - uses: CCBR/actions/post-release@latest
         with:
           github-token: ${{ github.token }}
           update-sliding-tags: true
