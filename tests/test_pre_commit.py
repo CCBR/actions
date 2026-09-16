@@ -305,10 +305,22 @@ def test_post_pr_comment_posts_to_issue_comments_endpoint():
 # ---------------------------------------------------------------------------
 
 
-def _make_review_session(*, extra_files=None, patch=None):
+def _make_review_session(
+    *, extra_files=None, patch=None, pr_node_payload=None, graphql_payload=None
+):
     """Build a MockSession suitable for review_pre_commit_pr tests."""
     if patch is None:
         patch = VALID_PATCH
+    if pr_node_payload is None:
+        pr_node_payload = {"node_id": "PR_NODE_7"}
+    if graphql_payload is None:
+        graphql_payload = {
+            "data": {
+                "enablePullRequestAutoMerge": {
+                    "pullRequest": {"autoMergeRequest": {"enabledAt": "2024-01-01"}}
+                }
+            }
+        }
     pr_files = [{"filename": PRE_COMMIT_CONFIG_FILE, "patch": patch}]
     if extra_files:
         pr_files.extend(extra_files)
@@ -321,14 +333,8 @@ def _make_review_session(*, extra_files=None, patch=None):
     return MockSession(
         {
             pr_url: pr_files,
-            pr_node_url: {"node_id": "PR_NODE_7"},
-            graphql_url: {
-                "data": {
-                    "enablePullRequestAutoMerge": {
-                        "pullRequest": {"autoMergeRequest": {"enabledAt": "2024-01-01"}}
-                    }
-                }
-            },
+            pr_node_url: pr_node_payload,
+            graphql_url: graphql_payload,
             comment_url: {"id": 1},
         }
     )
@@ -380,3 +386,22 @@ def test_review_pre_commit_pr_warns_when_reviewer_request_fails(monkeypatch):
             "CCBR/repo", 7, "dave", token="tok", session=session
         )
     assert result is False
+
+
+def test_review_pre_commit_pr_falls_back_when_auto_merge_api_fails():
+    session = _make_review_session(
+        graphql_payload={"errors": [{"message": "Resource not accessible by integration"}]}
+    )
+
+    result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
+
+    assert result is False
+    review_request_calls = [
+        c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
+    ]
+    assert review_request_calls
+    comment_calls = [c for c in session.calls if c[0] == "POST" and "comments" in c[1]]
+    assert comment_calls
+    comment_body = comment_calls[0][2]["json"]["body"]
+    assert "@erin" in comment_body
+    assert "GraphQL errors" in comment_body

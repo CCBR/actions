@@ -147,12 +147,14 @@ def approve_pr(repo, pr_number, token=None, session=None):
         requests.Response: Response from the GitHub reviews API.
     """
     url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/reviews"
-    return github_api_post(
+    response = github_api_post(
         url=url,
         token=token,
         session=session,
         json={"event": "APPROVE"},
     )
+    response.raise_for_status()
+    return response
 
 
 def enable_auto_merge(repo, pr_number, token=None, session=None):
@@ -211,6 +213,7 @@ def request_reviewer(repo, pr_number, reviewer, token=None, session=None):
     Returns:
         requests.Response: Response from the GitHub requested reviewers API.
     """
+    url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/requested_reviewers"
     response = github_api_post(
         url=url,
         token=token,
@@ -290,10 +293,16 @@ def review_pre_commit_pr(
             isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
         )
 
+    auto_approval_error = None
+    was_auto_approved = False
+
     if condition1 and condition2:
-        approve_pr(repo, pr_number, token=token, session=session)
-        enable_auto_merge(repo, pr_number, token=token, session=session)
-        return True
+        try:
+            approve_pr(repo, pr_number, token=token, session=session)
+            enable_auto_merge(repo, pr_number, token=token, session=session)
+            was_auto_approved = True
+        except (KeyError, requests.exceptions.RequestException, RuntimeError) as exc:
+            auto_approval_error = exc
 
     failed = []
     if not condition1:
@@ -306,16 +315,22 @@ def review_pre_commit_pr(
             "the only changes in `.pre-commit-config.yaml` should be "
             "`rev:` version bumps, but other modifications were found"
         )
+    if auto_approval_error is not None:
+        failed.append(
+            "automatic approval could not be completed because of a GitHub API "
+            f"error: {auto_approval_error}"
+        )
 
-    reasons = "\n".join(f"- {r}" for r in failed)
-    comment = (
-        f"@{reviewer} This pre-commit.ci autoupdate PR requires human review. "
-        f"The changes were too complex for CCBR-bot to automatically approve "
-        f"because the following conditions were not met:\n{reasons}"
-    )
-    try:
-        request_reviewer(repo, pr_number, reviewer, token=token, session=session)
-    except (requests.exceptions.RequestException, RuntimeError) as exc:
-        warnings.warn(f"Could not request reviewer {reviewer!r}: {exc}")
-    post_pr_comment(repo, pr_number, comment, token=token, session=session)
-    return False
+    if not was_auto_approved:
+        reasons = "\n".join(f"- {r}" for r in failed)
+        comment = (
+            f"@{reviewer} This pre-commit.ci autoupdate PR requires human review. "
+            f"The changes were too complex for CCBR-bot to automatically approve "
+            f"because the following conditions were not met:\n{reasons}"
+        )
+        try:
+            request_reviewer(repo, pr_number, reviewer, token=token, session=session)
+        except (requests.exceptions.RequestException, RuntimeError) as exc:
+            warnings.warn(f"Could not request reviewer {reviewer!r}: {exc}")
+        post_pr_comment(repo, pr_number, comment, token=token, session=session)
+    return was_auto_approved
