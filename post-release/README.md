@@ -10,6 +10,15 @@ changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
 
+> \[!WARNING\] If your repository contains a `DESCRIPTION` file
+> (i.e. it’s an R package), do **not** run this action via
+> `jobs.<job_id>.container: nciccbr/ccbr_actions:...`. This action
+> relies on `r-lib/actions/setup-r-dependencies` to install both `cffr`
+> and your package’s own dependencies declared in `DESCRIPTION`; the
+> container only has `cffr` preinstalled, so your package’s dependencies
+> would be missing. Run on a normal runner (no `container`) so that step
+> can install everything your package needs.
+
 ## Usage
 
 Required files:
@@ -40,6 +49,12 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    # optional: run in the ccbr_actions image (built for each release tag) to skip
+    # installing python/R/ccbr_actions -- omit `container` to install them via pip instead.
+    # do NOT set `container` if this repo is an R package (i.e. has a DESCRIPTION file):
+    # setup-r-dependencies installs both cffr and your package's own DESCRIPTION
+    # dependencies, but the container only has cffr preinstalled.
+    container: nciccbr/ccbr_actions:v0.7
     steps:
       - uses: actions/checkout@v7
         with:
