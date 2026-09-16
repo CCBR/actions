@@ -73,7 +73,7 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
 - `force_build`: Force docker image build even when the Docker Hub tag
   is up-to-date. **Required.** Default: `false`.
 - `ccbr-actions-version`: The version of ccbr_actions to use.
-  **Required.** Default: `main`.
+  **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.11`.
 - `github-actor`: Username of GitHub actor for the git commit when the

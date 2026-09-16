@@ -10,6 +10,7 @@ ENV CCBR_ACTIONS_DOCKER=true
 # toolchain temporarily and drop it again once the compiled package is installed
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+      gh \
       git \
       r-base \
       build-essential \
