@@ -12,7 +12,7 @@ from .github import GITHUB_API_URL, github_api_get, github_api_post, github_grap
 
 PRE_COMMIT_CI_TITLE = "[pre-commit.ci] pre-commit autoupdate"
 PRE_COMMIT_CONFIG_FILE = ".pre-commit-config.yaml"
-_REV_PATTERN = re.compile(r"^\s+rev:\s+\S+")
+_REV_PATTERN = re.compile(r"^\s+rev:\s+\S+\s*$")
 
 
 def is_pre_commit_autoupdate_pr(pr_title, pr_sender_type):
