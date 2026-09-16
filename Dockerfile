@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 ARG CCBR_ACTIONS_VERSION=main
 
