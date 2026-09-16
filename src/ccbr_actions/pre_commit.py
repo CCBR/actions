@@ -280,23 +280,23 @@ def review_pre_commit_pr(
     """
     pr_files = get_pr_files(repo, pr_number, token=token, session=session)
 
-    condition1 = check_only_pre_commit_config_changed(pr_files)
-    condition2 = False
+    only_config_changed = check_only_pre_commit_config_changed(pr_files)
+    only_rev_bumps = False
 
-    if condition1:
+    if only_config_changed:
         file_obj = next(
             (f for f in pr_files if f.get("filename") == PRE_COMMIT_CONFIG_FILE),
             {},
         )
         patch = file_obj.get("patch")
-        condition2 = (
+        only_rev_bumps = (
             isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
         )
 
     auto_approval_error = None
     was_auto_approved = False
 
-    if condition1 and condition2:
+    if only_config_changed and only_rev_bumps:
         try:
             approve_pr(repo, pr_number, token=token, session=session)
             enable_auto_merge(repo, pr_number, token=token, session=session)
@@ -305,12 +305,12 @@ def review_pre_commit_pr(
             auto_approval_error = exc
 
     failed = []
-    if not condition1:
+    if not only_config_changed:
         failed.append(
             "only `.pre-commit-config.yaml` should be changed, "
             "but other files were modified"
         )
-    if condition1 and not condition2:
+    if only_config_changed and not only_rev_bumps:
         failed.append(
             "the only changes in `.pre-commit-config.yaml` should be "
             "`rev:` version bumps, but other modifications were found"
