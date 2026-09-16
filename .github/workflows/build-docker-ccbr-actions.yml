@@ -11,7 +11,7 @@ on:
         type: boolean
         default: false
       ccbr-actions-version:
-        description: "Version/tag of ccbr_actions to install in the image (defaults to the release tag or 'main')"
+        description: "Version/tag of ccbr_actions to install in the image (defaults to the main branch)"
         required: false
         default: "main"
 
@@ -39,8 +39,15 @@ jobs:
             version="${{ inputs.ccbr-actions-version }}"
             push="${{ inputs.push }}"
           fi
+
+          docker_tags="nciccbr/ccbr_actions:${version}"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            docker_tags="${docker_tags},nciccbr/ccbr_actions:latest"
+          fi
+
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "push=${push}" >> "$GITHUB_OUTPUT"
+          echo "docker_tags=${docker_tags}" >> "$GITHUB_OUTPUT"
 
       - name: Login to DockerHub
         if: ${{ steps.setup.outputs.push == 'true' }}
@@ -55,6 +62,6 @@ jobs:
           context: .
           file: Dockerfile
           push: ${{ steps.setup.outputs.push == 'true' }}
-          tags: nciccbr/ccbr_actions:${{ steps.setup.outputs.version }}
+          tags: ${{ steps.setup.outputs.docker_tags }}
           build-args: |
             CCBR_ACTIONS_VERSION=${{ steps.setup.outputs.version }}

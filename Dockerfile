@@ -1,6 +1,6 @@
 FROM python:3.14-slim
 
-ARG CCBR_ACTIONS_VERSION=main
+ARG CCBR_ACTIONS_VERSION=latest
 
 # marks that setup steps (python/pip/R) are already available, so composite
 # actions can skip them when this image is used via `jobs.<id>.container`
