@@ -72,12 +72,12 @@ jobs:
     # do NOT set `container` if this repo is an R package (i.e. has a DESCRIPTION file):
     # setup-r-dependencies installs both cffr and your package's own DESCRIPTION
     # dependencies, but the container only has cffr preinstalled.
-    container: nciccbr/ccbr_actions:v0.7
+    container: nciccbr/ccbr_actions:latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # required to include tags
-      - uses: CCBR/actions/draft-release@v0.7
+      - uses: CCBR/actions/draft-release@latest
         with:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
