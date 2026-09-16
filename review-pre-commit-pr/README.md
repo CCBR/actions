@@ -71,7 +71,7 @@ jobs:
           private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - uses: CCBR/actions/review-pre-commit-pr@v0.7
+      - uses: CCBR/actions/review-pre-commit-pr@latest
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ github.event.pull_request.number }}
