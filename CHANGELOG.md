@@ -1,6 +1,7 @@
 ## actions development version
 
 - New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#189, @copilot)
+
 ## actions 0.7.2
 
 - New commands `list-rulesets` and `copy-ruleset`, plus a `copy-ruleset` action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)

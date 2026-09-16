@@ -122,6 +122,8 @@ def github_graphql_post(query, variables=None, token=None, session=requests):
     if "errors" in data:
         raise RuntimeError(f"GraphQL errors: {data['errors']}")
     return data
+
+
 def list_rulesets(repo, token=None, session=requests):
     """
     List all rulesets for a GitHub repository.

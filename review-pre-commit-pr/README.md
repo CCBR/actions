@@ -38,7 +38,7 @@ operations are performed as CCBR-bot.
 
 [review-pre-commit-pr.yml](/examples/review-pre-commit-pr.yml)
 
-``` yaml
+```yaml
 name: review-pre-commit-pr
 
 on:

@@ -286,7 +286,9 @@ def review_pre_commit_pr(
             {},
         )
         patch = file_obj.get("patch")
-        condition2 = isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
+        condition2 = (
+            isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
+        )
 
     if condition1 and condition2:
         approve_pr(repo, pr_number, token=token, session=session)
