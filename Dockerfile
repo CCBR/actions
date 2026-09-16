@@ -7,7 +7,7 @@ ARG CCBR_ACTIONS_VERSION=latest
 ENV CCBR_ACTIONS_DOCKER=true
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y git r-base && \
+    apt-get install --no-install-recommends -y gh git r-base && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir --upgrade pip && \
