@@ -1,7 +1,9 @@
 import os
+
 import pytest
 from ccbr_tools.shell import exec_in_context
-from ccbr_actions.actions import use_github_action, set_output, trigger_workflow
+
+from ccbr_actions.actions import set_output, trigger_workflow, use_github_action
 
 
 def test_use_github_action(tmp_path):
@@ -35,7 +37,7 @@ def test_set_output(tmp_path):
 
 
 def test_trigger_workflow_debug():
-    url, headers, data = trigger_workflow(
+    url, _headers, _data = trigger_workflow(
         workflow_name="test_workflow.yml",
         branch="dev",
         repo="CCBR/actions",

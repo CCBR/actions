@@ -4,8 +4,9 @@ Utility functions for the package
 
 import datetime
 import pathlib
-import ccbr_tools.shell
+
 import ccbr_tools.pkg_util
+import ccbr_tools.shell
 
 
 def repo_base(*paths):
@@ -46,7 +47,7 @@ def date_today():
     Returns:
         str: The current date as a string in the format YYYY-MM-DD.
     """
-    return datetime.datetime.today().strftime("%Y-%m-%d")
+    return datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y-%m-%d")
 
 
 def precommit_run(args):

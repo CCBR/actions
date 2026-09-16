@@ -6,15 +6,16 @@ import os
 import re
 import shlex
 import warnings
+
 from ccbr_tools.shell import shell_run
 
 from .actions import set_output, trigger_workflow
 from .citation import update_citation, write_citation
-from .util import precommit_run, path_resolve, repo_base
+from .util import path_resolve, precommit_run, repo_base
 from .versions import (
     check_version_increments_by_one,
-    match_semver,
     get_current_hash,
+    match_semver,
 )
 
 
@@ -222,7 +223,7 @@ def prepare_draft_release(
     changelog_filepath = path_resolve(changelog_filepath)
     version_filepath = path_resolve(version_filepath)
     citation_filepath = path_resolve(citation_filepath)
-    assert all([f.is_file() for f in (changelog_filepath, version_filepath)])
+    assert all(f.is_file() for f in (changelog_filepath, version_filepath))
 
     next_version = get_release_version(
         next_version_manual=next_version_manual,
@@ -286,7 +287,7 @@ def prepare_draft_release(
             trigger_workflow(
                 workflow_name="auto-format.yml", branch=release_branch, repo=repo
             )
-        except Exception as e:
+        except (ValueError, RuntimeError, OSError) as e:
             warnings.warn(f"Failed to trigger workflow:\n{e}")
     release_url = create_release_draft(
         release_branch=release_branch,
@@ -553,8 +554,8 @@ def get_changelog_lines(
             raise ValueError(
                 f"Version {version} does not match semantic versioning pattern"
             )
-    changelog_lines = list()
-    next_release_lines = list()
+    changelog_lines = []
+    next_release_lines = []
     for_next = True
     with open(changelog_filepath, "r") as infile:
         for line in infile:
@@ -573,7 +574,7 @@ def push_release_draft_branch(
     release_branch="release-draft",
     pr_ref_name="${{ github.ref_name }}",
     next_version=None,
-    files=["CHANGELOG.md", "VERSION", "CITATION.cff"],
+    files=None,
     debug=False,
 ):
     """
@@ -593,6 +594,9 @@ def push_release_draft_branch(
     Returns:
         None
     """
+    if files is None:
+        files = ["CHANGELOG.md", "VERSION", "CITATION.cff"]
+
     cmd = f"""git push origin --delete {release_branch} || echo "No {release_branch} branch to delete"
 git switch -c {release_branch} || git switch {release_branch}
 git merge --ff-only {pr_ref_name}
@@ -611,7 +615,7 @@ def create_release_draft(
     release_branch="release-draft",
     next_version="${{ steps.release.outputs.NEXT_VERSION }}",
     release_notes_filepath=".github/latest-release.md",
-    release_target=get_current_hash(),
+    release_target=None,
     repo="${{ github.repository }}",
     debug=False,
 ):
@@ -629,6 +633,9 @@ def create_release_draft(
     Returns:
         str: The URL of the created release draft, or an empty string if in debug mode.
     """
+    if release_target is None:
+        release_target = get_current_hash()
+
     version_strict = next_version.lstrip("v")
     cmd = f"gh release create {next_version} --draft --notes-file {release_notes_filepath} --title '{os.path.basename(repo)} {version_strict}' --repo {repo} --target {release_target}"
     if debug:

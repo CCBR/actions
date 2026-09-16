@@ -50,7 +50,7 @@ baseimagename=$(grep ^FROM $dockerfile | sed "s/FROM //g")
 # Construct the full image name for Docker Hub
 if [[ "$suffix" == "dev" ]]; then
   tag="${tag}-dev"
-elif  [[ "$suffix" == "main" || "suffix" == "" ]]; then
+elif  [[ "$suffix" == "main" || "$suffix" == "" ]]; then
   tag="${tag}"
 else
   tag="${tag}-feat"

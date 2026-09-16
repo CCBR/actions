@@ -2,7 +2,6 @@ import subprocess
 
 import requests
 
-
 from ccbr_actions import docker as docker_module
 
 

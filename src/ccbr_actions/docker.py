@@ -8,7 +8,6 @@ import datetime
 import os
 import pathlib
 import subprocess
-from typing import Dict, Optional
 
 import requests
 
@@ -48,9 +47,9 @@ def prepare_docker_build_variables(
     dockerfile: str,
     suffix: str,
     dockerhub_account: str,
-    github_env: Optional[str] = None,
-    now: Optional[datetime.datetime] = None,
-) -> Dict[str, str]:
+    github_env: str | None = None,
+    now: datetime.datetime | None = None,
+) -> dict[str, str]:
     """
     Prepare Docker build variables and optionally write them to GITHUB_ENV.
 
@@ -67,7 +66,9 @@ def prepare_docker_build_variables(
     print(f"Dockerfile: {dockerfile}")
     print(f"suffix: {suffix}")
 
-    dt = (now or datetime.datetime.now()).strftime("%Y-%m-%d_%H:%M:%S")
+    dt = (now or datetime.datetime.now(tz=datetime.timezone.utc)).strftime(
+        "%Y-%m-%d_%H:%M:%S"
+    )
     bn_dockerfile = os.path.basename(dockerfile)
     tag = tag_from_dockerfile(dockerfile)
     dn_dockerfile = os.path.dirname(dockerfile)
@@ -76,7 +77,7 @@ def prepare_docker_build_variables(
 
     if suffix == "dev":
         tag = f"{tag}-dev"
-    elif suffix == "main" or "suffix" == "":
+    elif suffix in ("main", ""):
         tag = f"{tag}"
     else:
         tag = f"{tag}-feat"
@@ -101,8 +102,7 @@ def prepare_docker_build_variables(
     env_path = github_env or os.environ.get("GITHUB_ENV")
     if env_path:
         with open(env_path, "a") as env_handle:
-            for key, value in values.items():
-                env_handle.write(f"{key}={value}\n")
+            env_handle.writelines(f"{key}={value}\n" for key, value in values.items())
 
     return values
 
@@ -169,7 +169,7 @@ def dockerhub_tag_last_updated(
     image_tag: str,
     timeout: int = 20,
     session=requests,
-) -> Optional[str]:
+) -> str | None:
     """
     Get Docker Hub tag ``last_updated`` timestamp.
 
@@ -201,7 +201,7 @@ def evaluate_docker_build_staleness(
     image_name: str,
     dockerhub_namespace: str,
     repo_name: str,
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Decide whether to build a Docker image based on Dockerfile git history and tag freshness.
 
@@ -251,7 +251,7 @@ def evaluate_docker_build_staleness(
             except requests.HTTPError as exc:
                 status_code = getattr(exc.response, "status_code", "unknown")
                 reason = f"dockerhub_http_{status_code}"
-            except Exception as exc:
+            except (requests.RequestException, ValueError, TypeError) as exc:
                 reason = f"dockerhub_lookup_failed_{type(exc).__name__}"
 
     return {
@@ -268,7 +268,7 @@ def evaluate_docker_build_staleness_and_set_outputs(
     image_name: str,
     dockerhub_namespace: str,
     repo_name: str,
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Evaluate Docker build staleness and set step outputs.
 

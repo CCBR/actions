@@ -2,8 +2,9 @@ import json
 import os
 import shutil
 
-from ccbr_actions.citation import print_citation, update_citation, write_citation
 from ccbr_tools.shell import exec_in_context
+
+from ccbr_actions.citation import print_citation, update_citation, write_citation
 
 
 def test_print_citation():

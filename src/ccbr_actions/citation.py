@@ -1,8 +1,8 @@
 """Print and update citation files in CFF format."""
 
+import yaml
 from cffconvert.cli.create_citation import create_citation
 from cffconvert.cli.validate_or_write_output import validate_or_write_output
-import yaml
 
 from .util import date_today, path_resolve
 
@@ -56,7 +56,7 @@ def write_citation(
 def update_citation(
     citation_file="CITATION.cff",
     version="${{ steps.set-version.output.NEXT_VERSION }}",
-    date=date_today(),
+    date=None,
     debug=False,
 ):
     """
@@ -74,6 +74,9 @@ def update_citation(
     Examples:
         >>> update_citation(version="1.0.1", date="2023-10-01")
     """
+    if date is None:
+        date = date_today()
+
     citation = create_citation(citation_file, None)
     citation._implementation.cffobj["version"] = version
     citation._implementation.cffobj["date-released"] = date

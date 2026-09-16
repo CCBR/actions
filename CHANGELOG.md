@@ -1,6 +1,10 @@
 ## actions development version
 
-- New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#188, @copilot)
+- New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#189, @copilot)
+## actions 0.7.2
+
+- New commands `list-rulesets` and `copy-ruleset`, plus a `copy-ruleset` action, for copying GitHub rulesets between repositories. (#183, @kelly-sovacool, @copilot)
+- Fix `build-docker` action: fix bash suffix conditional so an empty suffix (and main) leaves the docker tag unchanged. (#199, @kelly-sovacool)
 
 ## actions 0.7.1
 

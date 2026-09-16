@@ -45,14 +45,14 @@ runs:
   steps:
     - name: Generate a token
       id: generate-token
-      uses: actions/create-github-app-token@v2
+      uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.app-private-key }}
         owner: ${{ inputs.owner }}
 
     - name: Checkout target repo
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0
         persist-credentials: true

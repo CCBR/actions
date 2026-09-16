@@ -32,6 +32,7 @@ them for your needs.
 - [build-snakemake](examples/build-snakemake.yml)
 - [changed-files](examples/changed-files.yml)
 - [check-links](examples/check-links.yml)
+- [copy-ruleset](examples/copy-ruleset.yml)
 - [docs-mkdocs](examples/docs-mkdocs.yml)
 - [docs-quarto](examples/docs-quarto.yml)
 - [draft-release](examples/draft-release.yml)
@@ -55,6 +56,8 @@ Custom actions used in our github workflows.
   guidelines
 - [Changed Files](changed-files) - Get a list of changed files and
   filter them by a list of path patterns similar to .gitignore
+- [Copy Ruleset](copy-ruleset) - Copy a repository ruleset from one
+  GitHub repository to another.
 - [draft-release](draft-release) - Draft a new release based on
   conventional commits and prepare release notes
 - [Install R + pak](install-r-pak) - Install R package dependencies with
@@ -119,7 +122,9 @@ pip install git+https://github.com/CCBR/actions@v0.7
       -h, --help      Show this message and exit.
 
     Commands:
-      use-example  Use a GitHub Actions workflow file from CCBR/actions.
+      use-example    Use a GitHub Actions workflow file from CCBR/actions.
+      list-rulesets  List all rulesets for a GitHub repository.
+      copy-ruleset   Copy a ruleset from one GitHub repository to another.
 
 #### use-example
 
@@ -140,6 +145,45 @@ pip install git+https://github.com/CCBR/actions@v0.7
     Options:
       -h, --help  Show this message and exit.
 
+#### list-rulesets
+
+    Usage: ccbr_actions list-rulesets [OPTIONS] REPO
+
+      List all rulesets for a GitHub repository.
+
+      Args:
+          repo (str): Repository in owner/repo format.
+
+      Examples:
+          ccbr_actions list-rulesets CCBR/actions
+          ccbr_actions list-rulesets CCBR/actions --token ghp_...
+
+    Options:
+      -t, --token TEXT  GitHub token with repo scope. Defaults to the GH_TOKEN
+                        environment variable.
+      -h, --help        Show this message and exit.
+
+#### copy-ruleset
+
+    Usage: ccbr_actions copy-ruleset [OPTIONS] SOURCE_REPO TARGET_REPO
+                                     RULESET_NAME
+
+      Copy a ruleset from one GitHub repository to another.
+
+      Args:
+          source-repo (str): Source repository in owner/repo format.
+          target-repo (str): Target repository in owner/repo format.
+          ruleset-name (str): Name of the ruleset to copy.
+
+      Examples:
+          ccbr_actions copy-ruleset CCBR/actions CCBR/other-repo "Require PR reviews"
+          ccbr_actions copy-ruleset CCBR/actions CCBR/other-repo "Require PR reviews" --token ghp_...
+
+    Options:
+      -t, --token TEXT  GitHub token with repo scope. Defaults to the GH_TOKEN
+                        environment variable.
+      -h, --help        Show this message and exit.
+
 ## Help & Contributing
 
 Come across a **bug**? Open an
@@ -157,7 +201,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.7.1). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.7.2). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
@@ -166,7 +210,7 @@ Please cite this software if you use it in a publication:
 @misc{YourReferenceHere,
 author = {Sovacool, Kelly and Koparde, Vishal},
 doi = {10.5281/zenodo.13761059},
-month = {6},
+month = {9},
 title = {CCBR actions: GitHub Actions for CCBR repos},
 url = {https://ccbr.github.io/actions/},
 year = {2026}
