@@ -88,9 +88,9 @@ def check_only_version_bumps(patch):
     added_revs = []
 
     for line in patch.splitlines():
-        if line.startswith("@@") or line.startswith("---") or line.startswith("+++"):
+        if line.startswith(("@@", "---", "+++")):
             continue
-        if line.startswith("-") or line.startswith("+"):
+        if line.startswith(("-", "+")):
             content = line[1:]
             if not _REV_PATTERN.match(content):
                 return False
