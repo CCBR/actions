@@ -1,8 +1,6 @@
 ## actions development version
 
-- Add `setup-ccbr-actions` composite action that checks whether a Docker image exists at `nciccbr/ccbr_actions:{version}` on DockerHub and uses it if available, otherwise installs `ccbr_actions` via pip. (#190, @copilot, @kelly-sovacool)
-  - Build and push `nciccbr/ccbr_actions` Docker images on release.
-  - Update composite actions and example workflows to use `setup-ccbr-actions` for installing `ccbr_actions`.
+- Create `ccbr_actions` docker image and show how to use it in example workflows. (#190, @kelly-sovacool, @copilot)
 
 ## actions 0.7.2
 

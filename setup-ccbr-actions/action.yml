@@ -20,6 +20,13 @@ inputs:
       DockerHub namespace to check for the ccbr_actions Docker image.
     required: false
     default: "nciccbr"
+  skip-docker-check:
+    description: |
+      When true, skip checking DockerHub and always install ccbr_actions via pip.
+      Useful for actions that need ccbr_actions importable directly in the runner's
+      Python environment rather than inside a Docker container.
+    required: false
+    default: "false"
 
 outputs:
   install-method:
@@ -39,6 +46,13 @@ runs:
         version="${{ inputs.ccbr-actions-version }}"
         namespace="${{ inputs.dockerhub-namespace }}"
         repo_name="ccbr_actions"
+
+        if [ "${{ inputs.skip-docker-check }}" = "true" ]; then
+          echo "docker-image=" >> "$GITHUB_OUTPUT"
+          echo "install-method=pip" >> "$GITHUB_OUTPUT"
+          echo "::notice::Skipping DockerHub check. Installing ccbr_actions via pip."
+          exit 0
+        fi
 
         http_code="$(curl -s -o /dev/null -w "%{http_code}" \
           "https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repo_name}/tags/${version}" \
@@ -68,6 +82,7 @@ runs:
       uses: actions/setup-python@v6
       with:
         python-version: "${{ inputs.python-version }}"
+        cache: pip
 
     - name: Install ccbr_actions via pip
       if: ${{ steps.check-docker.outputs.install-method == 'pip' }}

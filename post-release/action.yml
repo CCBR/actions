@@ -57,20 +57,23 @@ runs:
         git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
         git checkout ${{ github.event.release.tag_name }}
         git switch -c ${{ inputs.pr-branch }}
-    - uses: actions/setup-python@v7
+    - name: Set up Python
+      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
+      uses: actions/setup-python@v7
       with:
         python-version: "${{ inputs.python-version }}"
         cache: "pip"
     - uses: r-lib/actions/setup-r@v2
-      if: ${{ hashFiles(inputs.description-filepath) != '' }}
+      if: ${{ hashFiles(inputs.description-filepath) != '' && env.CCBR_ACTIONS_DOCKER != 'true' }}
       with:
         r-version: "4.5"
         use-public-rspm: true
     - uses: r-lib/actions/setup-r-dependencies@v2
-      if: ${{ hashFiles(inputs.description-filepath) != '' }}
+      if: ${{ hashFiles(inputs.description-filepath) != '' && env.CCBR_ACTIONS_DOCKER != 'true' }}
       with:
         extra-packages: any::cffr
-    - name: Install actions package
+    - name: Install ccbr_actions
+      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
