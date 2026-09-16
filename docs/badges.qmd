@@ -1,6 +1,7 @@
 
 GitHub Actions for CCBR repos
 
+[![docker](https://img.shields.io/docker/v/nciccbr/ccbr_actions?logo=docker&label=docker&color=blue)](https://hub.docker.com/r/nciccbr/ccbr_actions)
 [![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
 [![docs](https://github.com/CCBR/actions/actions/workflows/docs-quartodoc.yml/badge.svg)](https://CCBR.github.io/actions)
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)

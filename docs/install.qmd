@@ -24,3 +24,11 @@ print("\n".join([
     "```"
 ]))
 ```
+
+Or use the provided [docker image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general):
+
+```sh
+podman pull docker://nciccbr/ccbr_actions@latest
+podman run docker://nciccbr/ccbr_actions@latest \
+  ccbr_actions --version
+```
