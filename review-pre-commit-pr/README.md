@@ -57,6 +57,7 @@ concurrency:
 jobs:
   review-pre-commit-pr:
     runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest
     # Only run for pre-commit.ci autoupdate PRs
     if: >
       github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate'
