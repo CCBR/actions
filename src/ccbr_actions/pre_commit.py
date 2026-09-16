@@ -280,15 +280,12 @@ def review_pre_commit_pr(
     condition2 = False
 
     if condition1:
-        patch = next(
-            (
-                f.get("patch", "")
-                for f in pr_files
-                if f["filename"] == PRE_COMMIT_CONFIG_FILE
-            ),
-            "",
+        file_obj = next(
+            (f for f in pr_files if f.get("filename") == PRE_COMMIT_CONFIG_FILE),
+            {},
         )
-        condition2 = check_only_version_bumps(patch)
+        patch = file_obj.get("patch")
+        condition2 = isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
 
     if condition1 and condition2:
         approve_pr(repo, pr_number, token=token, session=session)
