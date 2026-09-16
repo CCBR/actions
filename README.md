@@ -4,6 +4,7 @@
 
 GitHub Actions for CCBR repos
 
+[![docker](https://img.shields.io/docker/v/nciccbr/ccbr_actions?logo=docker&label=docker&color=blue.png)](https://hub.docker.com/r/nciccbr/ccbr_actions)
 [![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
 [![docs](https://github.com/CCBR/actions/actions/workflows/docs-quartodoc.yml/badge.svg)](https://CCBR.github.io/actions)
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
@@ -100,6 +101,15 @@ Or install it from a specific version or branch with:
 
 ```bash
 pip install git+https://github.com/CCBR/actions@v0.7
+```
+
+Or use the provided [docker
+image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general):
+
+```sh
+podman pull docker://nciccbr/ccbr_actions@latest
+podman run docker://nciccbr/ccbr_actions@latest \
+  ccbr_actions --version
 ```
 
 ### Command line interface
