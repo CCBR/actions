@@ -194,6 +194,9 @@ runs:
             -e DOCKERFILE_PATH \
             -e IMAGENAME \
             -e REPONAME \
+            -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
+            -e GITHUB_WORKSPACE \
+            -w "${GITHUB_WORKSPACE}" \
             -v "${script}:${script}:ro" \
             "${CCBR_DOCKER_IMAGE}" \
             python "${script}"
