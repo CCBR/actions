@@ -211,13 +211,14 @@ def request_reviewer(repo, pr_number, reviewer, token=None, session=None):
     Returns:
         requests.Response: Response from the GitHub requested reviewers API.
     """
-    url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/requested_reviewers"
-    return github_api_post(
+    response = github_api_post(
         url=url,
         token=token,
         session=session,
         json={"reviewers": [reviewer]},
     )
+    response.raise_for_status()
+    return response
 
 
 def post_pr_comment(repo, pr_number, comment, token=None, session=None):
