@@ -17,6 +17,12 @@ print(ccbr_actions.docs.action_markdown_desc(action))
 This action is designed to build Docker containers according to
 the format used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
 
+> [!WARNING]
+> Do **not** run this action via `jobs.<job_id>.container: nciccbr/ccbr_actions:...`.
+> This action builds/pushes Docker images, which would require Docker-in-Docker
+> (mounting the host's Docker socket into the container) -- an ill-advised pattern.
+> Run this action on a normal runner instead.
+
 This action:
 
   - Resolves an effective push mode: pushing is enabled only when 'push' is 'true' and both DockerHub credentials are provided.

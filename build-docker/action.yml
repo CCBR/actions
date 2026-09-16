@@ -76,14 +76,12 @@ runs:
   using: "composite"
   steps:
     - name: Set up Python
-      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       uses: actions/setup-python@v7
       with:
         python-version: "${{ inputs.python-version }}"
         cache: pip
 
     - name: Install ccbr_actions
-      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
