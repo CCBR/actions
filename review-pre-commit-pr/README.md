@@ -40,6 +40,21 @@ You should call this action from a workflow that is triggered on
 `actions/create-github-app-token`) so that the approval and merge
 operations are performed as CCBR-bot.
 
+We recommended creating a branch protection rule to require that status
+checks must pass before PRs can be merged, and include the pre-commit
+check as one of the required checks. In your repo’s rulesets
+(`github.com/OWNER/REPO/settings/rules`), create a rule, check
+`[x] Require status checks to pass`, and add `pre-commit.ci - pr`.
+Consider also including other desired checks such as your build/test
+workflow, auto-format, etc.
+
+<figure>
+<img
+src="https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png"
+alt="Branch protection rule" />
+<figcaption aria-hidden="true">Branch protection rule</figcaption>
+</figure>
+
 ### Basic example
 
 [review-pre-commit-pr.yml](/examples/review-pre-commit-pr.yml)
