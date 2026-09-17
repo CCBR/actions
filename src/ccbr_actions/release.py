@@ -500,8 +500,8 @@ def get_release_version(
     if not next_version:
         raise ValueError(
             "Unable to determine next release version. "
-            "If this is the first release for this repository, provide a manual next version "
-            "(draft-release input: version-tag)."
+            "Provide a manual next version (draft-release input: version-tag); "
+            "this is required for first releases or when automatic version detection fails."
         )
     if not is_strict_semver(next_version, with_leading_v=with_leading_v):
         raise ValueError(
