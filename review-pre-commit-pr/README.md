@@ -55,12 +55,16 @@ check as one of the required checks. In your repo’s rulesets
 Consider also including other desired checks such as your build/test
 workflow, auto-format, etc.
 
-![Branch protection
-rule](https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png)
+<figure>
+<img
+src="https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png"
+alt="Branch protection rule" />
+<figcaption aria-hidden="true">Branch protection rule</figcaption>
+</figure>
 
 ### Basic example
 
-[review-pre-commit-pr.yml](./examples/review-pre-commit-pr.yml)
+[review-pre-commit-pr.yml](/examples/review-pre-commit-pr.yml)
 
 ```yaml
 name: review-pre-commit-pr
