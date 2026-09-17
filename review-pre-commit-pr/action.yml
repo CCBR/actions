@@ -15,7 +15,7 @@ inputs:
     default: "${{ github.repository }}"
   reviewer:
     description: "GitHub username to request as reviewer when the PR requires human review."
-    required: true
+    required: false
   ccbr-actions-version:
     description: "The version of CCBR/actions to install (branch, tag, or 'latest')."
     required: true

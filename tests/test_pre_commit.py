@@ -3,20 +3,14 @@ Tests for ccbr_actions.pre_commit module.
 """
 
 import pytest
-import requests as requests_lib
 
 from ccbr_actions.pre_commit import (
     PRE_COMMIT_CI_TITLE,
     PRE_COMMIT_CONFIG_FILE,
     _is_version_bumped,
-    approve_pr,
     check_only_pre_commit_config_changed,
     check_only_version_bumps,
-    enable_auto_merge,
-    get_pr_files,
     is_pre_commit_autoupdate_pr,
-    post_pr_comment,
-    request_reviewer,
     review_pre_commit_pr,
 )
 
@@ -37,7 +31,7 @@ class MockResponse:
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise requests_lib.exceptions.HTTPError(f"HTTP {self.status_code}")
+            raise RuntimeError(f"HTTP {self.status_code}")
 
 
 class MockSession:
@@ -212,101 +206,18 @@ def test_check_only_version_bumps_returns_true_for_empty_patch():
 
 
 # ---------------------------------------------------------------------------
-# get_pr_files
-# ---------------------------------------------------------------------------
-
-
-def test_get_pr_files_calls_correct_url():
-    files = [{"filename": PRE_COMMIT_CONFIG_FILE}]
-    session = MockSession(
-        {"https://api.github.com/repos/CCBR/actions/pulls/42/files": files}
-    )
-    result = get_pr_files("CCBR/actions", 42, token="tok", session=session)
-    assert result == files
-    assert session.calls[0][0] == "GET"
-    assert (
-        session.calls[0][1]
-        == "https://api.github.com/repos/CCBR/actions/pulls/42/files"
-    )
-
-
-# ---------------------------------------------------------------------------
-# approve_pr
-# ---------------------------------------------------------------------------
-
-
-def test_approve_pr_posts_to_reviews_endpoint():
-    session = MockSession(post_status=200)
-    approve_pr("CCBR/actions", 42, token="tok", session=session)
-    method, url, kwargs = session.calls[0]
-    assert method == "POST"
-    assert url == "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
-    assert kwargs["json"]["event"] == "APPROVE"
-
-
-# ---------------------------------------------------------------------------
-# enable_auto_merge
-# ---------------------------------------------------------------------------
-
-
-def test_enable_auto_merge_calls_rest_then_graphql():
-    pr_url = "https://api.github.com/repos/CCBR/actions/pulls/42"
-    graphql_url = "https://api.github.com/graphql"
-    session = MockSession(
-        {
-            pr_url: {"node_id": "PR_NODE_ID_42"},
-            graphql_url: {
-                "data": {
-                    "enablePullRequestAutoMerge": {
-                        "pullRequest": {"autoMergeRequest": {"enabledAt": "2024-01-01"}}
-                    }
-                }
-            },
-        }
-    )
-    enable_auto_merge("CCBR/actions", 42, token="tok", session=session)
-    methods = [c[0] for c in session.calls]
-    assert "GET" in methods
-    assert "POST" in methods
-
-
-# ---------------------------------------------------------------------------
-# request_reviewer
-# ---------------------------------------------------------------------------
-
-
-def test_request_reviewer_posts_to_requested_reviewers_endpoint():
-    session = MockSession(post_status=201)
-    request_reviewer("CCBR/actions", 42, "alice", token="tok", session=session)
-    method, url, kwargs = session.calls[0]
-    assert method == "POST"
-    assert (
-        url == "https://api.github.com/repos/CCBR/actions/pulls/42/requested_reviewers"
-    )
-    assert kwargs["json"]["reviewers"] == ["alice"]
-
-
-# ---------------------------------------------------------------------------
-# post_pr_comment
-# ---------------------------------------------------------------------------
-
-
-def test_post_pr_comment_posts_to_issue_comments_endpoint():
-    session = MockSession(post_status=201)
-    post_pr_comment("CCBR/actions", 42, "hello world", token="tok", session=session)
-    method, url, kwargs = session.calls[0]
-    assert method == "POST"
-    assert url == "https://api.github.com/repos/CCBR/actions/issues/42/comments"
-    assert kwargs["json"]["body"] == "hello world"
-
-
-# ---------------------------------------------------------------------------
 # review_pre_commit_pr
 # ---------------------------------------------------------------------------
 
 
 def _make_review_session(
-    *, extra_files=None, patch=None, pr_node_payload=None, graphql_payload=None
+    *,
+    extra_files=None,
+    patch=None,
+    pr_node_payload=None,
+    graphql_payload=None,
+    codeowners_payload=None,
+    commits_payload=None,
 ):
     """Build a MockSession suitable for review_pre_commit_pr tests."""
     if patch is None:
@@ -332,16 +243,24 @@ def _make_review_session(
     pr_url = "https://api.github.com/repos/CCBR/repo/pulls/7/files"
     pr_node_url = "https://api.github.com/repos/CCBR/repo/pulls/7"
     graphql_url = "https://api.github.com/graphql"
-    comment_url = "https://api.github.com/repos/CCBR/repo/issues/7/comments"
+    reviews_url = "https://api.github.com/repos/CCBR/repo/pulls/7/reviews"
+    reviewers_url = "https://api.github.com/repos/CCBR/repo/pulls/7/requested_reviewers"
+    commits_url = "https://api.github.com/repos/CCBR/repo/commits"
 
-    return MockSession(
-        {
-            pr_url: pr_files,
-            pr_node_url: pr_node_payload,
-            graphql_url: graphql_payload,
-            comment_url: {"id": 1},
-        }
-    )
+    payloads = {
+        pr_url: pr_files,
+        pr_node_url: pr_node_payload,
+        graphql_url: graphql_payload,
+        reviews_url: {"id": 1},
+        reviewers_url: {},
+        commits_url: commits_payload if commits_payload is not None else [],
+    }
+    if codeowners_payload is not None:
+        payloads["https://api.github.com/repos/CCBR/repo/contents/CODEOWNERS"] = (
+            codeowners_payload
+        )
+
+    return MockSession(payloads)
 
 
 def test_review_pre_commit_pr_approves_when_conditions_met():
@@ -351,6 +270,10 @@ def test_review_pre_commit_pr_approves_when_conditions_met():
     posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
     assert any("reviews" in u for u in posted_urls)
     assert any("graphql" in u for u in posted_urls)
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert any(body.get("event") == "APPROVE" for body in review_bodies)
 
 
 def test_review_pre_commit_pr_requests_human_review_when_extra_file():
@@ -358,26 +281,28 @@ def test_review_pre_commit_pr_requests_human_review_when_extra_file():
     result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
     assert result is False
     posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
-    # Should request reviewer and post comment, but NOT submit approval review
-    assert not any("reviews" in u for u in posted_urls)
-    assert any("comments" in u for u in posted_urls)
+    # Should submit a REQUEST_CHANGES review and request the given reviewer, but NOT approve
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert not any(body.get("event") == "APPROVE" for body in review_bodies)
+    assert any(body.get("event") == "REQUEST_CHANGES" for body in review_bodies)
+    assert any("requested_reviewers" in u for u in posted_urls)
 
 
 def test_review_pre_commit_pr_requests_human_review_for_non_rev_change():
     session = _make_review_session(patch=INVALID_PATCH_NON_REV_CHANGE)
     result = review_pre_commit_pr("CCBR/repo", 7, "bob", token="tok", session=session)
     assert result is False
-    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
-    assert any("comments" in u for u in posted_urls)
-    # comment body should mention condition 2
-    comment_calls = [c for c in session.calls if c[0] == "POST" and "comments" in c[1]]
-    assert comment_calls
-    comment_body = comment_calls[0][2]["json"]["body"]
-    assert "@bob" in comment_body
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    assert review_calls
+    review_body = review_calls[0][2]["json"]
+    assert review_body["event"] == "REQUEST_CHANGES"
+    assert "@bob" in review_body["body"]
 
 
 def test_review_pre_commit_pr_warns_when_reviewer_request_fails(monkeypatch):
-    """reviewer request error should emit a warning but still post a comment."""
+    """reviewer request error should emit a warning but still submit the request-changes review."""
     session = _make_review_session(patch=DOWNGRADE_PATCH)
 
     def _fail_request(*args, **kwargs):
@@ -406,9 +331,12 @@ def test_review_pre_commit_pr_falls_back_when_auto_merge_api_fails():
         c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
     ]
     assert review_request_calls
-    comment_calls = [c for c in session.calls if c[0] == "POST" and "comments" in c[1]]
-    assert comment_calls
-    comment_body = comment_calls[0][2]["json"]["body"]
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    request_changes_calls = [
+        c for c in review_calls if c[2]["json"].get("event") == "REQUEST_CHANGES"
+    ]
+    assert request_changes_calls
+    comment_body = request_changes_calls[0][2]["json"]["body"]
     assert "@erin" in comment_body
     assert "GraphQL errors" in comment_body
 
@@ -423,10 +351,38 @@ def test_review_pre_commit_pr_requests_human_review_when_title_or_sender_mismatc
     )
     result = review_pre_commit_pr("CCBR/repo", 7, "frank", token="tok", session=session)
     assert result is False
-    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
-    assert not any("reviews" in u for u in posted_urls)
-    comment_calls = [c for c in session.calls if c[0] == "POST" and "comments" in c[1]]
-    assert comment_calls
-    comment_body = comment_calls[0][2]["json"]["body"]
-    assert "@frank" in comment_body
-    assert "autoupdate bot pattern" in comment_body
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    review_bodies = [c[2]["json"] for c in review_calls]
+    assert not any(body.get("event") == "APPROVE" for body in review_bodies)
+    request_changes_calls = [
+        body for body in review_bodies if body.get("event") == "REQUEST_CHANGES"
+    ]
+    assert request_changes_calls
+    assert "@frank" in request_changes_calls[0]["body"]
+    assert "autoupdate bot pattern" in request_changes_calls[0]["body"]
+
+
+def test_review_pre_commit_pr_works_without_reviewer_input():
+    """When no reviewer is given, fall back to the last human committer of the config file."""
+    session = _make_review_session(
+        patch=INVALID_PATCH_NON_REV_CHANGE,
+        commits_payload=[
+            {"author": {"login": "copilot-swe-agent[bot]"}},
+            {"author": {"login": "a-human"}},
+        ],
+    )
+    result = review_pre_commit_pr("CCBR/repo", 7, token="tok", session=session)
+    assert result is False
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    request_changes_calls = [
+        c[2]["json"]
+        for c in review_calls
+        if c[2]["json"].get("event") == "REQUEST_CHANGES"
+    ]
+    assert request_changes_calls
+    assert "@a-human" in request_changes_calls[0]["body"]
+    reviewer_calls = [
+        c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
+    ]
+    assert reviewer_calls
+    assert reviewer_calls[0][2]["json"]["reviewers"] == ["a-human"]

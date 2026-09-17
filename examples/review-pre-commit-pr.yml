@@ -36,4 +36,4 @@ jobs:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ github.event.pull_request.number }}
           repo: ${{ github.repository }}
-          reviewer: ${{ github.repository_owner }}
+          reviewer: CCBR/adminteam

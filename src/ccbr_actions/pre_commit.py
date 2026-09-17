@@ -8,7 +8,15 @@ import warnings
 import requests
 from packaging.version import InvalidVersion, Version
 
-from .github import GITHUB_API_URL, github_api_get, github_api_post, github_graphql_post
+from .github import GITHUB_API_URL, github_api_get
+from .pr_review import (
+    approve_pr,
+    determine_reviewer,
+    enable_auto_merge,
+    get_pr_files,
+    request_changes,
+    request_reviewer,
+)
 
 PRE_COMMIT_CI_TITLE = "[pre-commit.ci] pre-commit autoupdate"
 PRE_COMMIT_CONFIG_FILE = ".pre-commit-config.yaml"
@@ -30,23 +38,6 @@ def is_pre_commit_autoupdate_pr(pr_title, pr_sender_type):
         bool: ``True`` if the PR looks like a pre-commit.ci autoupdate PR.
     """
     return pr_title == PRE_COMMIT_CI_TITLE and pr_sender_type == "Bot"
-
-
-def get_pr_files(repo, pr_number, token=None, session=None):
-    """
-    Return the list of file objects changed in a pull request.
-
-    Args:
-        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
-        pr_number (int | str): Pull request number.
-        token (str, optional): GitHub API token.
-        session: Requests-compatible session object for dependency injection.
-
-    Returns:
-        list[dict]: File objects from the GitHub pull request files API.
-    """
-    url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/files"
-    return github_api_get(url=url, token=token, session=session)
 
 
 def check_only_pre_commit_config_changed(pr_files):
@@ -133,124 +124,10 @@ def _is_version_bumped(old_rev, new_rev):
         return old_rev != new_rev
 
 
-def approve_pr(repo, pr_number, token=None, session=None):
-    """
-    Submit an *APPROVE* review on a pull request.
-
-    Args:
-        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
-        pr_number (int | str): Pull request number.
-        token (str, optional): GitHub API token.
-        session: Requests-compatible session object for dependency injection.
-
-    Returns:
-        requests.Response: Response from the GitHub reviews API.
-    """
-    url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/reviews"
-    response = github_api_post(
-        url=url,
-        token=token,
-        session=session,
-        json={"event": "APPROVE"},
-    )
-    response.raise_for_status()
-    return response
-
-
-def enable_auto_merge(repo, pr_number, token=None, session=None):
-    """
-    Enable squash auto-merge on a pull request via the GitHub GraphQL API.
-
-    Args:
-        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
-        pr_number (int | str): Pull request number.
-        token (str, optional): GitHub API token.
-        session: Requests-compatible session object for dependency injection.
-
-    Returns:
-        dict: Parsed GraphQL response data.
-
-    Raises:
-        RuntimeError: If the GraphQL mutation returns errors.
-    """
-    pr_url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}"
-    pr_data = github_api_get(url=pr_url, token=token, session=session)
-    node_id = pr_data["node_id"]
-
-    mutation = """
-    mutation EnableAutoMerge($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
-      enablePullRequestAutoMerge(input: {
-        pullRequestId: $pullRequestId
-        mergeMethod: $mergeMethod
-      }) {
-        pullRequest {
-          autoMergeRequest {
-            enabledAt
-          }
-        }
-      }
-    }
-    """
-    return github_graphql_post(
-        query=mutation,
-        variables={"pullRequestId": node_id, "mergeMethod": "SQUASH"},
-        token=token,
-        session=session,
-    )
-
-
-def request_reviewer(repo, pr_number, reviewer, token=None, session=None):
-    """
-    Request a reviewer on a pull request.
-
-    Args:
-        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
-        pr_number (int | str): Pull request number.
-        reviewer (str): GitHub username to request as reviewer.
-        token (str, optional): GitHub API token.
-        session: Requests-compatible session object for dependency injection.
-
-    Returns:
-        requests.Response: Response from the GitHub requested reviewers API.
-    """
-    url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/requested_reviewers"
-    response = github_api_post(
-        url=url,
-        token=token,
-        session=session,
-        json={"reviewers": [reviewer]},
-    )
-    response.raise_for_status()
-    return response
-
-
-def post_pr_comment(repo, pr_number, comment, token=None, session=None):
-    """
-    Post a comment on a pull request.
-
-    Args:
-        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
-        pr_number (int | str): Pull request number.
-        comment (str): Comment body text (Markdown supported).
-        token (str, optional): GitHub API token.
-        session: Requests-compatible session object for dependency injection.
-
-    Returns:
-        requests.Response: Response from the GitHub issue comments API.
-    """
-    url = f"{GITHUB_API_URL}/repos/{repo}/issues/{pr_number}/comments"
-    return github_api_post(
-        url=url,
-        token=token,
-        session=session,
-        json={"body": comment},
-    )
-
-
 def review_pre_commit_pr(
     repo,
     pr_number,
-    reviewer,
+    reviewer=None,
     token=None,
     session=None,
 ):
@@ -263,14 +140,18 @@ def review_pre_commit_pr(
     - **Condition 2** – the only changes are ``rev:`` version bumps.
 
     When both conditions are met the function approves the PR, enables squash
-    auto-merge, and returns ``True``.  Otherwise it requests *reviewer* as a
-    human reviewer, posts a comment explaining why the PR needs manual review,
-    and returns ``False``.
+    auto-merge, and returns ``True``.  Otherwise it submits a *REQUEST_CHANGES*
+    review explaining why the PR needs manual review, requests a human
+    reviewer, and returns ``False``.  The reviewer is resolved via
+    [](`~ccbr_actions.pr_review.determine_reviewer`): *reviewer* if given,
+    otherwise the repo's ``CODEOWNERS`` entry for the config file, otherwise
+    the most recent human committer to the config file.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         pr_number (int | str): Pull request number.
-        reviewer (str): GitHub username to assign when human review is required.
+        reviewer (str, optional): GitHub username or team to request when human
+            review is required. If omitted, a reviewer is resolved automatically.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
 
@@ -339,14 +220,30 @@ def review_pre_commit_pr(
 
     if not was_auto_approved:
         reasons = "\n".join(f"- {r}" for r in failed)
+        resolved_reviewer = determine_reviewer(
+            repo,
+            reviewer=reviewer,
+            path=PRE_COMMIT_CONFIG_FILE,
+            token=token,
+            session=session,
+        )
+        reviewer_mention = f"@{resolved_reviewer} " if resolved_reviewer else ""
         comment = (
-            f"@{reviewer} This pre-commit.ci autoupdate PR requires human review. "
+            f"{reviewer_mention}This pre-commit.ci autoupdate PR requires human review. "
             f"The changes were too complex for CCBR-bot to automatically approve "
             f"because the following conditions were not met:\n{reasons}"
         )
         try:
-            request_reviewer(repo, pr_number, reviewer, token=token, session=session)
+            request_changes(repo, pr_number, comment, token=token, session=session)
         except (requests.exceptions.RequestException, RuntimeError) as exc:
-            warnings.warn(f"Could not request reviewer {reviewer!r}: {exc}")
-        post_pr_comment(repo, pr_number, comment, token=token, session=session)
+            warnings.warn(f"Could not submit request-changes review: {exc}")
+        if resolved_reviewer:
+            try:
+                request_reviewer(
+                    repo, pr_number, resolved_reviewer, token=token, session=session
+                )
+            except (requests.exceptions.RequestException, RuntimeError) as exc:
+                warnings.warn(
+                    f"Could not request reviewer {resolved_reviewer!r}: {exc}"
+                )
     return was_auto_approved

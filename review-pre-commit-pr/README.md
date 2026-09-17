@@ -23,9 +23,15 @@ When both conditions are satisfied the action:
 
 When either condition is **not** satisfied the action:
 
-- Requests the configured `reviewer` as a human reviewer.
-- Posts a comment on the PR tagging the reviewer and explaining which
-  conditions were not met.
+- Submits a `REQUEST_CHANGES` review listing which conditions were not
+  met.
+- Requests a human reviewer, resolved in this order:
+  1.  the `reviewer` input, if provided;
+  2.  otherwise, the owner(s) of `.pre-commit-config.yaml` per the
+      repo’s `CODEOWNERS` file (checked at the repo root, `.github/`,
+      and `docs/`);
+  3.  otherwise, the most recent human (non-bot, non-Copilot) committer
+      to `.pre-commit-config.yaml`.
 
 ## Usage
 
@@ -88,7 +94,8 @@ jobs:
 - `repo`: Repository full name (e.g. CCBR/actions). **Required.**
   Default: `${{ github.repository }}`.
 - `reviewer`: GitHub username to request as reviewer when the PR
-  requires human review. **Required.**
+  requires human review. Optional — falls back to `CODEOWNERS` or the
+  most recent human committer to `.pre-commit-config.yaml` if omitted.
 - `ccbr-actions-version`: The version of CCBR/actions to install
   (branch, tag, or ‘latest’). **Required.** Default: `latest`.
 - `python-version`: Python version to use. **Required.** Default:
