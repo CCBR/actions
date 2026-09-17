@@ -40,7 +40,9 @@ When either condition is **not** satisfied the action:
 You should call this action from a workflow that is triggered on
 `pull_request` events. Generate a CCBR-bot token first (using
 `actions/create-github-app-token`) so that the approval and merge
-operations are performed as CCBR-bot.
+operations are performed as CCBR-bot. The workflow and GitHub App token
+must allow `pull-requests: write` and `issues: write`; the latter is
+used for comments when auto-merge cannot be enabled.
 
 We recommended creating a branch protection rule to require that status
 checks must pass before PRs can be merged, and include the pre-commit
