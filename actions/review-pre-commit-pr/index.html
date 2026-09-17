@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Kelly Sovacool">
 
-<title>util – CCBR actions</title>
+<title>review-pre-commit-pr – CCBR actions</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -64,27 +65,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../reference/versions.html" rel="next">
-<link href="../reference/release.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-17e5a23d094ee4d3ea1f9bf67e0e3d54.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4c7bfa4c4c7014df65ce8603dfb1d681.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-210f43b741ce5871375c75d07709ced4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-22426002d43f36f39a13de5e3e343dad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../actions/install-r-pak/index.html" rel="next">
+<link href="../../actions/add-issue-label-list/index.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-17e5a23d094ee4d3ea1f9bf67e0e3d54.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-4c7bfa4c4c7014df65ce8603dfb1d681.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-210f43b741ce5871375c75d07709ced4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-22426002d43f36f39a13de5e3e343dad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -282,7 +283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">CCBR actions</span>
     </a>
   </div>
@@ -298,57 +299,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-docs">    
         <li>
-    <a class="dropdown-item" href="../index.html">
+    <a class="dropdown-item" href="../../index.html">
  <span class="dropdown-text">Home</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">GitHub Actions</li>
         <li>
-    <a class="dropdown-item" href="../actions/sync-copilot-instructions/index.html">
+    <a class="dropdown-item" href="../../actions/sync-copilot-instructions/index.html">
  <span class="dropdown-text">Actions</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../examples.html">
+    <a class="dropdown-item" href="../../examples.html">
  <span class="dropdown-text">Example Workflows</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../gh-app-auth.html">
+    <a class="dropdown-item" href="../../gh-app-auth.html">
  <span class="dropdown-text">GitHub App Authentication</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">Python package</li>
         <li>
-    <a class="dropdown-item" href="../install.html">
+    <a class="dropdown-item" href="../../install.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../cli.html">
+    <a class="dropdown-item" href="../../cli.html">
  <span class="dropdown-text">CLI</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../reference/actions.html">
+    <a class="dropdown-item" href="../../reference/actions.html">
  <span class="dropdown-text">API reference</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">Project information</li>
         <li>
-    <a class="dropdown-item" href="../cite.html">
+    <a class="dropdown-item" href="../../cite.html">
  <span class="dropdown-text">Citation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../CONTRIBUTING.html">
+    <a class="dropdown-item" href="../../CONTRIBUTING.html">
  <span class="dropdown-text">Contributing</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../contributors.html">
+    <a class="dropdown-item" href="../../contributors.html">
  <span class="dropdown-text">Contributors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../LICENSE.html">
+    <a class="dropdown-item" href="../../LICENSE.html">
  <span class="dropdown-text">License</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../CHANGELOG.html">
+    <a class="dropdown-item" href="../../CHANGELOG.html">
  <span class="dropdown-text">Changelog</span></a>
   </li>  
     </ul>
@@ -370,7 +371,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../package.html">Python package</a></li><li class="breadcrumb-item"><a href="../reference/index.html">API reference</a></li><li class="breadcrumb-item"><a href="../reference/util.html">util</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../gh-actions.html">GitHub Actions</a></li><li class="breadcrumb-item"><a href="../../actions.html">Actions</a></li><li class="breadcrumb-item"><a href="../../actions/review-pre-commit-pr/index.html">review-pre-commit-pr</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -384,13 +385,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Home</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../gh-actions.html" class="sidebar-item-text sidebar-link">
+            <a href="../../gh-actions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub Actions</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -399,88 +400,88 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../actions.html" class="sidebar-item-text sidebar-link">
+            <a href="../../actions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Actions</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/sync-copilot-instructions/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/sync-copilot-instructions/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">sync-copilot-instructions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/add-issue-label-list/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/add-issue-label-list/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">add-issue-label-list</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/review-pre-commit-pr/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/review-pre-commit-pr/index.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">review-pre-commit-pr</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/install-r-pak/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/install-r-pak/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Install R + pak</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/changed-files/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/changed-files/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changed Files</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">build-docker</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/maintain-milestones/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/maintain-milestones/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">maintain-milestones</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/label-issue-repo-name/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">label-issue-repo-name</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/user-projects/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/user-projects/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">user-projects</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/post-release/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/post-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">post-release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">mkdocs-mike</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/copy-ruleset/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/copy-ruleset/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Copy Ruleset</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">draft-release</span></a>
   </div>
 </li>
@@ -488,13 +489,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../examples.html" class="sidebar-item-text sidebar-link">
+  <a href="../../examples.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Example Workflows</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../gh-app-auth.html" class="sidebar-item-text sidebar-link">
+  <a href="../../gh-app-auth.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">GitHub App Authentication</span></a>
   </div>
 </li>
@@ -502,7 +503,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../package.html" class="sidebar-item-text sidebar-link">
+            <a href="../../package.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Python package</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -511,70 +512,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../install.html" class="sidebar-item-text sidebar-link">
+  <a href="../../install.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Installation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../cli.html" class="sidebar-item-text sidebar-link">
+  <a href="../../cli.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">CLI</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../reference/index.html" class="sidebar-item-text sidebar-link">
+            <a href="../../reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">API reference</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/actions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/actions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">actions</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/citation.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/citation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">citation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/docker.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/docker.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">docker</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/docs.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/docs.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">docs</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/release.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/release.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/util.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../reference/util.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">util</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../reference/versions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../reference/versions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">versions</span></a>
   </div>
 </li>
@@ -593,31 +594,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../cite.html" class="sidebar-item-text sidebar-link">
+  <a href="../../cite.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Citation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
+  <a href="../../CONTRIBUTING.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contributing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../contributors.html" class="sidebar-item-text sidebar-link">
+  <a href="../../contributors.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Contributors</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../LICENSE.html" class="sidebar-item-text sidebar-link">
+  <a href="../../LICENSE.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">License</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../CHANGELOG.html" class="sidebar-item-text sidebar-link">
+  <a href="../../CHANGELOG.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
@@ -633,273 +634,132 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#ccbr_actions.util" id="toc-ccbr_actions.util" class="nav-link active" data-scroll-target="#ccbr_actions.util">util</a>
+  <li><a href="#usage" id="toc-usage" class="nav-link active" data-scroll-target="#usage">Usage</a>
   <ul class="collapse">
-  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
-  <ul class="collapse">
-  <li><a href="#ccbr_actions.util.date_today" id="toc-ccbr_actions.util.date_today" class="nav-link" data-scroll-target="#ccbr_actions.util.date_today">date_today</a></li>
-  <li><a href="#ccbr_actions.util.path_resolve" id="toc-ccbr_actions.util.path_resolve" class="nav-link" data-scroll-target="#ccbr_actions.util.path_resolve">path_resolve</a></li>
-  <li><a href="#ccbr_actions.util.precommit_run" id="toc-ccbr_actions.util.precommit_run" class="nav-link" data-scroll-target="#ccbr_actions.util.precommit_run">precommit_run</a></li>
-  <li><a href="#ccbr_actions.util.print_citation" id="toc-ccbr_actions.util.print_citation" class="nav-link" data-scroll-target="#ccbr_actions.util.print_citation">print_citation</a></li>
-  <li><a href="#ccbr_actions.util.repo_base" id="toc-ccbr_actions.util.repo_base" class="nav-link" data-scroll-target="#ccbr_actions.util.repo_base">repo_base</a></li>
+  <li><a href="#basic-example" id="toc-basic-example" class="nav-link" data-scroll-target="#basic-example">Basic example</a></li>
   </ul></li>
-  </ul></li>
+  <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">Inputs</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/reference/util.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/CCBR/actions/edit/main/actions/review-pre-commit-pr/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../package.html">Python package</a></li><li class="breadcrumb-item"><a href="../reference/index.html">API reference</a></li><li class="breadcrumb-item"><a href="../reference/util.html">util</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../gh-actions.html">GitHub Actions</a></li><li class="breadcrumb-item"><a href="../../actions.html">Actions</a></li><li class="breadcrumb-item"><a href="../../actions/review-pre-commit-pr/index.html">review-pre-commit-pr</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">review-pre-commit-pr</h1>
+<p class="subtitle lead">Review a pre-commit.ci autoupdate PR: approve and enable auto-merge when only rev: versions changed, otherwise request a human reviewer</p>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Kelly Sovacool </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
 
 
-<section id="ccbr_actions.util" class="level1">
-<h1>util</h1>
-<p><code>util</code></p>
-<p>Utility functions for the package</p>
-<section id="functions" class="level2">
-<h2 class="anchored" data-anchor-id="functions">Functions</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="#ccbr_actions.util.date_today">date_today</a></td>
-<td>Returns the current date in ISO8601-compliant format (YYYY-MM-DD).</td>
-</tr>
-<tr class="even">
-<td><a href="#ccbr_actions.util.path_resolve">path_resolve</a></td>
-<td>Resolves the given filepath to an absolute path.</td>
-</tr>
-<tr class="odd">
-<td><a href="#ccbr_actions.util.precommit_run">precommit_run</a></td>
-<td>Run <code>pre-commit run</code> with the specified arguments.</td>
-</tr>
-<tr class="even">
-<td><a href="#ccbr_actions.util.print_citation">print_citation</a></td>
-<td>Print the package citation in bibtex format and exit.</td>
-</tr>
-<tr class="odd">
-<td><a href="#ccbr_actions.util.repo_base">repo_base</a></td>
-<td>Get the absolute path to a file in the repository</td>
-</tr>
-</tbody>
-</table>
-<section id="ccbr_actions.util.date_today" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.util.date_today">date_today</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>util.date_today()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Returns the current date in ISO8601-compliant format (YYYY-MM-DD).</p>
-<section id="returns" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 77%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>str</td>
-<td></td>
-<td>The current date as a string in the format YYYY-MM-DD.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="ccbr_actions.util.path_resolve" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.util.path_resolve">path_resolve</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>util.path_resolve(filepath)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Resolves the given filepath to an absolute path.</p>
-<section id="parameters" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>filepath</td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
-<td>The path to be resolved.</td>
-<td><em>required</em></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-1" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td></td>
-<td>pathlib.Path: The resolved absolute path.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="ccbr_actions.util.precommit_run" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.util.precommit_run">precommit_run</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>util.precommit_run(args)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Run <code>pre-commit run</code> with the specified arguments.</p>
-<section id="parameters-1" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>args</td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
-<td>The arguments to pass to the pre-commit command.</td>
-<td><em>required</em></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-2" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 82%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td></td>
-<td>subprocess.CompletedProcess: The result of the shell command execution.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="ccbr_actions.util.print_citation" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.util.print_citation">print_citation</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>util.print_citation(context, param, value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Print the package citation in bibtex format and exit.</p>
-<section id="parameters-2" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>context</td>
-<td></td>
-<td>Click context object.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td>param</td>
-<td></td>
-<td>Click parameter metadata for the option callback.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="odd">
-<td>value</td>
-<td><a href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></td>
-<td>Whether the citation flag was provided.</td>
-<td><em>required</em></td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="ccbr_actions.util.repo_base" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.util.repo_base">repo_base</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>util.repo_base(<span class="op">*</span>paths)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Get the absolute path to a file in the repository</p>
-<section id="parameters-3" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>*paths</td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
-<td>Additional paths to join with the base path.</td>
-<td><code>()</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-3" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-3">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>path</td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
-<td>The absolute path to the file in the repository.</td>
-</tr>
-</tbody>
-</table>
+</header>
 
 
+<p><strong><code>review-pre-commit-pr</code></strong> - Review a pre-commit.ci autoupdate PR: approve and enable auto-merge when only rev: versions changed, otherwise request a human reviewer</p>
+<p>This action automates the review of pull requests opened by the <a href="https://pre-commit.ci">pre-commit.ci</a> bot with the title <code>[pre-commit.ci] pre-commit autoupdate</code>.</p>
+<p>The action verifies two conditions:</p>
+<ol type="1">
+<li><strong>Only <code>.pre-commit-config.yaml</code> was changed</strong> – no other files should be modified by a routine autoupdate.</li>
+<li><strong>The only changes are <code>rev:</code> version bumps</strong> – no repos are added or removed and no fields other than <code>rev:</code> are changed.</li>
+</ol>
+<p>When both conditions are satisfied the action:</p>
+<ul>
+<li>Approves the PR as the token’s actor (typically CCBR-bot).</li>
+<li>Enables squash auto-merge so the PR merges automatically once all required checks pass.</li>
+</ul>
+<p>When either condition is <strong>not</strong> satisfied the action:</p>
+<ul>
+<li>Submits a <code>REQUEST_CHANGES</code> review listing which conditions were not met.</li>
+<li>Requests a human reviewer, resolved in this order:
+<ol type="1">
+<li>the <code>reviewer</code> input, if provided;</li>
+<li>otherwise, the owner(s) of <code>.pre-commit-config.yaml</code> per the repo’s <code>CODEOWNERS</code> file (checked at the repo root, <code>.github/</code>, and <code>docs/</code>);</li>
+<li>otherwise, the most recent human (non-bot, non-Copilot) committer to <code>.pre-commit-config.yaml</code>.</li>
+</ol></li>
+</ul>
+<section id="usage" class="level2">
+<h2 class="anchored" data-anchor-id="usage">Usage</h2>
+<p>You should call this action from a workflow that is triggered on <code>pull_request</code> events. Generate a CCBR-bot token first (using <code>actions/create-github-app-token</code>) so that the approval and merge operations are performed as CCBR-bot.</p>
+<p>We recommended creating a branch protection rule to require that status checks must pass before PRs can be merged, and include the pre-commit check as one of the required checks. In your repo’s rulesets (<code>github.com/OWNER/REPO/settings/rules</code>), create a rule, check <code>[x] Require status checks to pass</code>, and add <code>pre-commit.ci - pr</code>. Consider also including other desired checks such as your build/test workflow, auto-format, etc.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png" class="img-fluid figure-img"></p>
+<figcaption>Branch protection rule</figcaption>
+</figure>
+</div>
+<section id="basic-example" class="level3">
+<h3 class="anchored" data-anchor-id="basic-example">Basic example</h3>
+<p><a href=".https://github.com/CCBR/actions/blob/main/examples/review-pre-commit-pr.yml">review-pre-commit-pr.yml</a></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> review-pre-commit-pr</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pull_request</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">types</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> opened</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">permissions</span><span class="kw">:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> write</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pull-requests</span><span class="kw">:</span><span class="at"> write</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">concurrency</span><span class="kw">:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">group</span><span class="kw">:</span><span class="at"> ${{ github.workflow }}-${{ github.ref }}</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">cancel-in-progress</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">review-pre-commit-pr</span><span class="kw">:</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container</span><span class="kw">:</span><span class="at"> nciccbr/ccbr_actions:latest</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">    # Only run for pre-commit.ci autoupdate PRs</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">    if</span><span class="kw">: </span><span class="ch">&gt;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>      github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate'</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      &amp;&amp; github.event.sender.type == 'Bot'</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Generate CCBR-bot token</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">id</span><span class="kw">:</span><span class="at"> generate-token</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/create-github-app-token@v2</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">app-id</span><span class="kw">:</span><span class="at"> ${{ vars.CCBR_BOT_APP_ID }}</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">private-key</span><span class="kw">:</span><span class="at"> ${{ secrets.CCBR_BOT_PRIVATE_KEY }}</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">owner</span><span class="kw">:</span><span class="at"> ${{ github.repository_owner }}</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/review-pre-commit-pr@latest</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ steps.generate-token.outputs.token }}</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">pr-number</span><span class="kw">:</span><span class="at"> ${{ github.event.pull_request.number }}</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">repo</span><span class="kw">:</span><span class="at"> ${{ github.repository }}</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">reviewer</span><span class="kw">:</span><span class="at"> CCBR/adminteam</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
-</section>
+<section id="inputs" class="level2">
+<h2 class="anchored" data-anchor-id="inputs">Inputs</h2>
+<ul>
+<li><code>github-token</code>: GitHub API token (e.g.&nbsp;a CCBR-bot token generated with actions/create-github-app-token). <strong>Required.</strong></li>
+<li><code>pr-number</code>: Pull request number to review. <strong>Required.</strong></li>
+<li><code>repo</code>: Repository full name (e.g.&nbsp;CCBR/actions). <strong>Required.</strong> Default: <code>${{ github.repository }}</code>.</li>
+<li><code>reviewer</code>: GitHub username to request as reviewer when the PR requires human review.</li>
+<li><code>ccbr-actions-version</code>: The version of CCBR/actions to install (branch, tag, or ‘latest’). <strong>Required.</strong> Default: <code>latest</code>.</li>
+<li><code>python-version</code>: Python version to use. <strong>Required.</strong> Default: <code>3.11</code>.</li>
+</ul>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -1318,13 +1178,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../reference/release.html" class="pagination-link" aria-label="release">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">release</span>
+      <a href="../../actions/add-issue-label-list/index.html" class="pagination-link" aria-label="add-issue-label-list">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">add-issue-label-list</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../reference/versions.html" class="pagination-link" aria-label="versions">
-        <span class="nav-page-text">versions</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../actions/install-r-pak/index.html" class="pagination-link" aria-label="Install R + pak">
+        <span class="nav-page-text">Install R + pak</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1336,7 +1196,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/actions/edit/main/reference/util.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CCBR/actions/edit/main/actions/review-pre-commit-pr/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CCBR/actions/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

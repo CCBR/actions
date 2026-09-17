@@ -1,22 +1,5 @@
 [
   {
-    "listing": "/actions.html",
-    "items": [
-      "/actions/changed-files/index.html",
-      "/actions/copy-ruleset/index.html",
-      "/actions/install-r-pak/index.html",
-      "/actions/add-issue-label-list/index.html",
-      "/actions/build-docker/index.html",
-      "/actions/draft-release/index.html",
-      "/actions/label-issue-repo-name/index.html",
-      "/actions/maintain-milestones/index.html",
-      "/actions/mkdocs-mike/index.html",
-      "/actions/post-release/index.html",
-      "/actions/sync-copilot-instructions/index.html",
-      "/actions/user-projects/index.html"
-    ]
-  },
-  {
     "listing": "/index.html",
     "items": [
       "/actions/changed-files/index.html",
@@ -29,6 +12,25 @@
       "/actions/maintain-milestones/index.html",
       "/actions/mkdocs-mike/index.html",
       "/actions/post-release/index.html",
+      "/actions/review-pre-commit-pr/index.html",
+      "/actions/sync-copilot-instructions/index.html",
+      "/actions/user-projects/index.html"
+    ]
+  },
+  {
+    "listing": "/actions.html",
+    "items": [
+      "/actions/changed-files/index.html",
+      "/actions/copy-ruleset/index.html",
+      "/actions/install-r-pak/index.html",
+      "/actions/add-issue-label-list/index.html",
+      "/actions/build-docker/index.html",
+      "/actions/draft-release/index.html",
+      "/actions/label-issue-repo-name/index.html",
+      "/actions/maintain-milestones/index.html",
+      "/actions/mkdocs-mike/index.html",
+      "/actions/post-release/index.html",
+      "/actions/review-pre-commit-pr/index.html",
       "/actions/sync-copilot-instructions/index.html",
       "/actions/user-projects/index.html"
     ]
