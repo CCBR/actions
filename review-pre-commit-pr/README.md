@@ -83,7 +83,7 @@ jobs:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ github.event.pull_request.number }}
           repo: ${{ github.repository }}
-          reviewer: ${{ github.repository_owner }}
+          reviewer: CCBR/adminteam
 ```
 
 ## Inputs
@@ -94,8 +94,7 @@ jobs:
 - `repo`: Repository full name (e.g. CCBR/actions). **Required.**
   Default: `${{ github.repository }}`.
 - `reviewer`: GitHub username to request as reviewer when the PR
-  requires human review. Optional — falls back to `CODEOWNERS` or the
-  most recent human committer to `.pre-commit-config.yaml` if omitted.
+  requires human review.
 - `ccbr-actions-version`: The version of CCBR/actions to install
   (branch, tag, or ‘latest’). **Required.** Default: `latest`.
 - `python-version`: Python version to use. **Required.** Default:
