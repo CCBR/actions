@@ -1,8 +1,8 @@
 # review-pre-commit-pr
 
 **`review-pre-commit-pr`** - Review a pre-commit.ci autoupdate PR:
-approve and attempt auto-merge when only rev: versions changed, otherwise
-request a human reviewer
+approve and attempt auto-merge when only rev: versions changed,
+otherwise request a human reviewer
 
 This action automates the review of pull requests opened by the
 [pre-commit.ci](https://pre-commit.ci) bot with the title
