@@ -37,9 +37,10 @@ Required input files:
 For R packages, the action uses `NEWS.md` (or `NEWS`) instead of
 `CHANGELOG.md`, and `DESCRIPTION` instead of `VERSION`.
 
-`CITATION.cff` is optional. If present, it is updated along with the release;
-if absent, the release proceeds without citation metadata. Missing required
-files produce an actionable error before release preparation starts.
+`CITATION.cff` is optional. If present, it is updated along with the
+release; if absent, the release proceeds without citation metadata.
+Missing required files produce an actionable error before release
+preparation starts.
 
 For a repository’s first release, set `version-tag` manually (for
 example `v0.1.0`), because conventional-commit version detection may not
