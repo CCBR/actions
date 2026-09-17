@@ -226,7 +226,6 @@ def prepare_draft_release(
     required_files = {
         "changelog": changelog_filepath,
         "version": version_filepath,
-        "citation": citation_filepath,
     }
     missing_required_files = [
         f"{name} ({filepath})"
