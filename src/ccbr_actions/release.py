@@ -587,8 +587,8 @@ def get_changelog_lines(
         raise ValueError(
             f"Version {latest_version_strict} does not match semantic versioning pattern"
         )
-    changelog_lines = list()
-    next_release_lines = list()
+    changelog_lines = []
+    next_release_lines = []
     for_next = True
     with open(changelog_filepath, "r") as infile:
         for line in infile:
