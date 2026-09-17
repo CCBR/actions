@@ -171,6 +171,19 @@ def test_is_pr_approved_blocks_current_changes_requested_by_other_reviewer():
     assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
 
 
+def test_is_pr_approved_falls_back_to_user_id_when_login_is_missing():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {"id": 42, "user": {"id": 7}, "state": "APPROVED"},
+            ]
+        }
+    )
+
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is True
+
+
 # ---------------------------------------------------------------------------
 # enable_auto_merge
 # ---------------------------------------------------------------------------

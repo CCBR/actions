@@ -397,6 +397,44 @@ def test_review_pre_commit_pr_keeps_approval_when_auto_merge_api_fails():
     assert "GraphQL errors" in comment_body
 
 
+def test_review_pre_commit_pr_requests_human_review_when_approval_fails(monkeypatch):
+    session = _make_review_session()
+
+    def _fail_approval(*args, **kwargs):
+        raise RuntimeError("approval is not allowed")
+
+    monkeypatch.setattr("ccbr_actions.pre_commit.approve_pr", _fail_approval)
+
+    result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
+
+    assert result is False
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    review_bodies = [c[2]["json"] for c in review_calls]
+    request_changes_body = next(
+        body["body"] for body in review_bodies if body.get("event") == "REQUEST_CHANGES"
+    )
+    assert "automatic approval could not be completed" in request_changes_body
+    assert any("requested_reviewers" in c[1] for c in session.calls if c[0] == "POST")
+
+
+def test_review_pre_commit_pr_warns_when_auto_merge_comment_fails(monkeypatch):
+    session = _make_review_session(
+        graphql_payload={"errors": [{"message": "auto-merge unavailable"}]}
+    )
+
+    def _fail_comment(*args, **kwargs):
+        raise RuntimeError("comment is not allowed")
+
+    monkeypatch.setattr("ccbr_actions.pre_commit.post_pr_comment", _fail_comment)
+
+    with pytest.warns(UserWarning, match="Could not post auto-merge failure comment"):
+        result = review_pre_commit_pr(
+            "CCBR/repo", 7, "erin", token="tok", session=session
+        )
+
+    assert result is True
+
+
 def test_review_pre_commit_pr_requests_human_review_when_title_or_sender_mismatch():
     session = _make_review_session(
         pr_node_payload={
