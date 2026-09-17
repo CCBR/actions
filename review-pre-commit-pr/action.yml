@@ -1,5 +1,5 @@
 name: review-pre-commit-pr
-description: "Review a pre-commit.ci autoupdate PR: approve and enable auto-merge when only rev: versions changed, otherwise request a human reviewer"
+description: "Review a pre-commit.ci autoupdate PR: approve and attempt auto-merge when only rev: versions changed, otherwise request a human reviewer"
 author: "Kelly Sovacool"
 
 inputs:
@@ -16,6 +16,10 @@ inputs:
   reviewer:
     description: "GitHub username to request as reviewer when the PR requires human review."
     required: false
+  force-review:
+    description: "Re-submit the review and reviewer request even when the PR already has an approval."
+    required: false
+    default: "false"
   ccbr-actions-version:
     description: "The version of CCBR/actions to install (branch, tag, or 'latest')."
     required: true
@@ -29,10 +33,12 @@ runs:
   using: "composite"
   steps:
     - uses: actions/setup-python@v6
+      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       with:
         python-version: "${{ inputs.python-version }}"
         cache: "pip"
     - name: Install ccbr_actions
+      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
     - name: Review pre-commit.ci PR
@@ -41,11 +47,13 @@ runs:
         import os
 
         from ccbr_actions.pre_commit import review_pre_commit_pr
-        review_pre_commit_pr(
+        result = review_pre_commit_pr(
           repo="${{ inputs.repo }}",
           pr_number="${{ inputs.pr-number }}",
           reviewer="${{ inputs.reviewer }}",
+          force_review="${{ inputs.force-review }}".lower() == "true",
           token=os.environ["GITHUB_TOKEN"],
         )
+        print(f"Action completed with automatic_approval={result}")
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}

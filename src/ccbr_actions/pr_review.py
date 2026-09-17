@@ -58,6 +58,64 @@ def approve_pr(repo, pr_number, token=None, session=None):
     return response
 
 
+def get_pr_reviews(repo, pr_number, token=None, session=None):
+    """
+    Return the list of reviews submitted on a pull request.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        list[dict]: Review objects from the GitHub pull request reviews API.
+    """
+    url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/reviews"
+    return github_api_get(url=url, token=token, session=session)
+
+
+def is_pr_approved(repo, pr_number, token=None, session=None):
+    """
+    Check whether a pull request currently has an APPROVED review.
+
+    The reviews API returns the review history, so an earlier APPROVED review
+    must not count after that reviewer submits a later review. The latest
+    review for each reviewer is treated as their current state. A current
+    REQUEST_CHANGES review takes precedence over approvals from other
+    reviewers.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if the current review state includes an APPROVED review
+        and no current reviewer has requested changes.
+    """
+    reviews = get_pr_reviews(repo, pr_number, token=token, session=session)
+    latest_reviews = {}
+    for review_index, review in enumerate(reviews):
+        reviewer = review.get("user", {}).get("login")
+        if reviewer is None:
+            reviewer = review.get("user", {}).get("id", review.get("id"))
+        review_key = (
+            review.get("submitted_at") or review.get("created_at") or "",
+            review_index,
+        )
+        previous = latest_reviews.get(reviewer)
+        if previous is None or review_key > previous[0]:
+            latest_reviews[reviewer] = (review_key, review)
+
+    current_states = [review[1].get("state") for review in latest_reviews.values()]
+    has_changes_requested = "CHANGES_REQUESTED" in current_states
+    has_approval = "APPROVED" in current_states
+    result = has_approval and not has_changes_requested
+    return result
+
+
 def request_changes(repo, pr_number, comment, token=None, session=None):
     """
     Submit a *REQUEST_CHANGES* review on a pull request.
@@ -169,12 +227,14 @@ def post_pr_comment(repo, pr_number, comment, token=None, session=None):
         requests.Response: Response from the GitHub issue comments API.
     """
     url = f"{GITHUB_API_URL}/repos/{repo}/issues/{pr_number}/comments"
-    return github_api_post(
+    response = github_api_post(
         url=url,
         token=token,
         session=session,
         json={"body": comment},
     )
+    response.raise_for_status()
+    return response
 
 
 def get_codeowners_content(repo, token=None, session=None):

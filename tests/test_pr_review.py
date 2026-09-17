@@ -4,6 +4,7 @@ Tests for ccbr_actions.pr_review module.
 
 import base64
 
+import pytest
 import requests as requests_lib
 
 from ccbr_actions.pr_review import (
@@ -14,6 +15,7 @@ from ccbr_actions.pr_review import (
     get_codeowners_content,
     get_last_human_committer,
     get_pr_files,
+    is_pr_approved,
     match_codeowners,
     post_pr_comment,
     request_changes,
@@ -108,6 +110,80 @@ def test_request_changes_posts_review_with_event_and_body():
     assert kwargs["json"]["body"] == "please review"
 
 
+def test_is_pr_approved_uses_latest_review_from_each_reviewer():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {"id": 1, "user": {"login": "ccbr-bot"}, "state": "APPROVED"},
+                {
+                    "id": 2,
+                    "user": {"login": "ccbr-bot"},
+                    "state": "CHANGES_REQUESTED",
+                },
+            ]
+        }
+    )
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
+
+
+def test_is_pr_approved_uses_review_timestamp_not_response_order():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "id": 2,
+                    "user": {"login": "ccbr-bot"},
+                    "state": "CHANGES_REQUESTED",
+                    "submitted_at": "2026-09-17T12:00:00Z",
+                },
+                {
+                    "id": 1,
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "submitted_at": "2026-09-17T11:00:00Z",
+                },
+            ]
+        }
+    )
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
+
+
+def test_is_pr_approved_blocks_current_changes_requested_by_other_reviewer():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "human-reviewer"},
+                    "state": "CHANGES_REQUESTED",
+                    "submitted_at": "2026-09-17T11:00:00Z",
+                },
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "submitted_at": "2026-09-17T12:00:00Z",
+                },
+            ]
+        }
+    )
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
+
+
+def test_is_pr_approved_falls_back_to_user_id_when_login_is_missing():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {"id": 42, "user": {"id": 7}, "state": "APPROVED"},
+            ]
+        }
+    )
+
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is True
+
+
 # ---------------------------------------------------------------------------
 # enable_auto_merge
 # ---------------------------------------------------------------------------
@@ -177,6 +253,12 @@ def test_post_pr_comment_posts_to_issue_comments_endpoint():
     assert method == "POST"
     assert url == "https://api.github.com/repos/CCBR/actions/issues/42/comments"
     assert kwargs["json"]["body"] == "hello world"
+
+
+def test_post_pr_comment_raises_for_api_failure():
+    session = MockSession(post_status=403)
+    with pytest.raises(requests_lib.exceptions.HTTPError, match="HTTP 403"):
+        post_pr_comment("CCBR/actions", 42, "hello world", token="tok", session=session)
 
 
 # ---------------------------------------------------------------------------

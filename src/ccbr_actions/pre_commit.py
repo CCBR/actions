@@ -14,6 +14,8 @@ from .pr_review import (
     determine_reviewer,
     enable_auto_merge,
     get_pr_files,
+    is_pr_approved,
+    post_pr_comment,
     request_changes,
     request_reviewer,
 )
@@ -130,6 +132,7 @@ def review_pre_commit_pr(
     reviewer=None,
     token=None,
     session=None,
+    force_review=False,
 ):
     """
     Evaluate and review a pre-commit.ci autoupdate pull request.
@@ -139,26 +142,41 @@ def review_pre_commit_pr(
     - **Condition 1** – only ``.pre-commit-config.yaml`` was changed.
     - **Condition 2** – the only changes are ``rev:`` version bumps.
 
-    When both conditions are met the function approves the PR, enables squash
-    auto-merge, and returns ``True``.  Otherwise it submits a *REQUEST_CHANGES*
-    review explaining why the PR needs manual review, requests a human
-    reviewer, and returns ``False``.  The reviewer is resolved via
+    When both conditions are met the function approves the PR, attempts to
+    enable squash auto-merge, and returns ``True``. If auto-merge cannot be
+    enabled, it leaves a separate comment with the GitHub API error. Otherwise
+    it submits a *REQUEST_CHANGES* review explaining why the PR needs manual
+    review, requests a human reviewer, and returns ``False``. The reviewer is resolved via
     [](`~ccbr_actions.pr_review.determine_reviewer`): *reviewer* if given,
     otherwise the repo's ``CODEOWNERS`` entry for the config file, otherwise
     the most recent human committer to the config file.
+
+    If the PR already has an APPROVED review, no new review is submitted and
+    the function returns ``True`` immediately unless *force_review* is true.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         pr_number (int | str): Pull request number.
         reviewer (str, optional): GitHub username or team to request when human
             review is required. If omitted, a reviewer is resolved automatically.
+        force_review (bool, optional): Re-submit the review and reviewer request
+            even when the PR already has an approval. Defaults to ``False``.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
 
     Returns:
-        bool: ``True`` if the PR was automatically approved, ``False`` if human
-        review was requested.
+        bool: ``True`` if the PR was already approved or was automatically
+        approved, ``False`` if human review was requested.
     """
+    print(f"Reviewing pre-commit.ci PR {repo}#{pr_number}")
+    # Skip PRs that are already approved so re-running (e.g. via workflow_dispatch)
+    # doesn't submit duplicate approvals or auto-merge calls.
+    if not force_review and is_pr_approved(
+        repo, pr_number, token=token, session=session
+    ):
+        print("Result: PR already has an APPROVED review; no action was taken")
+        return True
+
     pr_data = github_api_get(
         url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
         token=token,
@@ -171,6 +189,11 @@ def review_pre_commit_pr(
     )
 
     pr_files = get_pr_files(repo, pr_number, token=token, session=session)
+    filenames = [file_obj.get("filename", "<unknown>") for file_obj in pr_files]
+    print(f"PR title: {pr_data.get('title', '<missing>')!r}")
+    print(f"PR sender type: {pr_data.get('user', {}).get('type', '<missing>')!r}")
+    print(f"Changed files ({len(filenames)}): {', '.join(filenames) or '<none>'}")
+    print(f"Matches pre-commit.ci autoupdate: {is_autoupdate_pr}")
 
     only_config_changed = check_only_pre_commit_config_changed(pr_files)
     only_rev_bumps = False
@@ -184,17 +207,54 @@ def review_pre_commit_pr(
         only_rev_bumps = (
             isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
         )
+    print(f"Only {PRE_COMMIT_CONFIG_FILE} changed: {only_config_changed}")
+    print(f"Only rev bumps found: {only_rev_bumps}")
 
-    auto_approval_error = None
+    approval_error = None
     was_auto_approved = False
 
     if is_autoupdate_pr and only_config_changed and only_rev_bumps:
+        print("Policy result: eligible for automatic approval")
         try:
-            approve_pr(repo, pr_number, token=token, session=session)
-            enable_auto_merge(repo, pr_number, token=token, session=session)
+            response = approve_pr(repo, pr_number, token=token, session=session)
             was_auto_approved = True
+            print(f"Approval submitted successfully (HTTP {response.status_code})")
         except (KeyError, requests.exceptions.RequestException, RuntimeError) as exc:
-            auto_approval_error = exc
+            approval_error = exc
+            print(f"Approval failed: {exc}")
+
+        if was_auto_approved:
+            try:
+                enable_auto_merge(repo, pr_number, token=token, session=session)
+                print("Squash auto-merge enabled successfully")
+            except (
+                KeyError,
+                requests.exceptions.RequestException,
+                RuntimeError,
+            ) as exc:
+                reviewer_mention = f"@{reviewer} " if reviewer else ""
+                comment = (
+                    f"{reviewer_mention}CCBR-bot approved this pre-commit.ci "
+                    "autoupdate PR, but could not enable auto-merge because of "
+                    f"a GitHub API error: {exc}"
+                )
+                try:
+                    post_pr_comment(
+                        repo, pr_number, comment, token=token, session=session
+                    )
+                    print(
+                        "Posted a comment explaining that auto-merge could not be enabled"
+                    )
+                except (
+                    requests.exceptions.RequestException,
+                    RuntimeError,
+                ) as comment_exc:
+                    print(
+                        f"Could not post the auto-merge failure comment: {comment_exc}"
+                    )
+                    warnings.warn(
+                        f"Could not post auto-merge failure comment: {comment_exc}"
+                    )
 
     failed = []
     if not is_autoupdate_pr:
@@ -212,14 +272,16 @@ def review_pre_commit_pr(
             "the only changes in `.pre-commit-config.yaml` should be "
             "`rev:` version bumps, but other modifications were found"
         )
-    if auto_approval_error is not None:
+    if approval_error is not None:
         failed.append(
             "automatic approval could not be completed because of a GitHub API "
-            f"error: {auto_approval_error}"
+            f"error: {approval_error}"
         )
 
     if not was_auto_approved:
+        print("Policy result: automatic approval not performed")
         reasons = "\n".join(f"- {r}" for r in failed)
+        print(f"Reasons requiring human review: {reasons.replace(chr(10), '; ')}")
         resolved_reviewer = determine_reviewer(
             repo,
             reviewer=reviewer,
@@ -234,16 +296,30 @@ def review_pre_commit_pr(
             f"because the following conditions were not met:\n{reasons}"
         )
         try:
-            request_changes(repo, pr_number, comment, token=token, session=session)
+            response = request_changes(
+                repo, pr_number, comment, token=token, session=session
+            )
+            print(f"Submitted REQUEST_CHANGES review (HTTP {response.status_code})")
         except (requests.exceptions.RequestException, RuntimeError) as exc:
+            print(f"Could not submit REQUEST_CHANGES review: {exc}")
             warnings.warn(f"Could not submit request-changes review: {exc}")
         if resolved_reviewer:
             try:
-                request_reviewer(
+                response = request_reviewer(
                     repo, pr_number, resolved_reviewer, token=token, session=session
                 )
+                print(
+                    f"Requested reviewer {resolved_reviewer!r} "
+                    f"(HTTP {response.status_code})"
+                )
             except (requests.exceptions.RequestException, RuntimeError) as exc:
+                print(f"Could not request reviewer {resolved_reviewer!r}: {exc}")
                 warnings.warn(
                     f"Could not request reviewer {resolved_reviewer!r}: {exc}"
                 )
+        else:
+            print("No reviewer could be resolved")
+        print("Result: human review requested")
+    else:
+        print("Result: automatically approved")
     return was_auto_approved
