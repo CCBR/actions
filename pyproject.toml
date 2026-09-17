@@ -55,7 +55,8 @@ test = [
     "pytest-cov"
 ]
 docs = [
-    "quartodoc >= v0.7.6"
+    "quartodoc >= v0.7.6",
+    "jupyter"
 ]
 [project.scripts]
 ccbr_actions = "ccbr_actions.__main__:main"
