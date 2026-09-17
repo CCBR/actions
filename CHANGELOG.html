@@ -645,8 +645,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="actions-development-version" class="level2">
 <h2 class="anchored" data-anchor-id="actions-development-version">actions development version</h2>
 <ul>
-<li>New action: <code>review-pre-commit-pr</code> to automatically review pre-commit.ci autoupdate PRs and approve them when only <code>rev:</code> version bumps are present, or request a human reviewer otherwise. (#189, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 <li>Create <code>ccbr_actions</code> docker image and show how to use it in example workflows. (#190, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>New action: <code>review-pre-commit-pr</code> to automatically review pre-commit.ci autoupdate PRs and approve them when only <code>rev:</code> version bumps are present, or request a human reviewer otherwise. (#189, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)
+<ul>
+<li>Add a <code>workflow_dispatch</code> trigger to the <code>review-pre-commit-pr</code> example workflow to re-scan and review open pre-commit.ci autoupdate PRs on demand, and skip re-review of already-approved PRs. (#208, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+</ul></li>
 </ul>
 </section>
 <section id="actions-0.7.2" class="level2">
