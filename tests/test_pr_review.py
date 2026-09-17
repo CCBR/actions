@@ -127,6 +127,50 @@ def test_is_pr_approved_uses_latest_review_from_each_reviewer():
     assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
 
 
+def test_is_pr_approved_uses_review_timestamp_not_response_order():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "id": 2,
+                    "user": {"login": "ccbr-bot"},
+                    "state": "CHANGES_REQUESTED",
+                    "submitted_at": "2026-09-17T12:00:00Z",
+                },
+                {
+                    "id": 1,
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "submitted_at": "2026-09-17T11:00:00Z",
+                },
+            ]
+        }
+    )
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
+
+
+def test_is_pr_approved_blocks_current_changes_requested_by_other_reviewer():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "human-reviewer"},
+                    "state": "CHANGES_REQUESTED",
+                    "submitted_at": "2026-09-17T11:00:00Z",
+                },
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "submitted_at": "2026-09-17T12:00:00Z",
+                },
+            ]
+        }
+    )
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
+
+
 # ---------------------------------------------------------------------------
 # enable_auto_merge
 # ---------------------------------------------------------------------------

@@ -97,13 +97,19 @@ def is_pr_approved(repo, pr_number, token=None, session=None):
     """
     reviews = get_pr_reviews(repo, pr_number, token=token, session=session)
     latest_reviews = {}
-    for review in reviews:
+    for review_index, review in enumerate(reviews):
         reviewer = review.get("user", {}).get("login")
         if reviewer is None:
             reviewer = review.get("user", {}).get("id", review.get("id"))
-        latest_reviews[reviewer] = review
+        review_key = (
+            review.get("submitted_at") or review.get("created_at") or "",
+            review_index,
+        )
+        previous = latest_reviews.get(reviewer)
+        if previous is None or review_key > previous[0]:
+            latest_reviews[reviewer] = (review_key, review)
 
-    current_states = [review.get("state") for review in latest_reviews.values()]
+    current_states = [review[1].get("state") for review in latest_reviews.values()]
     has_changes_requested = "CHANGES_REQUESTED" in current_states
     has_approval = "APPROVED" in current_states
     result = has_approval and not has_changes_requested
