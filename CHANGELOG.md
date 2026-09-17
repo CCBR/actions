@@ -1,5 +1,6 @@
 ## actions development version
 
+- New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#189, @kelly-sovacool, @copilot)
 - Create `ccbr_actions` docker image and show how to use it in example workflows. (#190, @kelly-sovacool, @copilot)
 
 ## actions 0.7.2

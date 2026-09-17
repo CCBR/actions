@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from ccbr_actions.github import (
     copy_ruleset,
@@ -6,6 +7,7 @@ from ccbr_actions.github import (
     github_api_headers,
     github_api_post,
     github_api_request,
+    github_graphql_post,
     list_rulesets,
 )
 
@@ -20,7 +22,7 @@ class MockResponse:
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise RuntimeError(f"HTTP {self.status_code}")
+            raise requests.exceptions.HTTPError(f"HTTP {self.status_code}")
 
 
 class MockRequestSession:
@@ -66,6 +68,28 @@ def test_github_api_request_supports_request_interface():
     assert session.calls[0][0] == "GET"
 
 
+def test_github_api_request_defaults_to_requests_module_when_session_is_none(
+    monkeypatch,
+):
+    calls = []
+
+    def fake_request(method, url, headers=None, **kwargs):
+        calls.append((method, url, headers, kwargs))
+        return MockResponse({"ok": True})
+
+    monkeypatch.setattr(requests, "request", fake_request)
+
+    response = github_api_request(
+        method="GET",
+        url="https://api.github.com/repos/CCBR/actions",
+        token="abc",
+        session=None,
+    )
+
+    assert response.status_code == 200
+    assert calls[0][0] == "GET"
+
+
 def test_github_api_get_supports_method_only_interface():
     session = MockMethodSession()
 
@@ -89,6 +113,48 @@ def test_github_api_post_supports_method_only_interface():
 
     assert response.status_code == 201
     assert session.calls[0][0] == "POST"
+
+
+def test_github_graphql_post_returns_data_on_success():
+    class GraphQLSession:
+        def post(self, url, headers=None, **kwargs):
+            return MockResponse({"data": {"foo": "bar"}})
+
+    result = github_graphql_post(
+        query="{ viewer { login } }",
+        session=GraphQLSession(),
+    )
+
+    assert result == {"data": {"foo": "bar"}}
+
+
+def test_github_graphql_post_raises_on_graphql_errors():
+    class ErrorSession:
+        def post(self, url, headers=None, **kwargs):
+            return MockResponse({"errors": [{"message": "Not found"}]})
+
+    with pytest.raises(RuntimeError, match="GraphQL errors"):
+        github_graphql_post(
+            query="{ viewer { login } }",
+            session=ErrorSession(),
+        )
+
+
+def test_github_graphql_post_passes_variables():
+    captured = {}
+
+    class VarSession:
+        def post(self, url, headers=None, **kwargs):
+            captured.update(kwargs.get("json", {}))
+            return MockResponse({"data": {}})
+
+    github_graphql_post(
+        query="mutation { foo }",
+        variables={"id": "123"},
+        session=VarSession(),
+    )
+
+    assert captured["variables"] == {"id": "123"}
 
 
 # ---------------------------------------------------------------------------
