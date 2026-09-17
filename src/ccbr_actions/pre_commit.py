@@ -15,6 +15,7 @@ from .pr_review import (
     enable_auto_merge,
     get_pr_files,
     is_pr_approved,
+    post_pr_comment,
     request_changes,
     request_reviewer,
 )
@@ -140,10 +141,11 @@ def review_pre_commit_pr(
     - **Condition 1** – only ``.pre-commit-config.yaml`` was changed.
     - **Condition 2** – the only changes are ``rev:`` version bumps.
 
-    When both conditions are met the function approves the PR, enables squash
-    auto-merge, and returns ``True``.  Otherwise it submits a *REQUEST_CHANGES*
-    review explaining why the PR needs manual review, requests a human
-    reviewer, and returns ``False``.  The reviewer is resolved via
+    When both conditions are met the function approves the PR, attempts to
+    enable squash auto-merge, and returns ``True``. If auto-merge cannot be
+    enabled, it leaves a separate comment with the GitHub API error. Otherwise
+    it submits a *REQUEST_CHANGES* review explaining why the PR needs manual
+    review, requests a human reviewer, and returns ``False``. The reviewer is resolved via
     [](`~ccbr_actions.pr_review.determine_reviewer`): *reviewer* if given,
     otherwise the repo's ``CODEOWNERS`` entry for the config file, otherwise
     the most recent human committer to the config file.
@@ -194,16 +196,41 @@ def review_pre_commit_pr(
             isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
         )
 
-    auto_approval_error = None
+    approval_error = None
     was_auto_approved = False
 
     if is_autoupdate_pr and only_config_changed and only_rev_bumps:
         try:
             approve_pr(repo, pr_number, token=token, session=session)
-            enable_auto_merge(repo, pr_number, token=token, session=session)
             was_auto_approved = True
         except (KeyError, requests.exceptions.RequestException, RuntimeError) as exc:
-            auto_approval_error = exc
+            approval_error = exc
+
+        if was_auto_approved:
+            try:
+                enable_auto_merge(repo, pr_number, token=token, session=session)
+            except (
+                KeyError,
+                requests.exceptions.RequestException,
+                RuntimeError,
+            ) as exc:
+                reviewer_mention = f"@{reviewer} " if reviewer else ""
+                comment = (
+                    f"{reviewer_mention}CCBR-bot approved this pre-commit.ci "
+                    "autoupdate PR, but could not enable auto-merge because of "
+                    f"a GitHub API error: {exc}"
+                )
+                try:
+                    post_pr_comment(
+                        repo, pr_number, comment, token=token, session=session
+                    )
+                except (
+                    requests.exceptions.RequestException,
+                    RuntimeError,
+                ) as comment_exc:
+                    warnings.warn(
+                        f"Could not post auto-merge failure comment: {comment_exc}"
+                    )
 
     failed = []
     if not is_autoupdate_pr:
@@ -221,10 +248,10 @@ def review_pre_commit_pr(
             "the only changes in `.pre-commit-config.yaml` should be "
             "`rev:` version bumps, but other modifications were found"
         )
-    if auto_approval_error is not None:
+    if approval_error is not None:
         failed.append(
             "automatic approval could not be completed because of a GitHub API "
-            f"error: {auto_approval_error}"
+            f"error: {approval_error}"
         )
 
     if not was_auto_approved:

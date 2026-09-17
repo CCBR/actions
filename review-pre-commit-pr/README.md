@@ -1,7 +1,7 @@
 # review-pre-commit-pr
 
 **`review-pre-commit-pr`** - Review a pre-commit.ci autoupdate PR:
-approve and enable auto-merge when only rev: versions changed, otherwise
+approve and attempt auto-merge when only rev: versions changed, otherwise
 request a human reviewer
 
 This action automates the review of pull requests opened by the
@@ -18,8 +18,10 @@ The action verifies two conditions:
 When both conditions are satisfied the action:
 
 - Approves the PR as the token’s actor (typically CCBR-bot).
-- Enables squash auto-merge so the PR merges automatically once all
-  required checks pass.
+- Attempts to enable squash auto-merge so the PR merges automatically
+  once all required checks pass. If auto-merge is unavailable, the
+  approval remains and the action posts a comment containing the GitHub
+  API error.
 
 When either condition is **not** satisfied the action:
 
