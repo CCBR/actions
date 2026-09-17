@@ -35,24 +35,23 @@ class MockResponse:
 
 
 class MockSession:
-    """Records calls and returns pre-configured payloads keyed by URL."""
+    """Records calls and returns pre-configured payloads keyed by URL.
+
+    Only ``request`` is implemented: ``github_api_request`` always prefers a
+    session's ``request`` method over ``get``/``post`` when present, so those
+    would never be exercised.
+    """
 
     def __init__(self, payloads=None, post_status=200):
         self.payloads = payloads or {}
         self.post_status = post_status
         self.calls = []
 
-    def get(self, url, headers=None, **kwargs):
-        self.calls.append(("GET", url))
-        return MockResponse(self.payloads.get(url, {}))
-
-    def post(self, url, headers=None, **kwargs):
-        self.calls.append(("POST", url, kwargs))
-        return MockResponse(self.payloads.get(url, {"data": {}}), self.post_status)
-
     def request(self, method, url, headers=None, **kwargs):
         self.calls.append((method, url, kwargs))
-        return MockResponse(self.payloads.get(url, {}))
+        status = self.post_status if method == "POST" else 200
+        default = {"data": {}} if method == "POST" else {}
+        return MockResponse(self.payloads.get(url, default), status)
 
 
 # ---------------------------------------------------------------------------
@@ -317,6 +316,24 @@ def test_review_pre_commit_pr_warns_when_reviewer_request_fails(monkeypatch):
     assert result is False
 
 
+def test_review_pre_commit_pr_warns_when_request_changes_fails(monkeypatch):
+    """request-changes review error should emit a warning but not raise."""
+    session = _make_review_session(patch=DOWNGRADE_PATCH)
+
+    def _fail_request_changes(*args, **kwargs):
+        raise RuntimeError("not allowed to request changes")
+
+    monkeypatch.setattr(
+        "ccbr_actions.pre_commit.request_changes", _fail_request_changes
+    )
+
+    with pytest.warns(UserWarning, match="Could not submit request-changes review"):
+        result = review_pre_commit_pr(
+            "CCBR/repo", 7, "dave", token="tok", session=session
+        )
+    assert result is False
+
+
 def test_review_pre_commit_pr_falls_back_when_auto_merge_api_fails():
     session = _make_review_session(
         graphql_payload={
@@ -386,3 +403,25 @@ def test_review_pre_commit_pr_works_without_reviewer_input():
     ]
     assert reviewer_calls
     assert reviewer_calls[0][2]["json"]["reviewers"] == ["a-human"]
+
+
+def test_review_pre_commit_pr_skips_reviewer_request_when_none_resolved():
+    """No explicit reviewer, no CODEOWNERS match, and no human committer found."""
+    session = _make_review_session(
+        patch=INVALID_PATCH_NON_REV_CHANGE,
+        commits_payload=[{"author": {"login": "dependabot[bot]"}}],
+    )
+    result = review_pre_commit_pr("CCBR/repo", 7, token="tok", session=session)
+    assert result is False
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    request_changes_calls = [
+        c[2]["json"]
+        for c in review_calls
+        if c[2]["json"].get("event") == "REQUEST_CHANGES"
+    ]
+    assert request_changes_calls
+    assert request_changes_calls[0]["body"].startswith("This pre-commit.ci")
+    reviewer_calls = [
+        c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
+    ]
+    assert not reviewer_calls

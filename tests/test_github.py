@@ -68,6 +68,28 @@ def test_github_api_request_supports_request_interface():
     assert session.calls[0][0] == "GET"
 
 
+def test_github_api_request_defaults_to_requests_module_when_session_is_none(
+    monkeypatch,
+):
+    calls = []
+
+    def fake_request(method, url, headers=None, **kwargs):
+        calls.append((method, url, headers, kwargs))
+        return MockResponse({"ok": True})
+
+    monkeypatch.setattr(requests, "request", fake_request)
+
+    response = github_api_request(
+        method="GET",
+        url="https://api.github.com/repos/CCBR/actions",
+        token="abc",
+        session=None,
+    )
+
+    assert response.status_code == 200
+    assert calls[0][0] == "GET"
+
+
 def test_github_api_get_supports_method_only_interface():
     session = MockMethodSession()
 

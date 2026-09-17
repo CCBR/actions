@@ -7,6 +7,7 @@ import base64
 import requests as requests_lib
 
 from ccbr_actions.pr_review import (
+    _codeowners_pattern_matches,
     approve_pr,
     determine_reviewer,
     enable_auto_merge,
@@ -40,24 +41,23 @@ class MockResponse:
 
 
 class MockSession:
-    """Records calls and returns pre-configured payloads keyed by URL."""
+    """Records calls and returns pre-configured payloads keyed by URL.
+
+    Only ``request`` is implemented: ``github_api_request`` always prefers a
+    session's ``request`` method over ``get``/``post`` when present, so those
+    would never be exercised.
+    """
 
     def __init__(self, payloads=None, post_status=200):
         self.payloads = payloads or {}
         self.post_status = post_status
         self.calls = []
 
-    def get(self, url, headers=None, **kwargs):
-        self.calls.append(("GET", url))
-        return MockResponse(self.payloads.get(url, {}))
-
-    def post(self, url, headers=None, **kwargs):
-        self.calls.append(("POST", url, kwargs))
-        return MockResponse(self.payloads.get(url, {"data": {}}), self.post_status)
-
     def request(self, method, url, headers=None, **kwargs):
         self.calls.append((method, url, kwargs))
-        return MockResponse(self.payloads.get(url, {}))
+        status = self.post_status if method == "POST" else 200
+        default = {"data": {}} if method == "POST" else {}
+        return MockResponse(self.payloads.get(url, default), status)
 
 
 # ---------------------------------------------------------------------------
@@ -204,6 +204,44 @@ def test_get_codeowners_content_returns_none_when_missing():
     assert result is None
 
 
+class _ErrorThenSuccessSession(MockSession):
+    """Raises a RequestException for the first CODEOWNERS path, succeeds after."""
+
+    def request(self, method, url, headers=None, **kwargs):
+        self.calls.append((method, url, kwargs))
+        if url.endswith("/contents/CODEOWNERS"):
+            raise requests_lib.exceptions.ConnectionError("boom")
+        return MockResponse(self.payloads.get(url, {}))
+
+
+def test_get_codeowners_content_skips_paths_that_error():
+    content = "* @default-owner\n"
+    encoded = base64.b64encode(content.encode("utf-8")).decode("ascii")
+    session = _ErrorThenSuccessSession(
+        {
+            "https://api.github.com/repos/CCBR/actions/contents/.github/CODEOWNERS": {
+                "content": encoded
+            },
+        }
+    )
+    result = get_codeowners_content("CCBR/actions", token="tok", session=session)
+    assert result == content
+
+
+# ---------------------------------------------------------------------------
+# _codeowners_pattern_matches
+# ---------------------------------------------------------------------------
+
+
+def test_codeowners_pattern_matches_returns_false_for_bare_slash():
+    assert _codeowners_pattern_matches("/", ".pre-commit-config.yaml") is False
+
+
+def test_codeowners_pattern_matches_prefix_match_for_directory_pattern():
+    assert _codeowners_pattern_matches("docs/", "docs/CODEOWNERS") is True
+    assert _codeowners_pattern_matches("docs/", "README.md") is False
+
+
 # ---------------------------------------------------------------------------
 # match_codeowners
 # ---------------------------------------------------------------------------
@@ -222,6 +260,16 @@ def test_match_codeowners_filters_email_owners():
 def test_match_codeowners_returns_empty_for_no_match():
     content = "docs/* @docs-owner\n"
     assert match_codeowners(content, ".pre-commit-config.yaml") == []
+
+
+def test_match_codeowners_skips_blank_and_comment_lines():
+    content = "\n# a comment\n.pre-commit-config.yaml @an-owner\n"
+    assert match_codeowners(content, ".pre-commit-config.yaml") == ["an-owner"]
+
+
+def test_match_codeowners_skips_lines_without_owners():
+    content = ".pre-commit-config.yaml\n.pre-commit-config.yaml @an-owner\n"
+    assert match_codeowners(content, ".pre-commit-config.yaml") == ["an-owner"]
 
 
 # ---------------------------------------------------------------------------
@@ -250,6 +298,22 @@ def test_get_last_human_committer_returns_none_when_all_bots():
     session = MockSession(
         {"https://api.github.com/repos/CCBR/actions/commits": commits}
     )
+    result = get_last_human_committer(
+        "CCBR/actions", ".pre-commit-config.yaml", token="tok", session=session
+    )
+    assert result is None
+
+
+class _RaisingSession(MockSession):
+    """Always raises a RequestException on GET."""
+
+    def request(self, method, url, headers=None, **kwargs):
+        self.calls.append((method, url, kwargs))
+        raise requests_lib.exceptions.ConnectionError("boom")
+
+
+def test_get_last_human_committer_returns_none_on_request_error():
+    session = _RaisingSession({})
     result = get_last_human_committer(
         "CCBR/actions", ".pre-commit-config.yaml", token="tok", session=session
     )
@@ -299,3 +363,28 @@ def test_determine_reviewer_falls_back_to_last_committer():
         "CCBR/actions", path=".pre-commit-config.yaml", token="tok", session=session
     )
     assert result == "a-human"
+
+
+def test_determine_reviewer_falls_back_to_committer_when_codeowners_no_match():
+    content = "docs/* @docs-owner\n"
+    encoded = base64.b64encode(content.encode("utf-8")).decode("ascii")
+    commits = [{"author": {"login": "a-human"}}]
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/actions/contents/CODEOWNERS": {
+                "content": encoded
+            },
+            "https://api.github.com/repos/CCBR/actions/commits": commits,
+        }
+    )
+    result = determine_reviewer(
+        "CCBR/actions", path=".pre-commit-config.yaml", token="tok", session=session
+    )
+    assert result == "a-human"
+
+
+def test_determine_reviewer_returns_none_without_reviewer_or_path():
+    session = MockSession({})
+    result = determine_reviewer("CCBR/actions", token="tok", session=session)
+    assert result is None
+    assert session.calls == []
