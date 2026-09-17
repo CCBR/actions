@@ -14,6 +14,7 @@ from .pr_review import (
     determine_reviewer,
     enable_auto_merge,
     get_pr_files,
+    is_pr_approved,
     request_changes,
     request_reviewer,
 )
@@ -147,6 +148,9 @@ def review_pre_commit_pr(
     otherwise the repo's ``CODEOWNERS`` entry for the config file, otherwise
     the most recent human committer to the config file.
 
+    If the PR already has an APPROVED review, no new review is submitted and
+    the function returns ``True`` immediately.
+
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         pr_number (int | str): Pull request number.
@@ -156,9 +160,14 @@ def review_pre_commit_pr(
         session: Requests-compatible session object for dependency injection.
 
     Returns:
-        bool: ``True`` if the PR was automatically approved, ``False`` if human
-        review was requested.
+        bool: ``True`` if the PR was already approved or was automatically
+        approved, ``False`` if human review was requested.
     """
+    # Skip PRs that are already approved so re-running (e.g. via workflow_dispatch)
+    # doesn't submit duplicate approvals or auto-merge calls.
+    if is_pr_approved(repo, pr_number, token=token, session=session):
+        return True
+
     pr_data = github_api_get(
         url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
         token=token,

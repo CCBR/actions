@@ -217,6 +217,7 @@ def _make_review_session(
     graphql_payload=None,
     codeowners_payload=None,
     commits_payload=None,
+    existing_reviews=None,
 ):
     """Build a MockSession suitable for review_pre_commit_pr tests."""
     if patch is None:
@@ -250,7 +251,7 @@ def _make_review_session(
         pr_url: pr_files,
         pr_node_url: pr_node_payload,
         graphql_url: graphql_payload,
-        reviews_url: {"id": 1},
+        reviews_url: existing_reviews if existing_reviews is not None else [],
         reviewers_url: {},
         commits_url: commits_payload if commits_payload is not None else [],
     }
@@ -273,6 +274,14 @@ def test_review_pre_commit_pr_approves_when_conditions_met():
         c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
     ]
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
+
+
+def test_review_pre_commit_pr_skips_when_already_approved():
+    session = _make_review_session(existing_reviews=[{"state": "APPROVED"}])
+    result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
+    assert result is True
+    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert not posted_urls
 
 
 def test_review_pre_commit_pr_requests_human_review_when_extra_file():

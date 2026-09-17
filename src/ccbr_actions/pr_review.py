@@ -58,6 +58,40 @@ def approve_pr(repo, pr_number, token=None, session=None):
     return response
 
 
+def get_pr_reviews(repo, pr_number, token=None, session=None):
+    """
+    Return the list of reviews submitted on a pull request.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        list[dict]: Review objects from the GitHub pull request reviews API.
+    """
+    url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/reviews"
+    return github_api_get(url=url, token=token, session=session)
+
+
+def is_pr_approved(repo, pr_number, token=None, session=None):
+    """
+    Check whether a pull request already has an outstanding APPROVED review.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if any review on the PR currently has state ``APPROVED``.
+    """
+    reviews = get_pr_reviews(repo, pr_number, token=token, session=session)
+    return any(review.get("state") == "APPROVED" for review in reviews)
+
+
 def request_changes(repo, pr_number, comment, token=None, session=None):
     """
     Submit a *REQUEST_CHANGES* review on a pull request.
