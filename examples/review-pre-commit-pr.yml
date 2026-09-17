@@ -6,6 +6,12 @@ on:
       - opened
   # Manually re-scan open PRs for any that meet the pre-commit.ci autoupdate criteria
   workflow_dispatch:
+    inputs:
+      force-review:
+        description: Re-submit reviews for PRs that already have an approval
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -72,3 +78,4 @@ jobs:
           pr-number: ${{ matrix.pr-number }}
           repo: ${{ github.repository }}
           reviewer: CCBR/adminteam
+          force-review: ${{ inputs.force-review || false }}

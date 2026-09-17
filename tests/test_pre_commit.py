@@ -286,6 +286,18 @@ def test_review_pre_commit_pr_skips_when_current_review_is_approved():
     assert not posted_urls
 
 
+def test_review_pre_commit_pr_reviews_again_when_force_review_is_enabled():
+    session = _make_review_session(
+        existing_reviews=[{"user": {"login": "ccbr-bot"}, "state": "APPROVED"}]
+    )
+    result = review_pre_commit_pr(
+        "CCBR/repo", 7, "alice", force_review=True, token="tok", session=session
+    )
+    assert result is True
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    assert any(c[2]["json"].get("event") == "APPROVE" for c in review_calls)
+
+
 def test_review_pre_commit_pr_does_not_skip_superseded_approval():
     session = _make_review_session(
         existing_reviews=[

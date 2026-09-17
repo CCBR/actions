@@ -132,6 +132,7 @@ def review_pre_commit_pr(
     reviewer=None,
     token=None,
     session=None,
+    force_review=False,
 ):
     """
     Evaluate and review a pre-commit.ci autoupdate pull request.
@@ -151,13 +152,15 @@ def review_pre_commit_pr(
     the most recent human committer to the config file.
 
     If the PR already has an APPROVED review, no new review is submitted and
-    the function returns ``True`` immediately.
+    the function returns ``True`` immediately unless *force_review* is true.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         pr_number (int | str): Pull request number.
         reviewer (str, optional): GitHub username or team to request when human
             review is required. If omitted, a reviewer is resolved automatically.
+        force_review (bool, optional): Re-submit the review and reviewer request
+            even when the PR already has an approval. Defaults to ``False``.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
 
@@ -168,7 +171,9 @@ def review_pre_commit_pr(
     print(f"Reviewing pre-commit.ci PR {repo}#{pr_number}")
     # Skip PRs that are already approved so re-running (e.g. via workflow_dispatch)
     # doesn't submit duplicate approvals or auto-merge calls.
-    if is_pr_approved(repo, pr_number, token=token, session=session):
+    if not force_review and is_pr_approved(
+        repo, pr_number, token=token, session=session
+    ):
         print("Result: PR already has an APPROVED review; no action was taken")
         return True
 

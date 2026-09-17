@@ -42,6 +42,9 @@ When either condition is **not** satisfied the action:
   3. otherwise, the most recent human (non-bot, non-Copilot) committer to
      `.pre-commit-config.yaml`.
 
+Set `force-review` to `true` to re-submit the review and reviewer request even
+when the PR already has an approval. It defaults to `false`.
+
 ## Usage
 
 You should call this action from a workflow that is triggered on

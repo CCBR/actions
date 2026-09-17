@@ -16,6 +16,10 @@ inputs:
   reviewer:
     description: "GitHub username to request as reviewer when the PR requires human review."
     required: false
+  force-review:
+    description: "Re-submit the review and reviewer request even when the PR already has an approval."
+    required: false
+    default: "false"
   ccbr-actions-version:
     description: "The version of CCBR/actions to install (branch, tag, or 'latest')."
     required: true
@@ -47,6 +51,7 @@ runs:
           repo="${{ inputs.repo }}",
           pr_number="${{ inputs.pr-number }}",
           reviewer="${{ inputs.reviewer }}",
+          force_review="${{ inputs.force-review }}".lower() == "true",
           token=os.environ["GITHUB_TOKEN"],
         )
         print(f"Action completed with automatic_approval={result}")

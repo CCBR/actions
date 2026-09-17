@@ -35,6 +35,10 @@ When either condition is **not** satisfied the action:
   3.  otherwise, the most recent human (non-bot, non-Copilot) committer
       to `.pre-commit-config.yaml`.
 
+Set `force-review` to `true` to re-submit the review and reviewer
+request even when the PR already has an approval. It defaults to
+`false`.
+
 ## Usage
 
 You should call this action from a workflow that is triggered on
@@ -71,6 +75,12 @@ on:
       - opened
   # Manually re-scan open PRs for any that meet the pre-commit.ci autoupdate criteria
   workflow_dispatch:
+    inputs:
+      force-review:
+        description: Re-submit reviews for PRs that already have an approval
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -137,6 +147,7 @@ jobs:
           pr-number: ${{ matrix.pr-number }}
           repo: ${{ github.repository }}
           reviewer: CCBR/adminteam
+          force-review: ${{ inputs.force-review || false }}
 ```
 
 ## Inputs
@@ -148,6 +159,8 @@ jobs:
   Default: `${{ github.repository }}`.
 - `reviewer`: GitHub username to request as reviewer when the PR
   requires human review.
+- `force-review`: Re-submit the review and reviewer request even when
+  the PR already has an approval. Default: `false`.
 - `ccbr-actions-version`: The version of CCBR/actions to install
   (branch, tag, or ‘latest’). **Required.** Default: `latest`.
 - `python-version`: Python version to use. **Required.** Default:
