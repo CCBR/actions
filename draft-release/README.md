@@ -27,13 +27,19 @@ you’re ready.
 
 ## Usage
 
-Input files:
+Required input files:
 
 - `CHANGELOG.md` - a changelog or news file with entries in reverse
   chronological order. The newest entry should contain a header with the
   phrase “development version”.
 - `VERSION` - a single-source version file.
-- `CITATION.cff` - a citation file.
+
+For R packages, the action uses `NEWS.md` (or `NEWS`) instead of
+`CHANGELOG.md`, and `DESCRIPTION` instead of `VERSION`.
+
+`CITATION.cff` is optional. If present, it is updated along with the release;
+if absent, the release proceeds without citation metadata. Missing required
+files produce an actionable error before release preparation starts.
 
 For a repository’s first release, set `version-tag` manually (for
 example `v0.1.0`), because conventional-commit version detection may not

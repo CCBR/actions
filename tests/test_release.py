@@ -81,7 +81,7 @@ def test_prepare_draft_release_missing_required_file(github_output_file, data_di
             changelog_filepath=str(data_dir_rel / "example_changelog.md"),
             dev_header="development version",
             release_notes_filepath=str(data_dir_rel / "latest-release.md"),
-            version_filepath=str(data_dir_rel / "VERSION"),
+            version_filepath=str(data_dir_rel / "missing-VERSION"),
             citation_filepath="not/a/file.cff",
             release_branch="release-draft",
             pr_ref_name="PR_BRANCH_NAME",
@@ -89,7 +89,58 @@ def test_prepare_draft_release_missing_required_file(github_output_file, data_di
             debug=True,
         )
     assert "Missing required release file(s)" in str(exc_info.value)
-    assert "citation" in str(exc_info.value)
+    assert "version" in str(exc_info.value)
+
+
+def test_prepare_draft_release_missing_changelog(github_output_file, data_dir_rel):
+    with pytest.raises(FileNotFoundError) as exc_info:
+        prepare_draft_release(
+            next_version_manual="v1.0.0",
+            next_version_convco="v1.0.0",
+            current_version="v0.9.10",
+            gh_event_name="push",
+            changelog_filepath=str(data_dir_rel / "missing-CHANGELOG.md"),
+            release_notes_filepath=str(data_dir_rel / "latest-release.md"),
+            version_filepath=str(data_dir_rel / "VERSION"),
+            citation_filepath="not/a/file.cff",
+            debug=True,
+        )
+
+    assert "Missing required release file(s)" in str(exc_info.value)
+    assert "changelog" in str(exc_info.value)
+
+
+def test_prepare_draft_release_without_optional_citation(github_output_file, tmp_path):
+    repo_dir = tmp_path / "repo"
+    repo_dir.mkdir()
+    (repo_dir / "CHANGELOG.md").write_text("## actions development version\n\nnotes\n")
+    (repo_dir / "VERSION").write_text("0.9.10\n")
+    (repo_dir / "latest-release.md").write_text("")
+    original_cwd = os.getcwd()
+    os.chdir(repo_dir)
+    shell_run("git init > /dev/null 2>&1")
+    shell_run(
+        "git -c user.name=ci -c user.email=ci@example.com commit --allow-empty -m 'initial commit' > /dev/null 2>&1"
+    )
+    try:
+        output = exec_in_context(
+            prepare_draft_release,
+            next_version_manual="v1.0.0",
+            next_version_convco="v1.0.0",
+            current_version="v0.9.10",
+            gh_event_name="push",
+            changelog_filepath="CHANGELOG.md",
+            release_notes_filepath="latest-release.md",
+            version_filepath="VERSION",
+            citation_filepath="CITATION.cff",
+            repo="CCBR/actions",
+            debug=True,
+        )
+    finally:
+        os.chdir(original_cwd)
+
+    assert "gh release create v1.0.0" in output
+    assert "CITATION.cff" not in output
 
 
 def test_create_release_draft(data_dir_rel):
@@ -146,6 +197,17 @@ def test_get_changelog_lines_first_release(data_dir_rel):
     assert new_changelog[0] == "## actions 0.2.0\n"
     assert release_notes[:3] == ["\n", "development version notes go here\n", "\n"]
     assert "## actions 0.1.0\n" in release_notes
+
+
+def test_get_changelog_lines_first_release_includes_history(data_dir_rel):
+    _changelog_lines, release_notes = get_changelog_lines(
+        "",
+        "0.2.0",
+        changelog_filepath=str(data_dir_rel / "example_changelog.md"),
+    )
+
+    assert "## actions 0.1.0\n" in release_notes
+    assert "This is the first release of `ccbr_actions`! 🎉\n" in release_notes
 
 
 def test_get_changelog_lines_sinclair(data_dir_rel):
