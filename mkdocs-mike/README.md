@@ -84,7 +84,7 @@ steps:
 - `github-token`: GitHub Actions token (e.g. { github.token }).
   **Required.**
 - `ccbr-actions-version`: The version of ccbr_actions to install.
-  **Required.** Default: `main`.
+  **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.11`.
 - `docs-branch`: The branch to deploy the docs website to. **Required.**

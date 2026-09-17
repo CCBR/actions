@@ -5,6 +5,12 @@
 This action is designed to build Docker containers according to the
 format used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
 
+> \[!WARNING\] Do **not** run this action via
+> `jobs.<job_id>.container: nciccbr/ccbr_actions:...`. This action
+> builds/pushes Docker images, which would require Docker-in-Docker
+> (mounting the host’s Docker socket into the container) – an
+> ill-advised pattern. Run this action on a normal runner instead.
+
 This action:
 
 - Resolves an effective push mode: pushing is enabled only when ‘push’
@@ -73,7 +79,7 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
 - `force_build`: Force docker image build even when the Docker Hub tag
   is up-to-date. **Required.** Default: `false`.
 - `ccbr-actions-version`: The version of ccbr_actions to use.
-  **Required.** Default: `main`.
+  **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.11`.
 - `github-actor`: Username of GitHub actor for the git commit when the

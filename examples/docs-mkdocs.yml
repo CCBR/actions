@@ -27,6 +27,9 @@ concurrency:
 jobs:
   mkdocs:
     runs-on: ubuntu-latest
+    # optional: run in the ccbr_actions image (built for each release tag) to skip
+    # installing python/ccbr_actions/mkdocs/mike -- omit `container` to install them via pip instead
+    container: nciccbr/ccbr_actions:latest
     steps:
       - uses: actions/checkout@v7
         with:

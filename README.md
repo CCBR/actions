@@ -4,6 +4,7 @@
 
 GitHub Actions for CCBR repos
 
+[![docker](https://img.shields.io/docker/v/nciccbr/ccbr_actions?logo=docker&label=docker&color=blue.png)](https://hub.docker.com/r/nciccbr/ccbr_actions)
 [![build](https://github.com/CCBR/actions/actions/workflows/build-python.yml/badge.svg)](https://github.com/CCBR/actions/actions/workflows/build-python.yml)
 [![docs](https://github.com/CCBR/actions/actions/workflows/docs-quartodoc.yml/badge.svg)](https://CCBR.github.io/actions)
 [![codecov](https://codecov.io/gh/CCBR/actions/graph/badge.svg?token=yCtBbX4tap)](https://codecov.io/gh/CCBR/actions)
@@ -39,6 +40,7 @@ them for your needs.
 - [label-issues-repo-name](examples/label-issues-repo-name.yml)
 - [maintain-milestones](examples/maintain-milestones.yml)
 - [post-release](examples/post-release.yml)
+- [review-pre-commit-pr](examples/review-pre-commit-pr.yml)
 - [sync-copilot-instructions](examples/sync-copilot-instructions.yml)
 - [techdev-project](examples/techdev-project.yml)
 - [trigger-docker-dispatch](examples/trigger-docker-dispatch.yml)
@@ -69,6 +71,9 @@ Custom actions used in our github workflows.
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [review-pre-commit-pr](review-pre-commit-pr) - Review a pre-commit.ci
+  autoupdate PR: approve and enable auto-merge when only rev: versions
+  changed, otherwise request a human reviewer
 - [sync-copilot-instructions](sync-copilot-instructions) - Sync Copilot
   instructions from a source repository to a target repository and open
   a PR
@@ -100,6 +105,15 @@ Or install it from a specific version or branch with:
 
 ```bash
 pip install git+https://github.com/CCBR/actions@v0.7
+```
+
+Or use the provided [docker
+image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general):
+
+```sh
+podman pull docker://nciccbr/ccbr_actions@latest
+podman run docker://nciccbr/ccbr_actions@latest \
+  ccbr_actions --version
 ```
 
 ### Command line interface
@@ -197,7 +211,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.7.1). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.7.2). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
@@ -206,7 +220,7 @@ Please cite this software if you use it in a publication:
 @misc{YourReferenceHere,
 author = {Sovacool, Kelly and Koparde, Vishal},
 doi = {10.5281/zenodo.13761059},
-month = {6},
+month = {9},
 title = {CCBR actions: GitHub Actions for CCBR repos},
 url = {https://ccbr.github.io/actions/},
 year = {2026}

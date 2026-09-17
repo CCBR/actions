@@ -28,7 +28,7 @@ repos:
   #     - id: panache-lint
   # Python formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.1
+    rev: v0.16.7
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -41,7 +41,7 @@ repos:
         additional_dependencies:
           - prettier@3.4.0
   - repo: https://github.com/CCBR/Tools
-    rev: v0.7
+    rev: v0.7.1
     hooks:
       - id: detect-absolute-paths
         exclude: |
@@ -51,7 +51,8 @@ repos:
               .*.diff|
               .*action.yml|
               examples/.*|
-              docs/_extensions/.*
+              docs/_extensions/.*|
+              Dockerfile
           )$
   - repo: https://github.com/citation-file-format/cffconvert
     rev: 054bda51dbe278b3e86f27c890e3f3ac877d616c

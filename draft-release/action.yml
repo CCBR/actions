@@ -53,17 +53,20 @@ runs:
       run: |
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
-    - uses: actions/setup-python@v7
+    - name: Set up Python
+      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
+      uses: actions/setup-python@v7
       with:
         python-version: "${{ inputs.python-version }}"
         cache: "pip"
     - uses: r-lib/actions/setup-r@v2
-      if: ${{ hashFiles(inputs.description-filepath) != '' }}
+      if: ${{ hashFiles(inputs.description-filepath) != '' && env.CCBR_ACTIONS_DOCKER != 'true' }}
     - uses: r-lib/actions/setup-r-dependencies@v2
-      if: ${{ hashFiles(inputs.description-filepath) != '' }}
+      if: ${{ hashFiles(inputs.description-filepath) != '' && env.CCBR_ACTIONS_DOCKER != 'true' }}
       with:
         extra-packages: any::cffr
-    - name: Install
+    - name: Install ccbr_actions
+      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
 
