@@ -43,11 +43,12 @@ runs:
         import os
 
         from ccbr_actions.pre_commit import review_pre_commit_pr
-        review_pre_commit_pr(
+        result = review_pre_commit_pr(
           repo="${{ inputs.repo }}",
           pr_number="${{ inputs.pr-number }}",
           reviewer="${{ inputs.reviewer }}",
           token=os.environ["GITHUB_TOKEN"],
         )
+        print(f"Action completed with automatic_approval={result}")
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}

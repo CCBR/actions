@@ -4,6 +4,7 @@ Tests for ccbr_actions.pr_review module.
 
 import base64
 
+import pytest
 import requests as requests_lib
 
 from ccbr_actions.pr_review import (
@@ -177,6 +178,12 @@ def test_post_pr_comment_posts_to_issue_comments_endpoint():
     assert method == "POST"
     assert url == "https://api.github.com/repos/CCBR/actions/issues/42/comments"
     assert kwargs["json"]["body"] == "hello world"
+
+
+def test_post_pr_comment_raises_for_api_failure():
+    session = MockSession(post_status=403)
+    with pytest.raises(requests_lib.exceptions.HTTPError, match="HTTP 403"):
+        post_pr_comment("CCBR/actions", 42, "hello world", token="tok", session=session)
 
 
 # ---------------------------------------------------------------------------

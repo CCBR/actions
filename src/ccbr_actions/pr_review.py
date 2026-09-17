@@ -203,12 +203,14 @@ def post_pr_comment(repo, pr_number, comment, token=None, session=None):
         requests.Response: Response from the GitHub issue comments API.
     """
     url = f"{GITHUB_API_URL}/repos/{repo}/issues/{pr_number}/comments"
-    return github_api_post(
+    response = github_api_post(
         url=url,
         token=token,
         session=session,
         json={"body": comment},
     )
+    response.raise_for_status()
+    return response
 
 
 def get_codeowners_content(repo, token=None, session=None):
