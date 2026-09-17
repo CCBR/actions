@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - opened
+      - review_requested
   # Manually re-scan open PRs for any that meet the pre-commit.ci autoupdate criteria
   workflow_dispatch:
     inputs:
@@ -46,11 +47,18 @@ jobs:
     needs: [find-prs]
     runs-on: ubuntu-latest
     container: nciccbr/ccbr_actions:latest
-    # Only run for pre-commit.ci autoupdate PRs, whether from the pull_request event or a manual re-scan
+    # Only run for pre-commit.ci autoupdate PRs or when ccbr-bot[bot] is requested as a reviewer
     if: >
       always() &&
       (
-        (github.event_name == 'pull_request' && github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate' && github.event.sender.type == 'Bot')
+        (
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate' &&
+          (
+            (github.event.action == 'opened' && github.event.sender.type == 'Bot') ||
+            (github.event.action == 'review_requested' && github.event.requested_reviewer.login == 'ccbr-bot[bot]')
+          )
+        )
         || (github.event_name == 'workflow_dispatch' && needs.find-prs.outputs.pr-numbers != '[]')
       )
     strategy:
@@ -78,4 +86,4 @@ jobs:
           pr-number: ${{ matrix.pr-number }}
           repo: ${{ github.repository }}
           reviewer: CCBR/adminteam
-          force-review: ${{ inputs.force-review || false }}
+          force-review: ${{ github.event.action == 'review_requested' || inputs.force-review || false }}
