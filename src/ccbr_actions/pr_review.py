@@ -77,7 +77,13 @@ def get_pr_reviews(repo, pr_number, token=None, session=None):
 
 def is_pr_approved(repo, pr_number, token=None, session=None):
     """
-    Check whether a pull request already has an outstanding APPROVED review.
+    Check whether a pull request currently has an APPROVED review.
+
+    The reviews API returns the review history, so an earlier APPROVED review
+    must not count after that reviewer submits a later review. The latest
+    review for each reviewer is treated as their current state. A current
+    REQUEST_CHANGES review takes precedence over approvals from other
+    reviewers.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
@@ -86,10 +92,22 @@ def is_pr_approved(repo, pr_number, token=None, session=None):
         session: Requests-compatible session object for dependency injection.
 
     Returns:
-        bool: ``True`` if any review on the PR currently has state ``APPROVED``.
+        bool: ``True`` if the current review state includes an APPROVED review
+        and no current reviewer has requested changes.
     """
     reviews = get_pr_reviews(repo, pr_number, token=token, session=session)
-    return any(review.get("state") == "APPROVED" for review in reviews)
+    latest_reviews = {}
+    for review in reviews:
+        reviewer = review.get("user", {}).get("login")
+        if reviewer is None:
+            reviewer = review.get("user", {}).get("id", review.get("id"))
+        latest_reviews[reviewer] = review
+
+    current_states = [review.get("state") for review in latest_reviews.values()]
+    has_changes_requested = "CHANGES_REQUESTED" in current_states
+    has_approval = "APPROVED" in current_states
+    result = has_approval and not has_changes_requested
+    return result
 
 
 def request_changes(repo, pr_number, comment, token=None, session=None):

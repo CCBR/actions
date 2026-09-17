@@ -276,12 +276,27 @@ def test_review_pre_commit_pr_approves_when_conditions_met():
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
 
 
-def test_review_pre_commit_pr_skips_when_already_approved():
-    session = _make_review_session(existing_reviews=[{"state": "APPROVED"}])
+def test_review_pre_commit_pr_skips_when_current_review_is_approved():
+    session = _make_review_session(
+        existing_reviews=[{"user": {"login": "ccbr-bot"}, "state": "APPROVED"}]
+    )
     result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
     assert result is True
     posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
     assert not posted_urls
+
+
+def test_review_pre_commit_pr_does_not_skip_superseded_approval():
+    session = _make_review_session(
+        existing_reviews=[
+            {"user": {"login": "ccbr-bot"}, "state": "APPROVED"},
+            {"user": {"login": "ccbr-bot"}, "state": "CHANGES_REQUESTED"},
+        ]
+    )
+    result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
+    assert result is True
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    assert any(c[2]["json"].get("event") == "APPROVE" for c in review_calls)
 
 
 def test_review_pre_commit_pr_requests_human_review_when_extra_file():

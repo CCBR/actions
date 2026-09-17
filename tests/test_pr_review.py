@@ -15,6 +15,7 @@ from ccbr_actions.pr_review import (
     get_codeowners_content,
     get_last_human_committer,
     get_pr_files,
+    is_pr_approved,
     match_codeowners,
     post_pr_comment,
     request_changes,
@@ -107,6 +108,23 @@ def test_request_changes_posts_review_with_event_and_body():
     assert url == "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
     assert kwargs["json"]["event"] == "REQUEST_CHANGES"
     assert kwargs["json"]["body"] == "please review"
+
+
+def test_is_pr_approved_uses_latest_review_from_each_reviewer():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {"id": 1, "user": {"login": "ccbr-bot"}, "state": "APPROVED"},
+                {
+                    "id": 2,
+                    "user": {"login": "ccbr-bot"},
+                    "state": "CHANGES_REQUESTED",
+                },
+            ]
+        }
+    )
+    assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is False
 
 
 # ---------------------------------------------------------------------------
