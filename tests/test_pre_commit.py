@@ -217,6 +217,7 @@ def _make_review_session(
     graphql_payload=None,
     codeowners_payload=None,
     commits_payload=None,
+    existing_reviews=None,
 ):
     """Build a MockSession suitable for review_pre_commit_pr tests."""
     if patch is None:
@@ -250,7 +251,7 @@ def _make_review_session(
         pr_url: pr_files,
         pr_node_url: pr_node_payload,
         graphql_url: graphql_payload,
-        reviews_url: {"id": 1},
+        reviews_url: existing_reviews if existing_reviews is not None else [],
         reviewers_url: {},
         commits_url: commits_payload if commits_payload is not None else [],
     }
@@ -273,6 +274,41 @@ def test_review_pre_commit_pr_approves_when_conditions_met():
         c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
     ]
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
+
+
+def test_review_pre_commit_pr_skips_when_current_review_is_approved():
+    session = _make_review_session(
+        existing_reviews=[{"user": {"login": "ccbr-bot"}, "state": "APPROVED"}]
+    )
+    result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
+    assert result is True
+    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert not posted_urls
+
+
+def test_review_pre_commit_pr_reviews_again_when_force_review_is_enabled():
+    session = _make_review_session(
+        existing_reviews=[{"user": {"login": "ccbr-bot"}, "state": "APPROVED"}]
+    )
+    result = review_pre_commit_pr(
+        "CCBR/repo", 7, "alice", force_review=True, token="tok", session=session
+    )
+    assert result is True
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    assert any(c[2]["json"].get("event") == "APPROVE" for c in review_calls)
+
+
+def test_review_pre_commit_pr_does_not_skip_superseded_approval():
+    session = _make_review_session(
+        existing_reviews=[
+            {"user": {"login": "ccbr-bot"}, "state": "APPROVED"},
+            {"user": {"login": "ccbr-bot"}, "state": "CHANGES_REQUESTED"},
+        ]
+    )
+    result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
+    assert result is True
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    assert any(c[2]["json"].get("event") == "APPROVE" for c in review_calls)
 
 
 def test_review_pre_commit_pr_requests_human_review_when_extra_file():
@@ -334,7 +370,7 @@ def test_review_pre_commit_pr_warns_when_request_changes_fails(monkeypatch):
     assert result is False
 
 
-def test_review_pre_commit_pr_falls_back_when_auto_merge_api_fails():
+def test_review_pre_commit_pr_keeps_approval_when_auto_merge_api_fails():
     session = _make_review_session(
         graphql_payload={
             "errors": [{"message": "Resource not accessible by integration"}]
@@ -343,19 +379,60 @@ def test_review_pre_commit_pr_falls_back_when_auto_merge_api_fails():
 
     result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
 
-    assert result is False
+    assert result is True
     review_request_calls = [
         c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
     ]
-    assert review_request_calls
+    assert not review_request_calls
     review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
-    request_changes_calls = [
-        c for c in review_calls if c[2]["json"].get("event") == "REQUEST_CHANGES"
+    review_bodies = [c[2]["json"] for c in review_calls]
+    assert any(body.get("event") == "APPROVE" for body in review_bodies)
+    assert not any(body.get("event") == "REQUEST_CHANGES" for body in review_bodies)
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
     ]
-    assert request_changes_calls
-    comment_body = request_changes_calls[0][2]["json"]["body"]
+    assert comment_calls
+    comment_body = comment_calls[0][2]["json"]["body"]
     assert "@erin" in comment_body
     assert "GraphQL errors" in comment_body
+
+
+def test_review_pre_commit_pr_requests_human_review_when_approval_fails(monkeypatch):
+    session = _make_review_session()
+
+    def _fail_approval(*args, **kwargs):
+        raise RuntimeError("approval is not allowed")
+
+    monkeypatch.setattr("ccbr_actions.pre_commit.approve_pr", _fail_approval)
+
+    result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
+
+    assert result is False
+    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
+    review_bodies = [c[2]["json"] for c in review_calls]
+    request_changes_body = next(
+        body["body"] for body in review_bodies if body.get("event") == "REQUEST_CHANGES"
+    )
+    assert "automatic approval could not be completed" in request_changes_body
+    assert any("requested_reviewers" in c[1] for c in session.calls if c[0] == "POST")
+
+
+def test_review_pre_commit_pr_warns_when_auto_merge_comment_fails(monkeypatch):
+    session = _make_review_session(
+        graphql_payload={"errors": [{"message": "auto-merge unavailable"}]}
+    )
+
+    def _fail_comment(*args, **kwargs):
+        raise RuntimeError("comment is not allowed")
+
+    monkeypatch.setattr("ccbr_actions.pre_commit.post_pr_comment", _fail_comment)
+
+    with pytest.warns(UserWarning, match="Could not post auto-merge failure comment"):
+        result = review_pre_commit_pr(
+            "CCBR/repo", 7, "erin", token="tok", session=session
+        )
+
+    assert result is True
 
 
 def test_review_pre_commit_pr_requests_human_review_when_title_or_sender_mismatch():

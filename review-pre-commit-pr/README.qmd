@@ -28,8 +28,9 @@ The action verifies two conditions:
 When both conditions are satisfied the action:
 
 - Approves the PR as the token's actor (typically CCBR-bot).
-- Enables squash auto-merge so the PR merges automatically once all
-  required checks pass.
+- Attempts to enable squash auto-merge so the PR merges automatically once all
+  required checks pass. If auto-merge is unavailable, the approval remains and
+  the action posts a comment containing the GitHub API error.
 
 When either condition is **not** satisfied the action:
 
@@ -41,12 +42,19 @@ When either condition is **not** satisfied the action:
   3. otherwise, the most recent human (non-bot, non-Copilot) committer to
      `.pre-commit-config.yaml`.
 
+Set `force-review` to `true` to re-submit the review and reviewer request even
+when the PR already has an approval. It defaults to `false`.
+
 ## Usage
 
 You should call this action from a workflow that is triggered on
 `pull_request` events.  Generate a CCBR-bot token first (using
 `actions/create-github-app-token`) so that the approval and merge
-operations are performed as CCBR-bot.
+operations are performed as CCBR-bot.  The workflow and GitHub App token
+must allow `contents: write`, `pull-requests: write`, and `issues: write`.
+The `contents` permission is required to enable auto-merge; `issues` is used
+for comments when auto-merge cannot be enabled.  The GitHub App installation
+must have these repository permissions as well.
 
 We recommended creating a branch protection rule to require that status
 checks must pass before PRs can be merged, and include the pre-commit check as
