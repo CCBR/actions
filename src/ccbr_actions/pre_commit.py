@@ -278,6 +278,17 @@ def review_pre_commit_pr(
         bool: ``True`` if the PR was automatically approved, ``False`` if human
         review was requested.
     """
+    pr_data = github_api_get(
+        url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
+        token=token,
+        session=session,
+    )
+    # Re-verify the PR is actually a pre-commit.ci autoupdate PR rather than relying
+    # solely on the calling workflow's `if:` gate.
+    is_autoupdate_pr = is_pre_commit_autoupdate_pr(
+        pr_data.get("title", ""), pr_data.get("user", {}).get("type", "")
+    )
+
     pr_files = get_pr_files(repo, pr_number, token=token, session=session)
 
     only_config_changed = check_only_pre_commit_config_changed(pr_files)
@@ -296,7 +307,7 @@ def review_pre_commit_pr(
     auto_approval_error = None
     was_auto_approved = False
 
-    if only_config_changed and only_rev_bumps:
+    if is_autoupdate_pr and only_config_changed and only_rev_bumps:
         try:
             approve_pr(repo, pr_number, token=token, session=session)
             enable_auto_merge(repo, pr_number, token=token, session=session)
@@ -305,6 +316,11 @@ def review_pre_commit_pr(
             auto_approval_error = exc
 
     failed = []
+    if not is_autoupdate_pr:
+        failed.append(
+            "the PR title/sender do not match the expected pre-commit.ci "
+            "autoupdate bot pattern"
+        )
     if not only_config_changed:
         failed.append(
             "only `.pre-commit-config.yaml` should be changed, "

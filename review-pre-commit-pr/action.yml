@@ -38,12 +38,14 @@ runs:
     - name: Review pre-commit.ci PR
       shell: python {0}
       run: |
+        import os
+
         from ccbr_actions.pre_commit import review_pre_commit_pr
         review_pre_commit_pr(
           repo="${{ inputs.repo }}",
           pr_number="${{ inputs.pr-number }}",
           reviewer="${{ inputs.reviewer }}",
-          token="${{ inputs.github-token }}",
+          token=os.environ["GITHUB_TOKEN"],
         )
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}

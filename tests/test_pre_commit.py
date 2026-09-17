@@ -312,7 +312,11 @@ def _make_review_session(
     if patch is None:
         patch = VALID_PATCH
     if pr_node_payload is None:
-        pr_node_payload = {"node_id": "PR_NODE_7"}
+        pr_node_payload = {
+            "node_id": "PR_NODE_7",
+            "title": PRE_COMMIT_CI_TITLE,
+            "user": {"type": "Bot"},
+        }
     if graphql_payload is None:
         graphql_payload = {
             "data": {
@@ -407,3 +411,22 @@ def test_review_pre_commit_pr_falls_back_when_auto_merge_api_fails():
     comment_body = comment_calls[0][2]["json"]["body"]
     assert "@erin" in comment_body
     assert "GraphQL errors" in comment_body
+
+
+def test_review_pre_commit_pr_requests_human_review_when_title_or_sender_mismatch():
+    session = _make_review_session(
+        pr_node_payload={
+            "node_id": "PR_NODE_7",
+            "title": "chore: bump deps",
+            "user": {"type": "User"},
+        }
+    )
+    result = review_pre_commit_pr("CCBR/repo", 7, "frank", token="tok", session=session)
+    assert result is False
+    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert not any("reviews" in u for u in posted_urls)
+    comment_calls = [c for c in session.calls if c[0] == "POST" and "comments" in c[1]]
+    assert comment_calls
+    comment_body = comment_calls[0][2]["json"]["body"]
+    assert "@frank" in comment_body
+    assert "autoupdate bot pattern" in comment_body
