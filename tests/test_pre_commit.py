@@ -389,7 +389,7 @@ def test_review_pre_commit_pr_keeps_approval_when_auto_merge_api_fails():
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
     assert not any(body.get("event") == "REQUEST_CHANGES" for body in review_bodies)
     comment_calls = [
-        c for c in session.calls if c[0] == "POST" and "/issues/7/comments" in c[1]
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
     ]
     assert comment_calls
     comment_body = comment_calls[0][2]["json"]["body"]
