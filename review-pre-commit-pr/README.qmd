@@ -48,8 +48,10 @@ You should call this action from a workflow that is triggered on
 `pull_request` events.  Generate a CCBR-bot token first (using
 `actions/create-github-app-token`) so that the approval and merge
 operations are performed as CCBR-bot.  The workflow and GitHub App token
-must allow `pull-requests: write` and `issues: write`; the latter is used
-for comments when auto-merge cannot be enabled.
+must allow `contents: write`, `pull-requests: write`, and `issues: write`.
+The `contents` permission is required to enable auto-merge; `issues` is used
+for comments when auto-merge cannot be enabled.  The GitHub App installation
+must have these repository permissions as well.
 
 We recommended creating a branch protection rule to require that status
 checks must pass before PRs can be merged, and include the pre-commit check as
