@@ -132,6 +132,8 @@ def test_enable_auto_merge_calls_rest_then_graphql():
     methods = [c[0] for c in session.calls]
     assert "GET" in methods
     assert "POST" in methods
+    graphql_call = next(c for c in session.calls if c[0] == "POST")
+    assert graphql_call[2]["json"]["variables"]["mergeMethod"] == "SQUASH"
 
 
 # ---------------------------------------------------------------------------
@@ -230,6 +232,7 @@ def test_match_codeowners_returns_empty_for_no_match():
 def test_get_last_human_committer_skips_bots_and_copilot():
     commits = [
         {"author": {"login": "copilot-swe-agent[bot]"}},
+        {"author": {"login": "pre-commit-ci[bot]"}},
         {"author": {"login": "dependabot[bot]"}},
         {"author": {"login": "a-human"}},
     ]
