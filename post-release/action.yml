@@ -13,7 +13,7 @@ inputs:
   python-version:
     description: "The version of Python to install."
     required: true
-    default: "3.11"
+    default: "3.14"
   pr-branch:
     description: "Branch to use for the post-release chores, from where a PR will be opened. Recommended to use 'release/{TAG_NAME}'."
     default: "release/${{ github.ref_name }}"
@@ -50,9 +50,9 @@ runs:
   steps:
     - name: git config
       shell: bash
-      # default cwd is wrong in container jobs (actions/runner#2058); working-directory is remapped correctly
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
         git config --global --add --bool push.autoSetupRemote true
@@ -82,9 +82,12 @@ runs:
     - name: Bump changelog & version, open PR
       shell: python {0}
       id: post-release
-      working-directory: ${{ github.workspace }}
       run: |
+        import os
+
         from ccbr_actions.release import post_release_cleanup
+
+        os.chdir(os.environ["GITHUB_WORKSPACE"])
         post_release_cleanup(
           changelog_filepath="${{ inputs.changelog-filepath }}",
           repo="${{ github.event.repository.name }}",
