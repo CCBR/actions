@@ -70,7 +70,9 @@ runs:
     # alongside its action.yml, and this fixture is the single entry point
     # build-python.yml calls (once on the host runner, once in the container).
     - uses: ./changed-files/test
-    - uses: ./build-docker/test
+    # build-docker is not supported inside container jobs; it needs a host runner with Docker.
+    - if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
+      uses: ./build-docker/test
     - uses: ./install-r-pak/test
     - uses: ./draft-release/test
     - uses: ./post-release/test

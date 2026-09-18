@@ -10,6 +10,7 @@
 - Fix the `draft-release` example workflow docs (`python-verson` typo, Python 3.14, `actions/checkout@v7`) and rename `examples/R-CMD-check.yaml` to `.yml` so it appears in the published examples docs. (#215, @kelly-sovacool)
 - Set up testing infrastructure for github actions: (#216, @kelly-sovacool, @copilot)
   - host/container integration coverage, dry-run support for release actions, actionlint validation, and contract tests for example workflows.
+- Fix `build-docker`: the `push_success` output now reports `false` when pushing is disabled. (#216, @kelly-sovacool, @copilot)
 
 ## actions 0.7.2
 

@@ -70,7 +70,7 @@ inputs:
 outputs:
   push_success:
     description: "Whether Docker succeeded for this run"
-    value: ${{ steps.resolve_push.outputs.push_enabled && steps.build_and_push.outcome == 'success' }}
+    value: ${{ steps.resolve_push.outputs.push_enabled == 'true' && steps.build_and_push.outcome == 'success' }}
 
 runs:
   using: "composite"
