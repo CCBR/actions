@@ -1,0 +1,123 @@
+name: Integration tests
+description: Verify runner/workspace behavior and exercise each testable composite action
+
+inputs:
+  expect-container:
+    description: "Whether this job is expected to run in the ccbr_actions container ('true' or 'false')."
+    required: true
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve workspace from Bash
+      shell: bash
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        test -f .github/actions/integration-tests/action.yml
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
+    - name: Resolve workspace from Python
+      shell: python {0}
+      run: |
+        import os
+        import subprocess
+        from pathlib import Path
+
+        workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+        os.chdir(workspace)
+        if not (workspace / ".github/actions/integration-tests/action.yml").is_file():
+            raise RuntimeError(f"Workspace fixture not found in {workspace}")
+        repository_root = Path(
+            subprocess.run(
+                ["git", "rev-parse", "--show-toplevel"],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+        ).resolve()
+        if repository_root != workspace:
+            raise RuntimeError(
+                f"Repository root {repository_root} does not match {workspace}"
+            )
+    - name: Write runner command files
+      id: runner-files
+      shell: bash
+      run: |
+        if [[ "${CCBR_ACTIONS_DOCKER:-false}" == "true" ]]; then
+          test "$(id -u)" -eq 0
+        fi
+
+        bin_dir="$RUNNER_TEMP/ccbr-actions-test-bin"
+        mkdir -p "$bin_dir"
+        cat > "$bin_dir/ccbr-actions-test-command" <<'EOF'
+        #!/bin/sh
+        printf '%s\n' command-file-ok
+        EOF
+        chmod +x "$bin_dir/ccbr-actions-test-command"
+
+        echo "CCBR_ACTIONS_TEST_ENV=command-file-ok" >> "$GITHUB_ENV"
+        echo "result=command-file-ok" >> "$GITHUB_OUTPUT"
+        echo "$bin_dir" >> "$GITHUB_PATH"
+        echo "### Runner command files are writable" >> "$GITHUB_STEP_SUMMARY"
+        echo "command-file-ok" > "$GITHUB_WORKSPACE/.ccbr-actions-write-test"
+    - name: Verify runner command files
+      shell: bash
+      env:
+        CCBR_ACTIONS_TEST_OUTPUT: ${{ steps.runner-files.outputs.result }}
+      run: |
+        test "$CCBR_ACTIONS_TEST_ENV" = "command-file-ok"
+        test "$CCBR_ACTIONS_TEST_OUTPUT" = "command-file-ok"
+        test "$(ccbr-actions-test-command)" = "command-file-ok"
+        test "$(cat "$GITHUB_WORKSPACE/.ccbr-actions-write-test")" = "command-file-ok"
+        rm "$GITHUB_WORKSPACE/.ccbr-actions-write-test"
+    - name: Detect ccbr_actions container
+      id: detect-container
+      shell: bash
+      # env vars baked into the container image are not visible to the `env` context in `if:` expressions
+      run: echo "in-container=${CCBR_ACTIONS_DOCKER:-false}" >> "$GITHUB_OUTPUT"
+    - name: Verify container detection
+      shell: bash
+      env:
+        EXPECTED: ${{ inputs.expect-container }}
+        DETECTED: ${{ steps.detect-container.outputs.in-container }}
+      run: |
+        if [ "$DETECTED" != "$EXPECTED" ]; then
+          echo "Expected in-container=$EXPECTED but detected $DETECTED" >&2
+          exit 1
+        fi
+    - name: Verify skipped-in-container step
+      id: host-only
+      if: ${{ steps.detect-container.outputs.in-container != 'true' }}
+      shell: bash
+      run: echo "ran=true" >> "$GITHUB_OUTPUT"
+    - name: Verify skipped-in-container step outcome
+      shell: bash
+      env:
+        EXPECTED: ${{ inputs.expect-container }}
+        HOST_ONLY_RAN: ${{ steps.host-only.outputs.ran || 'false' }}
+      run: |
+        if [ "$EXPECTED" = "true" ] && [ "$HOST_ONLY_RAN" != "false" ]; then
+          echo "Host-only step should have been skipped in the container" >&2
+          exit 1
+        fi
+        if [ "$EXPECTED" != "true" ] && [ "$HOST_ONLY_RAN" != "true" ]; then
+          echo "Host-only step should have run on the host runner" >&2
+          exit 1
+        fi
+
+    # Per-action integration tests. Each action defines its own test/action.yml
+    # alongside its action.yml, and this fixture is the single entry point
+    # build-python.yml calls (once on the host runner, once in the container).
+    - uses: ./changed-files/test
+    # build-docker is not supported inside container jobs; it needs a host runner with Docker.
+    - if: ${{ steps.detect-container.outputs.in-container != 'true' }}
+      uses: ./build-docker/test
+    # install-r-pak provisions R on a host runner via r-lib/actions, which requires sudo;
+    # container jobs run as root without sudo and already have R in the image.
+    - if: ${{ steps.detect-container.outputs.in-container != 'true' }}
+      uses: ./install-r-pak/test
+    - uses: ./draft-release/test
+    - uses: ./post-release/test
+    - uses: ./maintain-milestones/test
+    - uses: ./mkdocs-mike/test

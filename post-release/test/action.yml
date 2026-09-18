@@ -1,0 +1,11 @@
+name: post-release integration test
+description: Verify the post-release action runs in dry-run mode without creating branches, commits, or pull requests
+
+runs:
+  using: composite
+  steps:
+    - uses: ./post-release
+      with:
+        github-token: ${{ github.token }}
+        ccbr-actions-version: main
+        dry-run: true

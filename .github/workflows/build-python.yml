@@ -53,24 +53,36 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
+          flags: python
 
   test-actions-host:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/test-fixtures/actions
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/integration-tests
+        with:
+          expect-container: "false"
 
   test-actions-container:
     runs-on: ubuntu-latest
     container: nciccbr/ccbr_actions:latest@sha256:1f4e65a53499f7a44a01f66f4ea72657c55bae8ccd56384b113b2e959a32c947
     steps:
       - uses: actions/checkout@v7
-      - uses: ./.github/test-fixtures/actions
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/integration-tests
+        with:
+          expect-container: "true"
 
   build-status:
     # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871
     runs-on: ubuntu-latest
-    needs: [build, test-actions-host, test-actions-container]
+    needs:
+      - build
+      - test-actions-host
+      - test-actions-container
     if: always()
     steps:
       - name: Successful build

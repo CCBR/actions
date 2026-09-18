@@ -15,7 +15,7 @@ jobs:
     # optional: run in the ccbr_actions image to skip installing python/ccbr_actions via pip
     container: nciccbr/ccbr_actions:latest
     steps:
-      - uses: CCBR/actions/changed-files@latest
+      - uses: CCBR/actions/changed-files@v0.7.2
         id: changed-files
         with:
           # Default mode; shown explicitly for clarity.
@@ -29,7 +29,7 @@ jobs:
   filter-by-pattern:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/changed-files@latest
+      - uses: CCBR/actions/changed-files@v0.7.2
         id: changed-files
         with:
           # Full event range mode.
@@ -46,7 +46,7 @@ jobs:
   docs-only:
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/changed-files@latest
+      - uses: CCBR/actions/changed-files@v0.7.2
         id: changed-files
         with:
           # Latest-commit mode is useful for incremental PR checks.

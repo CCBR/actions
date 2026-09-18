@@ -35,13 +35,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: CCBR/actions/install-r-pak@latest
+      - uses: CCBR/actions/install-r-pak@v0.7.2
         with:
           versions-file: .github/package-versions.txt
           extra-packages: local::.
           needs: dev
           r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
@@ -52,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: CCBR/actions/install-r-pak@latest
+      - uses: CCBR/actions/install-r-pak@v0.7.2
         with:
           versions-file: .github/package-versions.txt
           needs: dev

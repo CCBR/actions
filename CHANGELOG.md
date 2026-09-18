@@ -1,5 +1,7 @@
 ## actions development version
 
+- New `dry-run` input for `mkdocs-mike` to print the `mike deploy` command instead of deploying the docs website. (#216, @kelly-sovacool)
+- Fix container detection in `draft-release`, `post-release`, `changed-files`, `mkdocs-mike`, and `review-pre-commit-pr`: the `CCBR_ACTIONS_DOCKER` variable baked into the `ccbr_actions` image is not visible to the `env` context, so Python/R setup steps (including `cache: pip`, which fails in container jobs) were still running inside the container. Detection now happens in a shell step whose output gates the setup steps. (#216, @kelly-sovacool)
 - Fix `draft-release` to accept a manually provided version when conventional commits do not determine a version bump. (#213, @kelly-sovacool, @copilot)
 - Create `ccbr_actions` docker image and show how to use it in example workflows. (#190, @kelly-sovacool, @copilot)
 - New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#189, @kelly-sovacool, @copilot)
@@ -8,6 +10,9 @@
 - Resolve `GITHUB_WORKSPACE` at runtime and register it as a safe Git directory in container jobs, working around actions/runner#2058 and actions/checkout#1169. Validate the workarounds in host and container jobs. Fixed in `draft-release`, `post-release`, `mkdocs-mike`, `install-r-pak`, `build-docker`, and `sync-copilot-instructions` actions. (#211, #214, @kelly-sovacool, @copilot)
 - Default composite actions to Python 3.14, matching the `ccbr_actions` container runtime. (#214, @kelly-sovacool, @copilot)
 - Fix the `draft-release` example workflow docs (`python-verson` typo, Python 3.14, `actions/checkout@v7`) and rename `examples/R-CMD-check.yaml` to `.yml` so it appears in the published examples docs. (#215, @kelly-sovacool)
+- Set up testing infrastructure for github actions: (#216, @kelly-sovacool, @copilot)
+  - host/container integration coverage, dry-run support for release actions, actionlint validation, and contract tests for example workflows.
+- Fix `build-docker`: the `push_success` output now reports `false` when pushing is disabled. (#216, @kelly-sovacool, @copilot)
 
 ## actions 0.7.2
 

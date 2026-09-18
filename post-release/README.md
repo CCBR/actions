@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: CCBR/actions/post-release@latest
+      - uses: CCBR/actions/post-release@v0.7.2
         with:
           github-token: ${{ github.token }}
           update-sliding-tags: false
@@ -116,3 +116,5 @@ steps:
   `41898282+github-actions[bot]`.
 - `update-sliding-tags`: Whether to update the sliding tags (major.minor
   & latest) to the new patch version. Default: `false`.
+- `dry-run`: Print cleanup commands without creating branches, commits,
+  or pull requests. Default: `false`.

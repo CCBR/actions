@@ -19,7 +19,6 @@ jobs:
     steps:
       - name: Generate a token
         id: generate-token
-        if: ${{ inputs.github-token == '' }}
         uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.CCBR_BOT_APP_ID }}

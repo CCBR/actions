@@ -1,0 +1,22 @@
+name: container-latest-test
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # weekly on Monday, to catch image drift on the floating :latest tag
+  workflow_dispatch:
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test-actions-container-latest:
+    runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/integration-tests

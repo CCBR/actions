@@ -53,3 +53,13 @@ def test_draft_release_r_setup_requires_description_file():
         "hashFiles(inputs.description-filepath) != ''" in step["if"]
         for step in setup_steps
     )
+
+
+def test_draft_release_exposes_dry_run_to_release_helper():
+    action = _load_action()
+    assert action["inputs"]["dry-run"]["default"] == "false"
+    prepare_step = next(
+        step for step in action["runs"]["steps"] if step.get("id") == "set-version"
+    )
+
+    assert "debug=${{ inputs.dry-run == 'true' }}" in prepare_step["run"]
