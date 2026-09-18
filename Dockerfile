@@ -33,3 +33,6 @@ RUN apt-get update && \
 
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir "git+https://github.com/CCBR/actions@${CCBR_ACTIONS_VERSION}"
+
+# GitHub Actions job containers must run as root to access runner mounts.
+RUN test "$(id -u)" -eq 0

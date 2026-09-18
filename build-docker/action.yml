@@ -44,7 +44,7 @@ inputs:
     description: |
       The version of Python to install.
     required: true
-    default: "3.11"
+    default: "3.14"
   github-actor:
     description: |
       Username of GitHub actor for the git commit when the README is updated.
@@ -114,8 +114,8 @@ runs:
     - name: Prepare build-time variables
       shell: bash
       id: prepare_vars
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
         script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
         cat > "$script" << 'PYEOF'
         from ccbr_actions.docker import prepare_docker_build_variables
@@ -131,8 +131,8 @@ runs:
     - name: Check variables and create README
       shell: bash
       id: check_and_create_readme
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
         echo "DOCKERFILE_PATH: $DOCKERFILE_PATH"
         echo "DOCKERFILE_BASENAME: $DOCKERFILE_BASENAME"
         echo "IMAGENAME: $IMAGENAME"
@@ -152,10 +152,11 @@ runs:
     - name: Check whether image tag is stale
       id: check_tag_staleness
       shell: bash
-      working-directory: ${{ github.workspace }}
       env:
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
       run: |
+        cd "$GITHUB_WORKSPACE"
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
         script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
         cat > "$script" << 'PYEOF'
         import os
@@ -200,6 +201,7 @@ runs:
       id: run_script_in_container
       if: ${{ (inputs.print-versions == 'true') && (steps.check_tag_staleness.outputs.should_build == 'true') }}
       run: |
+        cd "$GITHUB_WORKSPACE"
         EXTRA_MOUNTS=""
         script_src=$(command -v print_versions.sh)
         if [ -f "${{ inputs.config-file }}" ]; then

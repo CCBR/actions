@@ -12,7 +12,7 @@ inputs:
   python-version:
     description: "The version of Python to install."
     required: true
-    default: "3.11"
+    default: "3.14"
   docs-branch:
     description: "The branch to deploy the docs website to."
     required: true
@@ -43,9 +43,9 @@ runs:
         cache: pip
     - name: git config
       shell: bash
-      # default cwd is wrong in container jobs (actions/runner#2058); working-directory is remapped correctly
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
     - name: Install ccbr_actions
@@ -54,15 +54,18 @@ runs:
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
     - name: Install docs dependencies
       shell: bash
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
         if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
     - name: set version tag & alias for mike
       id: set-version
       shell: python {0}
-      working-directory: ${{ github.workspace }}
       run: |
+        import os
+
         from ccbr_actions.docs import set_docs_version
+
+        os.chdir(os.environ["GITHUB_WORKSPACE"])
         release_tag="${{ github.event.release.tag_name }}" if "${{ github.event_name }}" == "release" else None
         strict_semver = "${{ inputs.strict-semver }}" == "true"
 
@@ -73,8 +76,8 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
     - name: deploy docs
       shell: bash
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
         mike deploy ${{ steps.set-version.outputs.version }} ${{ steps.set-version.outputs.alias }} \
           --push \
           --update-aliases \

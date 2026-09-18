@@ -86,7 +86,7 @@ steps:
 - `ccbr-actions-version`: The version of ccbr_actions to install.
   **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
-  Default: `3.11`.
+  Default: `3.14`.
 - `docs-branch`: The branch to deploy the docs website to. **Required.**
   Default: `gh-pages`.
 - `github-actor`: Username of GitHub actor for the git commit when the

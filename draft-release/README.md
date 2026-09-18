@@ -130,7 +130,7 @@ steps:
 - `ccbr-actions-version`: The version of ccbr_actions to use.
   **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
-  Default: `3.11`.
+  Default: `3.14`.
 - `draft-branch`: The branch name to push changes to for the release
   draft. **Required.** Default: `release-draft`.
 - `version-filepath`: Path to the file containing the current version.

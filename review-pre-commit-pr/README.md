@@ -176,4 +176,4 @@ jobs:
 - `ccbr-actions-version`: The version of CCBR/actions to install
   (branch, tag, or ‘latest’). **Required.** Default: `latest`.
 - `python-version`: Python version to use. **Required.** Default:
-  `3.11`.
+  `3.14`.
