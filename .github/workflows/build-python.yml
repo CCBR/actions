@@ -67,10 +67,179 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/test-fixtures/actions
 
+  test-changed-files-host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: changed-files
+        uses: ./changed-files
+        with:
+          paths: |
+            .github/**
+            changed-files/**
+          ccbr-actions-version: main
+      - name: Verify changed-files outputs
+        shell: python {0}
+        env:
+          ERROR: ${{ steps.changed-files.outputs.error }}
+          MATCHED_FILES_JSON: ${{ steps.changed-files.outputs.matched_files_json }}
+        run: |
+          import json
+          import os
+
+          assert not os.environ["ERROR"]
+          assert isinstance(json.loads(os.environ["MATCHED_FILES_JSON"]), list)
+
+  test-changed-files-container:
+    runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest@sha256:1f4e65a53499f7a44a01f66f4ea72657c55bae8ccd56384b113b2e959a32c947
+    steps:
+      - uses: actions/checkout@v7
+      - id: changed-files
+        uses: ./changed-files
+        with:
+          paths: |
+            .github/**
+            changed-files/**
+      - name: Verify changed-files outputs
+        shell: python {0}
+        env:
+          ERROR: ${{ steps.changed-files.outputs.error }}
+          MATCHED_FILES_JSON: ${{ steps.changed-files.outputs.matched_files_json }}
+        run: |
+          import json
+          import os
+
+          assert not os.environ["ERROR"]
+          assert isinstance(json.loads(os.environ["MATCHED_FILES_JSON"]), list)
+
+  test-build-docker-host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: docker
+        uses: ./build-docker
+        with:
+          dockerfile: tests/data/Dockerfile.v1
+          github-token: ${{ github.token }}
+          push: false
+          print-versions: false
+          force_build: false
+          suffix: main
+          ccbr-actions-version: main
+      - name: Verify build-docker did not push
+        env:
+          PUSH_SUCCESS: ${{ steps.docker.outputs.push_success }}
+        run: test "$PUSH_SUCCESS" = "false"
+
+  test-build-docker-container:
+    runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest@sha256:1f4e65a53499f7a44a01f66f4ea72657c55bae8ccd56384b113b2e959a32c947
+    steps:
+      - uses: actions/checkout@v7
+      - id: docker
+        uses: ./build-docker
+        with:
+          dockerfile: tests/data/Dockerfile.v1
+          github-token: ${{ github.token }}
+          push: false
+          print-versions: false
+          force_build: false
+          suffix: main
+          ccbr-actions-version: main
+      - name: Verify build-docker did not push
+        env:
+          PUSH_SUCCESS: ${{ steps.docker.outputs.push_success }}
+        run: test "$PUSH_SUCCESS" = "false"
+
+  test-install-r-pak-host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./install-r-pak
+        with:
+          versions-file: .github/test-fixtures/r-package-versions.txt
+      - name: Verify versions file was available in the workspace
+        run: test -f .github/test-fixtures/r-package-versions.txt
+
+  test-install-r-pak-container:
+    runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest@sha256:1f4e65a53499f7a44a01f66f4ea72657c55bae8ccd56384b113b2e959a32c947
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./install-r-pak
+        with:
+          versions-file: .github/test-fixtures/r-package-versions.txt
+      - name: Verify versions file was available in the workspace
+        run: test -f .github/test-fixtures/r-package-versions.txt
+
+  test-draft-release-host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./draft-release
+        with:
+          github-token: ${{ github.token }}
+          version-tag: v0.7.3
+          ccbr-actions-version: main
+          dry-run: true
+
+  test-draft-release-container:
+    runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest@sha256:1f4e65a53499f7a44a01f66f4ea72657c55bae8ccd56384b113b2e959a32c947
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./draft-release
+        with:
+          github-token: ${{ github.token }}
+          version-tag: v0.7.3
+          dry-run: true
+
+  test-post-release-host:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./post-release
+        with:
+          github-token: ${{ github.token }}
+          ccbr-actions-version: main
+          dry-run: true
+
+  test-post-release-container:
+    runs-on: ubuntu-latest
+    container: nciccbr/ccbr_actions:latest@sha256:1f4e65a53499f7a44a01f66f4ea72657c55bae8ccd56384b113b2e959a32c947
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./post-release
+        with:
+          github-token: ${{ github.token }}
+          dry-run: true
+
   build-status:
     # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871
     runs-on: ubuntu-latest
-    needs: [build, test-actions-host, test-actions-container]
+    needs:
+      - build
+      - test-actions-host
+      - test-actions-container
+      - test-changed-files-host
+      - test-changed-files-container
+      - test-build-docker-host
+      - test-build-docker-container
+      - test-install-r-pak-host
+      - test-install-r-pak-container
+      - test-draft-release-host
+      - test-draft-release-container
+      - test-post-release-host
+      - test-post-release-container
     if: always()
     steps:
       - name: Successful build
