@@ -21,13 +21,11 @@ UNTESTED_ACTIONS = {
     # Pure API callers with no workspace dependency (see plan Decisions).
     "review-pre-commit-pr": "pure API caller; no workspace dependency",
     "copy-ruleset": "pure API caller; no workspace dependency",
-    "maintain-milestones": "pure API caller; no workspace dependency",
     "user-projects": "pure API caller; no workspace dependency",
     "add-issue-label-list": "pure API caller; no workspace dependency",
     "label-issue-repo-name": "pure API caller; no workspace dependency",
     # Side-effecting actions that require secrets or push to real branches,
     # and have no dry-run/debug hook to make them safely testable.
-    "mkdocs-mike": "pushes to gh-pages via `mike deploy --push`; no dry-run hook",
     "sync-copilot-instructions": "requires a GitHub App token and targets an external repository",
 }
 

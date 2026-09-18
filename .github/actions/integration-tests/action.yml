@@ -116,3 +116,5 @@ runs:
     - uses: ./install-r-pak/test
     - uses: ./draft-release/test
     - uses: ./post-release/test
+    - uses: ./maintain-milestones/test
+    - uses: ./mkdocs-mike/test
