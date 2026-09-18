@@ -13,6 +13,7 @@
 - Set up testing infrastructure for github actions: (#216, @kelly-sovacool, @copilot)
   - host/container integration coverage, dry-run support for release actions, actionlint validation, and contract tests for example workflows.
 - Fix `build-docker`: the `push_success` output now reports `false` when pushing is disabled. (#216, @kelly-sovacool, @copilot)
+- Fix `draft-release` and `post-release`: the `dry-run` input rendered as lowercase `true`/`false` in the Python step, raising `NameError`. (#216, @kelly-sovacool, @copilot)
 
 ## actions 0.7.2
 

@@ -112,7 +112,7 @@ runs:
           release_branch="${{ inputs.draft-branch }}",
           pr_ref_name="${{ github.ref_name }}",
           repo = "${{ github.repository }}",
-          debug=${{ inputs.dry-run == 'true' }},
+          debug=${{ inputs.dry-run == 'true' && 'True' || 'False' }},
         )
       env:
         GH_TOKEN: ${{ inputs.github-token }}
