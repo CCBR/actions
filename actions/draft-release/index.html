@@ -682,12 +682,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </blockquote>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
-<p>Input files:</p>
+<p>Required input files:</p>
 <ul>
 <li><code>CHANGELOG.md</code> - a changelog or news file with entries in reverse chronological order. The newest entry should contain a header with the phrase “development version”.</li>
 <li><code>VERSION</code> - a single-source version file.</li>
-<li><code>CITATION.cff</code> - a citation file. (optional)</li>
 </ul>
+<p>For R packages, the action uses <code>NEWS.md</code> (or <code>NEWS</code>) instead of <code>CHANGELOG.md</code>, and <code>DESCRIPTION</code> instead of <code>VERSION</code>.</p>
+<p><code>CITATION.cff</code> is optional. If present, it is updated along with the release; if absent, the release proceeds without citation metadata. Missing required files produce an actionable error before release preparation starts.</p>
+<p>For a repository’s first release, set <code>version-tag</code> manually (for example <code>v0.1.0</code>), because conventional-commit version detection may not have a previous release to compare against.</p>
 <p>When you’re ready to draft a new release, <a href="https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow">run the workflow manually</a>. After the workflow completes, there will be a new draft release that you can review and choose to publish.</p>
 <section id="basic-example" class="level3">
 <h3 class="anchored" data-anchor-id="basic-example">Basic example</h3>

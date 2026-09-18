@@ -650,6 +650,8 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>Add a <code>workflow_dispatch</code> trigger to the <code>review-pre-commit-pr</code> example workflow to re-scan and review open pre-commit.ci autoupdate PRs on demand, and skip re-review of already-approved PRs. (#208, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 </ul></li>
+<li>Fix <code>draft-release</code>: handle first-release repos and fail fast on required files. (#179, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>Set <code>working-directory</code> explicitly on steps that touch repo files, since <code>github.workspace</code>/default cwd resolve to the wrong path in container jobs (actions/runner#2058). Fixed in <code>draft-release</code>, <code>post-release</code>, <code>mkdocs-mike</code>, <code>install-r-pak</code>, <code>build-docker</code>, and <code>sync-copilot-instructions</code> actions. (#211, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 </ul>
 </section>
 <section id="actions-0.7.2" class="level2">
