@@ -114,6 +114,7 @@ runs:
     - name: Prepare build-time variables
       shell: bash
       id: prepare_vars
+      working-directory: ${{ github.workspace }}
       run: |
         script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
         cat > "$script" << 'PYEOF'
@@ -130,6 +131,7 @@ runs:
     - name: Check variables and create README
       shell: bash
       id: check_and_create_readme
+      working-directory: ${{ github.workspace }}
       run: |
         echo "DOCKERFILE_PATH: $DOCKERFILE_PATH"
         echo "DOCKERFILE_BASENAME: $DOCKERFILE_BASENAME"
@@ -150,6 +152,7 @@ runs:
     - name: Check whether image tag is stale
       id: check_tag_staleness
       shell: bash
+      working-directory: ${{ github.workspace }}
       env:
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
       run: |
