@@ -59,6 +59,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/test-fixtures/actions
+        with:
+          expect-container: "false"
 
   test-actions-container:
     runs-on: ubuntu-latest
@@ -66,6 +68,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/test-fixtures/actions
+        with:
+          expect-container: "true"
 
   build-status:
     # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871

@@ -1,6 +1,12 @@
 name: Test GitHub Actions behavior
 description: Verify general action behavior on host and container runners
 
+inputs:
+  expect-container:
+    description: "Whether this job is expected to run in the ccbr_actions container ('true' or 'false')."
+    required: true
+    default: "false"
+
 runs:
   using: composite
   steps:
@@ -65,3 +71,37 @@ runs:
         test "$(ccbr-actions-test-command)" = "command-file-ok"
         test "$(cat "$GITHUB_WORKSPACE/.ccbr-actions-write-test")" = "command-file-ok"
         rm "$GITHUB_WORKSPACE/.ccbr-actions-write-test"
+    - name: Detect ccbr_actions container
+      id: detect-container
+      shell: bash
+      # env vars baked into the container image are not visible to the `env` context in `if:` expressions
+      run: echo "in-container=${CCBR_ACTIONS_DOCKER:-false}" >> "$GITHUB_OUTPUT"
+    - name: Verify container detection
+      shell: bash
+      env:
+        EXPECTED: ${{ inputs.expect-container }}
+        DETECTED: ${{ steps.detect-container.outputs.in-container }}
+      run: |
+        if [ "$DETECTED" != "$EXPECTED" ]; then
+          echo "Expected in-container=$EXPECTED but detected $DETECTED" >&2
+          exit 1
+        fi
+    - name: Verify skipped-in-container step
+      id: host-only
+      if: ${{ steps.detect-container.outputs.in-container != 'true' }}
+      shell: bash
+      run: echo "ran=true" >> "$GITHUB_OUTPUT"
+    - name: Verify skipped-in-container step outcome
+      shell: bash
+      env:
+        EXPECTED: ${{ inputs.expect-container }}
+        HOST_ONLY_RAN: ${{ steps.host-only.outputs.ran || 'false' }}
+      run: |
+        if [ "$EXPECTED" = "true" ] && [ "$HOST_ONLY_RAN" != "false" ]; then
+          echo "Host-only step should have been skipped in the container" >&2
+          exit 1
+        fi
+        if [ "$EXPECTED" != "true" ] && [ "$HOST_ONLY_RAN" != "true" ]; then
+          echo "Host-only step should have run on the host runner" >&2
+          exit 1
+        fi

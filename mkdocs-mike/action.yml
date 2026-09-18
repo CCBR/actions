@@ -35,8 +35,13 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Detect ccbr_actions container
+      id: detect-container
+      shell: bash
+      # env vars baked into the container image are not visible to the `env` context in `if:` expressions
+      run: echo "in-container=${CCBR_ACTIONS_DOCKER:-false}" >> "$GITHUB_OUTPUT"
     - name: Set up Python
-      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
+      if: ${{ steps.detect-container.outputs.in-container != 'true' }}
       uses: actions/setup-python@v7
       with:
         python-version: ${{ inputs.python-version }}
@@ -49,7 +54,7 @@ runs:
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
     - name: Install ccbr_actions
-      if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
+      if: ${{ steps.detect-container.outputs.in-container != 'true' }}
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
     - name: Install docs dependencies
