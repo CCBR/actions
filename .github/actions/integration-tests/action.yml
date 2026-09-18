@@ -113,7 +113,10 @@ runs:
     # build-docker is not supported inside container jobs; it needs a host runner with Docker.
     - if: ${{ steps.detect-container.outputs.in-container != 'true' }}
       uses: ./build-docker/test
-    - uses: ./install-r-pak/test
+    # install-r-pak provisions R on a host runner via r-lib/actions, which requires sudo;
+    # container jobs run as root without sudo and already have R in the image.
+    - if: ${{ steps.detect-container.outputs.in-container != 'true' }}
+      uses: ./install-r-pak/test
     - uses: ./draft-release/test
     - uses: ./post-release/test
     - uses: ./maintain-milestones/test
