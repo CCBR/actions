@@ -62,6 +62,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/integration-tests
+        with:
+          expect-container: "false"
 
   test-actions-container:
     runs-on: ubuntu-latest
@@ -71,6 +73,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/integration-tests
+        with:
+          expect-container: "true"
 
   build-status:
     # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871

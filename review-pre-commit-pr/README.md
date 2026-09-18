@@ -141,7 +141,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-        if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       - name: Generate CCBR-bot token
         id: generate-token
         uses: actions/create-github-app-token@v3
