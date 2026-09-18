@@ -50,9 +50,8 @@ runs:
   steps:
     - name: git config
       shell: bash
-      # default cwd is wrong in container jobs (actions/runner#2058); working-directory is remapped correctly
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
         git config --global --add --bool push.autoSetupRemote true
@@ -82,9 +81,12 @@ runs:
     - name: Bump changelog & version, open PR
       shell: python {0}
       id: post-release
-      working-directory: ${{ github.workspace }}
       run: |
+        import os
+
         from ccbr_actions.release import post_release_cleanup
+
+        os.chdir(os.environ["GITHUB_WORKSPACE"])
         post_release_cleanup(
           changelog_filepath="${{ inputs.changelog-filepath }}",
           repo="${{ github.event.repository.name }}",

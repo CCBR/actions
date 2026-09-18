@@ -33,9 +33,8 @@ runs:
 
     - name: Set package versions
       shell: bash
-      # default cwd is wrong in container jobs (actions/runner#2058); working-directory is remapped correctly
-      working-directory: ${{ github.workspace }}
       run: |
+        cd "$GITHUB_WORKSPACE"
         # get package versions from file
         if [ -f "${{ inputs.versions-file }}" ]; then
           PKG_VERSIONS=$(cat "${{ inputs.versions-file }}")

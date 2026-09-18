@@ -1,0 +1,32 @@
+name: Test GitHub Actions behavior
+description: Verify general action behavior on host and container runners
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve workspace from Bash
+      shell: bash
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
+    - name: Resolve workspace from Python
+      shell: python {0}
+      run: |
+        import os
+        import subprocess
+        from pathlib import Path
+
+        workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+        os.chdir(workspace)
+        repository_root = Path(
+            subprocess.run(
+                ["git", "rev-parse", "--show-toplevel"],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+        ).resolve()
+        if repository_root != workspace:
+            raise RuntimeError(
+                f"Repository root {repository_root} does not match {workspace}"
+            )
