@@ -103,7 +103,7 @@ jobs:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v7
     with:
       fetch-depth: 0 # required to include tags
   - uses: CCBR/actions/draft-release@main
@@ -111,7 +111,7 @@ steps:
       github-token: ${{ github.token }}
       version-tag: ${{ github.event.inputs.version-tag }}
       ccbr-actions-version: main
-      python-verson: 3.11
+      python-version: 3.14
       draft-branch: "release-draft"
       version-filepath: VERSION
       changelog-filepath: CHANGELOG.md

@@ -23,6 +23,7 @@ See [examples/](examples) for workflow examples. You can copy these to
 your own repository in the `.github/workflows/` directory and modify
 them for your needs.
 
+- [R-CMD-check](examples/R-CMD-check.yml)
 - [add-issue-label-list](examples/add-issue-label-list.yml)
 - [auto-format](examples/auto-format.yml)
 - [build-docker-auto](examples/build-docker-auto.yml)
