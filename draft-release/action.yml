@@ -44,6 +44,9 @@ inputs:
     description: "Username of GitHub actor for the git commit when the docs branch is deployed."
     required: true
     default: "41898282+github-actions[bot]"
+  dry-run:
+    description: "Print release commands without creating release artifacts."
+    default: "false"
 
 runs:
   using: "composite"
@@ -104,6 +107,7 @@ runs:
           release_branch="${{ inputs.draft-branch }}",
           pr_ref_name="${{ github.ref_name }}",
           repo = "${{ github.repository }}",
+          debug=${{ inputs.dry-run == 'true' }},
         )
       env:
         GH_TOKEN: ${{ inputs.github-token }}
