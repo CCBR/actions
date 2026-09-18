@@ -34,3 +34,34 @@ runs:
             raise RuntimeError(
                 f"Repository root {repository_root} does not match {workspace}"
             )
+    - name: Write runner command files
+      id: runner-files
+      shell: bash
+      run: |
+        if [[ "${CCBR_ACTIONS_DOCKER:-false}" == "true" ]]; then
+          test "$(id -u)" -eq 0
+        fi
+
+        bin_dir="$RUNNER_TEMP/ccbr-actions-test-bin"
+        mkdir -p "$bin_dir"
+        cat > "$bin_dir/ccbr-actions-test-command" <<'EOF'
+        #!/bin/sh
+        printf '%s\n' command-file-ok
+        EOF
+        chmod +x "$bin_dir/ccbr-actions-test-command"
+
+        echo "CCBR_ACTIONS_TEST_ENV=command-file-ok" >> "$GITHUB_ENV"
+        echo "result=command-file-ok" >> "$GITHUB_OUTPUT"
+        echo "$bin_dir" >> "$GITHUB_PATH"
+        echo "### Runner command files are writable" >> "$GITHUB_STEP_SUMMARY"
+        echo "command-file-ok" > "$GITHUB_WORKSPACE/.ccbr-actions-write-test"
+    - name: Verify runner command files
+      shell: bash
+      env:
+        CCBR_ACTIONS_TEST_OUTPUT: ${{ steps.runner-files.outputs.result }}
+      run: |
+        test "$CCBR_ACTIONS_TEST_ENV" = "command-file-ok"
+        test "$CCBR_ACTIONS_TEST_OUTPUT" = "command-file-ok"
+        test "$(ccbr-actions-test-command)" = "command-file-ok"
+        test "$(cat "$GITHUB_WORKSPACE/.ccbr-actions-write-test")" = "command-file-ok"
+        rm "$GITHUB_WORKSPACE/.ccbr-actions-write-test"
