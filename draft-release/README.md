@@ -93,7 +93,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # required to include tags
-      - uses: CCBR/actions/draft-release@latest
+      - uses: CCBR/actions/draft-release@v0.7.2
         with:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
@@ -147,3 +147,5 @@ steps:
 - `github-actor`: Username of GitHub actor for the git commit when the
   docs branch is deployed. **Required.** Default:
   `41898282+github-actions[bot]`.
+- `dry-run`: Print release commands without creating release artifacts.
+  Default: `false`.
