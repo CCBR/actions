@@ -1,5 +1,6 @@
 ## actions development version
 
+- New `dry-run` input for `mkdocs-mike` to print the `mike deploy` command instead of deploying the docs website. (#216, @kelly-sovacool)
 - Fix container detection in `draft-release`, `post-release`, `changed-files`, `mkdocs-mike`, and `review-pre-commit-pr`: the `CCBR_ACTIONS_DOCKER` variable baked into the `ccbr_actions` image is not visible to the `env` context, so Python/R setup steps (including `cache: pip`, which fails in container jobs) were still running inside the container. Detection now happens in a shell step whose output gates the setup steps. (#216, @kelly-sovacool)
 - Fix `draft-release` to accept a manually provided version when conventional commits do not determine a version bump. (#213, @kelly-sovacool, @copilot)
 - Create `ccbr_actions` docker image and show how to use it in example workflows. (#190, @kelly-sovacool, @copilot)

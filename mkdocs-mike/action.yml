@@ -25,6 +25,9 @@ inputs:
     description: "Whether to follow strict semantic versioning guidelines."
     type: boolean
     default: true
+  dry-run:
+    description: "Print the mike deploy command without deploying the docs."
+    default: "false"
 outputs:
   version:
     description: "The version of the docs being deployed."
@@ -81,9 +84,16 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
     - name: deploy docs
       shell: bash
+      env:
+        DRY_RUN: ${{ inputs.dry-run }}
+        VERSION: ${{ steps.set-version.outputs.version }}
+        ALIAS: ${{ steps.set-version.outputs.alias }}
+        DOCS_BRANCH: ${{ inputs.docs-branch }}
       run: |
         cd "$GITHUB_WORKSPACE"
-        mike deploy ${{ steps.set-version.outputs.version }} ${{ steps.set-version.outputs.alias }} \
-          --push \
-          --update-aliases \
-          --branch ${{ inputs.docs-branch }}
+        deploy_cmd=(mike deploy $VERSION $ALIAS --push --update-aliases --branch "$DOCS_BRANCH")
+        if [ "$DRY_RUN" = "true" ]; then
+          echo "Dry run, not deploying the docs: ${deploy_cmd[*]}"
+          exit 0
+        fi
+        "${deploy_cmd[@]}"
