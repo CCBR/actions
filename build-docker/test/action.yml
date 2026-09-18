@@ -1,0 +1,21 @@
+name: build-docker integration test
+description: Verify the build-docker action builds without pushing
+
+runs:
+  using: composite
+  steps:
+    - id: docker
+      uses: ./build-docker
+      with:
+        dockerfile: tests/data/Dockerfile.v1
+        github-token: ${{ github.token }}
+        push: false
+        print-versions: false
+        force_build: false
+        suffix: main
+        ccbr-actions-version: main
+    - name: Verify build-docker did not push
+      shell: bash
+      env:
+        PUSH_SUCCESS: ${{ steps.docker.outputs.push_success }}
+      run: test "$PUSH_SUCCESS" = "false"

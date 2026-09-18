@@ -1,0 +1,12 @@
+name: install-r-pak integration test
+description: Verify the install-r-pak action reads a workspace-relative versions file
+
+runs:
+  using: composite
+  steps:
+    - uses: ./install-r-pak
+      with:
+        versions-file: .github/test-fixtures/r-package-versions.txt
+    - name: Verify versions file was available in the workspace
+      shell: bash
+      run: test -f .github/test-fixtures/r-package-versions.txt

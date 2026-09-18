@@ -1,18 +1,22 @@
 """Meta-test asserting every composite action has CI test coverage.
 
 See Further Considerations #1 in the coverage plan (issue #50): every
-`*/action.yml` must either be exercised by a job in `build-python.yml`
-(`uses: ./<action>`) or be explicitly listed here with a reason it cannot be.
+`*/action.yml` must either have a sibling `test/action.yml` (invoked by the
+shared `.github/test-fixtures/actions` fixture or directly by a workflow) or
+be explicitly listed here with a reason it cannot be.
 """
 
 import re
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-BUILD_WORKFLOW = REPOSITORY_ROOT / ".github/workflows/build-python.yml"
 LOCAL_ACTION_USAGE = re.compile(r"uses:\s*\./([^\s@]+)")
+SEARCHED_FILES = (
+    REPOSITORY_ROOT / ".github/workflows/build-python.yml",
+    REPOSITORY_ROOT / ".github/test-fixtures/actions/action.yml",
+)
 
-# Actions intentionally excluded from per-action integration jobs, with reasons.
+# Actions intentionally excluded from per-action integration tests, with reasons.
 UNTESTED_ACTIONS = {
     # Pure API callers with no workspace dependency (see plan Decisions).
     "review-pre-commit-pr": "pure API caller; no workspace dependency",
@@ -37,28 +41,37 @@ def _action_directories():
     )
 
 
-def _actions_used_in_build_workflow():
-    """Return the set of local action names referenced via `uses: ./<action>`."""
-    return set(LOCAL_ACTION_USAGE.findall(BUILD_WORKFLOW.read_text()))
+def _actions_invoked_locally():
+    """Return the top-level action names referenced via `uses: ./<action>[/...]`."""
+    invoked = set()
+    for filepath in SEARCHED_FILES:
+        for match in LOCAL_ACTION_USAGE.findall(filepath.read_text()):
+            invoked.add(match.split("/")[0])
+    return invoked
 
 
-def test_every_action_has_a_test_job_or_documented_exclusion():
-    tested_actions = _actions_used_in_build_workflow()
+def test_every_action_has_a_sibling_test_action_or_documented_exclusion():
+    invoked = _actions_invoked_locally()
     untested = [
         action_name
         for action_name in _action_directories()
-        if action_name not in tested_actions and action_name not in UNTESTED_ACTIONS
+        if action_name not in UNTESTED_ACTIONS
+        and (
+            action_name not in invoked
+            or not (REPOSITORY_ROOT / action_name / "test/action.yml").is_file()
+        )
     ]
     assert not untested, (
-        f"Add a build-python.yml job for {untested}, or document why it is "
+        f"Add a {untested}/test/action.yml invoked from "
+        ".github/test-fixtures/actions/action.yml, or document why it is "
         "excluded in tests/test_action_test_coverage.py:UNTESTED_ACTIONS"
     )
 
 
 def test_documented_exclusions_are_still_untested():
-    """Excluded actions should not silently gain a test job without pruning the list."""
-    tested_actions = _actions_used_in_build_workflow()
-    stale_exclusions = sorted(set(UNTESTED_ACTIONS) & tested_actions)
+    """Excluded actions should not silently gain a test action without pruning the list."""
+    invoked = _actions_invoked_locally()
+    stale_exclusions = sorted(set(UNTESTED_ACTIONS) & invoked)
     assert not stale_exclusions, (
-        f"Remove {stale_exclusions} from UNTESTED_ACTIONS since they now have test jobs"
+        f"Remove {stale_exclusions} from UNTESTED_ACTIONS since they now have test coverage"
     )

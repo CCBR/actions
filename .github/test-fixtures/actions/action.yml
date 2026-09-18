@@ -65,3 +65,12 @@ runs:
         test "$(ccbr-actions-test-command)" = "command-file-ok"
         test "$(cat "$GITHUB_WORKSPACE/.ccbr-actions-write-test")" = "command-file-ok"
         rm "$GITHUB_WORKSPACE/.ccbr-actions-write-test"
+
+    # Per-action integration tests. Each action defines its own test/action.yml
+    # alongside its action.yml, and this fixture is the single entry point
+    # build-python.yml calls (once on the host runner, once in the container).
+    - uses: ./changed-files/test
+    - uses: ./build-docker/test
+    - uses: ./install-r-pak/test
+    - uses: ./draft-release/test
+    - uses: ./post-release/test
