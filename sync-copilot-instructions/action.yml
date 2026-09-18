@@ -61,6 +61,8 @@ runs:
 
     - name: Update copilot instructions
       shell: bash
+      # default cwd is wrong in container jobs (actions/runner#2058); working-directory is remapped correctly
+      working-directory: ${{ github.workspace }}
       env:
         SOURCE_URL: https://raw.githubusercontent.com/${{ inputs.source-repository }}/${{ inputs.source-ref }}/${{ inputs.source-file }}
         TARGET_FILE: ${{ inputs.target-file }}

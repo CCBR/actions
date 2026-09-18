@@ -50,6 +50,8 @@ runs:
   steps:
     - name: git config
       shell: bash
+      # default cwd is wrong in container jobs (actions/runner#2058); working-directory is remapped correctly
+      working-directory: ${{ github.workspace }}
       run: |
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
@@ -81,6 +83,7 @@ runs:
     - name: Set version variable & prepare files
       shell: python {0}
       id: set-version
+      working-directory: ${{ github.workspace }}
       run: |
         from ccbr_actions.release import prepare_draft_release
         prepare_draft_release(
