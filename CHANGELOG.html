@@ -654,6 +654,7 @@ ul.task-list li input[type="checkbox"] {
 <li>Fix <code>draft-release</code>: handle first-release repos and fail fast on required files. (#179, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 <li>Resolve <code>GITHUB_WORKSPACE</code> at runtime and register it as a safe Git directory in container jobs, working around actions/runner#2058 and actions/checkout#1169. Validate the workarounds in host and container jobs. Fixed in <code>draft-release</code>, <code>post-release</code>, <code>mkdocs-mike</code>, <code>install-r-pak</code>, <code>build-docker</code>, and <code>sync-copilot-instructions</code> actions. (#211, #214, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 <li>Default composite actions to Python 3.14, matching the <code>ccbr_actions</code> container runtime. (#214, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>Fix the <code>draft-release</code> example workflow docs (<code>python-verson</code> typo, Python 3.14, <code>actions/checkout@v7</code>) and rename <code>examples/R-CMD-check.yaml</code> to <code>.yml</code> so it appears in the published examples docs. (#215, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
 </ul>
 </section>
 <section id="actions-0.7.2" class="level2">

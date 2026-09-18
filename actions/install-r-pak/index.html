@@ -686,7 +686,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Additional dependencies can optionally be recorded in a <code>versions-file</code>, which will be read and passed along to the <code>extra-packages</code> argument of <a href="https://github.com/r-lib/actions/tree/v2-branch/setup-r-dependencies"><code>setup-r-dependencies</code></a>.</p>
 <section id="basic-example" class="level3">
 <h3 class="anchored" data-anchor-id="basic-example">Basic example</h3>
-<p><a href=".https://github.com/CCBR/actions/blob/main/examples/R-CMD-check.yaml">R-CMD-check.yaml</a></p>
+<p><a href=".https://github.com/CCBR/actions/blob/main/examples/R-CMD-check.yml">R-CMD-check.yml</a></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">steps</span><span class="kw">:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v4</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/install-r-pak@main</span></span>
@@ -695,7 +695,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="customized-inputs" class="level3">
 <h3 class="anchored" data-anchor-id="customized-inputs">Customized inputs</h3>
-<p><a href=".https://github.com/CCBR/actions/blob/main/examples/R-CMD-check.yaml">R-CMD-check.yaml</a></p>
+<p><a href=".https://github.com/CCBR/actions/blob/main/examples/R-CMD-check.yml">R-CMD-check.yml</a></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">R-CMD-check</span><span class="kw">:</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">strategy</span><span class="kw">:</span></span>
