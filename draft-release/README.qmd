@@ -53,6 +53,10 @@ previous release to compare against.
 When you're ready to draft a new release,
 [run the workflow manually](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow). After the workflow completes, there will be a new draft release that you can review and choose to publish.
 
+When `version-tag` is provided, the action uses that version even if there are
+no new commits or no conventional commits that determine a version bump. When
+`version-tag` is omitted, the commit history must determine the next version.
+
 ### Basic example
 
 [draft-release.yml](/examples/draft-release.yml)

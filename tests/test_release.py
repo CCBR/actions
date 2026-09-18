@@ -267,6 +267,14 @@ def test_get_release_version():
     )
     assert (
         get_release_version(
+            next_version_manual="v1.10.0",
+            next_version_convco="",
+            current_version="v1.9.10",
+        )
+        == "v1.10.0"
+    )
+    assert (
+        get_release_version(
             next_version_manual="",
             next_version_convco="v0.1.0",
             current_version="",

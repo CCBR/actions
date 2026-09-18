@@ -58,6 +58,17 @@ def test_action_markdown_io_preserves_multiline_input_description():
     )
 
 
+def test_draft_release_manual_version_tolerates_no_semver_bump():
+    action_dict = parse_action_yaml("draft-release/action.yml")
+    semver_step = next(
+        step for step in action_dict["runs"]["steps"] if step.get("id") == "semver"
+    )
+    manual_version_behavior = "${{ inputs.version-tag != '' && 'current' || 'error' }}"
+
+    assert semver_step["with"]["noNewCommitBehavior"] == manual_version_behavior
+    assert semver_step["with"]["noVersionBumpBehavior"] == manual_version_behavior
+
+
 def test_get_docs_version():
     with pytest.warns(UserWarning) as record1:
         result1 = get_docs_version(repo="CCBR/CCBR_NextflowTemplate")
