@@ -79,6 +79,8 @@ runs:
       with:
         token: ${{ inputs.github-token }}
         branch: ${{ github.ref_name }}
+        noNewCommitBehavior: ${{ inputs.version-tag != '' && 'current' || 'error' }}
+        noVersionBumpBehavior: ${{ inputs.version-tag != '' && 'current' || 'error' }}
 
     - name: Set version variable & prepare files
       shell: python {0}

@@ -51,6 +51,11 @@ manually](https://docs.github.com/en/actions/managing-workflow-runs-and-deployme
 After the workflow completes, there will be a new draft release that you
 can review and choose to publish.
 
+When `version-tag` is provided, the action uses that version even if
+there are no new commits or no conventional commits that determine a
+version bump. When `version-tag` is omitted, the commit history must
+determine the next version.
+
 ### Basic example
 
 [draft-release.yml](/examples/draft-release.yml)
