@@ -4,7 +4,8 @@
 - New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#189, @kelly-sovacool, @copilot)
   - Add a `workflow_dispatch` trigger to the `review-pre-commit-pr` example workflow to re-scan and review open pre-commit.ci autoupdate PRs on demand, and skip re-review of already-approved PRs. (#208, @kelly-sovacool, @copilot)
 - Fix `draft-release`: handle first-release repos and fail fast on required files. (#179, @kelly-sovacool, @copilot)
-- Resolve `GITHUB_WORKSPACE` at runtime and register it as a safe Git directory in container jobs, working around actions/runner#2058 and actions/checkout#1169. Validate the workarounds in host and container jobs. Fixed in `draft-release`, `post-release`, `mkdocs-mike`, `install-r-pak`, `build-docker`, and `sync-copilot-instructions` actions. (#211, #813, @kelly-sovacool, @copilot)
+- Resolve `GITHUB_WORKSPACE` at runtime and register it as a safe Git directory in container jobs, working around actions/runner#2058 and actions/checkout#1169. Validate the workarounds in host and container jobs. Fixed in `draft-release`, `post-release`, `mkdocs-mike`, `install-r-pak`, `build-docker`, and `sync-copilot-instructions` actions. (#211, #214, @kelly-sovacool, @copilot)
+- Default composite actions to Python 3.14, matching the `ccbr_actions` container runtime. (#214, @kelly-sovacool, @copilot)
 
 ## actions 0.7.2
 

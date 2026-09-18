@@ -20,7 +20,7 @@ inputs:
   python-version:
     description: "The version of Python to install."
     required: true
-    default: "3.11"
+    default: "3.14"
   draft-branch:
     description: "The branch name to push changes to for the release draft."
     default: "release-draft"

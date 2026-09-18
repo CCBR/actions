@@ -12,7 +12,7 @@ inputs:
   python-version:
     description: "The version of Python to install."
     required: true
-    default: "3.11"
+    default: "3.14"
   docs-branch:
     description: "The branch to deploy the docs website to."
     required: true

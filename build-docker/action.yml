@@ -44,7 +44,7 @@ inputs:
     description: |
       The version of Python to install.
     required: true
-    default: "3.11"
+    default: "3.14"
   github-actor:
     description: |
       Username of GitHub actor for the git commit when the README is updated.
