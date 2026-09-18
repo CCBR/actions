@@ -53,6 +53,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
+          flags: python
 
   test-actions-host:
     runs-on: ubuntu-latest
