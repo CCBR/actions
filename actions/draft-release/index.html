@@ -691,6 +691,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>CITATION.cff</code> is optional. If present, it is updated along with the release; if absent, the release proceeds without citation metadata. Missing required files produce an actionable error before release preparation starts.</p>
 <p>For a repository’s first release, set <code>version-tag</code> manually (for example <code>v0.1.0</code>), because conventional-commit version detection may not have a previous release to compare against.</p>
 <p>When you’re ready to draft a new release, <a href="https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow">run the workflow manually</a>. After the workflow completes, there will be a new draft release that you can review and choose to publish.</p>
+<p>When <code>version-tag</code> is provided, the action uses that version even if there are no new commits or no conventional commits that determine a version bump. When <code>version-tag</code> is omitted, the commit history must determine the next version.</p>
 <section id="basic-example" class="level3">
 <h3 class="anchored" data-anchor-id="basic-example">Basic example</h3>
 <p><a href=".https://github.com/CCBR/actions/blob/main/examples/draft-release.yml">draft-release.yml</a></p>
