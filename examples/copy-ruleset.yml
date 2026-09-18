@@ -38,7 +38,7 @@ jobs:
       }}
     runs-on: ubuntu-latest
     steps:
-      - uses: CCBR/actions/copy-ruleset@latest
+      - uses: CCBR/actions/copy-ruleset@v0.7.2
         with:
           source-repo: ${{ github.event_name == 'workflow_dispatch' && inputs['source-repo'] || vars.RULESET_SOURCE_REPO }}
           target-repo: ${{ github.event_name == 'workflow_dispatch' && inputs['target-repo'] || vars.RULESET_TARGET_REPO || github.repository }}
