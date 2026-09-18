@@ -94,7 +94,7 @@ steps:
 - `ccbr-actions-version`: The version of CCBR/actions to use.
   **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
-  Default: `3.11`.
+  Default: `3.14`.
 - `pr-branch`: Branch to use for the post-release chores, from where a
   PR will be opened. Recommended to use ‘release/{TAG_NAME}’.
   **Required.** Default: `release/${{ github.ref_name }}`.
