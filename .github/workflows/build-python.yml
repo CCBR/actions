@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: ./.github/test-fixtures/actions
+      - uses: ./.github/actions/integration-tests
 
   test-actions-container:
     runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: ./.github/test-fixtures/actions
+      - uses: ./.github/actions/integration-tests
 
   build-status:
     # https://github.com/orgs/community/discussions/4324#discussioncomment-3477871

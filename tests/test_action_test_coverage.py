@@ -2,8 +2,8 @@
 
 See Further Considerations #1 in the coverage plan (issue #50): every
 `*/action.yml` must either have a sibling `test/action.yml` (invoked by the
-shared `.github/test-fixtures/actions` fixture or directly by a workflow) or
-be explicitly listed here with a reason it cannot be.
+shared `.github/actions/integration-tests` fixture or directly by a workflow)
+or be explicitly listed here with a reason it cannot be.
 """
 
 import re
@@ -13,7 +13,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 LOCAL_ACTION_USAGE = re.compile(r"uses:\s*\./([^\s@]+)")
 SEARCHED_FILES = (
     REPOSITORY_ROOT / ".github/workflows/build-python.yml",
-    REPOSITORY_ROOT / ".github/test-fixtures/actions/action.yml",
+    REPOSITORY_ROOT / ".github/actions/integration-tests/action.yml",
 )
 
 # Actions intentionally excluded from per-action integration tests, with reasons.
@@ -63,7 +63,7 @@ def test_every_action_has_a_sibling_test_action_or_documented_exclusion():
     ]
     assert not untested, (
         f"Add a {untested}/test/action.yml invoked from "
-        ".github/test-fixtures/actions/action.yml, or document why it is "
+        ".github/actions/integration-tests/action.yml, or document why it is "
         "excluded in tests/test_action_test_coverage.py:UNTESTED_ACTIONS"
     )
 

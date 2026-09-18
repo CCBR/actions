@@ -1,5 +1,5 @@
-name: Test GitHub Actions behavior
-description: Verify general action behavior on host and container runners
+name: Integration tests
+description: Verify runner/workspace behavior and exercise each testable composite action
 
 runs:
   using: composite
@@ -8,7 +8,7 @@ runs:
       shell: bash
       run: |
         cd "$GITHUB_WORKSPACE"
-        test -f .github/test-fixtures/actions/action.yml
+        test -f .github/actions/integration-tests/action.yml
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         test "$(git rev-parse --show-toplevel)" = "$GITHUB_WORKSPACE"
     - name: Resolve workspace from Python
@@ -20,7 +20,7 @@ runs:
 
         workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
         os.chdir(workspace)
-        if not (workspace / ".github/test-fixtures/actions/action.yml").is_file():
+        if not (workspace / ".github/actions/integration-tests/action.yml").is_file():
             raise RuntimeError(f"Workspace fixture not found in {workspace}")
         repository_root = Path(
             subprocess.run(
