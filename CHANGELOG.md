@@ -3,6 +3,7 @@
 - Create `ccbr_actions` docker image and show how to use it in example workflows. (#190, @kelly-sovacool, @copilot)
 - New action: `review-pre-commit-pr` to automatically review pre-commit.ci autoupdate PRs and approve them when only `rev:` version bumps are present, or request a human reviewer otherwise. (#189, @kelly-sovacool, @copilot)
   - Add a `workflow_dispatch` trigger to the `review-pre-commit-pr` example workflow to re-scan and review open pre-commit.ci autoupdate PRs on demand, and skip re-review of already-approved PRs. (#208, @kelly-sovacool, @copilot)
+- Set `working-directory` explicitly on steps that touch repo files, since `github.workspace`/default cwd resolve to the wrong path in container jobs (actions/runner#2058). Fixed in `draft-release`, `post-release`, `mkdocs-mike`, `install-r-pak`, `build-docker`, and `sync-copilot-instructions` actions. (#211, @kelly-sovacool, @copilot)
 
 ## actions 0.7.2
 
