@@ -156,6 +156,7 @@ runs:
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
       run: |
         cd "$GITHUB_WORKSPACE"
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
         script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
         cat > "$script" << 'PYEOF'
         import os
