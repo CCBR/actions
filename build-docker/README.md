@@ -81,7 +81,7 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
 - `ccbr-actions-version`: The version of ccbr_actions to use.
   **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
-  Default: `3.11`.
+  Default: `3.14`.
 - `github-actor`: Username of GitHub actor for the git commit when the
   README is updated. **Required.** Default: `258092125+CCBR-bot[bot]`.
 - `github-token`: GitHub Actions token (e.g. github.token).

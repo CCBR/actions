@@ -139,7 +139,7 @@ steps:
   changed files.
 - `token`: GitHub token used for `gh api` calls. Default:
   `${{ github.token }}`.
-- `python-version`: The version of Python to install. Default: `3.11`.
+- `python-version`: The version of Python to install. Default: `3.14`.
 - `ccbr-actions-version`: The version of ccbr_actions to use. Default:
   `main`.
 - `comparison-mode`: Comparison mode for collecting changed files.
