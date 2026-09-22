@@ -80,9 +80,13 @@ def check_only_version_bumps(patch):
         bool: ``True`` if the patch contains only ``rev:`` version bumps.
     """
     changes = _extract_rev_changes(patch)
-    if changes is None:
-        return False
-    return all(_is_version_bumped(old_rev, new_rev) for _, old_rev, new_rev in changes)
+    only_version_bumps = changes is not None
+    if only_version_bumps:
+        only_version_bumps = all(
+            _is_version_bumped(old_rev, new_rev)
+            for _, old_rev, new_rev in changes
+        )
+    return only_version_bumps
 
 
 def _extract_rev_changes(patch):
