@@ -57,7 +57,7 @@ View the package documentation [here](https://CCBR.github.io/actions/package).
 
 {{< include docs/install.qmd >}}
 
-{{< include docs/cli.qmd >}}
+View the CLI usage [here](https://ccbr.github.io/actions/cli).
 
 ## Help & Contributing
 
