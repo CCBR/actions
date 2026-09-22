@@ -92,6 +92,8 @@ readme = {file = "README.md"}
 
 [tool.setuptools]
 script-files = [
+    "scripts/check_docker_build_staleness.py",
+    "scripts/prepare_docker_build_variables.py",
     "scripts/prepare_docker_build_variables.sh",
     "scripts/print_versions.sh",
     "scripts/quarto-listings.py"

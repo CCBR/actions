@@ -7,9 +7,14 @@ import pytest
 from ccbr_actions.pre_commit import (
     PRE_COMMIT_CI_TITLE,
     PRE_COMMIT_CONFIG_FILE,
+    _extract_rev_changes,
+    _github_repo_slug,
     _is_version_bumped,
+    _resolve_commit_sha,
+    _same_commit,
     check_only_pre_commit_config_changed,
     check_only_version_bumps,
+    check_only_version_bumps_or_same_commit,
     is_pre_commit_autoupdate_pr,
     review_pre_commit_pr,
 )
@@ -96,6 +101,19 @@ COMMIT_HASH_PATCH = """\
  - repo: https://github.com/citation-file-format/cffconvert
 -  rev: abc1234deadbeef
 +  rev: def5678cafebabe
+"""
+
+# A moving `vX.Y` alias tag replaces a more specific `vX.Y.Z` tag (e.g. CCBR/actions#218:
+# v0.7.1 -> v0.7). Looks like a downgrade by version string, but may point at the same commit.
+SLIDING_TAG_PATCH = """\
+@@ -41,7 +41,7 @@ repos:
+ additional_dependencies:
+   - prettier@3.4.0
+ - repo: https://github.com/CCBR/Tools
+-  rev: v0.7.1
++  rev: v0.7
+   hooks:
+   - id: detect-absolute-paths
 """
 
 
@@ -204,6 +222,209 @@ def test_check_only_version_bumps_returns_true_for_empty_patch():
     assert check_only_version_bumps("") is True
 
 
+def test_check_only_version_bumps_returns_false_for_sliding_tag_without_lookup():
+    # Without a commit-sha lookup, a moving `vX.Y` tag still looks like a downgrade.
+    assert check_only_version_bumps(SLIDING_TAG_PATCH) is False
+
+
+# ---------------------------------------------------------------------------
+# _extract_rev_changes
+# ---------------------------------------------------------------------------
+
+
+def test_extract_rev_changes_associates_repo_url_with_each_rev_pair():
+    changes = _extract_rev_changes(VALID_PATCH)
+    assert changes == [
+        ("https://github.com/pre-commit/pre-commit-hooks", "v4.4.0", "v4.5.0"),
+        ("https://github.com/psf/black", "23.1.0", "24.3.0"),
+    ]
+
+
+def test_extract_rev_changes_returns_none_for_non_rev_line_changed():
+    assert _extract_rev_changes(INVALID_PATCH_NON_REV_CHANGE) is None
+
+
+def test_extract_rev_changes_returns_none_for_mismatched_rev_count():
+    patch = "@@ -1,2 +1,1 @@\n-  rev: v1.0.0\n-  rev: v2.0.0\n+  rev: v1.1.0\n"
+    assert _extract_rev_changes(patch) is None
+
+
+def test_extract_rev_changes_returns_empty_list_for_empty_patch():
+    assert _extract_rev_changes("") == []
+
+
+def test_extract_rev_changes_does_not_leak_repo_across_hunk_boundary():
+    # The second hunk's rev change has no repo: context line of its own, so it
+    # must not inherit the repo from the first hunk.
+    patch = (
+        "@@ -5,7 +5,7 @@ repos:\n"
+        " - repo: https://github.com/pre-commit/pre-commit-hooks\n"
+        "-  rev: v4.4.0\n"
+        "+  rev: v4.5.0\n"
+        "@@ -41,7 +41,7 @@ repos:\n"
+        "-  rev: v0.7.1\n"
+        "+  rev: v0.7\n"
+    )
+    changes = _extract_rev_changes(patch)
+    assert changes == [
+        ("https://github.com/pre-commit/pre-commit-hooks", "v4.4.0", "v4.5.0"),
+        (None, "v0.7.1", "v0.7"),
+    ]
+
+
+# ---------------------------------------------------------------------------
+# _github_repo_slug
+# ---------------------------------------------------------------------------
+
+
+def test_github_repo_slug_extracts_owner_and_repo():
+    assert _github_repo_slug("https://github.com/CCBR/Tools") == "CCBR/Tools"
+
+
+def test_github_repo_slug_strips_trailing_slash():
+    assert _github_repo_slug("https://github.com/CCBR/Tools/") == "CCBR/Tools"
+
+
+def test_github_repo_slug_returns_none_for_non_github_url():
+    assert _github_repo_slug("https://gitlab.com/CCBR/Tools") is None
+
+
+def test_github_repo_slug_returns_none_for_none():
+    assert _github_repo_slug(None) is None
+
+
+# ---------------------------------------------------------------------------
+# _resolve_commit_sha
+# ---------------------------------------------------------------------------
+
+
+def test_resolve_commit_sha_returns_sha_from_response():
+    session = MockSession(
+        {"https://api.github.com/repos/CCBR/Tools/commits/v0.7": {"sha": "abc123"}}
+    )
+    assert _resolve_commit_sha("CCBR/Tools", "v0.7", session=session) == "abc123"
+
+
+def test_resolve_commit_sha_returns_none_when_ref_not_found():
+    session = MockSession({})
+    assert _resolve_commit_sha("CCBR/Tools", "v9.9", session=session) is None
+
+
+def test_resolve_commit_sha_returns_none_on_request_exception():
+    class RaisingSession:
+        def request(self, *args, **kwargs):
+            raise RuntimeError("boom")
+
+    assert _resolve_commit_sha("CCBR/Tools", "v0.7", session=RaisingSession()) is None
+
+
+# ---------------------------------------------------------------------------
+# _same_commit
+# ---------------------------------------------------------------------------
+
+
+def test_same_commit_returns_true_when_both_revs_share_a_sha():
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7.1": {"sha": "c433"},
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7": {"sha": "c433"},
+        }
+    )
+    assert (
+        _same_commit("https://github.com/CCBR/Tools", "v0.7.1", "v0.7", session=session)
+        is True
+    )
+
+
+def test_same_commit_returns_false_when_shas_differ():
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7.1": {"sha": "c433"},
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7": {"sha": "deadbeef"},
+        }
+    )
+    assert (
+        _same_commit("https://github.com/CCBR/Tools", "v0.7.1", "v0.7", session=session)
+        is False
+    )
+
+
+def test_same_commit_returns_false_for_non_github_repo_url():
+    session = MockSession({})
+    assert (
+        _same_commit("https://gitlab.com/CCBR/Tools", "v0.7.1", "v0.7", session=session)
+        is False
+    )
+
+
+def test_same_commit_returns_false_when_sha_lookup_fails():
+    session = MockSession({})
+    assert (
+        _same_commit("https://github.com/CCBR/Tools", "v0.7.1", "v0.7", session=session)
+        is False
+    )
+
+
+# ---------------------------------------------------------------------------
+# check_only_version_bumps_or_same_commit
+# ---------------------------------------------------------------------------
+
+
+def test_check_only_version_bumps_or_same_commit_accepts_sliding_tag_same_commit():
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7.1": {"sha": "c433"},
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7": {"sha": "c433"},
+        }
+    )
+    assert (
+        check_only_version_bumps_or_same_commit(SLIDING_TAG_PATCH, session=session)
+        is True
+    )
+
+
+def test_check_only_version_bumps_or_same_commit_rejects_real_downgrade():
+    session = MockSession(
+        {
+            "https://api.github.com/repos/pre-commit/pre-commit-hooks/commits/v4.5.0": {
+                "sha": "newer-sha"
+            },
+            "https://api.github.com/repos/pre-commit/pre-commit-hooks/commits/v4.4.0": {
+                "sha": "older-sha"
+            },
+        }
+    )
+    assert (
+        check_only_version_bumps_or_same_commit(DOWNGRADE_PATCH, session=session)
+        is False
+    )
+
+
+def test_check_only_version_bumps_or_same_commit_still_accepts_normal_bump():
+    assert check_only_version_bumps_or_same_commit(VALID_PATCH) is True
+
+
+def test_check_only_version_bumps_or_same_commit_returns_false_for_non_rev_change():
+    assert (
+        check_only_version_bumps_or_same_commit(INVALID_PATCH_NON_REV_CHANGE) is False
+    )
+
+
+def test_check_only_version_bumps_or_same_commit_fails_closed_when_repo_context_missing():
+    # A downgrade-looking rev change with no repo: line in its hunk can't be
+    # verified via the same-commit fallback and must not be approved, even if
+    # a session is provided that would resolve a same-commit match for some
+    # other repo's revs.
+    patch = "@@ -41,7 +41,7 @@ repos:\n-  rev: v0.7.1\n+  rev: v0.7\n"
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7.1": {"sha": "c433"},
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7": {"sha": "c433"},
+        }
+    )
+    assert check_only_version_bumps_or_same_commit(patch, session=session) is False
+
+
 # ---------------------------------------------------------------------------
 # review_pre_commit_pr
 # ---------------------------------------------------------------------------
@@ -274,6 +495,42 @@ def test_review_pre_commit_pr_approves_when_conditions_met():
         c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
     ]
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
+
+
+def test_review_pre_commit_pr_approves_sliding_tag_pointing_at_same_commit():
+    # Regression test for CCBR/actions#218: rev changed from v0.7.1 to v0.7,
+    # which looks like a downgrade but both tags point at the same commit.
+    session = _make_review_session(patch=SLIDING_TAG_PATCH)
+    session.payloads["https://api.github.com/repos/CCBR/Tools/commits/v0.7.1"] = {
+        "sha": "c433f1c"
+    }
+    session.payloads["https://api.github.com/repos/CCBR/Tools/commits/v0.7"] = {
+        "sha": "c433f1c"
+    }
+    result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
+    assert result is True
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert any(body.get("event") == "APPROVE" for body in review_bodies)
+
+
+def test_review_pre_commit_pr_requests_human_review_for_sliding_tag_different_commit():
+    # Same rev change as above, but the two tags point at different commits,
+    # so it's a genuine downgrade and should still require human review.
+    session = _make_review_session(patch=SLIDING_TAG_PATCH)
+    session.payloads["https://api.github.com/repos/CCBR/Tools/commits/v0.7.1"] = {
+        "sha": "c433f1c"
+    }
+    session.payloads["https://api.github.com/repos/CCBR/Tools/commits/v0.7"] = {
+        "sha": "deadbeef"
+    }
+    result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
+    assert result is False
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert any(body.get("event") == "REQUEST_CHANGES" for body in review_bodies)
 
 
 def test_review_pre_commit_pr_skips_when_current_review_is_approved():

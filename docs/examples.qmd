@@ -18,7 +18,10 @@ ccbr_actions use-example draft-release
 #| output: asis
 import pathlib
 
-for filename in sorted(pathlib.Path().glob("../examples/*.yml")):
+for filename in sorted(
+    list(pathlib.Path().glob("../examples/*.yml"))
+    + list(pathlib.Path().glob("../examples/*.yaml"))
+):
     print(f"### {filename.stem}")
     print("[{{< fa brands github >}} Source]" + f"(https://github.com/CCBR/actions/tree/main/{str(filename).lstrip('../')})")
     print("```yaml")

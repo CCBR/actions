@@ -18,6 +18,10 @@ Install R package dependencies with pak
 
 ## Usage
 
+This action must run on a host runner, not in a job `container`: it provisions R
+and pandoc with [`r-lib/actions`](https://github.com/r-lib/actions), which
+requires `sudo`.
+
 The repository must have a `DESCRIPTION` file at the root with any dependencies
 listed.
 

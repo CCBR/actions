@@ -38,7 +38,7 @@ jobs:
   review-pre-commit-pr:
     needs: [find-prs]
     runs-on: ubuntu-latest
-    container: nciccbr/ccbr_actions:latest
+    #container: nciccbr/ccbr_actions:latest
     # Only run for pre-commit.ci autoupdate PRs, whether from the pull_request event or a manual re-scan
     if: >
       always() &&
@@ -53,7 +53,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-        if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       - name: Generate CCBR-bot token
         id: generate-token
         uses: actions/create-github-app-token@v3
@@ -70,3 +69,4 @@ jobs:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ matrix.pr-number }}
           repo: ${{ github.repository }}
+          ccbr-actions-version: main

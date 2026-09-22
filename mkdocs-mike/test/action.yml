@@ -1,0 +1,25 @@
+name: mkdocs-mike integration test
+description: Verify the mkdocs-mike action resolves the docs version in dry-run mode without deploying
+
+runs:
+  using: composite
+  steps:
+    - id: mkdocs-mike
+      uses: ./mkdocs-mike
+      with:
+        github-token: ${{ github.token }}
+        ccbr-actions-version: main
+        dry-run: true
+    - name: Verify mkdocs-mike resolved a docs version without deploying
+      shell: bash
+      env:
+        VERSION: ${{ steps.mkdocs-mike.outputs.version }}
+        DOCS_BRANCH: gh-pages
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        test -n "$VERSION"
+        # a dry run must not leave a local docs branch behind
+        if git show-ref --verify --quiet "refs/heads/$DOCS_BRANCH"; then
+          echo "Dry run created the local $DOCS_BRANCH branch" >&2
+          exit 1
+        fi

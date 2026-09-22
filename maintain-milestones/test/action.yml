@@ -1,0 +1,26 @@
+name: maintain-milestones integration test
+description: Verify the maintain-milestones action plans milestone changes in dry-run mode without applying them
+
+runs:
+  using: composite
+  steps:
+    - name: Plan milestone maintenance without applying it
+      uses: ./maintain-milestones
+      with:
+        target_repo: ${{ github.event.repository.name }}
+        owner: ${{ github.repository_owner }}
+        dry_run: true
+        github-token: ${{ github.token }}
+    - name: Reject an owner/repo value for target_repo
+      id: invalid-target-repo
+      continue-on-error: true
+      uses: ./maintain-milestones
+      with:
+        target_repo: ${{ github.repository }}
+        dry_run: true
+        github-token: ${{ github.token }}
+    - name: Verify the invalid target_repo failed
+      shell: bash
+      env:
+        OUTCOME: ${{ steps.invalid-target-repo.outcome }}
+      run: test "$OUTCOME" = "failure"

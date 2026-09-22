@@ -1,8 +1,8 @@
 # review-pre-commit-pr
 
 **`review-pre-commit-pr`** - Review a pre-commit.ci autoupdate PR:
-approve and attempt auto-merge when only rev: versions changed,
-otherwise request a human reviewer
+approve and attempt auto-merge when only rev: versions changed (or a rev
+alias tag points at the same commit), otherwise request a human reviewer
 
 This action automates the review of pull requests opened by the
 [pre-commit.ci](https://pre-commit.ci) bot with the title
@@ -13,7 +13,10 @@ The action verifies two conditions:
 1.  **Only `.pre-commit-config.yaml` was changed** – no other files
     should be modified by a routine autoupdate.
 2.  **The only changes are `rev:` version bumps** – no repos are added
-    or removed and no fields other than `rev:` are changed.
+    or removed and no fields other than `rev:` are changed. A `rev:`
+    change that isn’t a version bump is still accepted if the old and
+    new revs resolve to the same commit (e.g. a moving `vX.Y` alias tag
+    replacing a more specific `vX.Y.Z` tag).
 
 When both conditions are satisfied the action:
 
@@ -141,7 +144,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-        if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       - name: Generate CCBR-bot token
         id: generate-token
         uses: actions/create-github-app-token@v3
@@ -153,7 +155,7 @@ jobs:
           permission-issues: write
           permission-pull-requests: write
 
-      - uses: CCBR/actions/review-pre-commit-pr@latest
+      - uses: CCBR/actions/review-pre-commit-pr@v0.7.2
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ matrix.pr-number }}

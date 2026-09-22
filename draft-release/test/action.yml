@@ -1,0 +1,12 @@
+name: draft-release integration test
+description: Verify the draft-release action runs in dry-run mode without creating release artifacts
+
+runs:
+  using: composite
+  steps:
+    - uses: ./draft-release
+      with:
+        github-token: ${{ github.token }}
+        version-tag: v0.7.3
+        ccbr-actions-version: main
+        dry-run: true
