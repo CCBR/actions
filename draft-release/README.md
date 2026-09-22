@@ -64,7 +64,7 @@ determine the next version.
 
 ### Basic example
 
-[draft-release.yml](./examples/draft-release.yml)
+[draft-release.yml](/examples/draft-release.yml)
 
 ```yaml
 name: draft-release

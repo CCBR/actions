@@ -25,7 +25,7 @@ override it.
 
 ### Basic example
 
-[changed-files.yml](./examples/changed-files.yml)
+[changed-files.yml](/examples/changed-files.yml)
 
 Get all changed files:
 

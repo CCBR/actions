@@ -8,11 +8,6 @@ This action automates the review of pull requests opened by the
 [pre-commit.ci](https://pre-commit.ci) bot with the title
 `[pre-commit.ci] pre-commit autoupdate`.
 
-When running in the `nciccbr/ccbr_actions` container, the `ccbr_actions`
-package is already installed in the image. Its version is the version used to
-build the image, normally indicated by the image tag (for example,
-`nciccbr/ccbr_actions:v0.7.2`); `ccbr-actions-version` cannot override it.
-
 The action verifies two conditions:
 
 1.  **Only `.pre-commit-config.yaml` was changed** – no other files
@@ -180,7 +175,8 @@ jobs:
   requires human review.
 - `force-review`: Re-submit the review and reviewer request even when
   the PR already has an approval. Default: `false`.
-- `ccbr-actions-version`: The version of CCBR/actions to install
-  (branch, tag, or ‘latest’). **Required.** Default: `latest`.
+- `ccbr-actions-version`: The version of CCBR/actions to install when
+  running outside the ccbr_actions container (branch, tag, or ‘latest’).
+  **Required.** Default: `latest`.
 - `python-version`: Python version to use. **Required.** Default:
   `3.14`.
