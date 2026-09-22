@@ -676,6 +676,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p><strong><code>mkdocs-mike</code></strong> - Deploy documentation to github pages using mkdocs + mike</p>
 <p>This action is designed to be used with a repository that uses mkdocs to generate documentation and mike to deploy it to github pages. The action will checkout the repository, install the necessary python packages, build the documentation, and deploy it to the specified branch.</p>
+<p>When running in the <code>nciccbr/ccbr_actions</code> container, the <code>ccbr_actions</code> package is already installed in the image. Its version is the version used to build the image, normally indicated by the image tag (for example, <code>nciccbr/ccbr_actions:v0.7.2</code>); <code>ccbr-actions-version</code> cannot override it.</p>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <p>Any python requirements for your docs website (mkdocs, mike, other extensions) should be placed in <code>docs/requirements.txt</code>. You will also need an mkdocs config file <code>mkdocs.yml</code> in the root of your repository. To properly configure mike for your website, you will also need to complete these one-time steps:</p>
@@ -725,7 +726,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="inputs">Inputs</h2>
 <ul>
 <li><code>github-token</code>: GitHub Actions token (e.g.&nbsp;{ github.token }). <strong>Required.</strong></li>
-<li><code>ccbr-actions-version</code>: The version of ccbr_actions to install. <strong>Required.</strong> Default: <code>latest</code>.</li>
+<li><code>ccbr-actions-version</code>: The version of ccbr_actions to install when running outside the ccbr_actions container. <strong>Required.</strong> Default: <code>latest</code>.</li>
 <li><code>python-version</code>: The version of Python to install. <strong>Required.</strong> Default: <code>3.14</code>.</li>
 <li><code>docs-branch</code>: The branch to deploy the docs website to. <strong>Required.</strong> Default: <code>gh-pages</code>.</li>
 <li><code>github-actor</code>: Username of GitHub actor for the git commit when the docs branch is deployed. <strong>Required.</strong> Default: <code>41898282+github-actions[bot]</code>.</li>

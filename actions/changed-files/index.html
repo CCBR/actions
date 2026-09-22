@@ -687,6 +687,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Get a list of changed files in a GitHub Actions workflow and optionally filter them using <code>.gitignore</code>-style patterns.</p>
 <p>This action retrieves the list of files changed in a pull request or push event, and can filter the results by one or more patterns. It uses the GitHub API (via Python) to fetch changed files and <code>pathspec</code> for pattern matching.</p>
 <p>By default, <code>comparison-mode</code> is <code>latest-commit</code>, which compares only the latest commit for pull requests and uses the full <code>before...after</code> range for push events.</p>
+<p>When running in the <code>nciccbr/ccbr_actions</code> container, the <code>ccbr_actions</code> package is already installed in the image. Its version is the version used to build the image, normally indicated by the image tag (for example, <code>nciccbr/ccbr_actions:v0.7.2</code>); <code>ccbr-actions-version</code> cannot override it.</p>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <section id="basic-example" class="level3">
@@ -789,7 +790,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>paths</code>: Pattern list in the .gitignore syntax to match against changed files.</li>
 <li><code>token</code>: GitHub token used for <code>gh api</code> calls. Default: <code>${{ github.token }}</code>.</li>
 <li><code>python-version</code>: The version of Python to install. Default: <code>3.14</code>.</li>
-<li><code>ccbr-actions-version</code>: The version of ccbr_actions to use. Default: <code>main</code>.</li>
+<li><code>ccbr-actions-version</code>: The version of ccbr_actions to install when running outside the ccbr_actions container. Default: <code>main</code>.</li>
 <li><code>comparison-mode</code>: Comparison mode for collecting changed files.
 <ul>
 <li>latest-commit (default): for pull_request, compare head^…head (latest commit only)</li>
