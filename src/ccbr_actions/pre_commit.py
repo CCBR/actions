@@ -80,9 +80,9 @@ def check_only_version_bumps(patch):
         bool: ``True`` if the patch contains only ``rev:`` version bumps.
     """
     changes = _extract_rev_changes(patch)
-    if changes is None:
-        return False
-    return all(_is_version_bumped(old_rev, new_rev) for _, old_rev, new_rev in changes)
+    return changes is not None and all(
+        _is_version_bumped(old_rev, new_rev) for _, old_rev, new_rev in changes
+    )
 
 
 def _extract_rev_changes(patch):
@@ -101,6 +101,7 @@ def _extract_rev_changes(patch):
     removed = []  # list of (repo_url, rev)
     added = []  # list of (repo_url, rev)
     current_repo = None
+    is_valid = True
 
     for line in patch.splitlines():
         if line.startswith("@@"):
@@ -108,30 +109,31 @@ def _extract_rev_changes(patch):
             # same hunk, otherwise it could inherit the wrong repo from an
             # earlier hunk and let the same-commit fallback compare unrelated refs.
             current_repo = None
-            continue
-        if line.startswith(("---", "+++")):
-            continue
-        if line.startswith(("-", "+")):
+        elif line.startswith(("---", "+++")):
+            pass
+        elif line.startswith(("-", "+")):
             content = line[1:]
             if not _REV_PATTERN.match(content):
-                return None
-            rev_value = content.strip().removeprefix("rev:").strip()
-            if line.startswith("-"):
-                removed.append((current_repo, rev_value))
+                is_valid = False
             else:
-                added.append((current_repo, rev_value))
+                rev_value = content.strip().removeprefix("rev:").strip()
+                if line.startswith("-"):
+                    removed.append((current_repo, rev_value))
+                else:
+                    added.append((current_repo, rev_value))
         else:
             repo_match = _REPO_PATTERN.search(line)
             if repo_match:
                 current_repo = repo_match.group(1)
 
-    if len(removed) != len(added):
-        return None
-
-    return [
-        (repo_url, old_rev, new_rev)
-        for (repo_url, old_rev), (_, new_rev) in zip(removed, added)
-    ]
+    if not is_valid or len(removed) != len(added):
+        changes = None
+    else:
+        changes = [
+            (repo_url, old_rev, new_rev)
+            for (repo_url, old_rev), (_, new_rev) in zip(removed, added)
+        ]
+    return changes
 
 
 def _is_version_bumped(old_rev, new_rev):
@@ -193,7 +195,7 @@ def _resolve_commit_sha(repo_slug, ref, token=None, session=None):
             session=session,
         )
     except (requests.exceptions.RequestException, RuntimeError):
-        return None
+        data = None
     return data.get("sha") if isinstance(data, dict) else None
 
 
@@ -216,11 +218,13 @@ def _same_commit(repo_url, old_rev, new_rev, token=None, session=None):
         bool: ``True`` if both revs resolve to the same commit.
     """
     repo_slug = _github_repo_slug(repo_url)
-    if not repo_slug:
-        return False
-    old_sha = _resolve_commit_sha(repo_slug, old_rev, token=token, session=session)
-    new_sha = _resolve_commit_sha(repo_slug, new_rev, token=token, session=session)
-    return bool(old_sha) and old_sha == new_sha
+    if repo_slug:
+        old_sha = _resolve_commit_sha(repo_slug, old_rev, token=token, session=session)
+        new_sha = _resolve_commit_sha(repo_slug, new_rev, token=token, session=session)
+        is_same = bool(old_sha) and old_sha == new_sha
+    else:
+        is_same = False
+    return is_same
 
 
 def check_only_version_bumps_or_same_commit(patch, token=None, session=None):
@@ -239,15 +243,11 @@ def check_only_version_bumps_or_same_commit(patch, token=None, session=None):
         the same commit.
     """
     changes = _extract_rev_changes(patch)
-    if changes is None:
-        return False
-    for repo_url, old_rev, new_rev in changes:
-        if _is_version_bumped(old_rev, new_rev):
-            continue
-        if _same_commit(repo_url, old_rev, new_rev, token=token, session=session):
-            continue
-        return False
-    return True
+    return changes is not None and all(
+        _is_version_bumped(old_rev, new_rev)
+        or _same_commit(repo_url, old_rev, new_rev, token=token, session=session)
+        for repo_url, old_rev, new_rev in changes
+    )
 
 
 def review_pre_commit_pr(
