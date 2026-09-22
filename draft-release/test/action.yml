@@ -7,6 +7,6 @@ runs:
     - uses: ./draft-release
       with:
         github-token: ${{ github.token }}
-        version-tag: v0.7.3
+        version-tag: v0.8.1
         ccbr-actions-version: main
         dry-run: true
