@@ -4,9 +4,19 @@ description: Verify the draft-release action runs in dry-run mode without creati
 runs:
   using: composite
   steps:
+    - name: Compute next patch version for test
+      id: next-version
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      # derive next version from the actual latest release so this doesn't go stale as releases are published
+      run: |
+        latest_tag=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
+        IFS='.' read -r major minor patch <<< "${latest_tag#v}"
+        echo "version-tag=v${major}.${minor}.$((patch + 1))" >> "$GITHUB_OUTPUT"
     - uses: ./draft-release
       with:
         github-token: ${{ github.token }}
-        version-tag: v0.8.1
+        version-tag: ${{ steps.next-version.outputs.version-tag }}
         ccbr-actions-version: main
         dry-run: true
