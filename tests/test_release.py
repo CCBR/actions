@@ -210,6 +210,16 @@ def test_get_changelog_lines_first_release_includes_history(data_dir_rel):
     assert "This is the first release of `ccbr_actions`! 🎉\n" in release_notes
 
 
+def test_get_changelog_lines_case_insensitive_dev_header(data_dir_rel):
+    new_changelog, release_notes = get_changelog_lines(
+        "",
+        "0.2.0",
+        changelog_filepath=str(data_dir_rel / "example_changelog_capitalized.md"),
+    )
+    assert new_changelog[0] == "## 0.2.0\n"
+    assert release_notes[:3] == ["\n", "development version notes go here\n", "\n"]
+
+
 def test_get_changelog_lines_sinclair(data_dir_rel):
     new_changelog, release_notes = get_changelog_lines(
         "0.3.0",

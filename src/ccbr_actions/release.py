@@ -593,8 +593,13 @@ def get_changelog_lines(
     for_next = True
     with open(changelog_filepath, "r") as infile:
         for line in infile:
-            if line.startswith("#") and dev_header in line:
-                line = line.replace(dev_header, next_version_strict)
+            if line.startswith("#") and dev_header.lower() in line.lower():
+                line = re.sub(
+                    re.escape(dev_header),
+                    next_version_strict,
+                    line,
+                    flags=re.IGNORECASE,
+                )
             elif (
                 latest_version_strict
                 and line.startswith("#")
