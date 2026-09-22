@@ -23,6 +23,8 @@ from .pr_review import (
 PRE_COMMIT_CI_TITLE = "[pre-commit.ci] pre-commit autoupdate"
 PRE_COMMIT_CONFIG_FILE = ".pre-commit-config.yaml"
 _REV_PATTERN = re.compile(r"^\s+rev:\s+\S+\s*$")
+_REPO_PATTERN = re.compile(r"repo:\s+(\S+)")
+_GITHUB_REPO_URL_PATTERN = re.compile(r"^https://github\.com/([^/\s]+/[^/\s]+?)/?$")
 
 
 def is_pre_commit_autoupdate_pr(pr_title, pr_sender_type):
@@ -77,8 +79,28 @@ def check_only_version_bumps(patch):
     Returns:
         bool: ``True`` if the patch contains only ``rev:`` version bumps.
     """
-    removed_revs = []
-    added_revs = []
+    changes = _extract_rev_changes(patch)
+    if changes is None:
+        return False
+    return all(_is_version_bumped(old_rev, new_rev) for _, old_rev, new_rev in changes)
+
+
+def _extract_rev_changes(patch):
+    """
+    Parse a ``.pre-commit-config.yaml`` diff patch into a list of rev changes.
+
+    Args:
+        patch (str): Unified diff patch string for ``.pre-commit-config.yaml``.
+
+    Returns:
+        list[tuple[str | None, str, str]] | None: A list of
+        ``(repo_url, old_rev, new_rev)`` tuples in the order they appear, or
+        ``None`` if the patch contains changes other than ``rev:`` lines, or
+        the number of removed and added ``rev:`` lines doesn't match.
+    """
+    removed = []  # list of (repo_url, rev)
+    added = []  # list of (repo_url, rev)
+    current_repo = None
 
     for line in patch.splitlines():
         if line.startswith(("@@", "---", "+++")):
@@ -86,21 +108,24 @@ def check_only_version_bumps(patch):
         if line.startswith(("-", "+")):
             content = line[1:]
             if not _REV_PATTERN.match(content):
-                return False
+                return None
             rev_value = content.strip().removeprefix("rev:").strip()
             if line.startswith("-"):
-                removed_revs.append(rev_value)
+                removed.append((current_repo, rev_value))
             else:
-                added_revs.append(rev_value)
+                added.append((current_repo, rev_value))
+        else:
+            repo_match = _REPO_PATTERN.search(line)
+            if repo_match:
+                current_repo = repo_match.group(1)
 
-    if len(removed_revs) != len(added_revs):
-        return False
+    if len(removed) != len(added):
+        return None
 
-    for old_rev, new_rev in zip(removed_revs, added_revs):
-        if not _is_version_bumped(old_rev, new_rev):
-            return False
-
-    return True
+    return [
+        (repo_url, old_rev, new_rev)
+        for (repo_url, old_rev), (_, new_rev) in zip(removed, added)
+    ]
 
 
 def _is_version_bumped(old_rev, new_rev):
@@ -124,6 +149,99 @@ def _is_version_bumped(old_rev, new_rev):
         return new_v > old_v
     except InvalidVersion:
         return old_rev != new_rev
+
+
+def _github_repo_slug(repo_url):
+    """
+    Extract the ``owner/repo`` slug from a GitHub repo URL.
+
+    Args:
+        repo_url (str | None): A ``repo:`` value from ``.pre-commit-config.yaml``.
+
+    Returns:
+        str | None: The ``owner/repo`` slug, or ``None`` if *repo_url* isn't a
+        recognizable GitHub URL.
+    """
+    match = _GITHUB_REPO_URL_PATTERN.match(repo_url or "")
+    return match.group(1) if match else None
+
+
+def _resolve_commit_sha(repo_slug, ref, token=None, session=None):
+    """
+    Resolve a ref (tag, branch, or commit-ish) to its commit SHA.
+
+    Args:
+        repo_slug (str): ``owner/repo`` slug.
+        ref (str): Tag, branch, or commit SHA to resolve.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        str | None: The resolved commit SHA, or ``None`` if it couldn't be
+        resolved.
+    """
+    try:
+        data = github_api_get(
+            url=f"{GITHUB_API_URL}/repos/{repo_slug}/commits/{ref}",
+            token=token,
+            session=session,
+        )
+    except (requests.exceptions.RequestException, RuntimeError):
+        return None
+    return data.get("sha") if isinstance(data, dict) else None
+
+
+def _same_commit(repo_url, old_rev, new_rev, token=None, session=None):
+    """
+    Check whether *old_rev* and *new_rev* resolve to the same commit.
+
+    This is a fallback for cases where a naive version comparison suggests a
+    downgrade, e.g. a moving ``vX.Y`` tag replacing a more specific
+    ``vX.Y.Z`` tag that in fact points at the same commit.
+
+    Args:
+        repo_url (str | None): The ``repo:`` value the revs belong to.
+        old_rev (str): Previous revision tag or hash.
+        new_rev (str): New revision tag or hash.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if both revs resolve to the same commit.
+    """
+    repo_slug = _github_repo_slug(repo_url)
+    if not repo_slug:
+        return False
+    old_sha = _resolve_commit_sha(repo_slug, old_rev, token=token, session=session)
+    new_sha = _resolve_commit_sha(repo_slug, new_rev, token=token, session=session)
+    return bool(old_sha) and old_sha == new_sha
+
+
+def check_only_version_bumps_or_same_commit(patch, token=None, session=None):
+    """
+    Like [](`~ccbr_actions.pre_commit.check_only_version_bumps`), but also
+    accepts a rev change that isn't a version bump if both revs resolve to
+    the same commit (e.g. a moving ``vX.Y`` alias tag).
+
+    Args:
+        patch (str): Unified diff patch string for ``.pre-commit-config.yaml``.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if every rev change is a version bump or repoints to
+        the same commit.
+    """
+    changes = _extract_rev_changes(patch)
+    if changes is None:
+        return False
+    for repo_url, old_rev, new_rev in changes:
+        if _is_version_bumped(old_rev, new_rev):
+            continue
+        if _same_commit(repo_url, old_rev, new_rev, token=token, session=session):
+            continue
+        return False
+    return True
 
 
 def review_pre_commit_pr(
@@ -205,7 +323,11 @@ def review_pre_commit_pr(
         )
         patch = file_obj.get("patch")
         only_rev_bumps = (
-            isinstance(patch, str) and bool(patch) and check_only_version_bumps(patch)
+            isinstance(patch, str)
+            and bool(patch)
+            and check_only_version_bumps_or_same_commit(
+                patch, token=token, session=session
+            )
         )
     print(f"Only {PRE_COMMIT_CONFIG_FILE} changed: {only_config_changed}")
     print(f"Only rev bumps found: {only_rev_bumps}")
