@@ -597,7 +597,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#actions-development-version" id="toc-actions-development-version" class="nav-link active" data-scroll-target="#actions-development-version">actions development version</a></li>
+  <li><a href="#actions-development-version" id="toc-actions-development-version" class="nav-link active" data-scroll-target="#actions-development-version">actions development version</a>
+  <ul class="collapse">
+  <li><a href="#new" id="toc-new" class="nav-link" data-scroll-target="#new">New</a></li>
+  <li><a href="#fixes" id="toc-fixes" class="nav-link" data-scroll-target="#fixes">Fixes</a></li>
+  </ul></li>
   <li><a href="#actions-0.7.2" id="toc-actions-0.7.2" class="nav-link" data-scroll-target="#actions-0.7.2">actions 0.7.2</a></li>
   <li><a href="#actions-0.7.1" id="toc-actions-0.7.1" class="nav-link" data-scroll-target="#actions-0.7.1">actions 0.7.1</a></li>
   <li><a href="#actions-0.7.0" id="toc-actions-0.7.0" class="nav-link" data-scroll-target="#actions-0.7.0">actions 0.7.0</a></li>
@@ -644,27 +648,37 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="actions-development-version" class="level2">
 <h2 class="anchored" data-anchor-id="actions-development-version">actions development version</h2>
+<section id="new" class="level3">
+<h3 class="anchored" data-anchor-id="new">New</h3>
 <ul>
-<li>New <code>dry-run</code> input for <code>mkdocs-mike</code> to print the <code>mike deploy</code> command instead of deploying the docs website. (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
-<li>Fix container detection in <code>draft-release</code>, <code>post-release</code>, <code>changed-files</code>, <code>mkdocs-mike</code>, and <code>review-pre-commit-pr</code>: the <code>CCBR_ACTIONS_DOCKER</code> variable baked into the <code>ccbr_actions</code> image is not visible to the <code>env</code> context, so Python/R setup steps (including <code>cache: pip</code>, which fails in container jobs) were still running inside the container. Detection now happens in a shell step whose output gates the setup steps. (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
-<li>Fix <code>draft-release</code> to accept a manually provided version when conventional commits do not determine a version bump. (#213, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
-<li>Create <code>ccbr_actions</code> docker image and show how to use it in example workflows. (#190, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>Create <code>ccbr_actions</code> docker image and show how to use it in example workflows. (#190, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)
+<ul>
+<li>Resolve <code>GITHUB_WORKSPACE</code> at runtime and register it as a safe Git directory in container jobs, working around actions/runner#2058 and actions/checkout#1169. (#214, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>Default composite actions to Python 3.14, matching the <code>ccbr_actions</code> container runtime. (#214, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+</ul></li>
+<li>Allow <code>draft-release</code> to handle first-release repos and fail fast on required files. (#179, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 <li>New action: <code>review-pre-commit-pr</code> to automatically review pre-commit.ci autoupdate PRs and approve them when only <code>rev:</code> version bumps are present, or request a human reviewer otherwise. (#189, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)
 <ul>
 <li>Add a <code>workflow_dispatch</code> trigger to the <code>review-pre-commit-pr</code> example workflow to re-scan and review open pre-commit.ci autoupdate PRs on demand, and skip re-review of already-approved PRs. (#208, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
-<li>Fix <code>review-pre-commit-pr</code> to auto-approve version changes where a moving <code>vX.Y</code> tag replaces a more specific <code>vX.Y.Z</code> tag pointing at the same commit, instead of requiring human review as a false-positive downgrade. (#219, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>Handle case where a moving <code>vX.Y</code> tag replaces a more specific <code>vX.Y.Z</code> tag pointing at the same commit. (#219, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 </ul></li>
-<li>Fix <code>draft-release</code>: handle first-release repos and fail fast on required files. (#179, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
-<li>Resolve <code>GITHUB_WORKSPACE</code> at runtime and register it as a safe Git directory in container jobs, working around actions/runner#2058 and actions/checkout#1169. Validate the workarounds in host and container jobs. Fixed in <code>draft-release</code>, <code>post-release</code>, <code>mkdocs-mike</code>, <code>install-r-pak</code>, <code>build-docker</code>, and <code>sync-copilot-instructions</code> actions. (#211, #214, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
-<li>Default composite actions to Python 3.14, matching the <code>ccbr_actions</code> container runtime. (#214, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
-<li>Fix the <code>draft-release</code> example workflow docs (<code>python-verson</code> typo, Python 3.14, <code>actions/checkout@v7</code>) and rename <code>examples/R-CMD-check.yaml</code> to <code>.yml</code> so it appears in the published examples docs. (#215, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
-<li>Set up testing infrastructure for github actions: (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)
+</ul>
+</section>
+<section id="fixes" class="level3">
+<h3 class="anchored" data-anchor-id="fixes">Fixes</h3>
 <ul>
-<li>host/container integration coverage, dry-run support for release actions, actionlint validation, and contract tests for example workflows.</li>
-</ul></li>
+<li>Fix <code>draft-release</code> to accept a manually provided version when conventional commits do not determine a version bump. (#213, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>Fix the <code>draft-release</code> example workflow docs (correct typo, Python 3.14, <code>actions/checkout@v7</code>) and rename <code>examples/R-CMD-check.yaml</code> to <code>.yml</code> so it appears in the published examples docs. (#215, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+<li>Set up testing infrastructure for github actions and related fixes: (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)
+<ul>
+<li>Includes host/container integration coverage, dry-run support for release actions, actionlint validation, and contract tests for example workflows.</li>
+<li>Fix container detection in <code>draft-release</code>, <code>post-release</code>, <code>changed-files</code>, <code>mkdocs-mike</code>, and <code>review-pre-commit-pr</code>: the <code>CCBR_ACTIONS_DOCKER</code> variable baked into the <code>ccbr_actions</code> image is not visible to the <code>env</code> context, so Python/R setup steps (including <code>cache: pip</code>, which fails in container jobs) were still running inside the container. Detection now happens in a shell step whose output gates the setup steps. (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
 <li>Fix <code>build-docker</code>: the <code>push_success</code> output now reports <code>false</code> when pushing is disabled. (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 <li>Fix <code>draft-release</code> and <code>post-release</code>: the <code>dry-run</code> input rendered as lowercase <code>true</code>/<code>false</code> in the Python step, raising <code>NameError</code>. (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+<li>New <code>dry-run</code> input for <code>mkdocs-mike</code> to print the <code>mike deploy</code> command instead of deploying the docs website. (#216, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>)</li>
+</ul></li>
 </ul>
+</section>
 </section>
 <section id="actions-0.7.2" class="level2">
 <h2 class="anchored" data-anchor-id="actions-0.7.2">actions 0.7.2</h2>
