@@ -8,6 +8,12 @@ generate documentation and mike to deploy it to github pages. The action
 will checkout the repository, install the necessary python packages,
 build the documentation, and deploy it to the specified branch.
 
+When running in the `nciccbr/ccbr_actions` container, the `ccbr_actions`
+package is already installed in the image. Its version is the version
+used to build the image, normally indicated by the image tag (for
+example, `nciccbr/ccbr_actions:v0.7.2`); `ccbr-actions-version` cannot
+override it.
+
 ## Usage
 
 Any python requirements for your docs website (mkdocs, mike, other
@@ -83,8 +89,9 @@ steps:
 
 - `github-token`: GitHub Actions token (e.g. { github.token }).
   **Required.**
-- `ccbr-actions-version`: The version of ccbr_actions to install.
-  **Required.** Default: `latest`.
+- `ccbr-actions-version`: The version of ccbr_actions to install when
+  running outside the ccbr_actions container. **Required.** Default:
+  `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.14`.
 - `docs-branch`: The branch to deploy the docs website to. **Required.**

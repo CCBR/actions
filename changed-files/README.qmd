@@ -20,6 +20,11 @@ This action retrieves the list of files changed in a pull request or push event,
 
 By default, `comparison-mode` is `latest-commit`, which compares only the latest commit for pull requests and uses the full `before...after` range for push events.
 
+When running in the `nciccbr/ccbr_actions` container, the `ccbr_actions` package is
+already installed in the image. Its version is the version used to build the image,
+normally indicated by the image tag (for example, `nciccbr/ccbr_actions:v0.7.2`);
+`ccbr-actions-version` cannot override it.
+
 ## Usage
 
 ### Basic example
