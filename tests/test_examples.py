@@ -10,7 +10,8 @@ EXAMPLES = sorted(
     list((REPOSITORY_ROOT / "examples").glob("*.yml"))
     + list((REPOSITORY_ROOT / "examples").glob("*.yaml"))
 )
-CURRENT_RELEASE = "v0.7.2"
+CURRENT_VERSION = (REPOSITORY_ROOT / "VERSION").read_text().strip()
+CURRENT_RELEASE = f"v{CURRENT_VERSION.removesuffix('-dev')}"
 ACTION_REFERENCE = re.compile(r"CCBR/actions/([^@\s]+)@([^\s]+)")
 
 
