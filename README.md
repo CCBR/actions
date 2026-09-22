@@ -74,7 +74,8 @@ Custom actions used in our github workflows.
   to be triggered by publishing a release
 - [review-pre-commit-pr](review-pre-commit-pr) - Review a pre-commit.ci
   autoupdate PR: approve and attempt auto-merge when only rev: versions
-  changed, otherwise request a human reviewer
+  changed (or a rev alias tag points at the same commit), otherwise
+  request a human reviewer
 - [sync-copilot-instructions](sync-copilot-instructions) - Sync Copilot
   instructions from a source repository to a target repository and open
   a PR

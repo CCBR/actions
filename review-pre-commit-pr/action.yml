@@ -1,5 +1,5 @@
 name: review-pre-commit-pr
-description: "Review a pre-commit.ci autoupdate PR: approve and attempt auto-merge when only rev: versions changed, otherwise request a human reviewer"
+description: "Review a pre-commit.ci autoupdate PR: approve and attempt auto-merge when only rev: versions changed (or a rev alias tag points at the same commit), otherwise request a human reviewer"
 author: "Kelly Sovacool"
 
 inputs:

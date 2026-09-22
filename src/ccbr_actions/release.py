@@ -278,11 +278,12 @@ def prepare_draft_release(
             update_citation(
                 citation_file=citation_filepath, version=next_version, debug=debug
             )
-        write_citation(
-            citation_file=citation_filepath,
-            output_file="codemeta.json",
-            output_format="codemeta",
-        )
+        if not debug:
+            write_citation(
+                citation_file=citation_filepath,
+                output_file=citation_filepath.parent / "codemeta.json",
+                output_format="codemeta",
+            )
     else:
         citation_filepath = ""
 
