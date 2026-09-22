@@ -4,12 +4,6 @@ You will need the GitHub CLI installed
 
 Then install the `ccbr_actions` package with pip:
 
-```bash
-pip install git+https://github.com/CCBR/actions
-```
-
-Or install it from a specific version or branch with:
-
 ```{python}
 #| echo: false
 #| output: asis
@@ -25,10 +19,9 @@ print("\n".join([
 ]))
 ```
 
-Or use the provided [docker image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general):
+Or use the provided [docker image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general) with your preferred container engine:
 
 ```sh
-podman pull docker://nciccbr/ccbr_actions@latest
 podman run docker://nciccbr/ccbr_actions@latest \
   ccbr_actions --version
 ```
