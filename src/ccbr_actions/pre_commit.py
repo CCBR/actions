@@ -83,8 +83,7 @@ def check_only_version_bumps(patch):
     only_version_bumps = changes is not None
     if only_version_bumps:
         only_version_bumps = all(
-            _is_version_bumped(old_rev, new_rev)
-            for _, old_rev, new_rev in changes
+            _is_version_bumped(old_rev, new_rev) for _, old_rev, new_rev in changes
         )
     return only_version_bumps
 
