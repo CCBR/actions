@@ -15,6 +15,12 @@ By default, `comparison-mode` is `latest-commit`, which compares only
 the latest commit for pull requests and uses the full `before...after`
 range for push events.
 
+When running in the `nciccbr/ccbr_actions` container, the `ccbr_actions`
+package is already installed in the image. Its version is the version
+used to build the image, normally indicated by the image tag (for
+example, `nciccbr/ccbr_actions:v0.7.2`); `ccbr-actions-version` cannot
+override it.
+
 ## Usage
 
 ### Basic example
@@ -140,8 +146,8 @@ steps:
 - `token`: GitHub token used for `gh api` calls. Default:
   `${{ github.token }}`.
 - `python-version`: The version of Python to install. Default: `3.14`.
-- `ccbr-actions-version`: The version of ccbr_actions to use. Default:
-  `main`.
+- `ccbr-actions-version`: The version of ccbr_actions to install when
+  running outside the ccbr_actions container. Default: `main`.
 - `comparison-mode`: Comparison mode for collecting changed files.
   - latest-commit (default): for pull_request, compare head^…head
     (latest commit only)

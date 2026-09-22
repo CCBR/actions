@@ -175,7 +175,8 @@ jobs:
   requires human review.
 - `force-review`: Re-submit the review and reviewer request even when
   the PR already has an approval. Default: `false`.
-- `ccbr-actions-version`: The version of CCBR/actions to install
-  (branch, tag, or ‘latest’). **Required.** Default: `latest`.
+- `ccbr-actions-version`: The version of CCBR/actions to install when
+  running outside the ccbr_actions container (branch, tag, or ‘latest’).
+  **Required.** Default: `latest`.
 - `python-version`: Python version to use. **Required.** Default:
   `3.14`.
