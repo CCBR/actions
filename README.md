@@ -100,25 +100,41 @@ github actions runners): <https://github.com/cli/cli#installation>
 Then install the `ccbr_actions` package with pip:
 
 ```bash
-pip install git+https://github.com/CCBR/actions
-```
-
-Or install it from a specific version or branch with:
-
-```bash
 pip install git+https://github.com/CCBR/actions@v0.7
 ```
 
 Or use the provided [docker
-image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general):
+image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general)
+with your preferred container engine:
 
 ```sh
-podman pull docker://nciccbr/ccbr_actions@latest
 podman run docker://nciccbr/ccbr_actions@latest \
   ccbr_actions --version
 ```
 
-View the CLI usage [here](https://ccbr.github.io/actions/cli).
+### Command line interface
+
+You can copy example workflows to your project with
+`ccbr_actions use-example`:
+
+    Usage: ccbr_actions use-example [OPTIONS] NAME
+
+      Use a GitHub Actions workflow file from CCBR/actions.
+
+      Args:
+          name (str): The name of the example workflow file to download.
+
+      Examples:
+          ccbr_actions use-example docs-mkdocs
+          ccbr_actions use-example build-nextflow
+
+      See list of workflow files here:
+      https://ccbr.github.io/actions/examples.html
+
+    Options:
+      -h, --help  Show this message and exit.
+
+View the full CLI usage [here](https://ccbr.github.io/actions/cli).
 
 ## Help & Contributing
 
