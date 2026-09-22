@@ -1,0 +1,24 @@
+name: changed-files integration test
+description: Verify the changed-files action produces valid outputs
+
+runs:
+  using: composite
+  steps:
+    - id: changed-files
+      uses: ./changed-files
+      with:
+        paths: |
+          .github/**
+          changed-files/**
+        ccbr-actions-version: main
+    - name: Verify changed-files outputs
+      shell: python {0}
+      env:
+        ERROR: ${{ steps.changed-files.outputs.error }}
+        MATCHED_FILES_JSON: ${{ steps.changed-files.outputs.matched_files_json }}
+      run: |
+        import json
+        import os
+
+        assert not os.environ["ERROR"]
+        assert isinstance(json.loads(os.environ["MATCHED_FILES_JSON"]), list)

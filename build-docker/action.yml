@@ -70,7 +70,7 @@ inputs:
 outputs:
   push_success:
     description: "Whether Docker succeeded for this run"
-    value: ${{ steps.resolve_push.outputs.push_enabled && steps.build_and_push.outcome == 'success' }}
+    value: ${{ steps.resolve_push.outputs.push_enabled == 'true' && steps.build_and_push.outcome == 'success' }}
 
 runs:
   using: "composite"
@@ -114,19 +114,14 @@ runs:
     - name: Prepare build-time variables
       shell: bash
       id: prepare_vars
+      env:
+        DOCKERFILE_INPUT: ${{ inputs.dockerfile }}
+        SUFFIX_INPUT: ${{ inputs.suffix }}
+        DOCKERHUB_NAMESPACE_INPUT: ${{ inputs.dockerhub-namespace }}
       run: |
         cd "$GITHUB_WORKSPACE"
-        script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
-        cat > "$script" << 'PYEOF'
-        from ccbr_actions.docker import prepare_docker_build_variables
-        prepare_docker_build_variables(
-            dockerfile="${{ inputs.dockerfile }}",
-            suffix="${{ inputs.suffix }}",
-            dockerhub_account="${{ inputs.dockerhub-namespace }}"
-        )
-        PYEOF
-        python "$script"
-        rm -f "$script"
+        python "$GITHUB_ACTION_PATH/../scripts/prepare_docker_build_variables.py" \
+          "$DOCKERFILE_INPUT" "$SUFFIX_INPUT" "$DOCKERHUB_NAMESPACE_INPUT"
 
     - name: Check variables and create README
       shell: bash
@@ -154,30 +149,16 @@ runs:
       shell: bash
       env:
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
+        DOCKERFILE_PATH_INPUT: ${{ env.DOCKERFILE_PATH }}
+        IMAGE_NAME_INPUT: ${{ env.IMAGENAME }}
+        DOCKERHUB_NAMESPACE_INPUT: ${{ inputs.dockerhub-namespace }}
+        REPO_NAME_INPUT: ${{ env.REPONAME }}
       run: |
         cd "$GITHUB_WORKSPACE"
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        script=$(mktemp /tmp/ccbr_XXXXXXXXXX.py)
-        cat > "$script" << 'PYEOF'
-        import os
-        from ccbr_actions.actions import set_output
-        from ccbr_actions.docker import evaluate_docker_build_staleness_and_set_outputs
-
-        force_build = os.environ.get("INPUT_FORCE_BUILD", "").lower() == "true"
-        if force_build:
-          set_output("should_build", "true")
-          set_output("reason", "force_build_requested")
-          print("::notice::Force build requested. Skipping Docker Hub staleness check.")
-        else:
-          evaluate_docker_build_staleness_and_set_outputs(
-            dockerfile_path=os.environ.get("DOCKERFILE_PATH", ""),
-            image_name=os.environ.get("IMAGENAME", ""),
-            dockerhub_namespace="${{ inputs.dockerhub-namespace }}",
-            repo_name=os.environ.get("REPONAME", ""),
-          )
-        PYEOF
-        python "$script"
-        rm -f "$script"
+        python "$GITHUB_ACTION_PATH/../scripts/check_docker_build_staleness.py" \
+          "$DOCKERFILE_PATH_INPUT" "$IMAGE_NAME_INPUT" \
+          "$DOCKERHUB_NAMESPACE_INPUT" "$REPO_NAME_INPUT"
 
     - name: Build and push Docker image
       id: build_and_push

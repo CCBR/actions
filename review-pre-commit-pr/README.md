@@ -144,7 +144,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-        if: ${{ env.CCBR_ACTIONS_DOCKER != 'true' }}
       - name: Generate CCBR-bot token
         id: generate-token
         uses: actions/create-github-app-token@v3
@@ -156,7 +155,7 @@ jobs:
           permission-issues: write
           permission-pull-requests: write
 
-      - uses: CCBR/actions/review-pre-commit-pr@latest
+      - uses: CCBR/actions/review-pre-commit-pr@v0.7.2
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ matrix.pr-number }}

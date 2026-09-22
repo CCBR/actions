@@ -27,3 +27,33 @@ jobs:
         with:
           github-token: ${{ github.token }}
           update-sliding-tags: true
+      - name: Pin example workflows to the published release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          release_tag = os.environ["RELEASE_TAG"]
+          pattern = re.compile(r"(CCBR/actions/[^@\s]+@)[^\s]+")
+          for filepath in pathlib.Path("examples").glob("*.y*ml"):
+              text = filepath.read_text()
+              updated = pattern.sub(rf"\g<1>{release_tag}", text)
+              if updated != text:
+                  filepath.write_text(updated)
+          docs_path = pathlib.Path("docs/actions/mkdocs-mike/index.qmd")
+          text = docs_path.read_text()
+          docs_path.write_text(
+              re.sub(
+                  r"(ccbr-actions-version:\s*)\S+",
+                  rf"\g<1>{release_tag}",
+                  text,
+              )
+          )
+          PY
+          git add examples docs/actions/mkdocs-mike/index.qmd
+          git diff --cached --quiet || git commit -m "chore: pin examples to ${RELEASE_TAG}"
+          git push

@@ -94,6 +94,8 @@ steps:
   `41898282+github-actions[bot]`.
 - `strict-semver`: Whether to follow strict semantic versioning
   guidelines. Default: `True`.
+- `dry-run`: Print the mike deploy command without deploying the docs.
+  Default: `false`.
 
 ## Outputs
 
