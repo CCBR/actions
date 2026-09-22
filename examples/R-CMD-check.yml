@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: CCBR/actions/install-r-pak@v0.7.2
+      - uses: CCBR/actions/install-r-pak@v0.8.0
         with:
           versions-file: .github/package-versions.txt
           extra-packages: local::.
@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: CCBR/actions/install-r-pak@v0.7.2
+      - uses: CCBR/actions/install-r-pak@v0.8.0
         with:
           versions-file: .github/package-versions.txt
           needs: dev
