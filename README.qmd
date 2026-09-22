@@ -57,7 +57,21 @@ View the package documentation [here](https://CCBR.github.io/actions/package).
 
 {{< include docs/install.qmd >}}
 
-View the CLI usage [here](https://ccbr.github.io/actions/cli).
+### Command line interface
+
+You can copy example workflows to your project with `ccbr_actions use-example`:
+
+```{python}
+#| echo: false
+#| output: asis
+from ccbr_tools.shell import shell_run
+help_msg = shell_run("ccbr_actions use-example --help")
+print("```")
+print(help_msg)
+print("```", end = '\n\n')
+```
+
+View the full CLI usage [here](https://ccbr.github.io/actions/cli).
 
 ## Help & Contributing
 

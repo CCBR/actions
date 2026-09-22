@@ -118,7 +118,29 @@ podman run docker://nciccbr/ccbr_actions@latest \
   ccbr_actions --version
 ```
 
-View the CLI usage [here](https://ccbr.github.io/actions/cli).
+### Command line interface
+
+You can copy example workflows to your project with
+`ccbr_actions use-example`:
+
+    Usage: ccbr_actions use-example [OPTIONS] NAME
+
+      Use a GitHub Actions workflow file from CCBR/actions.
+
+      Args:
+          name (str): The name of the example workflow file to download.
+
+      Examples:
+          ccbr_actions use-example docs-mkdocs
+          ccbr_actions use-example build-nextflow
+
+      See list of workflow files here:
+      https://ccbr.github.io/actions/examples.html
+
+    Options:
+      -h, --help  Show this message and exit.
+
+View the full CLI usage [here](https://ccbr.github.io/actions/cli).
 
 ## Help & Contributing
 
