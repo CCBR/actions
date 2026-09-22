@@ -61,7 +61,7 @@ jobs:
           - actions
           - Tools
     steps:
-      - uses: CCBR/actions/sync-copilot-instructions@v0.7.2
+      - uses: CCBR/actions/sync-copilot-instructions@v0.8.0
         with:
           owner: ${{ matrix.OWNER }}
           repo: ${{ matrix.REPO }}

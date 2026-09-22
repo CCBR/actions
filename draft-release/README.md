@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # required to include tags
-      - uses: CCBR/actions/draft-release@v0.7.2
+      - uses: CCBR/actions/draft-release@v0.8.0
         with:
           github-token: ${{ github.token }}
           version-tag: ${{ github.event.inputs.version-tag }}
