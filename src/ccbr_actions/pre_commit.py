@@ -103,7 +103,13 @@ def _extract_rev_changes(patch):
     current_repo = None
 
     for line in patch.splitlines():
-        if line.startswith(("@@", "---", "+++")):
+        if line.startswith("@@"):
+            # Reset per hunk: a rev line's repo: context must be visible in the
+            # same hunk, otherwise it could inherit the wrong repo from an
+            # earlier hunk and let the same-commit fallback compare unrelated refs.
+            current_repo = None
+            continue
+        if line.startswith(("---", "+++")):
             continue
         if line.startswith(("-", "+")):
             content = line[1:]

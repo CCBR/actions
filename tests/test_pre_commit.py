@@ -253,6 +253,25 @@ def test_extract_rev_changes_returns_empty_list_for_empty_patch():
     assert _extract_rev_changes("") == []
 
 
+def test_extract_rev_changes_does_not_leak_repo_across_hunk_boundary():
+    # The second hunk's rev change has no repo: context line of its own, so it
+    # must not inherit the repo from the first hunk.
+    patch = (
+        "@@ -5,7 +5,7 @@ repos:\n"
+        " - repo: https://github.com/pre-commit/pre-commit-hooks\n"
+        "-  rev: v4.4.0\n"
+        "+  rev: v4.5.0\n"
+        "@@ -41,7 +41,7 @@ repos:\n"
+        "-  rev: v0.7.1\n"
+        "+  rev: v0.7\n"
+    )
+    changes = _extract_rev_changes(patch)
+    assert changes == [
+        ("https://github.com/pre-commit/pre-commit-hooks", "v4.4.0", "v4.5.0"),
+        (None, "v0.7.1", "v0.7"),
+    ]
+
+
 # ---------------------------------------------------------------------------
 # _github_repo_slug
 # ---------------------------------------------------------------------------
@@ -389,6 +408,21 @@ def test_check_only_version_bumps_or_same_commit_returns_false_for_non_rev_chang
     assert (
         check_only_version_bumps_or_same_commit(INVALID_PATCH_NON_REV_CHANGE) is False
     )
+
+
+def test_check_only_version_bumps_or_same_commit_fails_closed_when_repo_context_missing():
+    # A downgrade-looking rev change with no repo: line in its hunk can't be
+    # verified via the same-commit fallback and must not be approved, even if
+    # a session is provided that would resolve a same-commit match for some
+    # other repo's revs.
+    patch = "@@ -41,7 +41,7 @@ repos:\n-  rev: v0.7.1\n+  rev: v0.7\n"
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7.1": {"sha": "c433"},
+            "https://api.github.com/repos/CCBR/Tools/commits/v0.7": {"sha": "c433"},
+        }
+    )
+    assert check_only_version_bumps_or_same_commit(patch, session=session) is False
 
 
 # ---------------------------------------------------------------------------
