@@ -100,20 +100,14 @@ github actions runners): <https://github.com/cli/cli#installation>
 Then install the `ccbr_actions` package with pip:
 
 ```bash
-pip install git+https://github.com/CCBR/actions
-```
-
-Or install it from a specific version or branch with:
-
-```bash
 pip install git+https://github.com/CCBR/actions@v0.7
 ```
 
 Or use the provided [docker
-image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general):
+image](https://hub.docker.com/repository/docker/nciccbr/ccbr_actions/general)
+with your preferred container engine:
 
 ```sh
-podman pull docker://nciccbr/ccbr_actions@latest
 podman run docker://nciccbr/ccbr_actions@latest \
   ccbr_actions --version
 ```
