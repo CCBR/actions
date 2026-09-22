@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions 0.8.0
+
 ### New
 
 - Create `ccbr_actions` docker image and show how to use it in example workflows. (#190, @kelly-sovacool, @copilot)

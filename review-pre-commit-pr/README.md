@@ -155,7 +155,7 @@ jobs:
           permission-issues: write
           permission-pull-requests: write
 
-      - uses: CCBR/actions/review-pre-commit-pr@v0.7.2
+      - uses: CCBR/actions/review-pre-commit-pr@v0.8.0
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ matrix.pr-number }}
