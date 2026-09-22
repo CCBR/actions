@@ -12,8 +12,10 @@
 
 ### Fixes
 
-- Fix `draft-release` to accept a manually provided version when conventional commits do not determine a version bump. (#213, @kelly-sovacool, @copilot)
-- Fix the `draft-release` example workflow docs (correct typo, Python 3.14, `actions/checkout@v7`) and rename `examples/R-CMD-check.yaml` to `.yml` so it appears in the published examples docs. (#215, @kelly-sovacool)
+- Fixes for the `draft-release` action:
+  - Fix `draft-release` to accept a manually provided version when conventional commits do not determine a version bump. (#213, @kelly-sovacool, @copilot)
+  - Fix the `draft-release` example workflow docs (correct typo, Python 3.14, `actions/checkout@v7`) and rename `examples/R-CMD-check.yaml` to `.yml` so it appears in the published examples docs. (#215, @kelly-sovacool)
+  - Match the `dev_header` in `draft-release` changelogs case-insensitively so capitalized headers (e.g. `## Development version`) are updated correctly. (#220, @kelly-sovacool, @copilot)
 - Set up testing infrastructure for github actions and related fixes: (#216, @kelly-sovacool, @copilot)
   - Includes host/container integration coverage, dry-run support for release actions, actionlint validation, and contract tests for example workflows.
   - Fix container detection in `draft-release`, `post-release`, `changed-files`, `mkdocs-mike`, and `review-pre-commit-pr`: the `CCBR_ACTIONS_DOCKER` variable baked into the `ccbr_actions` image is not visible to the `env` context, so Python/R setup steps (including `cache: pip`, which fails in container jobs) were still running inside the container. Detection now happens in a shell step whose output gates the setup steps. (#216, @kelly-sovacool)
