@@ -12,6 +12,8 @@
 
 ### Fixes
 
+- Clarify `ccbr-actions-version` behavior for containerized actions and document
+  the `CCBR_ACTIONS_VERSION` build argument used by `build-docker`. (#221, @kelly-sovacool, @copilot)
 - Fixes for the `draft-release` action:
   - Fix `draft-release` to accept a manually provided version when conventional commits do not determine a version bump. (#213, @kelly-sovacool, @copilot)
   - Fix the `draft-release` example workflow docs (correct typo, Python 3.14, `actions/checkout@v7`) and rename `examples/R-CMD-check.yaml` to `.yml` so it appears in the published examples docs. (#215, @kelly-sovacool)
