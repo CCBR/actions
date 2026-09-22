@@ -21,7 +21,7 @@ inputs:
     required: false
     default: "false"
   ccbr-actions-version:
-    description: "The version of CCBR/actions to install (branch, tag, or 'latest')."
+    description: "The version of CCBR/actions to install when running outside the ccbr_actions container (branch, tag, or 'latest')."
     required: true
     default: "latest"
   python-version:

@@ -16,6 +16,11 @@ print(ccbr_actions.docs.action_markdown_desc(action))
 
 This action is designed to be used with a repository that uses mkdocs to generate documentation and mike to deploy it to github pages. The action will checkout the repository, install the necessary python packages, build the documentation, and deploy it to the specified branch.
 
+When running in the `nciccbr/ccbr_actions` container, the `ccbr_actions` package is
+already installed in the image. Its version is the version used to build the image,
+normally indicated by the image tag (for example, `nciccbr/ccbr_actions:v0.7.2`);
+`ccbr-actions-version` cannot override it.
+
 ## Usage
 
 Any python requirements for your docs website (mkdocs, mike, other extensions) should be placed in `docs/requirements.txt`.

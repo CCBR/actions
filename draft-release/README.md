@@ -25,6 +25,12 @@ you’re ready.
 > would be missing. Run on a normal runner (no `container`) so that step
 > can install everything your package needs.
 
+When running in the `nciccbr/ccbr_actions` container, the `ccbr_actions`
+package is already installed in the image. Its version is the version
+used to build the image, normally indicated by the image tag (for
+example, `nciccbr/ccbr_actions:v0.7.2`); `ccbr-actions-version` cannot
+override it.
+
 ## Usage
 
 Required input files:
@@ -58,7 +64,7 @@ determine the next version.
 
 ### Basic example
 
-[draft-release.yml](/examples/draft-release.yml)
+[draft-release.yml](./examples/draft-release.yml)
 
 ```yaml
 name: draft-release
@@ -127,8 +133,9 @@ steps:
   v2.5.11.
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
-- `ccbr-actions-version`: The version of ccbr_actions to use.
-  **Required.** Default: `latest`.
+- `ccbr-actions-version`: The version of ccbr_actions to install when
+  running outside the ccbr_actions container. **Required.** Default:
+  `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.14`.
 - `draft-branch`: The branch name to push changes to for the release

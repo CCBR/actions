@@ -6,7 +6,7 @@ inputs:
     description: "GitHub Actions token (e.g. { github.token })."
     required: true
   ccbr-actions-version:
-    description: "The version of ccbr_actions to install."
+    description: "The version of ccbr_actions to install when running outside the ccbr_actions container."
     required: true
     default: "latest"
   python-version:

@@ -7,7 +7,7 @@ This action is designed to be triggered by publishing a release. On
 completion, it will open a pull request to merge post-release clean up
 chores such as bumping the development version in the version file and
 changelog. It works best when used in conjunction with
-[`draft-release`](/draft-release) to help automate parts of the release
+[`draft-release`](./draft-release) to help automate parts of the release
 process.
 
 > \[!WARNING\] If your repository contains a `DESCRIPTION` file
@@ -18,6 +18,12 @@ process.
 > container only has `cffr` preinstalled, so your package’s dependencies
 > would be missing. Run on a normal runner (no `container`) so that step
 > can install everything your package needs.
+
+When running in the `nciccbr/ccbr_actions` container, the `ccbr_actions`
+package is already installed in the image. Its version is the version
+used to build the image, normally indicated by the image tag (for
+example, `nciccbr/ccbr_actions:v0.7.2`); `ccbr-actions-version` cannot
+override it.
 
 ## Usage
 
@@ -31,7 +37,7 @@ Required files:
 
 ### Basic example
 
-[post-release.yml](/examples/post-release.yml)
+[post-release.yml](./examples/post-release.yml)
 
 ```yaml
 name: post-release
@@ -91,8 +97,9 @@ steps:
 
 - `github-token`: GitHub Actions token (e.g. github.token).
   **Required.**
-- `ccbr-actions-version`: The version of CCBR/actions to use.
-  **Required.** Default: `latest`.
+- `ccbr-actions-version`: The version of CCBR/actions to install when
+  running outside the ccbr_actions container. **Required.** Default:
+  `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.14`.
 - `pr-branch`: Branch to use for the post-release chores, from where a

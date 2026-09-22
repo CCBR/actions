@@ -11,6 +11,10 @@ format used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
 > (mounting the host’s Docker socket into the container) – an
 > ill-advised pattern. Run this action on a normal runner instead.
 
+The `ccbr-actions-version` input selects the version of `ccbr_actions`
+installed in the image being built. It is passed to the Dockerfile as
+the `CCBR_ACTIONS_VERSION` build argument.
+
 This action:
 
 - Resolves an effective push mode: pushing is enabled only when ‘push’
@@ -52,11 +56,11 @@ steps:
 
 For an example to manually trigger the workflow for a single docker
 container, see
-[build-docker-manual.yml](/examples/build-docker-manual.yml).
+[build-docker-manual.yml](./examples/build-docker-manual.yml).
 
 For an advanced example to automatically build docker containers when
 files change, see
-[build-docker-auto.yml](/examples/build-docker-auto.yml).
+[build-docker-auto.yml](./examples/build-docker-auto.yml).
 
 Suffix behavior: `dev` appends `-dev`, `main` or an empty value leaves
 the Dockerfile tag unchanged, and any other value appends `-feat`.
@@ -78,7 +82,8 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
   pushing). **Required.** Default: `false`.
 - `force_build`: Force docker image build even when the Docker Hub tag
   is up-to-date. **Required.** Default: `false`.
-- `ccbr-actions-version`: The version of ccbr_actions to use.
+- `ccbr-actions-version`: The version of ccbr_actions to install in the
+  image. This value is passed to the Dockerfile as CCBR_ACTIONS_VERSION.
   **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.14`.

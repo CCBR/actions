@@ -23,6 +23,10 @@ the format used in [CCBR/dockers2](https://github.com/CCBR/Dockers2).
 > (mounting the host's Docker socket into the container) -- an ill-advised pattern.
 > Run this action on a normal runner instead.
 
+The `ccbr-actions-version` input selects the version of `ccbr_actions` installed in
+the image being built. It is passed to the Dockerfile as the
+`CCBR_ACTIONS_VERSION` build argument.
+
 This action:
 
   - Resolves an effective push mode: pushing is enabled only when 'push' is 'true' and both DockerHub credentials are provided.

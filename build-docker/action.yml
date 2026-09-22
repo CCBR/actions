@@ -37,7 +37,8 @@ inputs:
     default: "false"
   ccbr-actions-version:
     description: |
-      The version of ccbr_actions to use.
+      The version of ccbr_actions to install in the image.
+      This value is passed to the Dockerfile as CCBR_ACTIONS_VERSION.
     required: true
     default: "latest"
   python-version:
