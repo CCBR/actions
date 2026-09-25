@@ -1,5 +1,6 @@
 ## actions development version
 
+- New action: `review-post-release-pr` to automatically review post-release cleanup PRs and approve them (approving pending workflow runs and enabling auto-merge) when only version/date bumps matching an actual release tag are present, or request a human reviewer otherwise. (#227, @kelly-sovacool, @copilot)
 - Fix `review-pre-commit-pr` to post a comment instead of requesting changes when a pre-commit.ci autoupdate PR needs human review. (#226, @kelly-sovacool, @copilot)
 
 ## actions 0.8.0
