@@ -70,7 +70,7 @@ alt="Branch protection rule" />
 
 ### Example
 
-[review-pre-commit-pr.yml](/examples/pre-review-pr.yml)
+[pre-review-pr.yml](/examples/pre-review-pr.yml)
 
 ```yaml
 name: pre-review-pr
