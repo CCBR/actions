@@ -70,7 +70,7 @@ Consider also including other desired checks such as your build/test workflow, a
 
 ### Example
 
-[review-pre-commit-pr.yml](/examples/pre-review-pr.yml)
+[pre-review-pr.yml](/examples/pre-review-pr.yml)
 
 
 ```yaml
