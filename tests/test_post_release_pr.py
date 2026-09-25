@@ -369,6 +369,11 @@ def test_check_patch_is_version_bump_returns_true_for_empty_patch():
     assert check_patch_is_version_bump("", {"0.7.1"}, "0.7.1") is True
 
 
+def test_check_patch_is_version_bump_ignores_file_header_lines():
+    patch = "--- a/VERSION\n+++ b/VERSION\n@@ -1 +1 @@\n-0.7.0-dev\n+0.7.1-dev\n"
+    assert check_patch_is_version_bump(patch, {"0.7.1", "0.7.1-dev"}, "0.7.1") is True
+
+
 # ---------------------------------------------------------------------------
 # check_version_date_bumps
 # ---------------------------------------------------------------------------
@@ -710,3 +715,48 @@ def test_review_post_release_pr_warns_when_reviewer_request_fails(monkeypatch):
     with pytest.warns(UserWarning, match="Could not request reviewer"):
         result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
     assert result is False
+
+
+def test_review_post_release_pr_warns_when_human_review_comment_fails(monkeypatch):
+    pr_files = _pr_files() + [{"filename": "src/main.py", "patch": "@@ -1 +1 @@\n"}]
+    session = _make_review_session(pr_files=pr_files)
+
+    def _fail_comment(*args, **kwargs):
+        raise RuntimeError("comment is not allowed")
+
+    monkeypatch.setattr("ccbr_actions.post_release_pr.post_pr_comment", _fail_comment)
+
+    with pytest.warns(UserWarning, match="Could not post human-review comment"):
+        result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is False
+
+
+def test_review_post_release_pr_warns_when_auto_merge_comment_fails(monkeypatch):
+    session = _make_review_session(
+        graphql_payload={"errors": [{"message": "auto-merge unavailable"}]}
+    )
+
+    def _fail_comment(*args, **kwargs):
+        raise RuntimeError("comment is not allowed")
+
+    monkeypatch.setattr("ccbr_actions.post_release_pr.post_pr_comment", _fail_comment)
+
+    with pytest.warns(UserWarning, match="Could not post auto-merge failure comment"):
+        result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is True
+
+
+def test_review_post_release_pr_warns_when_workflow_run_approval_fails(monkeypatch):
+    session = _make_review_session()
+
+    def _fail_approve_runs(*args, **kwargs):
+        raise RuntimeError("actions: write permission required")
+
+    monkeypatch.setattr(
+        "ccbr_actions.post_release_pr.approve_pending_workflow_runs",
+        _fail_approve_runs,
+    )
+
+    with pytest.warns(UserWarning, match="Could not approve pending workflow runs"):
+        result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is True
