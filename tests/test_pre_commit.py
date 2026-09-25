@@ -515,7 +515,7 @@ def test_review_pre_commit_pr_approves_sliding_tag_pointing_at_same_commit():
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
 
 
-def test_review_pre_commit_pr_requests_human_review_for_sliding_tag_different_commit():
+def test_review_pre_commit_pr_comments_when_sliding_tag_has_different_commit():
     # Same rev change as above, but the two tags point at different commits,
     # so it's a genuine downgrade and should still require human review.
     session = _make_review_session(patch=SLIDING_TAG_PATCH)
@@ -527,10 +527,11 @@ def test_review_pre_commit_pr_requests_human_review_for_sliding_tag_different_co
     }
     result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
     assert result is False
-    review_bodies = [
-        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
     ]
-    assert any(body.get("event") == "REQUEST_CHANGES" for body in review_bodies)
+    assert comment_calls
+    assert "requires human review" in comment_calls[0][2]["json"]["body"]
 
 
 def test_review_pre_commit_pr_skips_when_current_review_is_approved():
@@ -568,29 +569,31 @@ def test_review_pre_commit_pr_does_not_skip_superseded_approval():
     assert any(c[2]["json"].get("event") == "APPROVE" for c in review_calls)
 
 
-def test_review_pre_commit_pr_requests_human_review_when_extra_file():
+def test_review_pre_commit_pr_comments_when_extra_file():
     session = _make_review_session(extra_files=[{"filename": "README.md", "patch": ""}])
     result = review_pre_commit_pr("CCBR/repo", 7, "alice", token="tok", session=session)
     assert result is False
     posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
-    # Should submit a REQUEST_CHANGES review and request the given reviewer, but NOT approve
+    # Should post a comment and request the given reviewer, but NOT approve.
     review_bodies = [
         c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
     ]
     assert not any(body.get("event") == "APPROVE" for body in review_bodies)
-    assert any(body.get("event") == "REQUEST_CHANGES" for body in review_bodies)
+    assert not review_bodies
+    assert any("issues/7/comments" in u for u in posted_urls)
     assert any("requested_reviewers" in u for u in posted_urls)
 
 
-def test_review_pre_commit_pr_requests_human_review_for_non_rev_change():
+def test_review_pre_commit_pr_comments_for_non_rev_change():
     session = _make_review_session(patch=INVALID_PATCH_NON_REV_CHANGE)
     result = review_pre_commit_pr("CCBR/repo", 7, "bob", token="tok", session=session)
     assert result is False
-    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
-    assert review_calls
-    review_body = review_calls[0][2]["json"]
-    assert review_body["event"] == "REQUEST_CHANGES"
-    assert "@bob" in review_body["body"]
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
+    ]
+    assert comment_calls
+    comment_body = comment_calls[0][2]["json"]["body"]
+    assert "@bob" in comment_body
 
 
 def test_review_pre_commit_pr_warns_when_reviewer_request_fails(monkeypatch):
@@ -609,18 +612,16 @@ def test_review_pre_commit_pr_warns_when_reviewer_request_fails(monkeypatch):
     assert result is False
 
 
-def test_review_pre_commit_pr_warns_when_request_changes_fails(monkeypatch):
-    """request-changes review error should emit a warning but not raise."""
+def test_review_pre_commit_pr_warns_when_human_review_comment_fails(monkeypatch):
+    """Human-review comment errors should emit a warning but not raise."""
     session = _make_review_session(patch=DOWNGRADE_PATCH)
 
-    def _fail_request_changes(*args, **kwargs):
-        raise RuntimeError("not allowed to request changes")
+    def _fail_comment(*args, **kwargs):
+        raise RuntimeError("comment is not allowed")
 
-    monkeypatch.setattr(
-        "ccbr_actions.pre_commit.request_changes", _fail_request_changes
-    )
+    monkeypatch.setattr("ccbr_actions.pre_commit.post_pr_comment", _fail_comment)
 
-    with pytest.warns(UserWarning, match="Could not submit request-changes review"):
+    with pytest.warns(UserWarning, match="Could not post human-review comment"):
         result = review_pre_commit_pr(
             "CCBR/repo", 7, "dave", token="tok", session=session
         )
@@ -654,7 +655,7 @@ def test_review_pre_commit_pr_keeps_approval_when_auto_merge_api_fails():
     assert "GraphQL errors" in comment_body
 
 
-def test_review_pre_commit_pr_requests_human_review_when_approval_fails(monkeypatch):
+def test_review_pre_commit_pr_comments_when_approval_fails(monkeypatch):
     session = _make_review_session()
 
     def _fail_approval(*args, **kwargs):
@@ -665,12 +666,12 @@ def test_review_pre_commit_pr_requests_human_review_when_approval_fails(monkeypa
     result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
 
     assert result is False
-    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
-    review_bodies = [c[2]["json"] for c in review_calls]
-    request_changes_body = next(
-        body["body"] for body in review_bodies if body.get("event") == "REQUEST_CHANGES"
-    )
-    assert "automatic approval could not be completed" in request_changes_body
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
+    ]
+    assert comment_calls
+    comment_body = comment_calls[0][2]["json"]["body"]
+    assert "automatic approval could not be completed" in comment_body
     assert any("requested_reviewers" in c[1] for c in session.calls if c[0] == "POST")
 
 
@@ -692,7 +693,7 @@ def test_review_pre_commit_pr_warns_when_auto_merge_comment_fails(monkeypatch):
     assert result is True
 
 
-def test_review_pre_commit_pr_requests_human_review_when_title_or_sender_mismatch():
+def test_review_pre_commit_pr_comments_when_title_or_sender_mismatch():
     session = _make_review_session(
         pr_node_payload={
             "node_id": "PR_NODE_7",
@@ -705,12 +706,13 @@ def test_review_pre_commit_pr_requests_human_review_when_title_or_sender_mismatc
     review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
     review_bodies = [c[2]["json"] for c in review_calls]
     assert not any(body.get("event") == "APPROVE" for body in review_bodies)
-    request_changes_calls = [
-        body for body in review_bodies if body.get("event") == "REQUEST_CHANGES"
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
     ]
-    assert request_changes_calls
-    assert "@frank" in request_changes_calls[0]["body"]
-    assert "autoupdate bot pattern" in request_changes_calls[0]["body"]
+    assert comment_calls
+    comment_body = comment_calls[0][2]["json"]["body"]
+    assert "@frank" in comment_body
+    assert "autoupdate bot pattern" in comment_body
 
 
 def test_review_pre_commit_pr_works_without_reviewer_input():
@@ -724,14 +726,11 @@ def test_review_pre_commit_pr_works_without_reviewer_input():
     )
     result = review_pre_commit_pr("CCBR/repo", 7, token="tok", session=session)
     assert result is False
-    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
-    request_changes_calls = [
-        c[2]["json"]
-        for c in review_calls
-        if c[2]["json"].get("event") == "REQUEST_CHANGES"
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
     ]
-    assert request_changes_calls
-    assert "@a-human" in request_changes_calls[0]["body"]
+    assert comment_calls
+    assert "@a-human" in comment_calls[0][2]["json"]["body"]
     reviewer_calls = [
         c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
     ]
@@ -747,14 +746,11 @@ def test_review_pre_commit_pr_skips_reviewer_request_when_none_resolved():
     )
     result = review_pre_commit_pr("CCBR/repo", 7, token="tok", session=session)
     assert result is False
-    review_calls = [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
-    request_changes_calls = [
-        c[2]["json"]
-        for c in review_calls
-        if c[2]["json"].get("event") == "REQUEST_CHANGES"
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
     ]
-    assert request_changes_calls
-    assert request_changes_calls[0]["body"].startswith("This pre-commit.ci")
+    assert comment_calls
+    assert comment_calls[0][2]["json"]["body"].startswith("This pre-commit.ci")
     reviewer_calls = [
         c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
     ]
