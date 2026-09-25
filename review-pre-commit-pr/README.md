@@ -28,8 +28,7 @@ When both conditions are satisfied the action:
 
 When either condition is **not** satisfied the action:
 
-- Submits a `REQUEST_CHANGES` review listing which conditions were not
-  met.
+- Posts a comment listing which conditions were not met.
 - Requests a human reviewer, resolved in this order:
   1.  the `reviewer` input, if provided;
   2.  otherwise, the owner(s) of `.pre-commit-config.yaml` per the
@@ -69,12 +68,12 @@ alt="Branch protection rule" />
 <figcaption aria-hidden="true">Branch protection rule</figcaption>
 </figure>
 
-### Basic example
+### Example
 
-[review-pre-commit-pr.yml](/examples/review-pre-commit-pr.yml)
+[pre-review-pr.yml](/examples/pre-review-pr.yml)
 
 ```yaml
-name: review-pre-commit-pr
+name: pre-review-pr
 
 on:
   pull_request:
@@ -100,7 +99,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  find-prs:
+  find-prec-prs:
     # Only needed when manually dispatched; the pull_request event already has a single PR to act on
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -120,7 +119,7 @@ jobs:
           echo "pr-numbers=${pr_numbers}" >> "$GITHUB_OUTPUT"
 
   review-pre-commit-pr:
-    needs: [find-prs]
+    needs: [find-prec-prs]
     runs-on: ubuntu-latest
     container: nciccbr/ccbr_actions:latest
     # Only run for pre-commit.ci autoupdate PRs or when ccbr-bot[bot] is requested as a reviewer
@@ -135,12 +134,12 @@ jobs:
             (github.event.action == 'review_requested' && github.event.requested_reviewer.login == 'ccbr-bot[bot]')
           )
         )
-        || (github.event_name == 'workflow_dispatch' && needs.find-prs.outputs.pr-numbers != '[]')
+        || (github.event_name == 'workflow_dispatch' && needs.find-prec-prs.outputs.pr-numbers != '[]')
       )
     strategy:
       fail-fast: false
       matrix:
-        pr-number: ${{ github.event_name == 'workflow_dispatch' && fromJson(needs.find-prs.outputs.pr-numbers) || fromJson(format('[{0}]', github.event.pull_request.number)) }}
+        pr-number: ${{ github.event_name == 'workflow_dispatch' && fromJson(needs.find-prec-prs.outputs.pr-numbers) || fromJson(format('[{0}]', github.event.pull_request.number)) }}
 
     steps:
       - uses: actions/checkout@v7
@@ -154,8 +153,7 @@ jobs:
           permission-contents: write
           permission-issues: write
           permission-pull-requests: write
-
-      - uses: CCBR/actions/review-pre-commit-pr@v0.8.0
+      - uses: CCBR/actions/review-pre-commit-pr@latest
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           pr-number: ${{ matrix.pr-number }}
