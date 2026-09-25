@@ -3,11 +3,14 @@ Helpers for reviewing post-release cleanup pull requests opened by the
 ``post-release`` action.
 """
 
+import base64
+import json
 import os
 import re
 import warnings
 
 import requests
+import yaml
 
 from .github import GITHUB_API_URL, github_api_get
 from .pr_review import (
@@ -17,15 +20,16 @@ from .pr_review import (
     get_codeowners_content,
     get_last_workflow_run_actor,
     get_pr_files,
-    is_pr_approved,
+    is_pr_approved_for_commit,
     match_codeowners,
     post_pr_comment,
     request_reviewer,
 )
+from .release import get_r_dev_version
 
 POST_RELEASE_PR_TITLE_PATTERN = re.compile(r"^chore: post-release cleanup for (\S+)$")
 DRAFT_RELEASE_WORKFLOW_FILE = "draft-release.yml"
-_TOKEN_PATTERN = re.compile(r"\d+(?:[.\-]\d+)*")
+_VERSION_TOKEN_PATTERN = re.compile(r"\d+(?:[.\-]\d+)*")
 
 
 def is_post_release_pr(pr_title, pr_sender_type):
@@ -82,11 +86,11 @@ def get_release_by_tag(repo, tag, token=None, session=None):
     return release
 
 
-def _allowed_basenames(
+def _file_roles(
     version_filepath, citation_filepath, changelog_filepath, description_filepath
 ):
     """
-    Build the set of file basenames a post-release cleanup PR may change.
+    Map allowed file basenames to the validator role used to check their bump.
 
     Args:
         version_filepath (str): Path to the version file.
@@ -95,58 +99,62 @@ def _allowed_basenames(
         description_filepath (str): Path to the R DESCRIPTION file.
 
     Returns:
-        set[str]: Allowed file basenames (README files are matched separately
-        by prefix).
+        dict[str, str]: Basename to role (``"version"``, ``"citation"``,
+        ``"codemeta"``, ``"changelog"``, or ``"description"``). README files
+        are matched separately by prefix and default to the ``"readme"``
+        role.
     """
     return {
-        os.path.basename(version_filepath),
-        os.path.basename(citation_filepath),
-        os.path.basename(changelog_filepath),
-        os.path.basename(description_filepath),
-        "codemeta.json",
-        "NEWS.md",
-        "NEWS",
+        os.path.basename(version_filepath): "version",
+        os.path.basename(citation_filepath): "citation",
+        "codemeta.json": "codemeta",
+        os.path.basename(changelog_filepath): "changelog",
+        "NEWS.md": "changelog",
+        "NEWS": "changelog",
+        os.path.basename(description_filepath): "description",
     }
 
 
-def is_allowed_filename(filename, allowed_basenames):
+def is_allowed_filename(filename, roles):
     """
     Check whether a changed file is allowed in a post-release cleanup PR.
 
     Args:
         filename (str): Changed file's path, relative to the repo root.
-        allowed_basenames (set[str]): Allowed file basenames, from
-            [](`~ccbr_actions.post_release_pr._allowed_basenames`).
+        roles (dict[str, str]): Allowed file basenames mapped to validator
+            roles, from [](`~ccbr_actions.post_release_pr._file_roles`).
 
     Returns:
         bool: ``True`` if *filename*'s basename is allowed, including any
         README file (matched case-insensitively by prefix).
     """
     basename = os.path.basename(filename)
-    return basename in allowed_basenames or basename.lower().startswith("readme")
+    return basename in roles or basename.lower().startswith("readme")
 
 
-def check_only_allowed_files_changed(pr_files, allowed_basenames):
+def check_only_allowed_files_changed(pr_files, roles):
     """
     Check that every changed file in the PR is an allowed post-release file.
 
     Args:
         pr_files (list[dict]): File objects as returned by
             [](`~ccbr_actions.pr_review.get_pr_files`).
-        allowed_basenames (set[str]): Allowed file basenames, from
-            [](`~ccbr_actions.post_release_pr._allowed_basenames`).
+        roles (dict[str, str]): Allowed file basenames mapped to validator
+            roles, from [](`~ccbr_actions.post_release_pr._file_roles`).
 
     Returns:
         bool: ``True`` if *pr_files* is non-empty and every file is allowed.
     """
     return bool(pr_files) and all(
-        is_allowed_filename(f.get("filename", ""), allowed_basenames) for f in pr_files
+        is_allowed_filename(f.get("filename", ""), roles) for f in pr_files
     )
 
 
 def _release_bump_values(release_tag, release):
     """
     Build the set of token values allowed as a version/date bump target.
+
+    Used only for the lenient, prose-oriented readme validator.
 
     Args:
         release_tag (str): The release tag name (e.g. ``"v0.7.1"``).
@@ -172,13 +180,13 @@ def _split_tokens(line):
     Split a line into its non-numeric text segments and numeric tokens.
 
     Args:
-        line (str): A single diff line's content (without the leading +/-).
+        line (str): A single line of file content.
 
     Returns:
         tuple[list[str], list[str]]: The text segments surrounding each
         numeric/version-like token, and the tokens themselves.
     """
-    return _TOKEN_PATTERN.split(line), _TOKEN_PATTERN.findall(line)
+    return _VERSION_TOKEN_PATTERN.split(line), _VERSION_TOKEN_PATTERN.findall(line)
 
 
 def _is_valid_bump_line(old_line, new_line, valid_values):
@@ -186,8 +194,8 @@ def _is_valid_bump_line(old_line, new_line, valid_values):
     Check whether a modified line is only a version/date bump.
 
     Args:
-        old_line (str): The removed line's content.
-        new_line (str): The added line's content.
+        old_line (str): The line's previous content.
+        new_line (str): The line's new content.
         valid_values (set[str]): Acceptable new token values, from
             [](`~ccbr_actions.post_release_pr._release_bump_values`).
 
@@ -207,114 +215,345 @@ def _is_valid_bump_line(old_line, new_line, valid_values):
     return result
 
 
-def _is_valid_insertion(new_line, release_version):
+def _get_file_content(repo, path, ref, token=None, session=None):
     """
-    Check whether a pure line insertion is an allowed post-release addition.
+    Fetch a file's decoded text content at a specific git ref.
 
     Args:
-        new_line (str): The added line's content.
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        path (str): File path, relative to the repo root.
+        ref (str): Git ref (commit SHA, branch, or tag) to read the file at.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        str | None: Decoded file content, or ``None`` if the file doesn't
+        exist at *ref* or its content couldn't be decoded.
+    """
+    url = f"{GITHUB_API_URL}/repos/{repo}/contents/{path}"
+    try:
+        data = github_api_get(
+            url=url, token=token, session=session, params={"ref": ref}
+        )
+    except requests.exceptions.RequestException:
+        data = None
+    content = None
+    if isinstance(data, dict) and isinstance(data.get("content"), str):
+        try:
+            content = base64.b64decode(data["content"]).decode("utf-8")
+        except (ValueError, UnicodeDecodeError):
+            content = None
+    return content
+
+
+def _validate_version_file(new_content, release_version):
+    """
+    Check that a plain version file was bumped to the expected dev version.
+
+    Args:
+        new_content (str | None): The file's content at the PR's head.
         release_version (str): The release version (without leading ``v``).
 
     Returns:
-        bool: ``True`` if the line is blank or references the release
-        version (e.g. a new changelog heading).
+        bool: ``True`` if *new_content* is exactly ``"{release_version}-dev"``.
     """
-    stripped = new_line.strip()
-    return not stripped or release_version in new_line
+    return (
+        isinstance(new_content, str) and new_content.strip() == f"{release_version}-dev"
+    )
 
 
-def _flush_diff_buffer(removed_buffer, added_buffer, valid_values, release_version):
+def _validate_description_file(old_content, new_content, release_version):
     """
-    Validate a buffered block of consecutive removed/added diff lines.
-
-    Removed and added lines are paired positionally. Extra removed lines must
-    be blank, and extra added lines must be blank or reference the release
-    version.
+    Check that an R ``DESCRIPTION`` file's ``Version:`` field was bumped.
 
     Args:
-        removed_buffer (list[str]): Buffered removed line contents.
-        added_buffer (list[str]): Buffered added line contents.
-        valid_values (set[str]): Acceptable new token values, from
-            [](`~ccbr_actions.post_release_pr._release_bump_values`).
+        old_content (str | None): The file's content at the PR's base.
+        new_content (str | None): The file's content at the PR's head.
         release_version (str): The release version (without leading ``v``).
 
     Returns:
-        bool: ``True`` if the buffered block only contains valid bumps and/or
-        allowed insertions.
+        bool: ``True`` if the only change is the ``Version:`` line, bumped to
+        the R development version (``X.Y.Z.9000``).
     """
-    pair_count = min(len(removed_buffer), len(added_buffer))
-    pairs_valid = all(
-        _is_valid_bump_line(removed_buffer[i], added_buffer[i], valid_values)
-        for i in range(pair_count)
-    )
-    extra_removed_valid = all(not line.strip() for line in removed_buffer[pair_count:])
-    extra_added_valid = all(
-        _is_valid_insertion(line, release_version) for line in added_buffer[pair_count:]
-    )
-    return pairs_valid and extra_removed_valid and extra_added_valid
-
-
-def check_patch_is_version_bump(patch, valid_values, release_version):
-    """
-    Verify a unified diff patch only contains version/date bump changes.
-
-    Args:
-        patch (str): Unified diff patch string for a single file.
-        valid_values (set[str]): Acceptable new token values, from
-            [](`~ccbr_actions.post_release_pr._release_bump_values`).
-        release_version (str): The release version (without leading ``v``),
-            allowed in pure line insertions such as a new changelog heading.
-
-    Returns:
-        bool: ``True`` if every change in the patch is a valid version/date
-        bump or an allowed insertion.
-    """
-    removed_buffer = []
-    added_buffer = []
-    is_valid = True
-    for line in patch.splitlines():
-        if line.startswith(("---", "+++")):
-            pass
-        elif line.startswith("-"):
-            removed_buffer.append(line[1:])
-        elif line.startswith("+"):
-            added_buffer.append(line[1:])
+    if not isinstance(old_content, str) or not isinstance(new_content, str):
+        result = False
+    else:
+        try:
+            expected_version = get_r_dev_version(release_version)
+        except ValueError:
+            expected_version = None
+        old_lines = old_content.splitlines()
+        new_lines = new_content.splitlines()
+        if expected_version is None or len(old_lines) != len(new_lines):
+            result = False
         else:
-            is_valid = (
-                _flush_diff_buffer(
-                    removed_buffer, added_buffer, valid_values, release_version
-                )
-                and is_valid
+            diffs = [
+                (old_line, new_line)
+                for old_line, new_line in zip(old_lines, new_lines)
+                if old_line != new_line
+            ]
+            result = (
+                len(diffs) == 1
+                and diffs[0][0].startswith("Version:")
+                and diffs[0][1] == f"Version: {expected_version}"
             )
-            removed_buffer = []
-            added_buffer = []
-    is_valid = (
-        _flush_diff_buffer(removed_buffer, added_buffer, valid_values, release_version)
-        and is_valid
-    )
-    return is_valid
+    return result
 
 
-def check_version_date_bumps(pr_files, valid_values, release_version):
+def _validate_citation_file(old_content, new_content, release_tag):
     """
-    Verify every changed file's patch is only a version/date bump.
+    Check that a ``CITATION.cff`` file's version/date fields were bumped.
 
     Args:
-        pr_files (list[dict]): File objects as returned by
-            [](`~ccbr_actions.pr_review.get_pr_files`).
-        valid_values (set[str]): Acceptable new token values, from
-            [](`~ccbr_actions.post_release_pr._release_bump_values`).
-        release_version (str): The release version (without leading ``v``).
+        old_content (str | None): The file's content at the PR's base.
+        new_content (str | None): The file's content at the PR's head.
+        release_tag (str): The release tag (e.g. ``"v0.7.1"``).
 
     Returns:
-        bool: ``True`` if *pr_files* is non-empty and every file's patch only
-        contains valid version/date bumps.
+        bool: ``True`` if only ``version``/``date-released`` changed, the new
+        version equals *release_tag*, and the new date is a valid
+        ``YYYY-MM-DD`` string.
     """
-    return bool(pr_files) and all(
-        isinstance(f.get("patch"), str)
-        and check_patch_is_version_bump(f["patch"], valid_values, release_version)
-        for f in pr_files
+    try:
+        old_data = yaml.safe_load(old_content) if old_content else {}
+        new_data = yaml.safe_load(new_content) if new_content else {}
+    except yaml.YAMLError:
+        old_data, new_data = None, None
+    if not isinstance(old_data, dict) or not isinstance(new_data, dict):
+        result = False
+    else:
+        exempt_keys = {"version", "date-released"}
+        unchanged_keys = (set(old_data) | set(new_data)) - exempt_keys
+        fields_unchanged = all(
+            old_data.get(k) == new_data.get(k) for k in unchanged_keys
+        )
+        new_date = new_data.get("date-released")
+        version_ok = new_data.get("version") == release_tag
+        date_ok = bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(new_date)))
+        result = fields_unchanged and version_ok and date_ok
+    return result
+
+
+def _validate_codemeta_file(new_content, release_version, release_tag):
+    """
+    Check that ``codemeta.json``'s version field (if present) matches the release.
+
+    Args:
+        new_content (str | None): The file's content at the PR's head.
+        release_version (str): The release version (without leading ``v``).
+        release_tag (str): The release tag (e.g. ``"v0.7.1"``).
+
+    Returns:
+        bool: ``True`` if *new_content* is valid JSON and its ``version``
+        field (if any) matches the release.
+    """
+    try:
+        new_data = json.loads(new_content) if new_content else None
+    except (json.JSONDecodeError, TypeError):
+        new_data = None
+    if not isinstance(new_data, dict):
+        result = False
+    else:
+        version_field = new_data.get("version")
+        result = version_field is None or version_field in (
+            release_version,
+            release_tag,
+            f"v{release_version}",
+        )
+    return result
+
+
+def _validate_changelog_file(old_content, new_content, release_version, dev_header):
+    """
+    Check that a changelog/news file only gained a new release heading.
+
+    The only allowed change is a two-line insertion (a heading referencing
+    *release_version*, followed by a blank line) placed immediately after the
+    development-version header; everything else must be unchanged.
+
+    Args:
+        old_content (str | None): The file's content at the PR's base.
+        new_content (str | None): The file's content at the PR's head.
+        release_version (str): The release version (without leading ``v``).
+        dev_header (str): Development-version header text to locate (matched
+            case-insensitively).
+
+    Returns:
+        bool: ``True`` if the only change is the expected heading insertion.
+    """
+    if not isinstance(old_content, str) or not isinstance(new_content, str):
+        result = False
+    else:
+        old_lines = old_content.splitlines(keepends=True)
+        new_lines = new_content.splitlines(keepends=True)
+        dev_header_index = next(
+            (
+                i
+                for i, line in enumerate(old_lines)
+                if line.lstrip().startswith("#") and dev_header.lower() in line.lower()
+            ),
+            None,
+        )
+        if dev_header_index is None:
+            result = False
+        else:
+            insert_at = dev_header_index + 1
+            if insert_at < len(old_lines) and not old_lines[insert_at].strip():
+                insert_at += 1
+            inserted = new_lines[insert_at : insert_at + 2]
+            heading_pattern = re.compile(
+                r"^#+\s+\S.*\b" + re.escape(release_version) + r"\b.*$"
+            )
+            rebuilt = old_lines[:insert_at] + inserted + old_lines[insert_at:]
+            result = (
+                len(new_lines) == len(old_lines) + 2
+                and len(inserted) == 2
+                and bool(heading_pattern.match(inserted[0].rstrip("\n")))
+                and not inserted[1].strip()
+                and rebuilt == new_lines
+            )
+    return result
+
+
+def _validate_readme_file(old_content, new_content, valid_values):
+    """
+    Check that a readme file's changes are only version/date token bumps.
+
+    No lines may be inserted or removed; each changed line must differ from
+    its previous content only in numeric/version-like tokens.
+
+    Args:
+        old_content (str | None): The file's content at the PR's base.
+        new_content (str | None): The file's content at the PR's head.
+        valid_values (set[str]): Acceptable new token values, from
+            [](`~ccbr_actions.post_release_pr._release_bump_values`).
+
+    Returns:
+        bool: ``True`` if every line is unchanged or a valid token bump.
+    """
+    if not isinstance(old_content, str) or not isinstance(new_content, str):
+        result = False
+    else:
+        old_lines = old_content.splitlines()
+        new_lines = new_content.splitlines()
+        result = len(old_lines) == len(new_lines) and all(
+            old_line == new_line
+            or _is_valid_bump_line(old_line, new_line, valid_values)
+            for old_line, new_line in zip(old_lines, new_lines)
+        )
+    return result
+
+
+def _validate_file_bump(
+    role,
+    old_content,
+    new_content,
+    release_tag,
+    release_version,
+    dev_header,
+    valid_values,
+):
+    """
+    Dispatch to the validator for an allowed file's role.
+
+    Args:
+        role (str): One of ``"version"``, ``"description"``, ``"citation"``,
+            ``"codemeta"``, ``"changelog"``, or ``"readme"``.
+        old_content (str | None): The file's content at the PR's base.
+        new_content (str | None): The file's content at the PR's head.
+        release_tag (str): The release tag (e.g. ``"v0.7.1"``).
+        release_version (str): The release version (without leading ``v``).
+        dev_header (str): Development-version header text for changelog files.
+        valid_values (set[str]): Acceptable new token values for readme files.
+
+    Returns:
+        bool: ``True`` if the file's change is a valid bump for its role.
+    """
+    if role == "version":
+        result = _validate_version_file(new_content, release_version)
+    elif role == "description":
+        result = _validate_description_file(old_content, new_content, release_version)
+    elif role == "citation":
+        result = _validate_citation_file(old_content, new_content, release_tag)
+    elif role == "codemeta":
+        result = _validate_codemeta_file(new_content, release_version, release_tag)
+    elif role == "changelog":
+        result = _validate_changelog_file(
+            old_content, new_content, release_version, dev_header
+        )
+    else:
+        result = _validate_readme_file(old_content, new_content, valid_values)
+    return result
+
+
+def check_files_are_valid_bumps(
+    repo,
+    filenames,
+    roles,
+    release_tag,
+    release,
+    dev_header,
+    base_sha,
+    head_sha,
+    token=None,
+    session=None,
+):
+    """
+    Verify every changed file is a valid bump, and that the version file
+    itself was actually changed.
+
+    This directly audits that the ``post-release`` action did its job: a PR
+    that only touches, say, a readme file without also bumping the version
+    file is rejected.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        filenames (list[str]): Changed file paths from the PR.
+        roles (dict[str, str]): Basename to validator role, from
+            [](`~ccbr_actions.post_release_pr._file_roles`).
+        release_tag (str): The release tag (e.g. ``"v0.7.1"``).
+        release (dict): Release object from
+            [](`~ccbr_actions.post_release_pr.get_release_by_tag`).
+        dev_header (str): Development-version header text for changelog files.
+        base_sha (str): Commit SHA to read "old" file contents at.
+        head_sha (str): Commit SHA to read "new" file contents at.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if the version file was among the changed files and
+        every changed file's new content is a valid bump for its role.
+    """
+    release_version = release_tag.lstrip("v")
+    valid_values = _release_bump_values(release_tag, release)
+    version_basename = next(
+        (basename for basename, role in roles.items() if role == "version"), None
     )
+    version_bumped = any(
+        os.path.basename(filename) == version_basename for filename in filenames
+    )
+    files_valid = True
+    for filename in filenames:
+        role = roles.get(os.path.basename(filename), "readme")
+        old_content = _get_file_content(
+            repo, filename, base_sha, token=token, session=session
+        )
+        new_content = _get_file_content(
+            repo, filename, head_sha, token=token, session=session
+        )
+        files_valid = (
+            _validate_file_bump(
+                role,
+                old_content,
+                new_content,
+                release_tag,
+                release_version,
+                dev_header,
+                valid_values,
+            )
+            and files_valid
+        )
+    return version_bumped and files_valid
 
 
 def determine_post_release_reviewer(
@@ -363,7 +602,12 @@ def determine_post_release_reviewer(
 
 
 def _collect_failure_reasons(
-    is_post_release, release, only_allowed_files, only_valid_bumps, approval_error
+    is_post_release,
+    release,
+    files_complete,
+    only_allowed_files,
+    only_valid_bumps,
+    approval_error,
 ):
     """
     Build a list of human-readable reasons a post-release PR needs review.
@@ -372,9 +616,11 @@ def _collect_failure_reasons(
         is_post_release (bool): Whether the PR matches the post-release
             cleanup pattern.
         release (dict | None): The matching GitHub release, or ``None``.
+        files_complete (bool): Whether the full list of changed files could
+            be retrieved (fails closed on a pagination mismatch).
         only_allowed_files (bool): Whether only allowed files were changed.
-        only_valid_bumps (bool): Whether all changes were valid version/date
-            bumps.
+        only_valid_bumps (bool): Whether the version file was bumped and all
+            changes were valid bumps.
         approval_error (Exception | None): The error raised while attempting
             automatic approval, if any.
 
@@ -389,15 +635,21 @@ def _collect_failure_reasons(
         )
     if release is None:
         reasons.append("no matching GitHub release tag could be found for this PR")
-    if release is not None and not only_allowed_files:
+    if release is not None and not files_complete:
+        reasons.append(
+            "the full list of changed files could not be verified (a "
+            "pagination mismatch was detected), so the PR was not approved"
+        )
+    if release is not None and files_complete and not only_allowed_files:
         reasons.append(
             "only the version, citation, codemeta, changelog, news, and "
             "readme files should be changed, but other files were modified"
         )
     if release is not None and only_allowed_files and not only_valid_bumps:
         reasons.append(
-            "the changes must be limited to version/date bumps matching the "
-            "release tag, but other modifications were found"
+            "the version file must be bumped and every change must be a "
+            "valid version/date bump matching the release tag, but "
+            "validation failed"
         )
     if approval_error is not None:
         reasons.append(
@@ -496,6 +748,8 @@ def _review_post_release_pr(
     citation_filepath,
     changelog_filepath,
     description_filepath,
+    dev_header,
+    pr_data,
 ):
     """
     Evaluate and review a post-release cleanup PR that isn't already approved.
@@ -507,14 +761,12 @@ def _review_post_release_pr(
         bool: ``True`` if the PR was automatically approved, ``False`` if
         human review was requested.
     """
-    pr_data = github_api_get(
-        url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
-        token=token,
-        session=session,
-    )
     pr_title = pr_data.get("title", "")
     pr_sender_type = pr_data.get("user", {}).get("type", "")
     head_ref = pr_data.get("head", {}).get("ref", "")
+    head_sha = pr_data.get("head", {}).get("sha", "")
+    base_sha = pr_data.get("base", {}).get("sha", "")
+    expected_file_count = pr_data.get("changed_files")
     is_post_release = is_post_release_pr(pr_title, pr_sender_type)
     release_tag = extract_release_tag(pr_title)
     release = (
@@ -525,25 +777,37 @@ def _review_post_release_pr(
 
     pr_files = get_pr_files(repo, pr_number, token=token, session=session)
     filenames = [f.get("filename", "<unknown>") for f in pr_files]
+    files_complete = expected_file_count is None or len(pr_files) == expected_file_count
     print(f"PR title: {pr_title!r}")
     print(f"PR sender type: {pr_sender_type!r}")
     print(f"Changed files ({len(filenames)}): {', '.join(filenames) or '<none>'}")
     print(f"Matches post-release cleanup PR: {is_post_release}")
     print(f"Release tag from title: {release_tag!r}")
     print(f"Release found on GitHub: {release is not None}")
+    print(f"Full file list retrieved: {files_complete}")
 
-    allowed_basenames = _allowed_basenames(
+    roles = _file_roles(
         version_filepath, citation_filepath, changelog_filepath, description_filepath
     )
-    only_allowed_files = check_only_allowed_files_changed(pr_files, allowed_basenames)
+    only_allowed_files = files_complete and check_only_allowed_files_changed(
+        pr_files, roles
+    )
     only_valid_bumps = False
-    if only_allowed_files and release is not None:
-        valid_values = _release_bump_values(release_tag, release)
-        only_valid_bumps = check_version_date_bumps(
-            pr_files, valid_values, release_tag.lstrip("v")
+    if only_allowed_files and release is not None and head_sha and base_sha:
+        only_valid_bumps = check_files_are_valid_bumps(
+            repo,
+            filenames,
+            roles,
+            release_tag,
+            release,
+            dev_header,
+            base_sha,
+            head_sha,
+            token=token,
+            session=session,
         )
     print(f"Only allowed files changed: {only_allowed_files}")
-    print(f"Only version/date bumps found: {only_valid_bumps}")
+    print(f"Version bumped and all changes valid: {only_valid_bumps}")
 
     eligible = (
         is_post_release
@@ -561,13 +825,34 @@ def _review_post_release_pr(
         except (KeyError, requests.exceptions.RequestException, RuntimeError) as exc:
             print(f"Could not approve pending workflow runs: {exc}")
             warnings.warn(f"Could not approve pending workflow runs: {exc}")
-        try:
-            response = approve_pr(repo, pr_number, token=token, session=session)
-            was_auto_approved = True
-            print(f"Approval submitted successfully (HTTP {response.status_code})")
-        except (KeyError, requests.exceptions.RequestException, RuntimeError) as exc:
-            approval_error = exc
-            print(f"Approval failed: {exc}")
+
+        current_pr_data = github_api_get(
+            url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
+            token=token,
+            session=session,
+        )
+        current_head_sha = current_pr_data.get("head", {}).get("sha", "")
+        if current_head_sha and current_head_sha != head_sha:
+            approval_error = RuntimeError(
+                "the pull request's head commit changed during review; "
+                "aborting automatic approval to avoid approving unreviewed "
+                "changes"
+            )
+            print(f"Aborting approval: {approval_error}")
+        else:
+            try:
+                response = approve_pr(
+                    repo, pr_number, token=token, session=session, commit_id=head_sha
+                )
+                was_auto_approved = True
+                print(f"Approval submitted successfully (HTTP {response.status_code})")
+            except (
+                KeyError,
+                requests.exceptions.RequestException,
+                RuntimeError,
+            ) as exc:
+                approval_error = exc
+                print(f"Approval failed: {exc}")
         if was_auto_approved:
             _enable_merge_or_comment(
                 repo, pr_number, reviewer, token=token, session=session
@@ -578,6 +863,7 @@ def _review_post_release_pr(
         failed_reasons = _collect_failure_reasons(
             is_post_release,
             release,
+            files_complete,
             only_allowed_files,
             only_valid_bumps,
             approval_error,
@@ -603,30 +889,44 @@ def review_post_release_pr(
     citation_filepath="CITATION.cff",
     changelog_filepath="CHANGELOG.md",
     description_filepath="DESCRIPTION",
+    dev_header="development version",
 ):
     """
     Evaluate and review a post-release cleanup pull request.
 
-    Checks whether the PR satisfies three conditions:
+    Checks whether the PR satisfies four conditions:
 
     - **Condition 1** – the PR title matches the post-release cleanup
       pattern (``chore: post-release cleanup for <tag>``) and *<tag>*
       corresponds to an actual GitHub release.
-    - **Condition 2** – only the version file, citation file, ``codemeta.json``,
-      changelog file, news file, and/or readme files were changed.
-    - **Condition 3** – every change in those files is a version/date bump
-      matching the release tag (or a re-rendered citation snippet in a
-      readme file, which is validated the same way).
+    - **Condition 2** – the full list of changed files could be retrieved
+      (fails closed if a pagination mismatch is detected), and only the
+      version file, citation file, ``codemeta.json``, changelog file, news
+      file, and/or readme files were changed.
+    - **Condition 3** – the version file was actually changed, auditing that
+      the ``post-release`` action did its job.
+    - **Condition 4** – every changed file's new content is a valid bump for
+      its role: the version file matches the expected dev version exactly;
+      ``CITATION.cff`` and ``codemeta.json`` match the release tag/version
+      with no other fields changed; the changelog/news file only gained the
+      expected release heading; and readme files only had existing
+      version/date tokens replaced (no inserted lines), matching a
+      re-rendered citation snippet from the ``auto-format`` action.
 
     When all conditions are met the function approves any pending workflow
-    runs on the PR's head branch, approves the PR, and attempts to enable
-    squash auto-merge. If auto-merge cannot be enabled, it leaves a comment
-    with the GitHub API error. Otherwise it posts a comment explaining why
-    the PR needs manual review and requests a human reviewer, resolved via
+    runs on the PR's head branch, re-checks the PR's head commit immediately
+    before approving (aborting if it changed since validation), approves the
+    PR pinned to that commit, and attempts to enable squash auto-merge. If
+    auto-merge cannot be enabled, it leaves a comment with the GitHub API
+    error. Otherwise it posts a comment explaining why the PR needs manual
+    review and requests a human reviewer, resolved via
     [](`~ccbr_actions.post_release_pr.determine_post_release_reviewer`).
 
-    If the PR already has an APPROVED review, no new review is submitted and
-    the function returns ``True`` immediately unless *force_review* is true.
+    If the PR already has an APPROVED review tied to its current head commit,
+    no new review is submitted and the function returns ``True`` immediately
+    unless *force_review* is true. A stale approval left on an earlier commit
+    (e.g. after the ``auto-format`` action pushes a citation rerender) does
+    not count, so the PR is re-validated.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
@@ -648,17 +948,26 @@ def review_post_release_pr(
         description_filepath (str): Path to the R DESCRIPTION file, used when
             an R package's version file is the DESCRIPTION file. Defaults to
             ``"DESCRIPTION"``.
+        dev_header (str): Development-version header text to locate in the
+            changelog file (matched case-insensitively). Defaults to
+            ``"development version"``.
 
     Returns:
         bool: ``True`` if the PR was already approved or was automatically
         approved, ``False`` if human review was requested.
     """
     print(f"Reviewing post-release cleanup PR {repo}#{pr_number}")
-    already_approved = not force_review and is_pr_approved(
-        repo, pr_number, token=token, session=session
+    pr_data = github_api_get(
+        url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
+        token=token,
+        session=session,
+    )
+    head_sha = pr_data.get("head", {}).get("sha", "")
+    already_approved = not force_review and is_pr_approved_for_commit(
+        repo, pr_number, head_sha, token=token, session=session
     )
     if already_approved:
-        print("Result: PR already has an APPROVED review; no action was taken")
+        print("Result: PR already has an APPROVED review for the current head commit")
         result = True
     else:
         result = _review_post_release_pr(
@@ -671,5 +980,7 @@ def review_post_release_pr(
             citation_filepath,
             changelog_filepath,
             description_filepath,
+            dev_header,
+            pr_data,
         )
     return result

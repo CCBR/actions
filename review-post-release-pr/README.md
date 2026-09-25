@@ -6,10 +6,10 @@ version/date bumps matching a real release tag are present, otherwise
 request a human reviewer
 
 This action automates the review of post-release cleanup pull requests
-opened by the [post-release](/post-release) action, with titles of the
+opened by the [post-release](./post-release) action, with titles of the
 form `chore: post-release cleanup for <tag>`.
 
-The action verifies three conditions:
+The action verifies four conditions:
 
 1.  **The PR matches the post-release cleanup pattern** – the title
     matches `chore: post-release cleanup for <tag>`, the sender is a
@@ -17,18 +17,29 @@ The action verifies three conditions:
     release in the repo.
 2.  **Only allowed files were changed** – the version file, citation
     file, `codemeta.json`, changelog file, news file, and/or readme
-    files. No other files should be modified.
-3.  **Only version/date bumps were made** – every change in those files
-    must be a version or date bump consistent with the release found in
-    condition
-    1.  A readme file’s suggested citation snippet may also be
-        re-rendered by the `auto-format` action in response to the
-        version/date bump; that type of change is accepted the same way.
+    files. No other files should be modified, and the full list of
+    changed files must be retrievable (the action fails closed if a
+    pagination mismatch is detected).
+3.  **The version file was actually bumped** – auditing that the
+    `post-release` action did its job, not just that the changed files
+    are individually allowed.
+4.  **Every changed file’s new content is a valid bump for its role** –
+    the version file must match the expected dev version exactly;
+    `CITATION.cff` and `codemeta.json` must match the release
+    tag/version with no other fields changed; the changelog/news file
+    must have gained only the expected release heading; and readme files
+    may only have existing version/date tokens replaced (no inserted
+    lines), matching a re-rendered citation snippet from the
+    `auto-format` action.
 
-When all three conditions are satisfied the action:
+When all conditions are satisfied the action:
 
 - Approves any workflow runs pending approval on the PR’s head branch.
-- Approves the PR as the token’s actor (typically CCBR-bot).
+- Re-checks the PR’s head commit immediately before approving, aborting
+  if it changed since validation (e.g. a concurrent push), to avoid
+  approving unreviewed changes.
+- Approves the PR, pinned to the validated commit, as the token’s actor
+  (typically CCBR-bot).
 - Attempts to enable squash auto-merge so the PR merges automatically
   once all required checks pass. If auto-merge is unavailable, the
   approval remains and the action posts a comment containing the GitHub
@@ -43,8 +54,13 @@ When any condition is **not** satisfied the action:
       `draft-release.yml` workflow run;
   3.  otherwise, the repo’s default (catch-all `*`) `CODEOWNERS` entry.
 
+If the PR already has an APPROVED review tied to its _current_ head
+commit, no new review is submitted. A stale approval left on an earlier
+commit (e.g. before the `auto-format` action pushes a citation rerender)
+does not count, so the PR is re-validated — trigger your workflow on the
+`synchronize` PR event (as shown below) so new commits are re-checked.
 Set `force-review` to `true` to re-submit the review and reviewer
-request even when the PR already has an approval. It defaults to
+request even when the PR already has a current approval. It defaults to
 `false`.
 
 ## Usage
@@ -69,6 +85,7 @@ on:
     types:
       - opened
       - review_requested
+      - synchronize
 
 permissions:
   actions: write
@@ -94,7 +111,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also [pre-review-pr.yml](/examples/pre-review-pr.yml).
+See also [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 
@@ -117,6 +134,9 @@ See also [pre-review-pr.yml](/examples/pre-review-pr.yml).
   `CHANGELOG.md`.
 - `description-filepath`: Path to the R DESCRIPTION file, used when an R
   package is detected. Default: `DESCRIPTION`.
+- `dev-header`: Header string to match to find the development version
+  entry in the changelog, typically of the form ‘\## <software name>
+  development version’. Default: `development version`.
 - `ccbr-actions-version`: The version of CCBR/actions to install when
   running outside the ccbr_actions container (branch, tag, or ‘latest’).
   **Required.** Default: `latest`.

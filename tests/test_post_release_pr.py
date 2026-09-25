@@ -2,19 +2,27 @@
 Tests for ccbr_actions.post_release_pr module.
 """
 
+import base64
+
 import pytest
 import requests as requests_lib
 
 from ccbr_actions.post_release_pr import (
     POST_RELEASE_PR_TITLE_PATTERN,
-    _allowed_basenames,
+    _file_roles,
+    _get_file_content,
     _is_valid_bump_line,
-    _is_valid_insertion,
     _release_bump_values,
     _split_tokens,
+    _validate_changelog_file,
+    _validate_citation_file,
+    _validate_codemeta_file,
+    _validate_description_file,
+    _validate_file_bump,
+    _validate_readme_file,
+    _validate_version_file,
+    check_files_are_valid_bumps,
     check_only_allowed_files_changed,
-    check_patch_is_version_bump,
-    check_version_date_bumps,
     determine_post_release_reviewer,
     extract_release_tag,
     get_release_by_tag,
@@ -58,6 +66,36 @@ class MockSession:
         return MockResponse(self.payloads.get(url, default), status)
 
 
+class ContentSession(MockSession):
+    """MockSession variant that also serves file contents keyed by (path, ref)."""
+
+    def __init__(self, contents=None, **kwargs):
+        super().__init__(**kwargs)
+        self.contents = contents or {}
+        self.pr_payloads_sequence = None
+
+    def request(self, method, url, headers=None, **kwargs):
+        self.calls.append((method, url, kwargs))
+        if "contents/" in url and method == "GET":
+            path = url.split("contents/", 1)[1]
+            ref = (kwargs.get("params") or {}).get("ref")
+            text = self.contents.get((path, ref))
+            if text is None:
+                response = MockResponse({}, 404)
+            else:
+                encoded = base64.b64encode(text.encode("utf-8")).decode("ascii")
+                response = MockResponse({"content": encoded})
+        elif self.pr_payloads_sequence is not None and url in self.pr_payloads_sequence:
+            queue = self.pr_payloads_sequence[url]
+            payload = queue.pop(0) if len(queue) > 1 else queue[0]
+            response = MockResponse(payload)
+        else:
+            status = self.post_status if method == "POST" else 200
+            default = {"data": {}} if method == "POST" else {}
+            response = MockResponse(self.payloads.get(url, default), status)
+        return response
+
+
 class _RaisingSession(MockSession):
     """Always raises a RequestException on GET."""
 
@@ -67,10 +105,11 @@ class _RaisingSession(MockSession):
 
 
 # ---------------------------------------------------------------------------
-# Fixture patches, based on CCBR/Tools#229
+# Fixture content, based on CCBR/Tools#229
 # ---------------------------------------------------------------------------
 
 RELEASE_TAG = "v0.7.1"
+RELEASE_VERSION = "0.7.1"
 PR_TITLE = f"chore: post-release cleanup for {RELEASE_TAG}"
 RELEASE = {
     "tag_name": RELEASE_TAG,
@@ -78,70 +117,72 @@ RELEASE = {
     "created_at": "2026-09-17T00:00:00Z",
 }
 
-CHANGELOG_PATCH = """\
-@@ -1,5 +1,7 @@
- ## Tools development version
+VERSION_OLD = "0.7.0-dev\n"
+VERSION_NEW = "0.7.1-dev\n"
 
-+## Tools 0.7.1
-+
- - minor documentation improvements. (#197, #198, @kelly-sovacool)
+CITATION_OLD = """\
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+title: Tools
+authors:
+  - family-names: Sovacool
+    given-names: Kelly
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.13377166
+doi: 10.5281/zenodo.13377166
+version: v0.7.0
+date-released: "2026-06-10"
 """
+CITATION_NEW = CITATION_OLD.replace("version: v0.7.0", "version: v0.7.1").replace(
+    'date-released: "2026-06-10"', 'date-released: "2026-09-17"'
+)
 
-README_PATCH = """\
-@@ -181,7 +181,7 @@ guidelines](https://CCBR.github.io/Tools/CONTRIBUTING).
- Please cite this software if you use it in a publication:
+CODEMETA_OLD = '{"version": "0.7.0"}'
+CODEMETA_NEW = '{"version": "0.7.1"}'
 
- > Sovacool K., Koparde V., Kuhn S., Tandon M., and Huse S. (2026). CCBR
--> Tools: Utilities for CCBR Bioinformatics Software (version v0.7.0).
-+> Tools: Utilities for CCBR Bioinformatics Software (version v0.7.1).
- > DOI: 10.5281/zenodo.13377166 URL: https://ccbr.github.io/Tools/
+CHANGELOG_OLD = (
+    "## Tools development version\n\n"
+    "- minor documentation improvements. (#197, #198, @kelly-sovacool)\n"
+)
+CHANGELOG_NEW = (
+    "## Tools development version\n\n"
+    "## Tools 0.7.1\n\n"
+    "- minor documentation improvements. (#197, #198, @kelly-sovacool)\n"
+)
 
- ### Bibtex entry
-@@ -190,7 +190,7 @@ Please cite this software if you use it in a publication:
- @misc{YourReferenceHere,
-   author = {Sovacool, Kelly and Koparde, Vishal and Kuhn, Skyler and Tandon, Mayank and Huse, Susan},
-   doi = {10.5281/zenodo.13377166},
--  month = {6},
-+  month = {9},
-   title = {CCBR Tools: Utilities for CCBR Bioinformatics Software},
-   url = {https://ccbr.github.io/Tools/},
-   year = {2026}
-"""
+README_OLD = (
+    "> Sovacool K. (2026). CCBR Tools: Utilities (version v0.7.0).\n  month = {6},\n"
+)
+README_NEW = (
+    "> Sovacool K. (2026). CCBR Tools: Utilities (version v0.7.1).\n  month = {9},\n"
+)
 
-CITATION_PATCH = """\
-@@ -29,5 +29,5 @@ identifiers:
-   type: doi
-   value: 10.5281/zenodo.13377166
- doi: 10.5281/zenodo.13377166
--version: v0.7.0
--date-released: "2026-06-10"
-+version: v0.7.1
-+date-released: "2026-09-17"
-"""
-
-VERSION_PATCH = """\
-@@ -1 +1 @@
--0.7.0-dev
-+0.7.1-dev
-"""
-
-# A non-version change slipped into the changelog (invalid)
-INVALID_CHANGELOG_PATCH = """\
-@@ -1,5 +1,5 @@
- ## Tools development version
-
--- minor documentation improvements. (#197, #198, @kelly-sovacool)
-+- MAJOR documentation improvements. (#197, #198, @kelly-sovacool)
-"""
+DESCRIPTION_OLD = "Package: pkg\nVersion: 0.7.0.9000\nTitle: Example\n"
+DESCRIPTION_NEW = "Package: pkg\nVersion: 0.7.1.9000\nTitle: Example\n"
 
 
-def _pr_files():
-    return [
-        {"filename": "CHANGELOG.md", "patch": CHANGELOG_PATCH},
-        {"filename": "README.md", "patch": README_PATCH},
-        {"filename": "src/ccbr_tools/CITATION.cff", "patch": CITATION_PATCH},
-        {"filename": "src/ccbr_tools/VERSION", "patch": VERSION_PATCH},
-    ]
+def _default_roles():
+    return _file_roles("VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION")
+
+
+def _default_contents():
+    return {
+        ("VERSION", "base-sha"): VERSION_OLD,
+        ("VERSION", "head-sha"): VERSION_NEW,
+        ("CITATION.cff", "base-sha"): CITATION_OLD,
+        ("CITATION.cff", "head-sha"): CITATION_NEW,
+        ("codemeta.json", "base-sha"): CODEMETA_OLD,
+        ("codemeta.json", "head-sha"): CODEMETA_NEW,
+        ("CHANGELOG.md", "base-sha"): CHANGELOG_OLD,
+        ("CHANGELOG.md", "head-sha"): CHANGELOG_NEW,
+        ("README.md", "base-sha"): README_OLD,
+        ("README.md", "head-sha"): README_NEW,
+    }
+
+
+def _default_filenames():
+    return ["VERSION", "CITATION.cff", "codemeta.json", "CHANGELOG.md", "README.md"]
 
 
 # ---------------------------------------------------------------------------
@@ -186,79 +227,63 @@ def test_get_release_by_tag_returns_release_when_found():
 
 
 def test_get_release_by_tag_returns_none_when_missing():
-    class NotFoundSession(MockSession):
-        def request(self, method, url, headers=None, **kwargs):
-            self.calls.append((method, url, kwargs))
-            raise requests_lib.exceptions.HTTPError("404")
-
-    assert get_release_by_tag("CCBR/Tools", "v9.9.9", session=NotFoundSession()) is None
+    assert get_release_by_tag("CCBR/Tools", "v9.9.9", session=_RaisingSession()) is None
 
 
 # ---------------------------------------------------------------------------
-# _allowed_basenames / is_allowed_filename / check_only_allowed_files_changed
+# _file_roles / is_allowed_filename / check_only_allowed_files_changed
 # ---------------------------------------------------------------------------
 
 
-def test_allowed_basenames_includes_defaults():
-    basenames = _allowed_basenames(
-        "VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION"
-    )
-    assert basenames == {
-        "VERSION",
-        "CITATION.cff",
-        "CHANGELOG.md",
-        "DESCRIPTION",
-        "codemeta.json",
-        "NEWS.md",
-        "NEWS",
+def test_file_roles_assigns_expected_roles():
+    roles = _default_roles()
+    assert roles == {
+        "VERSION": "version",
+        "CITATION.cff": "citation",
+        "codemeta.json": "codemeta",
+        "CHANGELOG.md": "changelog",
+        "NEWS.md": "changelog",
+        "NEWS": "changelog",
+        "DESCRIPTION": "description",
     }
 
 
 def test_is_allowed_filename_matches_basename_regardless_of_path():
-    basenames = _allowed_basenames(
-        "VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION"
-    )
-    assert is_allowed_filename("src/ccbr_tools/VERSION", basenames) is True
+    roles = _default_roles()
+    assert is_allowed_filename("src/ccbr_tools/VERSION", roles) is True
 
 
 def test_is_allowed_filename_matches_readme_case_insensitively():
-    basenames = _allowed_basenames(
-        "VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION"
-    )
-    assert is_allowed_filename("Readme.qmd", basenames) is True
+    roles = _default_roles()
+    assert is_allowed_filename("Readme.qmd", roles) is True
 
 
 def test_is_allowed_filename_returns_false_for_disallowed_file():
-    basenames = _allowed_basenames(
-        "VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION"
-    )
-    assert is_allowed_filename("src/main.py", basenames) is False
+    roles = _default_roles()
+    assert is_allowed_filename("src/main.py", roles) is False
 
 
 def test_check_only_allowed_files_changed_returns_true_for_pr_files():
-    basenames = _allowed_basenames(
-        "VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION"
-    )
-    assert check_only_allowed_files_changed(_pr_files(), basenames) is True
+    roles = _default_roles()
+    pr_files = [{"filename": name} for name in _default_filenames()]
+    assert check_only_allowed_files_changed(pr_files, roles) is True
 
 
 def test_check_only_allowed_files_changed_returns_false_when_extra_file():
-    basenames = _allowed_basenames(
-        "VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION"
-    )
-    pr_files = _pr_files() + [{"filename": "src/main.py"}]
-    assert check_only_allowed_files_changed(pr_files, basenames) is False
+    roles = _default_roles()
+    pr_files = [{"filename": name} for name in _default_filenames()] + [
+        {"filename": "src/main.py"}
+    ]
+    assert check_only_allowed_files_changed(pr_files, roles) is False
 
 
 def test_check_only_allowed_files_changed_returns_false_when_empty():
-    basenames = _allowed_basenames(
-        "VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION"
-    )
-    assert check_only_allowed_files_changed([], basenames) is False
+    roles = _default_roles()
+    assert check_only_allowed_files_changed([], roles) is False
 
 
 # ---------------------------------------------------------------------------
-# _release_bump_values
+# _release_bump_values / _split_tokens / _is_valid_bump_line
 # ---------------------------------------------------------------------------
 
 
@@ -268,14 +293,7 @@ def test_release_bump_values_includes_version_and_date_tokens():
     assert "0.7.1" in values
     assert "0.7.1-dev" in values
     assert "2026-09-17" in values
-    assert "2026" in values
     assert "9" in values
-    assert "17" in values
-
-
-# ---------------------------------------------------------------------------
-# _split_tokens
-# ---------------------------------------------------------------------------
 
 
 def test_split_tokens_separates_text_and_numeric_tokens():
@@ -284,19 +302,14 @@ def test_split_tokens_separates_text_and_numeric_tokens():
     assert text == ["version: v", ""]
 
 
-# ---------------------------------------------------------------------------
-# _is_valid_bump_line
-# ---------------------------------------------------------------------------
-
-
 def test_is_valid_bump_line_accepts_version_bump():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert _is_valid_bump_line("version: v0.7.0", "version: v0.7.1", values) is True
+    assert _is_valid_bump_line("(version v0.7.0).", "(version v0.7.1).", values) is True
 
 
 def test_is_valid_bump_line_rejects_non_matching_version():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert _is_valid_bump_line("version: v0.7.0", "version: v9.9.9", values) is False
+    assert _is_valid_bump_line("v0.7.0", "v9.9.9", values) is False
 
 
 def test_is_valid_bump_line_rejects_changed_surrounding_text():
@@ -304,102 +317,403 @@ def test_is_valid_bump_line_rejects_changed_surrounding_text():
     assert _is_valid_bump_line("version: v0.7.0", "ver: v0.7.1", values) is False
 
 
-def test_is_valid_bump_line_rejects_mismatched_token_count():
-    values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert _is_valid_bump_line("v0.7.0", "v0.7.1 v0.7.1", values) is False
-
-
 # ---------------------------------------------------------------------------
-# _is_valid_insertion
+# _get_file_content
 # ---------------------------------------------------------------------------
 
 
-def test_is_valid_insertion_accepts_blank_line():
-    assert _is_valid_insertion("", "0.7.1") is True
-    assert _is_valid_insertion("   ", "0.7.1") is True
+def test_get_file_content_returns_decoded_text():
+    encoded = base64.b64encode(b"hello world").decode("ascii")
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/Tools/contents/VERSION": {
+                "content": encoded
+            }
+        }
+    )
+    result = _get_file_content("CCBR/Tools", "VERSION", "abc", session=session)
+    assert result == "hello world"
 
 
-def test_is_valid_insertion_accepts_heading_with_release_version():
-    assert _is_valid_insertion("## Tools 0.7.1", "0.7.1") is True
+def test_get_file_content_returns_none_when_missing():
+    result = _get_file_content(
+        "CCBR/Tools", "VERSION", "abc", session=_RaisingSession()
+    )
+    assert result is None
 
 
-def test_is_valid_insertion_rejects_unrelated_line():
-    assert _is_valid_insertion("- a new unrelated bullet point", "0.7.1") is False
+def test_get_file_content_returns_none_for_invalid_base64():
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/Tools/contents/VERSION": {
+                "content": "not-valid-base64!!"
+            }
+        }
+    )
+    result = _get_file_content("CCBR/Tools", "VERSION", "abc", session=session)
+    assert result is None
 
 
 # ---------------------------------------------------------------------------
-# check_patch_is_version_bump
+# _validate_version_file
 # ---------------------------------------------------------------------------
 
 
-def test_check_patch_is_version_bump_accepts_changelog_heading_insertion():
-    assert check_patch_is_version_bump(CHANGELOG_PATCH, {"0.7.1"}, "0.7.1") is True
+def test_validate_version_file_accepts_exact_dev_bump():
+    assert _validate_version_file(VERSION_NEW, RELEASE_VERSION) is True
 
 
-def test_check_patch_is_version_bump_accepts_readme_citation_rerender():
-    values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert check_patch_is_version_bump(README_PATCH, values, "0.7.1") is True
+def test_validate_version_file_rejects_wrong_version():
+    assert _validate_version_file("9.9.9-dev\n", RELEASE_VERSION) is False
 
 
-def test_check_patch_is_version_bump_accepts_citation_cff_bump():
-    values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert check_patch_is_version_bump(CITATION_PATCH, values, "0.7.1") is True
+def test_validate_version_file_rejects_missing_content():
+    assert _validate_version_file(None, RELEASE_VERSION) is False
 
 
-def test_check_patch_is_version_bump_accepts_version_file_bump():
-    values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert check_patch_is_version_bump(VERSION_PATCH, values, "0.7.1") is True
+# ---------------------------------------------------------------------------
+# _validate_description_file
+# ---------------------------------------------------------------------------
 
 
-def test_check_patch_is_version_bump_rejects_non_version_change():
-    values = _release_bump_values(RELEASE_TAG, RELEASE)
+def test_validate_description_file_accepts_valid_r_dev_bump():
     assert (
-        check_patch_is_version_bump(INVALID_CHANGELOG_PATCH, values, "0.7.1") is False
+        _validate_description_file(DESCRIPTION_OLD, DESCRIPTION_NEW, RELEASE_VERSION)
+        is True
     )
 
 
-def test_check_patch_is_version_bump_rejects_version_not_matching_release():
-    # Looks like a version bump, but doesn't match the fetched release's version.
-    patch = "@@ -1 +1 @@\n-0.7.0-dev\n+0.9.9-dev\n"
-    values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert check_patch_is_version_bump(patch, values, "0.7.1") is False
+def test_validate_description_file_rejects_other_field_changes():
+    tampered = DESCRIPTION_NEW.replace("Title: Example", "Title: Tampered")
+    assert (
+        _validate_description_file(DESCRIPTION_OLD, tampered, RELEASE_VERSION) is False
+    )
 
 
-def test_check_patch_is_version_bump_returns_true_for_empty_patch():
-    assert check_patch_is_version_bump("", {"0.7.1"}, "0.7.1") is True
+def test_validate_description_file_rejects_wrong_version():
+    tampered = DESCRIPTION_OLD.replace("Version: 0.7.0.9000", "Version: 9.9.9.9000")
+    assert (
+        _validate_description_file(DESCRIPTION_OLD, tampered, RELEASE_VERSION) is False
+    )
 
 
-def test_check_patch_is_version_bump_ignores_file_header_lines():
-    patch = "--- a/VERSION\n+++ b/VERSION\n@@ -1 +1 @@\n-0.7.0-dev\n+0.7.1-dev\n"
-    assert check_patch_is_version_bump(patch, {"0.7.1", "0.7.1-dev"}, "0.7.1") is True
+def test_validate_description_file_rejects_missing_content():
+    assert _validate_description_file(None, DESCRIPTION_NEW, RELEASE_VERSION) is False
+
+
+def test_validate_description_file_rejects_non_semver_release_version():
+    assert (
+        _validate_description_file(DESCRIPTION_OLD, DESCRIPTION_NEW, "not-semver")
+        is False
+    )
+
+
+def test_validate_description_file_rejects_line_count_mismatch():
+    new_with_extra_line = DESCRIPTION_NEW + "Extra: field\n"
+    assert (
+        _validate_description_file(
+            DESCRIPTION_OLD, new_with_extra_line, RELEASE_VERSION
+        )
+        is False
+    )
 
 
 # ---------------------------------------------------------------------------
-# check_version_date_bumps
+# _validate_citation_file
 # ---------------------------------------------------------------------------
 
 
-def test_check_version_date_bumps_returns_true_for_valid_pr_files():
+def test_validate_citation_file_accepts_valid_bump():
+    assert _validate_citation_file(CITATION_OLD, CITATION_NEW, RELEASE_TAG) is True
+
+
+def test_validate_citation_file_rejects_other_field_changes():
+    tampered = CITATION_NEW.replace("title: Tools", "title: Tampered")
+    assert _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG) is False
+
+
+def test_validate_citation_file_rejects_version_not_matching_release():
+    tampered = CITATION_NEW.replace("version: v0.7.1", "version: v9.9.9")
+    assert _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG) is False
+
+
+def test_validate_citation_file_rejects_malformed_date():
+    tampered = CITATION_NEW.replace(
+        'date-released: "2026-09-17"', 'date-released: "not-a-date"'
+    )
+    assert _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG) is False
+
+
+def test_validate_citation_file_rejects_invalid_yaml():
+    assert (
+        _validate_citation_file(CITATION_OLD, "not: valid: yaml: [", RELEASE_TAG)
+        is False
+    )
+
+
+# ---------------------------------------------------------------------------
+# _validate_codemeta_file
+# ---------------------------------------------------------------------------
+
+
+def test_validate_codemeta_file_accepts_matching_version():
+    assert _validate_codemeta_file(CODEMETA_NEW, RELEASE_VERSION, RELEASE_TAG) is True
+
+
+def test_validate_codemeta_file_accepts_missing_version_field():
+    assert _validate_codemeta_file("{}", RELEASE_VERSION, RELEASE_TAG) is True
+
+
+def test_validate_codemeta_file_rejects_mismatched_version():
+    assert (
+        _validate_codemeta_file('{"version": "9.9.9"}', RELEASE_VERSION, RELEASE_TAG)
+        is False
+    )
+
+
+def test_validate_codemeta_file_rejects_invalid_json():
+    assert _validate_codemeta_file("not json", RELEASE_VERSION, RELEASE_TAG) is False
+
+
+# ---------------------------------------------------------------------------
+# _validate_changelog_file
+# ---------------------------------------------------------------------------
+
+
+def test_validate_changelog_file_accepts_expected_heading_insertion():
+    assert (
+        _validate_changelog_file(
+            CHANGELOG_OLD, CHANGELOG_NEW, RELEASE_VERSION, "development version"
+        )
+        is True
+    )
+
+
+def test_validate_changelog_file_rejects_unrelated_bullet_insertion():
+    tampered = CHANGELOG_OLD + "- an unrelated bullet\n"
+    assert (
+        _validate_changelog_file(
+            CHANGELOG_OLD, tampered, RELEASE_VERSION, "development version"
+        )
+        is False
+    )
+
+
+def test_validate_changelog_file_rejects_missing_dev_header():
+    old_without_header = "- a bullet\n"
+    new_with_insertion = "## Tools 0.7.1\n\n- a bullet\n"
+    assert (
+        _validate_changelog_file(
+            old_without_header,
+            new_with_insertion,
+            RELEASE_VERSION,
+            "development version",
+        )
+        is False
+    )
+
+
+def test_validate_changelog_file_rejects_heading_without_release_version():
+    tampered = CHANGELOG_NEW.replace("## Tools 0.7.1", "## Tools 9.9.9")
+    assert (
+        _validate_changelog_file(
+            CHANGELOG_OLD, tampered, RELEASE_VERSION, "development version"
+        )
+        is False
+    )
+
+
+def test_validate_changelog_file_rejects_missing_content():
+    assert (
+        _validate_changelog_file(
+            None, CHANGELOG_NEW, RELEASE_VERSION, "development version"
+        )
+        is False
+    )
+
+
+# ---------------------------------------------------------------------------
+# _validate_readme_file
+# ---------------------------------------------------------------------------
+
+
+def test_validate_readme_file_accepts_token_bumps():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert check_version_date_bumps(_pr_files(), values, "0.7.1") is True
+    assert _validate_readme_file(README_OLD, README_NEW, values) is True
 
 
-def test_check_version_date_bumps_returns_false_when_one_file_invalid():
+def test_validate_readme_file_rejects_inserted_lines():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
-    pr_files = _pr_files()
-    pr_files[0] = {"filename": "CHANGELOG.md", "patch": INVALID_CHANGELOG_PATCH}
-    assert check_version_date_bumps(pr_files, values, "0.7.1") is False
+    tampered = README_NEW + "Imports: unsafe-package (>= 0.7.1)\n"
+    assert _validate_readme_file(README_OLD, tampered, values) is False
 
 
-def test_check_version_date_bumps_returns_false_when_patch_missing():
+def test_validate_readme_file_rejects_unrelated_line_change():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
-    pr_files = [{"filename": "CHANGELOG.md"}]
-    assert check_version_date_bumps(pr_files, values, "0.7.1") is False
+    tampered = README_NEW.replace("Sovacool K.", "Someone Else.")
+    assert _validate_readme_file(README_OLD, tampered, values) is False
 
 
-def test_check_version_date_bumps_returns_false_for_empty_files():
+def test_validate_readme_file_rejects_missing_content():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
-    assert check_version_date_bumps([], values, "0.7.1") is False
+    assert _validate_readme_file(None, README_NEW, values) is False
+
+
+# ---------------------------------------------------------------------------
+# _validate_file_bump dispatch
+# ---------------------------------------------------------------------------
+
+
+def test_validate_file_bump_dispatches_to_version_validator():
+    values = _release_bump_values(RELEASE_TAG, RELEASE)
+    assert (
+        _validate_file_bump(
+            "version",
+            VERSION_OLD,
+            VERSION_NEW,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            "development version",
+            values,
+        )
+        is True
+    )
+
+
+def test_validate_file_bump_dispatches_to_readme_validator_by_default():
+    values = _release_bump_values(RELEASE_TAG, RELEASE)
+    assert (
+        _validate_file_bump(
+            "readme",
+            README_OLD,
+            README_NEW,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            "development version",
+            values,
+        )
+        is True
+    )
+
+
+def test_validate_file_bump_dispatches_to_description_validator():
+    values = _release_bump_values(RELEASE_TAG, RELEASE)
+    assert (
+        _validate_file_bump(
+            "description",
+            DESCRIPTION_OLD,
+            DESCRIPTION_NEW,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            "development version",
+            values,
+        )
+        is True
+    )
+
+
+def test_validate_file_bump_dispatches_to_citation_validator():
+    values = _release_bump_values(RELEASE_TAG, RELEASE)
+    assert (
+        _validate_file_bump(
+            "citation",
+            CITATION_OLD,
+            CITATION_NEW,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            "development version",
+            values,
+        )
+        is True
+    )
+
+
+def test_validate_file_bump_dispatches_to_codemeta_validator():
+    values = _release_bump_values(RELEASE_TAG, RELEASE)
+    assert (
+        _validate_file_bump(
+            "codemeta",
+            CODEMETA_OLD,
+            CODEMETA_NEW,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            "development version",
+            values,
+        )
+        is True
+    )
+
+
+def test_validate_file_bump_dispatches_to_changelog_validator():
+    values = _release_bump_values(RELEASE_TAG, RELEASE)
+    assert (
+        _validate_file_bump(
+            "changelog",
+            CHANGELOG_OLD,
+            CHANGELOG_NEW,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            "development version",
+            values,
+        )
+        is True
+    )
+
+
+# ---------------------------------------------------------------------------
+# check_files_are_valid_bumps
+# ---------------------------------------------------------------------------
+
+
+def test_check_files_are_valid_bumps_returns_true_for_valid_pr():
+    session = ContentSession(contents=_default_contents())
+    result = check_files_are_valid_bumps(
+        "CCBR/Tools",
+        _default_filenames(),
+        _default_roles(),
+        RELEASE_TAG,
+        RELEASE,
+        "development version",
+        "base-sha",
+        "head-sha",
+        session=session,
+    )
+    assert result is True
+
+
+def test_check_files_are_valid_bumps_returns_false_when_version_file_not_changed():
+    filenames = ["README.md"]
+    session = ContentSession(contents=_default_contents())
+    result = check_files_are_valid_bumps(
+        "CCBR/Tools",
+        filenames,
+        _default_roles(),
+        RELEASE_TAG,
+        RELEASE,
+        "development version",
+        "base-sha",
+        "head-sha",
+        session=session,
+    )
+    assert result is False
+
+
+def test_check_files_are_valid_bumps_returns_false_when_one_file_invalid():
+    contents = _default_contents()
+    contents[("CHANGELOG.md", "head-sha")] = CHANGELOG_OLD + "- unrelated bullet\n"
+    session = ContentSession(contents=contents)
+    result = check_files_are_valid_bumps(
+        "CCBR/Tools",
+        _default_filenames(),
+        _default_roles(),
+        RELEASE_TAG,
+        RELEASE,
+        "development version",
+        "base-sha",
+        "head-sha",
+        session=session,
+    )
+    assert result is False
 
 
 # ---------------------------------------------------------------------------
@@ -429,8 +743,6 @@ def test_determine_post_release_reviewer_uses_last_draft_release_actor():
 
 
 def test_determine_post_release_reviewer_falls_back_to_default_codeowner():
-    import base64
-
     runs_url = (
         "https://api.github.com/repos/CCBR/Tools/actions/workflows/"
         "draft-release.yml/runs"
@@ -472,16 +784,20 @@ def _make_review_session(
     release_payload=None,
     existing_reviews=None,
     action_required_runs=None,
+    contents=None,
+    second_pr_node_payload=None,
 ):
-    """Build a MockSession suitable for review_post_release_pr tests."""
+    """Build a ContentSession suitable for review_post_release_pr tests."""
     if pr_files is None:
-        pr_files = _pr_files()
+        pr_files = [{"filename": name} for name in _default_filenames()]
     if pr_node_payload is None:
         pr_node_payload = {
             "node_id": "PR_NODE_9",
             "title": PR_TITLE,
             "user": {"type": "Bot"},
-            "head": {"ref": "release/v0.7.1"},
+            "head": {"ref": "release/v0.7.1", "sha": "head-sha"},
+            "base": {"sha": "base-sha"},
+            "changed_files": len(pr_files),
         }
     if graphql_payload is None:
         graphql_payload = {
@@ -493,6 +809,8 @@ def _make_review_session(
         }
     if release_payload is None:
         release_payload = RELEASE
+    if contents is None:
+        contents = _default_contents()
 
     pr_files_url = "https://api.github.com/repos/CCBR/Tools/pulls/9/files"
     pr_node_url = "https://api.github.com/repos/CCBR/Tools/pulls/9"
@@ -518,7 +836,12 @@ def _make_review_session(
         runs_url: {"workflow_runs": action_required_runs or []},
         draft_runs_url: {"workflow_runs": []},
     }
-    return MockSession(payloads)
+    session = ContentSession(contents=contents, payloads=payloads)
+    if second_pr_node_payload is not None:
+        session.pr_payloads_sequence = {
+            pr_node_url: [pr_node_payload, second_pr_node_payload]
+        }
+    return session
 
 
 def test_review_post_release_pr_approves_when_conditions_met():
@@ -532,6 +855,7 @@ def test_review_post_release_pr_approves_when_conditions_met():
         c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
     ]
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
+    assert any(body.get("commit_id") == "head-sha" for body in review_bodies)
 
 
 def test_review_post_release_pr_approves_pending_workflow_runs():
@@ -548,7 +872,13 @@ def test_review_post_release_pr_approves_pending_workflow_runs():
 
 def test_review_post_release_pr_skips_when_current_review_is_approved():
     session = _make_review_session(
-        existing_reviews=[{"user": {"login": "ccbr-bot"}, "state": "APPROVED"}]
+        existing_reviews=[
+            {
+                "user": {"login": "ccbr-bot"},
+                "state": "APPROVED",
+                "commit_id": "head-sha",
+            }
+        ]
     )
     result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
     assert result is True
@@ -556,9 +886,31 @@ def test_review_post_release_pr_skips_when_current_review_is_approved():
     assert not posted_urls
 
 
+def test_review_post_release_pr_revalidates_when_approval_is_stale():
+    # Approval exists but was left on an earlier commit (e.g. before an
+    # auto-format push), so it must not count and the PR must be re-validated.
+    session = _make_review_session(
+        existing_reviews=[
+            {"user": {"login": "ccbr-bot"}, "state": "APPROVED", "commit_id": "old-sha"}
+        ]
+    )
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is True
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert any(body.get("event") == "APPROVE" for body in review_bodies)
+
+
 def test_review_post_release_pr_reviews_again_when_force_review_is_enabled():
     session = _make_review_session(
-        existing_reviews=[{"user": {"login": "ccbr-bot"}, "state": "APPROVED"}]
+        existing_reviews=[
+            {
+                "user": {"login": "ccbr-bot"},
+                "state": "APPROVED",
+                "commit_id": "head-sha",
+            }
+        ]
     )
     result = review_post_release_pr(
         "CCBR/Tools", 9, force_review=True, token="tok", session=session
@@ -569,7 +921,9 @@ def test_review_post_release_pr_reviews_again_when_force_review_is_enabled():
 
 
 def test_review_post_release_pr_requests_human_review_when_extra_file_changed():
-    pr_files = _pr_files() + [{"filename": "src/main.py", "patch": "@@ -1 +1 @@\n"}]
+    pr_files = [{"filename": name} for name in _default_filenames()] + [
+        {"filename": "src/main.py"}
+    ]
     session = _make_review_session(pr_files=pr_files)
     result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
     assert result is False
@@ -581,9 +935,27 @@ def test_review_post_release_pr_requests_human_review_when_extra_file_changed():
     assert any("issues/9/comments" in u for u in posted_urls)
 
 
-def test_review_post_release_pr_requests_human_review_when_non_bump_change():
-    pr_files = _pr_files()
-    pr_files[0] = {"filename": "CHANGELOG.md", "patch": INVALID_CHANGELOG_PATCH}
+def test_review_post_release_pr_requests_human_review_when_file_count_mismatched():
+    pr_node_payload = {
+        "node_id": "PR_NODE_9",
+        "title": PR_TITLE,
+        "user": {"type": "Bot"},
+        "head": {"ref": "release/v0.7.1", "sha": "head-sha"},
+        "base": {"sha": "base-sha"},
+        "changed_files": 99,
+    }
+    session = _make_review_session(pr_node_payload=pr_node_payload)
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is False
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/9/comments" in c[1]
+    ]
+    assert comment_calls
+    assert "pagination mismatch" in comment_calls[0][2]["json"]["body"]
+
+
+def test_review_post_release_pr_requests_human_review_when_version_not_bumped():
+    pr_files = [{"filename": "README.md"}]
     session = _make_review_session(pr_files=pr_files)
     result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
     assert result is False
@@ -591,21 +963,19 @@ def test_review_post_release_pr_requests_human_review_when_non_bump_change():
         c for c in session.calls if c[0] == "POST" and "issues/9/comments" in c[1]
     ]
     assert comment_calls
-    assert "requires human review" in comment_calls[0][2]["json"]["body"]
+    assert "version file must be bumped" in comment_calls[0][2]["json"]["body"]
 
 
 def test_review_post_release_pr_requests_human_review_when_release_not_found():
-    class NoReleaseSession(MockSession):
-        def request(self, method, url, headers=None, **kwargs):
-            self.calls.append((method, url, kwargs))
-            if "releases/tags/" in url:
-                raise requests_lib.exceptions.HTTPError("404")
-            status = self.post_status if method == "POST" else 200
-            default = {"data": {}} if method == "POST" else {}
-            return MockResponse(self.payloads.get(url, default), status)
-
     session = _make_review_session()
-    session.__class__ = NoReleaseSession
+    original_request = session.request
+
+    def _patched_request(method, url, headers=None, **kwargs):
+        if "releases/tags/" in url:
+            raise requests_lib.exceptions.HTTPError("404")
+        return original_request(method, url, headers=headers, **kwargs)
+
+    session.request = _patched_request
     result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
     assert result is False
     comment_calls = [
@@ -621,7 +991,9 @@ def test_review_post_release_pr_requests_human_review_when_title_or_sender_misma
             "node_id": "PR_NODE_9",
             "title": "chore: bump deps",
             "user": {"type": "User"},
-            "head": {"ref": "some-branch"},
+            "head": {"ref": "some-branch", "sha": "head-sha"},
+            "base": {"sha": "base-sha"},
+            "changed_files": 5,
         }
     )
     result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
@@ -633,7 +1005,7 @@ def test_review_post_release_pr_requests_human_review_when_title_or_sender_misma
     assert "post-release cleanup pattern" in comment_calls[0][2]["json"]["body"]
 
 
-def test_review_post_release_pr_uses_resolved_reviewer_in_comment():
+def test_review_post_release_pr_requests_resolved_reviewer_successfully():
     runs_url = (
         "https://api.github.com/repos/CCBR/Tools/actions/workflows/"
         "draft-release.yml/runs"
@@ -643,7 +1015,9 @@ def test_review_post_release_pr_uses_resolved_reviewer_in_comment():
             "node_id": "PR_NODE_9",
             "title": "chore: bump deps",
             "user": {"type": "User"},
-            "head": {"ref": "some-branch"},
+            "head": {"ref": "some-branch", "sha": "head-sha"},
+            "base": {"sha": "base-sha"},
+            "changed_files": 5,
         }
     )
     session.payloads[runs_url] = {
@@ -651,15 +1025,39 @@ def test_review_post_release_pr_uses_resolved_reviewer_in_comment():
     }
     result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
     assert result is False
-    comment_calls = [
-        c for c in session.calls if c[0] == "POST" and "issues/9/comments" in c[1]
-    ]
-    assert "@kelly-sovacool" in comment_calls[0][2]["json"]["body"]
     reviewer_calls = [
         c for c in session.calls if c[0] == "POST" and "requested_reviewers" in c[1]
     ]
     assert reviewer_calls
     assert reviewer_calls[0][2]["json"]["reviewers"] == ["kelly-sovacool"]
+
+
+def test_review_post_release_pr_aborts_approval_when_head_changes_concurrently():
+    pr_node_payload = {
+        "node_id": "PR_NODE_9",
+        "title": PR_TITLE,
+        "user": {"type": "Bot"},
+        "head": {"ref": "release/v0.7.1", "sha": "head-sha"},
+        "base": {"sha": "base-sha"},
+        "changed_files": len(_default_filenames()),
+    }
+    second_pr_node_payload = dict(pr_node_payload)
+    second_pr_node_payload["head"] = {"ref": "release/v0.7.1", "sha": "new-head-sha"}
+    session = _make_review_session(
+        pr_node_payload=pr_node_payload,
+        second_pr_node_payload=second_pr_node_payload,
+    )
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is False
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert not any(body.get("event") == "APPROVE" for body in review_bodies)
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/9/comments" in c[1]
+    ]
+    assert comment_calls
+    assert "head commit changed" in comment_calls[0][2]["json"]["body"]
 
 
 def test_review_post_release_pr_keeps_approval_when_auto_merge_api_fails():
@@ -700,7 +1098,9 @@ def test_review_post_release_pr_comments_when_approval_fails(monkeypatch):
 
 
 def test_review_post_release_pr_warns_when_reviewer_request_fails(monkeypatch):
-    pr_files = _pr_files() + [{"filename": "src/main.py", "patch": "@@ -1 +1 @@\n"}]
+    pr_files = [{"filename": name} for name in _default_filenames()] + [
+        {"filename": "src/main.py"}
+    ]
     session = _make_review_session(pr_files=pr_files)
 
     def _fail_request(*args, **kwargs):
@@ -718,7 +1118,9 @@ def test_review_post_release_pr_warns_when_reviewer_request_fails(monkeypatch):
 
 
 def test_review_post_release_pr_warns_when_human_review_comment_fails(monkeypatch):
-    pr_files = _pr_files() + [{"filename": "src/main.py", "patch": "@@ -1 +1 @@\n"}]
+    pr_files = [{"filename": name} for name in _default_filenames()] + [
+        {"filename": "src/main.py"}
+    ]
     session = _make_review_session(pr_files=pr_files)
 
     def _fail_comment(*args, **kwargs):
@@ -743,6 +1145,7 @@ def test_review_post_release_pr_warns_when_auto_merge_comment_fails(monkeypatch)
 
     with pytest.warns(UserWarning, match="Could not post auto-merge failure comment"):
         result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+
     assert result is True
 
 

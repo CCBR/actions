@@ -13,6 +13,9 @@ EXAMPLES = sorted(
 CURRENT_VERSION = (REPOSITORY_ROOT / "VERSION").read_text().strip()
 CURRENT_RELEASE = f"v{CURRENT_VERSION.removesuffix('-dev')}"
 ACTION_REFERENCE = re.compile(r"CCBR/actions/([^@\s]+)@([^\s]+)")
+# Actions with no release containing them yet may reference @main until the
+# next release is cut; the ref should be repinned to that release afterward.
+UNRELEASED_ACTIONS = {"review-post-release-pr"}
 
 
 def _iter_steps(value):
@@ -28,14 +31,23 @@ def _iter_steps(value):
 
 
 def test_examples_use_current_release_refs():
-    """Examples should use the current release rather than a moving ref."""
+    """Examples should use the current release, except unreleased actions on @main."""
     references = [
-        match.group(2)
+        (match.group(1), match.group(2))
         for example in EXAMPLES
         for match in ACTION_REFERENCE.finditer(example.read_text())
     ]
     assert references
-    assert set(references) == {CURRENT_RELEASE}
+    unexpected = [
+        (action_name, ref)
+        for action_name, ref in references
+        if not (
+            ref == CURRENT_RELEASE
+            or (action_name in UNRELEASED_ACTIONS and ref == "main")
+        )
+    ]
+    assert not unexpected
+    assert any(ref == CURRENT_RELEASE for _, ref in references)
 
 
 def test_examples_reference_declared_inputs_and_required_values():

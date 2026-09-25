@@ -17,24 +17,39 @@ from .github import (
 _CODEOWNERS_PATHS = ("CODEOWNERS", ".github/CODEOWNERS", "docs/CODEOWNERS")
 
 
-def get_pr_files(repo, pr_number, token=None, session=None):
+def get_pr_files(repo, pr_number, token=None, session=None, per_page=100):
     """
-    Return the list of file objects changed in a pull request.
+    Return the full, paginated list of file objects changed in a pull request.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         pr_number (int | str): Pull request number.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
+        per_page (int): Page size to request (max 100 per the GitHub API).
 
     Returns:
-        list[dict]: File objects from the GitHub pull request files API.
+        list[dict]: File objects from the GitHub pull request files API,
+        collected across all pages.
     """
     url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/files"
-    return github_api_get(url=url, token=token, session=session)
+    files = []
+    page = 1
+    has_more_pages = True
+    while has_more_pages:
+        page_files = github_api_get(
+            url=url,
+            token=token,
+            session=session,
+            params={"per_page": per_page, "page": page},
+        )
+        files.extend(page_files)
+        has_more_pages = len(page_files) == per_page
+        page += 1
+    return files
 
 
-def approve_pr(repo, pr_number, token=None, session=None):
+def approve_pr(repo, pr_number, token=None, session=None, commit_id=None):
     """
     Submit an *APPROVE* review on a pull request.
 
@@ -43,16 +58,22 @@ def approve_pr(repo, pr_number, token=None, session=None):
         pr_number (int | str): Pull request number.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
+        commit_id (str, optional): SHA of the commit the review applies to.
+            Pinning the review to a specific commit means a concurrent push
+            leaves the new head without a matching approval.
 
     Returns:
         requests.Response: Response from the GitHub reviews API.
     """
     url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/reviews"
+    payload = {"event": "APPROVE"}
+    if commit_id:
+        payload["commit_id"] = commit_id
     response = github_api_post(
         url=url,
         token=token,
         session=session,
-        json={"event": "APPROVE"},
+        json=payload,
     )
     response.raise_for_status()
     return response
@@ -73,6 +94,32 @@ def get_pr_reviews(repo, pr_number, token=None, session=None):
     """
     url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/reviews"
     return github_api_get(url=url, token=token, session=session)
+
+
+def _latest_reviews_by_reviewer(reviews):
+    """
+    Reduce a PR's review history to each reviewer's most recent review.
+
+    Args:
+        reviews (list[dict]): Review objects from
+            [](`~ccbr_actions.pr_review.get_pr_reviews`).
+
+    Returns:
+        dict: Mapping of reviewer identity to their latest review object.
+    """
+    latest_reviews = {}
+    for review_index, review in enumerate(reviews):
+        reviewer = review.get("user", {}).get("login")
+        if reviewer is None:
+            reviewer = review.get("user", {}).get("id", review.get("id"))
+        review_key = (
+            review.get("submitted_at") or review.get("created_at") or "",
+            review_index,
+        )
+        previous = latest_reviews.get(reviewer)
+        if previous is None or review_key > previous[0]:
+            latest_reviews[reviewer] = (review_key, review)
+    return {reviewer: entry[1] for reviewer, entry in latest_reviews.items()}
 
 
 def is_pr_approved(repo, pr_number, token=None, session=None):
@@ -96,24 +143,44 @@ def is_pr_approved(repo, pr_number, token=None, session=None):
         and no current reviewer has requested changes.
     """
     reviews = get_pr_reviews(repo, pr_number, token=token, session=session)
-    latest_reviews = {}
-    for review_index, review in enumerate(reviews):
-        reviewer = review.get("user", {}).get("login")
-        if reviewer is None:
-            reviewer = review.get("user", {}).get("id", review.get("id"))
-        review_key = (
-            review.get("submitted_at") or review.get("created_at") or "",
-            review_index,
-        )
-        previous = latest_reviews.get(reviewer)
-        if previous is None or review_key > previous[0]:
-            latest_reviews[reviewer] = (review_key, review)
-
-    current_states = [review[1].get("state") for review in latest_reviews.values()]
+    latest_reviews = _latest_reviews_by_reviewer(reviews)
+    current_states = [review.get("state") for review in latest_reviews.values()]
     has_changes_requested = "CHANGES_REQUESTED" in current_states
     has_approval = "APPROVED" in current_states
     result = has_approval and not has_changes_requested
     return result
+
+
+def is_pr_approved_for_commit(repo, pr_number, commit_sha, token=None, session=None):
+    """
+    Check whether a pull request has a current APPROVED review tied to *commit_sha*.
+
+    Unlike [](`~ccbr_actions.pr_review.is_pr_approved`), this requires the
+    approving review's ``commit_id`` to match *commit_sha* (typically the
+    PR's current head), so a stale approval left on an earlier commit (e.g.
+    before an ``auto-format`` push) does not count.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        commit_sha (str): Commit SHA the approval must be tied to.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if the current review state includes an APPROVED
+        review for *commit_sha* and no current reviewer has requested
+        changes.
+    """
+    reviews = get_pr_reviews(repo, pr_number, token=token, session=session)
+    latest_reviews = _latest_reviews_by_reviewer(reviews)
+    current_states = [review.get("state") for review in latest_reviews.values()]
+    has_changes_requested = "CHANGES_REQUESTED" in current_states
+    has_matching_approval = bool(commit_sha) and any(
+        review.get("state") == "APPROVED" and review.get("commit_id") == commit_sha
+        for review in latest_reviews.values()
+    )
+    return has_matching_approval and not has_changes_requested
 
 
 def request_changes(repo, pr_number, comment, token=None, session=None):

@@ -18,6 +18,7 @@ from ccbr_actions.pr_review import (
     get_last_workflow_run_actor,
     get_pr_files,
     is_pr_approved,
+    is_pr_approved_for_commit,
     match_codeowners,
     post_pr_comment,
     request_changes,
@@ -83,6 +84,25 @@ def test_get_pr_files_calls_correct_url():
     )
 
 
+def test_get_pr_files_paginates_across_full_pages():
+    class PaginatedSession(MockSession):
+        def request(self, method, url, headers=None, **kwargs):
+            self.calls.append((method, url, kwargs))
+            page = kwargs["params"]["page"]
+            per_page = kwargs["params"]["per_page"]
+            if page == 1:
+                payload = [{"filename": f"file{i}.txt"} for i in range(per_page)]
+            else:
+                payload = [{"filename": "last.txt"}]
+            return MockResponse(payload)
+
+    session = PaginatedSession()
+    result = get_pr_files("CCBR/actions", 42, token="tok", session=session, per_page=2)
+    assert len(result) == 3
+    assert [f["filename"] for f in result] == ["file0.txt", "file1.txt", "last.txt"]
+    assert len(session.calls) == 2
+
+
 # ---------------------------------------------------------------------------
 # approve_pr
 # ---------------------------------------------------------------------------
@@ -95,6 +115,15 @@ def test_approve_pr_posts_to_reviews_endpoint():
     assert method == "POST"
     assert url == "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
     assert kwargs["json"]["event"] == "APPROVE"
+    assert "commit_id" not in kwargs["json"]
+
+
+def test_approve_pr_includes_commit_id_when_provided():
+    session = MockSession(post_status=200)
+    approve_pr("CCBR/actions", 42, token="tok", session=session, commit_id="abc123")
+    method, _url, kwargs = session.calls[0]
+    assert method == "POST"
+    assert kwargs["json"]["commit_id"] == "abc123"
 
 
 # ---------------------------------------------------------------------------
@@ -184,6 +213,98 @@ def test_is_pr_approved_falls_back_to_user_id_when_login_is_missing():
     )
 
     assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is True
+
+
+# ---------------------------------------------------------------------------
+# is_pr_approved_for_commit
+# ---------------------------------------------------------------------------
+
+
+def test_is_pr_approved_for_commit_returns_true_for_matching_commit():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "sha-abc",
+                }
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit(
+            "CCBR/actions", 42, "sha-abc", token="tok", session=session
+        )
+        is True
+    )
+
+
+def test_is_pr_approved_for_commit_returns_false_for_stale_commit():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "sha-old",
+                }
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit(
+            "CCBR/actions", 42, "sha-new", token="tok", session=session
+        )
+        is False
+    )
+
+
+def test_is_pr_approved_for_commit_returns_false_when_changes_requested():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "sha-abc",
+                },
+                {
+                    "user": {"login": "human"},
+                    "state": "CHANGES_REQUESTED",
+                    "commit_id": "sha-abc",
+                },
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit(
+            "CCBR/actions", 42, "sha-abc", token="tok", session=session
+        )
+        is False
+    )
+
+
+def test_is_pr_approved_for_commit_returns_false_for_blank_commit_sha():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "",
+                }
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit("CCBR/actions", 42, "", token="tok", session=session)
+        is False
+    )
 
 
 # ---------------------------------------------------------------------------
