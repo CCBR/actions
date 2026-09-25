@@ -16,7 +16,6 @@ from .pr_review import (
     get_pr_files,
     is_pr_approved,
     post_pr_comment,
-    request_changes,
     request_reviewer,
 )
 
@@ -269,8 +268,8 @@ def review_pre_commit_pr(
     When both conditions are met the function approves the PR, attempts to
     enable squash auto-merge, and returns ``True``. If auto-merge cannot be
     enabled, it leaves a separate comment with the GitHub API error. Otherwise
-    it submits a *REQUEST_CHANGES* review explaining why the PR needs manual
-    review, requests a human reviewer, and returns ``False``. The reviewer is resolved via
+    it posts a comment explaining why the PR needs manual review, requests a
+    human reviewer, and returns ``False``. The reviewer is resolved via
     [](`~ccbr_actions.pr_review.determine_reviewer`): *reviewer* if given,
     otherwise the repo's ``CODEOWNERS`` entry for the config file, otherwise
     the most recent human committer to the config file.
@@ -424,13 +423,13 @@ def review_pre_commit_pr(
             f"because the following conditions were not met:\n{reasons}"
         )
         try:
-            response = request_changes(
+            response = post_pr_comment(
                 repo, pr_number, comment, token=token, session=session
             )
-            print(f"Submitted REQUEST_CHANGES review (HTTP {response.status_code})")
+            print(f"Posted human-review comment (HTTP {response.status_code})")
         except (requests.exceptions.RequestException, RuntimeError) as exc:
-            print(f"Could not submit REQUEST_CHANGES review: {exc}")
-            warnings.warn(f"Could not submit request-changes review: {exc}")
+            print(f"Could not post human-review comment: {exc}")
+            warnings.warn(f"Could not post human-review comment: {exc}")
         if resolved_reviewer:
             try:
                 response = request_reviewer(

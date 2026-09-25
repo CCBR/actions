@@ -41,7 +41,7 @@ them for your needs.
 - [label-issues-repo-name](examples/label-issues-repo-name.yml)
 - [maintain-milestones](examples/maintain-milestones.yml)
 - [post-release](examples/post-release.yml)
-- [review-pre-commit-pr](examples/review-pre-commit-pr.yml)
+- [pre-review-pr](examples/pre-review-pr.yml)
 - [sync-copilot-instructions](examples/sync-copilot-instructions.yml)
 - [techdev-project](examples/techdev-project.yml)
 - [trigger-docker-dispatch](examples/trigger-docker-dispatch.yml)
