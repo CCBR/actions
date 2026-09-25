@@ -6,7 +6,7 @@ version/date bumps matching a real release tag are present, otherwise
 request a human reviewer
 
 This action automates the review of post-release cleanup pull requests
-opened by the [post-release](./post-release) action, with titles of the
+opened by the [post-release](/post-release) action, with titles of the
 form `chore: post-release cleanup for <tag>`.
 
 The action verifies four conditions:
@@ -111,7 +111,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also [pre-review-pr.yml](./examples/pre-review-pr.yml).
+See also [pre-review-pr.yml](/examples/pre-review-pr.yml).
 
 ## Inputs
 
