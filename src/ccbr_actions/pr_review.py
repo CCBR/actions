@@ -183,6 +183,27 @@ def is_pr_approved_for_commit(repo, pr_number, commit_sha, token=None, session=N
     return has_matching_approval and not has_changes_requested
 
 
+def has_changes_requested(repo, pr_number, token=None, session=None):
+    """
+    Check whether any reviewer currently has an active CHANGES_REQUESTED review.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if the latest review from any reviewer is currently
+        ``CHANGES_REQUESTED``.
+    """
+    reviews = get_pr_reviews(repo, pr_number, token=token, session=session)
+    latest_reviews = _latest_reviews_by_reviewer(reviews)
+    return any(
+        review.get("state") == "CHANGES_REQUESTED" for review in latest_reviews.values()
+    )
+
+
 def request_changes(repo, pr_number, comment, token=None, session=None):
     """
     Submit a *REQUEST_CHANGES* review on a pull request.
@@ -250,7 +271,9 @@ def enable_auto_merge(repo, pr_number, token=None, session=None):
     )
 
 
-def approve_pending_workflow_runs(repo, branch, token=None, session=None):
+def approve_pending_workflow_runs(
+    repo, branch, head_sha=None, token=None, session=None
+):
     """
     Approve workflow runs awaiting approval for a branch.
 
@@ -261,6 +284,9 @@ def approve_pending_workflow_runs(repo, branch, token=None, session=None):
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         branch (str): Branch name (typically a pull request's head ref).
+        head_sha (str, optional): If given, only approve runs whose
+            ``head_sha`` matches exactly, so runs from an unrelated PR or an
+            earlier push that happen to share the branch name are ignored.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
 
@@ -274,8 +300,13 @@ def approve_pending_workflow_runs(repo, branch, token=None, session=None):
         session=session,
         params={"branch": branch, "status": "action_required"},
     )
+    matching_runs = [
+        run
+        for run in data.get("workflow_runs", [])
+        if not head_sha or run.get("head_sha") == head_sha
+    ]
     approved_run_ids = []
-    for run in data.get("workflow_runs", []):
+    for run in matching_runs:
         run_id = run["id"]
         approve_url = f"{GITHUB_API_URL}/repos/{repo}/actions/runs/{run_id}/approve"
         response = github_api_post(url=approve_url, token=token, session=session)

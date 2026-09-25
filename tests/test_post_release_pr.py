@@ -15,6 +15,7 @@ from ccbr_actions.post_release_pr import (
     _human_review_marker,
     _is_valid_bump_line,
     _release_bump_values,
+    _release_dates,
     _split_tokens,
     _validate_changelog_file,
     _validate_citation_file,
@@ -118,6 +119,7 @@ RELEASE = {
     "published_at": "2026-09-17T00:00:00Z",
     "created_at": "2026-09-17T00:00:00Z",
 }
+RELEASE_DATES = {"2026-09-17"}
 
 VERSION_OLD = "0.7.0-dev\n"
 VERSION_NEW = "0.7.1-dev\n"
@@ -298,6 +300,14 @@ def test_release_bump_values_includes_version_and_date_tokens():
     assert "9" in values
 
 
+def test_release_dates_extracts_published_and_created_dates():
+    assert _release_dates(RELEASE) == RELEASE_DATES
+
+
+def test_release_dates_ignores_missing_or_malformed_dates():
+    assert _release_dates({"published_at": "", "created_at": "not-a-date"}) == set()
+
+
 def test_split_tokens_separates_text_and_numeric_tokens():
     text, tokens = _split_tokens("version: v0.7.0")
     assert tokens == ["0.7.0"]
@@ -426,29 +436,54 @@ def test_validate_description_file_rejects_line_count_mismatch():
 
 
 def test_validate_citation_file_accepts_valid_bump():
-    assert _validate_citation_file(CITATION_OLD, CITATION_NEW, RELEASE_TAG) is True
+    assert (
+        _validate_citation_file(CITATION_OLD, CITATION_NEW, RELEASE_TAG, RELEASE_DATES)
+        is True
+    )
 
 
 def test_validate_citation_file_rejects_other_field_changes():
     tampered = CITATION_NEW.replace("title: Tools", "title: Tampered")
-    assert _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG) is False
+    assert (
+        _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG, RELEASE_DATES)
+        is False
+    )
 
 
 def test_validate_citation_file_rejects_version_not_matching_release():
     tampered = CITATION_NEW.replace("version: v0.7.1", "version: v9.9.9")
-    assert _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG) is False
+    assert (
+        _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG, RELEASE_DATES)
+        is False
+    )
 
 
 def test_validate_citation_file_rejects_malformed_date():
     tampered = CITATION_NEW.replace(
         'date-released: "2026-09-17"', 'date-released: "not-a-date"'
     )
-    assert _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG) is False
+    assert (
+        _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG, RELEASE_DATES)
+        is False
+    )
+
+
+def test_validate_citation_file_rejects_date_not_matching_release():
+    # Well-formed date, but not the actual release date.
+    tampered = CITATION_NEW.replace(
+        'date-released: "2026-09-17"', 'date-released: "2099-01-01"'
+    )
+    assert (
+        _validate_citation_file(CITATION_OLD, tampered, RELEASE_TAG, RELEASE_DATES)
+        is False
+    )
 
 
 def test_validate_citation_file_rejects_invalid_yaml():
     assert (
-        _validate_citation_file(CITATION_OLD, "not: valid: yaml: [", RELEASE_TAG)
+        _validate_citation_file(
+            CITATION_OLD, "not: valid: yaml: [", RELEASE_TAG, RELEASE_DATES
+        )
         is False
     )
 
@@ -459,22 +494,53 @@ def test_validate_citation_file_rejects_invalid_yaml():
 
 
 def test_validate_codemeta_file_accepts_matching_version():
-    assert _validate_codemeta_file(CODEMETA_NEW, RELEASE_VERSION, RELEASE_TAG) is True
+    assert (
+        _validate_codemeta_file(
+            CODEMETA_OLD, CODEMETA_NEW, RELEASE_VERSION, RELEASE_TAG, RELEASE_DATES
+        )
+        is True
+    )
 
 
 def test_validate_codemeta_file_accepts_missing_version_field():
-    assert _validate_codemeta_file("{}", RELEASE_VERSION, RELEASE_TAG) is True
+    assert (
+        _validate_codemeta_file("{}", "{}", RELEASE_VERSION, RELEASE_TAG, RELEASE_DATES)
+        is True
+    )
 
 
 def test_validate_codemeta_file_rejects_mismatched_version():
     assert (
-        _validate_codemeta_file('{"version": "9.9.9"}', RELEASE_VERSION, RELEASE_TAG)
+        _validate_codemeta_file(
+            CODEMETA_OLD,
+            '{"version": "9.9.9"}',
+            RELEASE_VERSION,
+            RELEASE_TAG,
+            RELEASE_DATES,
+        )
         is False
     )
 
 
 def test_validate_codemeta_file_rejects_invalid_json():
-    assert _validate_codemeta_file("not json", RELEASE_VERSION, RELEASE_TAG) is False
+    assert (
+        _validate_codemeta_file(
+            CODEMETA_OLD, "not json", RELEASE_VERSION, RELEASE_TAG, RELEASE_DATES
+        )
+        is False
+    )
+
+
+def test_validate_codemeta_file_rejects_unrelated_field_replacement():
+    # A completely different JSON object must not pass just because the old
+    # content is ignored and the version happens to be absent.
+    tampered = '{"name": "Totally different metadata", "license": "MIT"}'
+    assert (
+        _validate_codemeta_file(
+            CODEMETA_OLD, tampered, RELEASE_VERSION, RELEASE_TAG, RELEASE_DATES
+        )
+        is False
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -561,6 +627,16 @@ def test_validate_readme_file_rejects_missing_content():
     assert _validate_readme_file(None, README_NEW, values) is False
 
 
+def test_validate_readme_file_rejects_bump_outside_citation_context():
+    # "9" happens to equal the release month, but this line has nothing to do
+    # with the citation snippet (e.g. an issue reference), so it must not
+    # pass just because the token is individually valid.
+    values = _release_bump_values(RELEASE_TAG, RELEASE)
+    old = "Fixes #6 for details.\n" + README_OLD
+    new = "Fixes #9 for details.\n" + README_OLD
+    assert _validate_readme_file(old, new, values) is False
+
+
 # ---------------------------------------------------------------------------
 # _validate_file_bump dispatch
 # ---------------------------------------------------------------------------
@@ -575,6 +651,7 @@ def test_validate_file_bump_dispatches_to_version_validator():
             VERSION_NEW,
             RELEASE_TAG,
             RELEASE_VERSION,
+            RELEASE_DATES,
             "development version",
             values,
         )
@@ -591,6 +668,7 @@ def test_validate_file_bump_dispatches_to_readme_validator_by_default():
             README_NEW,
             RELEASE_TAG,
             RELEASE_VERSION,
+            RELEASE_DATES,
             "development version",
             values,
         )
@@ -607,6 +685,7 @@ def test_validate_file_bump_dispatches_to_description_validator():
             DESCRIPTION_NEW,
             RELEASE_TAG,
             RELEASE_VERSION,
+            RELEASE_DATES,
             "development version",
             values,
         )
@@ -623,6 +702,7 @@ def test_validate_file_bump_dispatches_to_citation_validator():
             CITATION_NEW,
             RELEASE_TAG,
             RELEASE_VERSION,
+            RELEASE_DATES,
             "development version",
             values,
         )
@@ -639,6 +719,7 @@ def test_validate_file_bump_dispatches_to_codemeta_validator():
             CODEMETA_NEW,
             RELEASE_TAG,
             RELEASE_VERSION,
+            RELEASE_DATES,
             "development version",
             values,
         )
@@ -655,6 +736,7 @@ def test_validate_file_bump_dispatches_to_changelog_validator():
             CHANGELOG_NEW,
             RELEASE_TAG,
             RELEASE_VERSION,
+            RELEASE_DATES,
             "development version",
             values,
         )
@@ -678,6 +760,8 @@ def test_check_files_are_valid_bumps_returns_true_for_valid_pr():
         "development version",
         "base-sha",
         "head-sha",
+        "VERSION",
+        "DESCRIPTION",
         session=session,
     )
     assert result is True
@@ -695,6 +779,8 @@ def test_check_files_are_valid_bumps_returns_false_when_version_file_not_changed
         "development version",
         "base-sha",
         "head-sha",
+        "VERSION",
+        "DESCRIPTION",
         session=session,
     )
     assert result is False
@@ -713,9 +799,37 @@ def test_check_files_are_valid_bumps_returns_false_when_one_file_invalid():
         "development version",
         "base-sha",
         "head-sha",
+        "VERSION",
+        "DESCRIPTION",
         session=session,
     )
     assert result is False
+
+
+def test_check_files_are_valid_bumps_counts_r_description_bump_as_version_bump():
+    # For an R package, version-filepath and description-filepath are both
+    # DESCRIPTION; a validated description bump must satisfy the version-bump
+    # audit even though no basename maps to the "version" role.
+    roles = _file_roles("DESCRIPTION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION")
+    contents = {
+        ("DESCRIPTION", "base-sha"): DESCRIPTION_OLD,
+        ("DESCRIPTION", "head-sha"): DESCRIPTION_NEW,
+    }
+    session = ContentSession(contents=contents)
+    result = check_files_are_valid_bumps(
+        "CCBR/Tools",
+        ["DESCRIPTION"],
+        roles,
+        RELEASE_TAG,
+        RELEASE,
+        "development version",
+        "base-sha",
+        "head-sha",
+        "DESCRIPTION",
+        "DESCRIPTION",
+        session=session,
+    )
+    assert result is True
 
 
 # ---------------------------------------------------------------------------
@@ -911,8 +1025,29 @@ def test_review_post_release_pr_approves_when_conditions_met():
     assert any(body.get("commit_id") == "head-sha" for body in review_bodies)
 
 
+def test_review_post_release_pr_defers_to_active_changes_requested_review():
+    # Even though the file checks would otherwise pass, an active human
+    # CHANGES_REQUESTED review must block automatic approval.
+    session = _make_review_session(
+        existing_reviews=[{"user": {"login": "human"}, "state": "CHANGES_REQUESTED"}]
+    )
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is False
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert not any(body.get("event") == "APPROVE" for body in review_bodies)
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/9/comments" in c[1]
+    ]
+    assert comment_calls
+    assert "changes requested" in comment_calls[0][2]["json"]["body"]
+
+
 def test_review_post_release_pr_approves_pending_workflow_runs():
-    session = _make_review_session(action_required_runs=[{"id": 555}])
+    session = _make_review_session(
+        action_required_runs=[{"id": 555, "head_sha": "head-sha"}]
+    )
     result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
     assert result is True
     approve_run_urls = [
@@ -921,6 +1056,20 @@ def test_review_post_release_pr_approves_pending_workflow_runs():
         if c[0] == "POST" and "actions/runs/555/approve" in c[1]
     ]
     assert approve_run_urls
+
+
+def test_review_post_release_pr_does_not_approve_workflow_runs_for_other_commits():
+    session = _make_review_session(
+        action_required_runs=[{"id": 555, "head_sha": "unrelated-sha"}]
+    )
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is True
+    approve_run_urls = [
+        c[1]
+        for c in session.calls
+        if c[0] == "POST" and "actions/runs/555/approve" in c[1]
+    ]
+    assert not approve_run_urls
 
 
 def test_review_post_release_pr_skips_when_current_review_is_approved():

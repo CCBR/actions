@@ -21,6 +21,7 @@ from .pr_review import (
     get_last_workflow_run_actor,
     get_pr_comments,
     get_pr_files,
+    has_changes_requested,
     is_pr_approved_for_commit,
     match_codeowners,
     post_pr_comment,
@@ -151,6 +152,26 @@ def check_only_allowed_files_changed(pr_files, roles):
     )
 
 
+def _release_dates(release):
+    """
+    Build the set of valid ISO release dates (``YYYY-MM-DD``) for a release.
+
+    Args:
+        release (dict): Release object from
+            [](`~ccbr_actions.post_release_pr.get_release_by_tag`).
+
+    Returns:
+        set[str]: The release's ``published_at``/``created_at`` dates, since
+        a citation date set at draft time may match either.
+    """
+    dates = set()
+    for date_key in ("published_at", "created_at"):
+        date_part = (release.get(date_key) or "")[:10]
+        if len(date_part) == 10 and date_part[4] == "-" and date_part[7] == "-":
+            dates.add(date_part)
+    return dates
+
+
 def _release_bump_values(release_tag, release):
     """
     Build the set of token values allowed as a version/date bump target.
@@ -168,11 +189,9 @@ def _release_bump_values(release_tag, release):
     """
     version = release_tag.lstrip("v")
     values = {release_tag, version, f"{version}-dev"}
-    for date_key in ("published_at", "created_at"):
-        date_part = (release.get(date_key) or "")[:10]
-        if len(date_part) == 10 and date_part[4] == "-" and date_part[7] == "-":
-            year, month, day = date_part.split("-")
-            values.update({date_part, str(int(year)), str(int(month)), str(int(day))})
+    for date_part in _release_dates(release):
+        year, month, day = date_part.split("-")
+        values.update({date_part, str(int(year)), str(int(month)), str(int(day))})
     return values
 
 
@@ -214,6 +233,36 @@ def _is_valid_bump_line(old_line, new_line, valid_values):
             for old_tok, new_tok in zip(old_tokens, new_tokens)
         )
     return result
+
+
+# A README's citation snippet is the only prose expected to carry release
+# tokens; requiring one of these keywords near a changed line keeps an
+# unrelated number (e.g. an issue reference or dependency pin) that happens
+# to match a release token from being accepted as a "bump".
+_README_BUMP_CONTEXT_PATTERN = re.compile(
+    r"version|\bmonth\s*=\s*\{|\byear\s*=\s*\{|date-released", re.IGNORECASE
+)
+
+
+def _is_valid_readme_bump_line(old_line, new_line, valid_values):
+    """
+    Check whether a readme line is a valid, citation-context version/date bump.
+
+    Args:
+        old_line (str): The line's previous content.
+        new_line (str): The line's new content.
+        valid_values (set[str]): Acceptable new token values, from
+            [](`~ccbr_actions.post_release_pr._release_bump_values`).
+
+    Returns:
+        bool: ``True`` if the line is an unchanged line, or a valid bump
+        occurring in a recognized citation context (a "version" mention or a
+        bibtex ``month``/``year`` field).
+    """
+    return old_line == new_line or (
+        bool(_README_BUMP_CONTEXT_PATTERN.search(new_line))
+        and _is_valid_bump_line(old_line, new_line, valid_values)
+    )
 
 
 def _get_file_content(repo, path, ref, token=None, session=None):
@@ -301,7 +350,7 @@ def _validate_description_file(old_content, new_content, release_version):
     return result
 
 
-def _validate_citation_file(old_content, new_content, release_tag):
+def _validate_citation_file(old_content, new_content, release_tag, release_dates):
     """
     Check that a ``CITATION.cff`` file's version/date fields were bumped.
 
@@ -309,11 +358,12 @@ def _validate_citation_file(old_content, new_content, release_tag):
         old_content (str | None): The file's content at the PR's base.
         new_content (str | None): The file's content at the PR's head.
         release_tag (str): The release tag (e.g. ``"v0.7.1"``).
+        release_dates (set[str]): Acceptable ``date-released`` values, from
+            [](`~ccbr_actions.post_release_pr._release_dates`).
 
     Returns:
         bool: ``True`` if only ``version``/``date-released`` changed, the new
-        version equals *release_tag*, and the new date is a valid
-        ``YYYY-MM-DD`` string.
+        version equals *release_tag*, and the new date matches the release.
     """
     try:
         old_data = yaml.safe_load(old_content) if old_content else {}
@@ -328,39 +378,58 @@ def _validate_citation_file(old_content, new_content, release_tag):
         fields_unchanged = all(
             old_data.get(k) == new_data.get(k) for k in unchanged_keys
         )
-        new_date = new_data.get("date-released")
         version_ok = new_data.get("version") == release_tag
-        date_ok = bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(new_date)))
+        date_ok = str(new_data.get("date-released")) in release_dates
         result = fields_unchanged and version_ok and date_ok
     return result
 
 
-def _validate_codemeta_file(new_content, release_version, release_tag):
+def _validate_codemeta_file(
+    old_content, new_content, release_version, release_tag, release_dates
+):
     """
-    Check that ``codemeta.json``'s version field (if present) matches the release.
+    Check that ``codemeta.json``'s version/date fields were bumped to the release.
 
     Args:
+        old_content (str | None): The file's content at the PR's base.
         new_content (str | None): The file's content at the PR's head.
         release_version (str): The release version (without leading ``v``).
         release_tag (str): The release tag (e.g. ``"v0.7.1"``).
+        release_dates (set[str]): Acceptable date field values, from
+            [](`~ccbr_actions.post_release_pr._release_dates`).
 
     Returns:
-        bool: ``True`` if *new_content* is valid JSON and its ``version``
-        field (if any) matches the release.
+        bool: ``True`` if only version/date-like fields changed between
+        *old_content* and *new_content*, and the new values match the
+        release.
     """
     try:
+        old_data = json.loads(old_content) if old_content else {}
         new_data = json.loads(new_content) if new_content else None
     except (json.JSONDecodeError, TypeError):
-        new_data = None
-    if not isinstance(new_data, dict):
+        old_data, new_data = None, None
+    if not isinstance(old_data, dict) or not isinstance(new_data, dict):
         result = False
     else:
-        version_field = new_data.get("version")
-        result = version_field is None or version_field in (
+        date_keys = {"dateModified", "datePublished", "dateCreated"}
+        exempt_keys = {"version"} | date_keys
+        unchanged_keys = (set(old_data) | set(new_data)) - exempt_keys
+        fields_unchanged = all(
+            old_data.get(k) == new_data.get(k) for k in unchanged_keys
+        )
+        new_version = new_data.get("version")
+        version_ok = new_version is None or new_version in (
             release_version,
             release_tag,
             f"v{release_version}",
         )
+        date_fields_ok = all(
+            new_data.get(k) is None
+            or new_data.get(k) == old_data.get(k)
+            or str(new_data.get(k))[:10] in release_dates
+            for k in date_keys
+        )
+        result = fields_unchanged and version_ok and date_fields_ok
     return result
 
 
@@ -421,7 +490,10 @@ def _validate_readme_file(old_content, new_content, valid_values):
     Check that a readme file's changes are only version/date token bumps.
 
     No lines may be inserted or removed; each changed line must differ from
-    its previous content only in numeric/version-like tokens.
+    its previous content only in numeric/version-like tokens, and only within
+    a recognized citation context (a "version" mention or a bibtex
+    ``month``/``year`` field), so an unrelated number that happens to match a
+    release token (e.g. an issue reference) is not accepted.
 
     Args:
         old_content (str | None): The file's content at the PR's base.
@@ -430,7 +502,7 @@ def _validate_readme_file(old_content, new_content, valid_values):
             [](`~ccbr_actions.post_release_pr._release_bump_values`).
 
     Returns:
-        bool: ``True`` if every line is unchanged or a valid token bump.
+        bool: ``True`` if every line is unchanged or a valid contextual bump.
     """
     if not isinstance(old_content, str) or not isinstance(new_content, str):
         result = False
@@ -438,8 +510,7 @@ def _validate_readme_file(old_content, new_content, valid_values):
         old_lines = old_content.splitlines()
         new_lines = new_content.splitlines()
         result = len(old_lines) == len(new_lines) and all(
-            old_line == new_line
-            or _is_valid_bump_line(old_line, new_line, valid_values)
+            _is_valid_readme_bump_line(old_line, new_line, valid_values)
             for old_line, new_line in zip(old_lines, new_lines)
         )
     return result
@@ -451,6 +522,7 @@ def _validate_file_bump(
     new_content,
     release_tag,
     release_version,
+    release_dates,
     dev_header,
     valid_values,
 ):
@@ -464,6 +536,8 @@ def _validate_file_bump(
         new_content (str | None): The file's content at the PR's head.
         release_tag (str): The release tag (e.g. ``"v0.7.1"``).
         release_version (str): The release version (without leading ``v``).
+        release_dates (set[str]): Acceptable release date values, from
+            [](`~ccbr_actions.post_release_pr._release_dates`).
         dev_header (str): Development-version header text for changelog files.
         valid_values (set[str]): Acceptable new token values for readme files.
 
@@ -475,9 +549,13 @@ def _validate_file_bump(
     elif role == "description":
         result = _validate_description_file(old_content, new_content, release_version)
     elif role == "citation":
-        result = _validate_citation_file(old_content, new_content, release_tag)
+        result = _validate_citation_file(
+            old_content, new_content, release_tag, release_dates
+        )
     elif role == "codemeta":
-        result = _validate_codemeta_file(new_content, release_version, release_tag)
+        result = _validate_codemeta_file(
+            old_content, new_content, release_version, release_tag, release_dates
+        )
     elif role == "changelog":
         result = _validate_changelog_file(
             old_content, new_content, release_version, dev_header
@@ -496,6 +574,8 @@ def check_files_are_valid_bumps(
     dev_header,
     base_sha,
     head_sha,
+    version_filepath,
+    description_filepath,
     token=None,
     session=None,
 ):
@@ -518,6 +598,10 @@ def check_files_are_valid_bumps(
         dev_header (str): Development-version header text for changelog files.
         base_sha (str): Commit SHA to read "old" file contents at.
         head_sha (str): Commit SHA to read "new" file contents at.
+        version_filepath (str): Path to the version file.
+        description_filepath (str): Path to the R DESCRIPTION file. For R
+            packages this is also the version file, so a validated
+            ``description`` bump counts as the required version bump.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
 
@@ -526,12 +610,14 @@ def check_files_are_valid_bumps(
         every changed file's new content is a valid bump for its role.
     """
     release_version = release_tag.lstrip("v")
+    release_dates = _release_dates(release)
     valid_values = _release_bump_values(release_tag, release)
-    version_basename = next(
-        (basename for basename, role in roles.items() if role == "version"), None
-    )
+    version_basenames = {
+        os.path.basename(version_filepath),
+        os.path.basename(description_filepath),
+    }
     version_bumped = any(
-        os.path.basename(filename) == version_basename for filename in filenames
+        os.path.basename(filename) in version_basenames for filename in filenames
     )
     files_valid = True
     for filename in filenames:
@@ -549,6 +635,7 @@ def check_files_are_valid_bumps(
                 new_content,
                 release_tag,
                 release_version,
+                release_dates,
                 dev_header,
                 valid_values,
             )
@@ -608,6 +695,7 @@ def _collect_failure_reasons(
     files_complete,
     only_allowed_files,
     only_valid_bumps,
+    changes_requested,
     approval_error,
 ):
     """
@@ -622,6 +710,8 @@ def _collect_failure_reasons(
         only_allowed_files (bool): Whether only allowed files were changed.
         only_valid_bumps (bool): Whether the version file was bumped and all
             changes were valid bumps.
+        changes_requested (bool): Whether a reviewer currently has an active
+            CHANGES_REQUESTED review.
         approval_error (Exception | None): The error raised while attempting
             automatic approval, if any.
 
@@ -651,6 +741,11 @@ def _collect_failure_reasons(
             "the version file must be bumped and every change must be a "
             "valid version/date bump matching the release tag, but "
             "validation failed"
+        )
+    if changes_requested:
+        reasons.append(
+            "a reviewer currently has changes requested on this PR; automatic "
+            "approval is skipped until that review is resolved"
         )
     if approval_error is not None:
         reasons.append(
@@ -847,29 +942,29 @@ def _review_post_release_pr(
             dev_header,
             base_sha,
             head_sha,
+            version_filepath,
+            description_filepath,
             token=token,
             session=session,
         )
+    changes_requested = has_changes_requested(
+        repo, pr_number, token=token, session=session
+    )
     print(f"Only allowed files changed: {only_allowed_files}")
     print(f"Version bumped and all changes valid: {only_valid_bumps}")
+    print(f"A reviewer currently has changes requested: {changes_requested}")
 
     eligible = (
         is_post_release
         and release is not None
         and only_allowed_files
         and only_valid_bumps
+        and not changes_requested
     )
     approval_error = None
     was_auto_approved = False
     if eligible:
         print("Policy result: eligible for automatic approval")
-        try:
-            approve_pending_workflow_runs(repo, head_ref, token=token, session=session)
-            print("Approved pending workflow runs (if any)")
-        except (KeyError, requests.exceptions.RequestException, RuntimeError) as exc:
-            print(f"Could not approve pending workflow runs: {exc}")
-            warnings.warn(f"Could not approve pending workflow runs: {exc}")
-
         current_pr_data = github_api_get(
             url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
             token=token,
@@ -884,6 +979,18 @@ def _review_post_release_pr(
             )
             print(f"Aborting approval: {approval_error}")
         else:
+            try:
+                approve_pending_workflow_runs(
+                    repo, head_ref, head_sha=head_sha, token=token, session=session
+                )
+                print("Approved pending workflow runs (if any)")
+            except (
+                KeyError,
+                requests.exceptions.RequestException,
+                RuntimeError,
+            ) as exc:
+                print(f"Could not approve pending workflow runs: {exc}")
+                warnings.warn(f"Could not approve pending workflow runs: {exc}")
             try:
                 response = approve_pr(
                     repo, pr_number, token=token, session=session, commit_id=head_sha
@@ -923,6 +1030,7 @@ def _review_post_release_pr(
                 files_complete,
                 only_allowed_files,
                 only_valid_bumps,
+                changes_requested,
                 approval_error,
             )
             _request_human_review(
@@ -957,7 +1065,7 @@ def review_post_release_pr(
     """
     Evaluate and review a post-release cleanup pull request.
 
-    Checks whether the PR satisfies four conditions:
+    Checks whether the PR satisfies five conditions:
 
     - **Condition 1** – the PR title matches the post-release cleanup
       pattern (``chore: post-release cleanup for <tag>``) and *<tag>*
@@ -967,22 +1075,31 @@ def review_post_release_pr(
       version file, citation file, ``codemeta.json``, changelog file, news
       file, and/or readme files were changed.
     - **Condition 3** – the version file was actually changed, auditing that
-      the ``post-release`` action did its job.
+      the ``post-release`` action did its job. For an R package where the
+      version and description files are the same ``DESCRIPTION`` file, a
+      validated description bump satisfies this condition.
     - **Condition 4** – every changed file's new content is a valid bump for
       its role: the version file matches the expected dev version exactly;
-      ``CITATION.cff`` and ``codemeta.json`` match the release tag/version
-      with no other fields changed; the changelog/news file only gained the
-      expected release heading; and readme files only had existing
-      version/date tokens replaced (no inserted lines), matching a
-      re-rendered citation snippet from the ``auto-format`` action.
+      ``CITATION.cff`` and ``codemeta.json`` change only their version/date
+      fields, matching the release tag and the release's actual
+      published/created date exactly; the changelog/news file only gained
+      the expected release heading; and readme files only had existing
+      version/date tokens replaced in a recognized citation context (a
+      "version" mention or a bibtex ``month``/``year`` field, with no
+      inserted lines), matching a re-rendered citation snippet from the
+      ``auto-format`` action.
+    - **Condition 5** – no reviewer currently has an active CHANGES_REQUESTED
+      review; automatic approval is skipped until that review is resolved,
+      even if the file-level checks above would otherwise pass.
 
-    When all conditions are met the function approves any pending workflow
-    runs on the PR's head branch, re-checks the PR's head commit immediately
-    before approving (aborting if it changed since validation), approves the
-    PR pinned to that commit, and attempts to enable squash auto-merge. If
-    auto-merge cannot be enabled, it leaves a comment with the GitHub API
-    error. Otherwise it posts a comment explaining why the PR needs manual
-    review and requests a human reviewer, resolved via
+    When all conditions are met the function re-checks the PR's head commit
+    immediately before acting (aborting if it changed since validation),
+    approves any pending workflow runs tied to that exact commit on the PR's
+    head branch, approves the PR pinned to that commit, and attempts to
+    enable squash auto-merge. If auto-merge cannot be enabled, it leaves a
+    comment with the GitHub API error. Otherwise it posts a comment
+    explaining why the PR needs manual review and requests a human reviewer,
+    resolved via
     [](`~ccbr_actions.post_release_pr.determine_post_release_reviewer`).
 
     If the PR already has an APPROVED review tied to its current head commit,

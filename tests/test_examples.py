@@ -14,8 +14,11 @@ CURRENT_VERSION = (REPOSITORY_ROOT / "VERSION").read_text().strip()
 CURRENT_RELEASE = f"v{CURRENT_VERSION.removesuffix('-dev')}"
 ACTION_REFERENCE = re.compile(r"CCBR/actions/([^@\s]+)@([^\s]+)")
 # Actions with no release containing them yet may reference @main until the
-# next release is cut; the ref should be repinned to that release afterward.
-UNRELEASED_ACTIONS = {"review-post-release-pr"}
+# next release is cut. Each entry records the release this exception was
+# written against, so it self-expires: once CURRENT_RELEASE advances past
+# that value, the exception no longer applies and @main starts failing this
+# test again, forcing the ref to be repinned to the new release.
+UNRELEASED_ACTIONS = {"review-post-release-pr": "v0.8.0"}
 
 
 def _iter_steps(value):
@@ -43,7 +46,9 @@ def test_examples_use_current_release_refs():
         for action_name, ref in references
         if not (
             ref == CURRENT_RELEASE
-            or (action_name in UNRELEASED_ACTIONS and ref == "main")
+            or (
+                ref == "main" and UNRELEASED_ACTIONS.get(action_name) == CURRENT_RELEASE
+            )
         )
     ]
     assert not unexpected

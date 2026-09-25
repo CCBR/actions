@@ -6,10 +6,10 @@ version/date bumps matching a real release tag are present, otherwise
 request a human reviewer
 
 This action automates the review of post-release cleanup pull requests
-opened by the [post-release](/post-release) action, with titles of the
+opened by the [post-release](./post-release) action, with titles of the
 form `chore: post-release cleanup for <tag>`.
 
-The action verifies four conditions:
+The action verifies five conditions:
 
 1.  **The PR matches the post-release cleanup pattern** – the title
     matches `chore: post-release cleanup for <tag>`, the sender is a
@@ -22,22 +22,32 @@ The action verifies four conditions:
     pagination mismatch is detected).
 3.  **The version file was actually bumped** – auditing that the
     `post-release` action did its job, not just that the changed files
-    are individually allowed.
+    are individually allowed. For an R package where the version and
+    description files are the same `DESCRIPTION` file, a validated
+    description bump satisfies this condition.
 4.  **Every changed file’s new content is a valid bump for its role** –
     the version file must match the expected dev version exactly;
-    `CITATION.cff` and `codemeta.json` must match the release
-    tag/version with no other fields changed; the changelog/news file
-    must have gained only the expected release heading; and readme files
-    may only have existing version/date tokens replaced (no inserted
-    lines), matching a re-rendered citation snippet from the
-    `auto-format` action.
+    `CITATION.cff` and `codemeta.json` may only change their
+    version/date fields, matching the release tag and the release’s
+    actual published/created date exactly; the changelog/news file must
+    have gained only the expected release heading; and readme files may
+    only have existing version/date tokens replaced in a recognized
+    citation context (a “version” mention or a bibtex `month`/`year`
+    field, with no inserted lines), matching a re-rendered citation
+    snippet from the `auto-format` action.
+5.  **No reviewer currently has changes requested** – an active
+    `CHANGES_REQUESTED` review blocks automatic approval even if the
+    file checks above pass, so CCBR-bot never silently overrides a
+    human’s request.
 
 When all conditions are satisfied the action:
 
-- Approves any workflow runs pending approval on the PR’s head branch.
-- Re-checks the PR’s head commit immediately before approving, aborting
-  if it changed since validation (e.g. a concurrent push), to avoid
+- Re-checks the PR’s head commit immediately before acting, aborting if
+  it changed since validation (e.g. a concurrent push), to avoid
   approving unreviewed changes.
+- Approves workflow runs pending approval on the PR’s head branch,
+  filtered to the validated commit so an unrelated run sharing the
+  branch name isn’t approved.
 - Approves the PR, pinned to the validated commit, as the token’s actor
   (typically CCBR-bot).
 - Attempts to enable squash auto-merge so the PR merges automatically
@@ -111,7 +121,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also [pre-review-pr.yml](/examples/pre-review-pr.yml).
+See also [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 
