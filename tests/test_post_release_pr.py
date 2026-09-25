@@ -11,6 +11,8 @@ from ccbr_actions.post_release_pr import (
     POST_RELEASE_PR_TITLE_PATTERN,
     _file_roles,
     _get_file_content,
+    _has_pending_human_review_comment,
+    _human_review_marker,
     _is_valid_bump_line,
     _release_bump_values,
     _split_tokens,
@@ -772,6 +774,54 @@ def test_determine_post_release_reviewer_returns_none_when_nothing_resolves():
 
 
 # ---------------------------------------------------------------------------
+# _human_review_marker / _has_pending_human_review_comment
+# ---------------------------------------------------------------------------
+
+
+def test_human_review_marker_embeds_commit_sha():
+    marker = _human_review_marker("abc123")
+    assert (
+        marker
+        == "<!-- ccbr-actions:review-post-release-pr:needs-human-review:abc123 -->"
+    )
+
+
+def test_has_pending_human_review_comment_returns_true_for_matching_marker():
+    comments_url = "https://api.github.com/repos/CCBR/Tools/issues/9/comments"
+    session = MockSession(
+        {comments_url: [{"body": f"hello\n\n{_human_review_marker('abc123')}"}]}
+    )
+    assert (
+        _has_pending_human_review_comment(
+            "CCBR/Tools", 9, "abc123", token="tok", session=session
+        )
+        is True
+    )
+
+
+def test_has_pending_human_review_comment_returns_false_for_different_commit():
+    comments_url = "https://api.github.com/repos/CCBR/Tools/issues/9/comments"
+    session = MockSession(
+        {comments_url: [{"body": f"hello\n\n{_human_review_marker('old-sha')}"}]}
+    )
+    assert (
+        _has_pending_human_review_comment(
+            "CCBR/Tools", 9, "abc123", token="tok", session=session
+        )
+        is False
+    )
+
+
+def test_has_pending_human_review_comment_returns_false_on_request_error():
+    assert (
+        _has_pending_human_review_comment(
+            "CCBR/Tools", 9, "abc123", token="tok", session=_RaisingSession()
+        )
+        is False
+    )
+
+
+# ---------------------------------------------------------------------------
 # review_post_release_pr
 # ---------------------------------------------------------------------------
 
@@ -783,6 +833,7 @@ def _make_review_session(
     graphql_payload=None,
     release_payload=None,
     existing_reviews=None,
+    existing_comments=None,
     action_required_runs=None,
     contents=None,
     second_pr_node_payload=None,
@@ -819,6 +870,7 @@ def _make_review_session(
     reviewers_url = (
         "https://api.github.com/repos/CCBR/Tools/pulls/9/requested_reviewers"
     )
+    comments_url = "https://api.github.com/repos/CCBR/Tools/issues/9/comments"
     release_url = f"https://api.github.com/repos/CCBR/Tools/releases/tags/{RELEASE_TAG}"
     runs_url = "https://api.github.com/repos/CCBR/Tools/actions/runs"
     draft_runs_url = (
@@ -832,6 +884,7 @@ def _make_review_session(
         graphql_url: graphql_payload,
         reviews_url: existing_reviews if existing_reviews is not None else [],
         reviewers_url: {},
+        comments_url: existing_comments if existing_comments is not None else [],
         release_url: release_payload,
         runs_url: {"workflow_runs": action_required_runs or []},
         draft_runs_url: {"workflow_runs": []},
@@ -932,6 +985,66 @@ def test_review_post_release_pr_requests_human_review_when_extra_file_changed():
         c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
     ]
     assert not any(body.get("event") == "APPROVE" for body in review_bodies)
+    assert any("issues/9/comments" in u for u in posted_urls)
+
+
+def test_review_post_release_pr_skips_duplicate_human_review_comment_for_same_commit():
+    pr_files = [{"filename": name} for name in _default_filenames()] + [
+        {"filename": "src/main.py"}
+    ]
+    existing_comments = [
+        {
+            "body": (
+                "This post-release cleanup PR requires human review.\n\n"
+                "<!-- ccbr-actions:review-post-release-pr:needs-human-review:head-sha -->"
+            )
+        }
+    ]
+    session = _make_review_session(
+        pr_files=pr_files, existing_comments=existing_comments
+    )
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is False
+    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert not any("issues/9/comments" in u for u in posted_urls)
+    assert not any("requested_reviewers" in u for u in posted_urls)
+
+
+def test_review_post_release_pr_reposts_comment_for_different_commit_marker():
+    pr_files = [{"filename": name} for name in _default_filenames()] + [
+        {"filename": "src/main.py"}
+    ]
+    existing_comments = [
+        {
+            "body": "<!-- ccbr-actions:review-post-release-pr:needs-human-review:old-sha -->"
+        }
+    ]
+    session = _make_review_session(
+        pr_files=pr_files, existing_comments=existing_comments
+    )
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is False
+    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert any("issues/9/comments" in u for u in posted_urls)
+
+
+def test_review_post_release_pr_reposts_duplicate_comment_when_force_review_enabled():
+    pr_files = [{"filename": name} for name in _default_filenames()] + [
+        {"filename": "src/main.py"}
+    ]
+    existing_comments = [
+        {
+            "body": "<!-- ccbr-actions:review-post-release-pr:needs-human-review:head-sha -->"
+        }
+    ]
+    session = _make_review_session(
+        pr_files=pr_files, existing_comments=existing_comments
+    )
+    result = review_post_release_pr(
+        "CCBR/Tools", 9, force_review=True, token="tok", session=session
+    )
+    assert result is False
+    posted_urls = [c[1] for c in session.calls if c[0] == "POST"]
     assert any("issues/9/comments" in u for u in posted_urls)
 
 

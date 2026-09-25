@@ -341,6 +341,23 @@ def request_reviewer(repo, pr_number, reviewer, token=None, session=None):
     return response
 
 
+def get_pr_comments(repo, pr_number, token=None, session=None):
+    """
+    Return the list of issue comments on a pull request.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        list[dict]: Comment objects from the GitHub issue comments API.
+    """
+    url = f"{GITHUB_API_URL}/repos/{repo}/issues/{pr_number}/comments"
+    return github_api_get(url=url, token=token, session=session)
+
+
 def post_pr_comment(repo, pr_number, comment, token=None, session=None):
     """
     Post a comment on a pull request.

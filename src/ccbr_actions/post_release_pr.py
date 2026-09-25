@@ -19,6 +19,7 @@ from .pr_review import (
     enable_auto_merge,
     get_codeowners_content,
     get_last_workflow_run_actor,
+    get_pr_comments,
     get_pr_files,
     is_pr_approved_for_commit,
     match_codeowners,
@@ -688,8 +689,46 @@ def _enable_merge_or_comment(repo, pr_number, reviewer, token=None, session=None
             warnings.warn(f"Could not post auto-merge failure comment: {comment_exc}")
 
 
+def _human_review_marker(head_sha):
+    """
+    Build the hidden marker used to detect a prior human-review comment.
+
+    Args:
+        head_sha (str): Commit SHA the comment applies to.
+
+    Returns:
+        str: An HTML comment embedding *head_sha*, invisible when rendered.
+    """
+    return f"<!-- ccbr-actions:review-post-release-pr:needs-human-review:{head_sha} -->"
+
+
+def _has_pending_human_review_comment(
+    repo, pr_number, head_sha, token=None, session=None
+):
+    """
+    Check whether a human-review comment was already posted for *head_sha*.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        head_sha (str): Commit SHA to check for a prior comment.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        bool: ``True`` if an existing comment already carries the marker for
+        *head_sha*.
+    """
+    try:
+        comments = get_pr_comments(repo, pr_number, token=token, session=session)
+    except requests.exceptions.RequestException:
+        comments = []
+    marker = _human_review_marker(head_sha)
+    return any(marker in (comment.get("body") or "") for comment in comments)
+
+
 def _request_human_review(
-    repo, pr_number, reviewer, failed_reasons, token=None, session=None
+    repo, pr_number, reviewer, failed_reasons, head_sha, token=None, session=None
 ):
     """
     Post a comment explaining failed conditions and request a human reviewer.
@@ -700,6 +739,9 @@ def _request_human_review(
         reviewer (str, optional): Explicit reviewer override.
         failed_reasons (list[str]): Reasons the PR needs human review, from
             [](`~ccbr_actions.post_release_pr._collect_failure_reasons`).
+        head_sha (str): The PR's current head commit SHA, embedded as a
+            hidden marker so a later run can detect this comment and avoid
+            posting a duplicate for the same commit.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
     """
@@ -713,6 +755,7 @@ def _request_human_review(
         f"{reviewer_mention}This post-release cleanup PR requires human "
         "review. The changes were too complex for CCBR-bot to automatically "
         f"approve because the following conditions were not met:\n{reasons_text}"
+        f"\n\n{_human_review_marker(head_sha)}"
     )
     try:
         response = post_pr_comment(
@@ -749,6 +792,7 @@ def _review_post_release_pr(
     changelog_filepath,
     description_filepath,
     dev_header,
+    force_review,
     pr_data,
 ):
     """
@@ -860,18 +904,37 @@ def _review_post_release_pr(
 
     if not was_auto_approved:
         print("Policy result: automatic approval not performed")
-        failed_reasons = _collect_failure_reasons(
-            is_post_release,
-            release,
-            files_complete,
-            only_allowed_files,
-            only_valid_bumps,
-            approval_error,
+        already_notified = (
+            bool(head_sha)
+            and not force_review
+            and _has_pending_human_review_comment(
+                repo, pr_number, head_sha, token=token, session=session
+            )
         )
-        _request_human_review(
-            repo, pr_number, reviewer, failed_reasons, token=token, session=session
-        )
-        print("Result: human review requested")
+        if already_notified:
+            print(
+                "Result: human review was already requested for this commit; "
+                "skipping duplicate comment"
+            )
+        else:
+            failed_reasons = _collect_failure_reasons(
+                is_post_release,
+                release,
+                files_complete,
+                only_allowed_files,
+                only_valid_bumps,
+                approval_error,
+            )
+            _request_human_review(
+                repo,
+                pr_number,
+                reviewer,
+                failed_reasons,
+                head_sha,
+                token=token,
+                session=session,
+            )
+            print("Result: human review requested")
     else:
         print("Result: automatically approved")
 
@@ -926,7 +989,11 @@ def review_post_release_pr(
     no new review is submitted and the function returns ``True`` immediately
     unless *force_review* is true. A stale approval left on an earlier commit
     (e.g. after the ``auto-format`` action pushes a citation rerender) does
-    not count, so the PR is re-validated.
+    not count, so the PR is re-validated. Likewise, if a human-review comment
+    was already posted for the current head commit, no duplicate comment or
+    reviewer request is submitted (unless *force_review* is true) — this keeps
+    a `synchronize`-triggered workflow from spamming the PR while the same
+    unresolved commit is repeatedly re-evaluated.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
@@ -937,8 +1004,8 @@ def review_post_release_pr(
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
         force_review (bool, optional): Re-submit the review and reviewer
-            request even when the PR already has an approval. Defaults to
-            ``False``.
+            request even when the PR already has an approval or was already
+            notified for the current commit. Defaults to ``False``.
         version_filepath (str): Path to the version file. Defaults to
             ``"VERSION"``.
         citation_filepath (str): Path to the citation file. Defaults to
@@ -981,6 +1048,7 @@ def review_post_release_pr(
             changelog_filepath,
             description_filepath,
             dev_header,
+            force_review,
             pr_data,
         )
     return result
