@@ -62,6 +62,8 @@ installation must have these repository permissions as well.
 ### Basic example
 
 ```yaml
+name: review-post-release-pr
+
 on:
   pull_request:
     types:
