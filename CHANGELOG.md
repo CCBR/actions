@@ -1,5 +1,7 @@
 ## actions development version
 
+- Fix `review-pre-commit-pr` to post a comment instead of requesting changes when a pre-commit.ci autoupdate PR needs human review. (#226, @kelly-sovacool, @copilot)
+
 ## actions 0.8.0
 
 ### New
