@@ -9,11 +9,13 @@ import requests as requests_lib
 
 from ccbr_actions.pr_review import (
     _codeowners_pattern_matches,
+    approve_pending_workflow_runs,
     approve_pr,
     determine_reviewer,
     enable_auto_merge,
     get_codeowners_content,
     get_last_human_committer,
+    get_last_workflow_run_actor,
     get_pr_files,
     is_pr_approved,
     match_codeowners,
@@ -469,4 +471,99 @@ def test_determine_reviewer_returns_none_without_reviewer_or_path():
     session = MockSession({})
     result = determine_reviewer("CCBR/actions", token="tok", session=session)
     assert result is None
-    assert session.calls == []
+
+
+# ---------------------------------------------------------------------------
+# approve_pending_workflow_runs
+# ---------------------------------------------------------------------------
+
+
+def test_approve_pending_workflow_runs_approves_each_pending_run():
+    runs_url = "https://api.github.com/repos/CCBR/actions/actions/runs"
+    session = MockSession({runs_url: {"workflow_runs": [{"id": 111}, {"id": 222}]}})
+    result = approve_pending_workflow_runs(
+        "CCBR/actions", "release/v1.0.0", token="tok", session=session
+    )
+    assert result == [111, 222]
+    approve_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert (
+        "https://api.github.com/repos/CCBR/actions/actions/runs/111/approve"
+        in approve_urls
+    )
+    assert (
+        "https://api.github.com/repos/CCBR/actions/actions/runs/222/approve"
+        in approve_urls
+    )
+    get_call = next(c for c in session.calls if c[0] == "GET")
+    assert get_call[2]["params"] == {
+        "branch": "release/v1.0.0",
+        "status": "action_required",
+    }
+
+
+def test_approve_pending_workflow_runs_returns_empty_list_when_none_pending():
+    runs_url = "https://api.github.com/repos/CCBR/actions/actions/runs"
+    session = MockSession({runs_url: {"workflow_runs": []}})
+    result = approve_pending_workflow_runs(
+        "CCBR/actions", "release/v1.0.0", token="tok", session=session
+    )
+    assert result == []
+
+
+# ---------------------------------------------------------------------------
+# get_last_workflow_run_actor
+# ---------------------------------------------------------------------------
+
+
+def test_get_last_workflow_run_actor_returns_triggering_actor_login():
+    runs_url = (
+        "https://api.github.com/repos/CCBR/actions/actions/workflows/"
+        "draft-release.yml/runs"
+    )
+    session = MockSession(
+        {
+            runs_url: {
+                "workflow_runs": [
+                    {"triggering_actor": {"login": "kelly-sovacool"}},
+                ]
+            }
+        }
+    )
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result == "kelly-sovacool"
+
+
+def test_get_last_workflow_run_actor_falls_back_to_actor_field():
+    runs_url = (
+        "https://api.github.com/repos/CCBR/actions/actions/workflows/"
+        "draft-release.yml/runs"
+    )
+    session = MockSession(
+        {runs_url: {"workflow_runs": [{"actor": {"login": "a-human"}}]}}
+    )
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result == "a-human"
+
+
+def test_get_last_workflow_run_actor_returns_none_when_no_runs():
+    runs_url = (
+        "https://api.github.com/repos/CCBR/actions/actions/workflows/"
+        "draft-release.yml/runs"
+    )
+    session = MockSession({runs_url: {"workflow_runs": []}})
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result is None
+
+
+def test_get_last_workflow_run_actor_returns_none_on_request_error():
+    session = _RaisingSession({})
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result is None

@@ -1,0 +1,80 @@
+name: review-post-release-pr
+description: "Review a post-release cleanup PR: approve pending workflow runs, approve, and enable auto-merge when only version/date bumps matching a real release tag are present, otherwise request a human reviewer"
+author: "Kelly Sovacool"
+
+inputs:
+  github-token:
+    description: "GitHub API token (e.g. a CCBR-bot token generated with actions/create-github-app-token)."
+    required: true
+  pr-number:
+    description: "Pull request number to review."
+    required: true
+  repo:
+    description: "Repository full name (e.g. CCBR/actions)."
+    required: true
+    default: "${{ github.repository }}"
+  reviewer:
+    description: "GitHub username to request as reviewer when the PR requires human review. If omitted, it is resolved from the actor that triggered the most recent draft-release workflow run, falling back to the repo's default CODEOWNERS entry."
+    required: false
+  force-review:
+    description: "Re-submit the review and reviewer request even when the PR already has an approval."
+    required: false
+    default: "false"
+  version-filepath:
+    description: "Path to the file containing the current version."
+    default: "VERSION"
+  citation-filepath:
+    description: "Path to the citation file."
+    default: "CITATION.cff"
+  changelog-filepath:
+    description: "Path to the changelog or news file."
+    default: "CHANGELOG.md"
+  description-filepath:
+    description: "Path to the R DESCRIPTION file, used when an R package is detected."
+    default: "DESCRIPTION"
+  ccbr-actions-version:
+    description: "The version of CCBR/actions to install when running outside the ccbr_actions container (branch, tag, or 'latest')."
+    required: true
+    default: "latest"
+  python-version:
+    description: "Python version to use."
+    required: true
+    default: "3.14"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Detect ccbr_actions container
+      id: detect-container
+      shell: bash
+      # env vars baked into the container image are not visible to the `env` context in `if:` expressions
+      run: echo "in-container=${CCBR_ACTIONS_DOCKER:-false}" >> "$GITHUB_OUTPUT"
+    - uses: actions/setup-python@v6
+      if: ${{ steps.detect-container.outputs.in-container != 'true' }}
+      with:
+        python-version: "${{ inputs.python-version }}"
+        cache: "pip"
+    - name: Install ccbr_actions
+      if: ${{ steps.detect-container.outputs.in-container != 'true' }}
+      shell: bash
+      run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+    - name: Review post-release cleanup PR
+      shell: python {0}
+      run: |
+        import os
+
+        from ccbr_actions.post_release_pr import review_post_release_pr
+        result = review_post_release_pr(
+          repo="${{ inputs.repo }}",
+          pr_number="${{ inputs.pr-number }}",
+          reviewer="${{ inputs.reviewer }}",
+          force_review="${{ inputs.force-review }}".lower() == "true",
+          version_filepath="${{ inputs.version-filepath }}",
+          citation_filepath="${{ inputs.citation-filepath }}",
+          changelog_filepath="${{ inputs.changelog-filepath }}",
+          description_filepath="${{ inputs.description-filepath }}",
+          token=os.environ["GITHUB_TOKEN"],
+        )
+        print(f"Action completed with automatic_approval={result}")
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}

@@ -183,6 +183,68 @@ def enable_auto_merge(repo, pr_number, token=None, session=None):
     )
 
 
+def approve_pending_workflow_runs(repo, branch, token=None, session=None):
+    """
+    Approve workflow runs awaiting approval for a branch.
+
+    Some repositories require manual approval before workflow runs triggered
+    by a pull request are allowed to execute. This lists runs for *branch*
+    with status ``action_required`` and approves each of them.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        branch (str): Branch name (typically a pull request's head ref).
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        list[int]: IDs of the workflow runs that were approved.
+    """
+    url = f"{GITHUB_API_URL}/repos/{repo}/actions/runs"
+    data = github_api_get(
+        url=url,
+        token=token,
+        session=session,
+        params={"branch": branch, "status": "action_required"},
+    )
+    approved_run_ids = []
+    for run in data.get("workflow_runs", []):
+        run_id = run["id"]
+        approve_url = f"{GITHUB_API_URL}/repos/{repo}/actions/runs/{run_id}/approve"
+        response = github_api_post(url=approve_url, token=token, session=session)
+        response.raise_for_status()
+        approved_run_ids.append(run_id)
+    return approved_run_ids
+
+
+def get_last_workflow_run_actor(repo, workflow_file, token=None, session=None):
+    """
+    Return the triggering actor's login for the most recent run of a workflow.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        workflow_file (str): Workflow filename (e.g. ``"draft-release.yml"``).
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        str | None: Login of the actor who triggered the most recent run, or
+        ``None`` if no runs were found or the request failed.
+    """
+    url = f"{GITHUB_API_URL}/repos/{repo}/actions/workflows/{workflow_file}/runs"
+    try:
+        data = github_api_get(
+            url=url, token=token, session=session, params={"per_page": 1}
+        )
+    except requests.exceptions.RequestException:
+        data = {}
+    runs = data.get("workflow_runs", [])
+    actor = (
+        (runs[0].get("triggering_actor") or runs[0].get("actor") or {}) if runs else {}
+    )
+    return actor.get("login")
+
+
 def request_reviewer(repo, pr_number, reviewer, token=None, session=None):
     """
     Request a reviewer (user or team) on a pull request.
