@@ -61,106 +61,42 @@ check as one of the required checks. In your repo’s rulesets
 Consider also including other desired checks such as your build/test
 workflow, auto-format, etc.
 
-<figure>
-<img
-src="https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png"
-alt="Branch protection rule" />
-<figcaption aria-hidden="true">Branch protection rule</figcaption>
-</figure>
+![Branch protection
+rule](https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png)
 
-### Example
-
-[pre-review-pr.yml](/examples/pre-review-pr.yml)
+### Basic example
 
 ```yaml
-name: pre-review-pr
-
 on:
   pull_request:
     types:
       - opened
       - review_requested
-  # Manually re-scan open PRs for any that meet the pre-commit.ci autoupdate criteria
-  workflow_dispatch:
-    inputs:
-      force-review:
-        description: Re-submit reviews for PRs that already have an approval
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: write
   issues: write
   pull-requests: write
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  find-prec-prs:
-    # Only needed when manually dispatched; the pull_request event already has a single PR to act on
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    outputs:
-      pr-numbers: ${{ steps.search.outputs.pr-numbers }}
-    steps:
-      - name: Search for open pre-commit.ci autoupdate PRs
-        id: search
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pr_numbers=$(gh pr list \
-            --repo "${{ github.repository }}" \
-            --state open \
-            --json number,title,author \
-            --jq '[.[] | select(.title == "[pre-commit.ci] pre-commit autoupdate" and .author.is_bot)] | map(.number)')
-          echo "pr-numbers=${pr_numbers}" >> "$GITHUB_OUTPUT"
-
   review-pre-commit-pr:
-    needs: [find-prec-prs]
     runs-on: ubuntu-latest
     container: nciccbr/ccbr_actions:latest
-    # Only run for pre-commit.ci autoupdate PRs or when ccbr-bot[bot] is requested as a reviewer
-    if: >
-      always() &&
-      (
-        (
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate' &&
-          (
-            (github.event.action == 'opened' && github.event.sender.type == 'Bot') ||
-            (github.event.action == 'review_requested' && github.event.requested_reviewer.login == 'ccbr-bot[bot]')
-          )
-        )
-        || (github.event_name == 'workflow_dispatch' && needs.find-prec-prs.outputs.pr-numbers != '[]')
-      )
-    strategy:
-      fail-fast: false
-      matrix:
-        pr-number: ${{ github.event_name == 'workflow_dispatch' && fromJson(needs.find-prec-prs.outputs.pr-numbers) || fromJson(format('[{0}]', github.event.pull_request.number)) }}
-
+    # Only run for pre-commit.ci autoupdate PRs
+    if: github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate'
     steps:
-      - uses: actions/checkout@v7
-      - name: Generate CCBR-bot token
+      - uses: actions/create-github-app-token@v3
         id: generate-token
-        uses: actions/create-github-app-token@v3
         with:
           client-id: ${{ vars.CCBR_BOT_APP_ID }}
           private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          permission-contents: write
-          permission-issues: write
-          permission-pull-requests: write
-      - uses: CCBR/actions/review-pre-commit-pr@latest
+      - uses: CCBR/actions/review-pre-commit-pr@main
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
-          pr-number: ${{ matrix.pr-number }}
-          repo: ${{ github.repository }}
-          reviewer: CCBR/adminteam
-          force-review: ${{ github.event.action == 'review_requested' || inputs.force-review || false }}
+          pr-number: ${{ github.event.pull_request.number }}
 ```
+
+See also: [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 
