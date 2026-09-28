@@ -61,12 +61,8 @@ check as one of the required checks. In your repo’s rulesets
 Consider also including other desired checks such as your build/test
 workflow, auto-format, etc.
 
-<figure>
-<img
-src="https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png"
-alt="Branch protection rule" />
-<figcaption aria-hidden="true">Branch protection rule</figcaption>
-</figure>
+![Branch protection
+rule](https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png)
 
 ### Example
 
@@ -87,8 +83,13 @@ jobs:
   review-pre-commit-pr:
     runs-on: ubuntu-latest
     container: nciccbr/ccbr_actions:latest
-    # Only run for pre-commit.ci autoupdate PRs
-    if: github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate'
+    # Only run for pre-commit.ci autoupdate PRs opened by the bot, or when ccbr-bot is requested as a reviewer
+    if: >
+      github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate' &&
+      (
+        github.event.sender.type == 'Bot' ||
+        (github.event.action == 'review_requested' && github.event.requested_reviewer.login == 'ccbr-bot[bot]')
+      )
     steps:
       - uses: actions/create-github-app-token@v3
         id: generate-token
@@ -101,7 +102,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also: [pre-review-pr.yml](/examples/pre-review-pr.yml).
+See also: [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 

@@ -6,7 +6,7 @@ version/date bumps matching a real release tag are present, otherwise
 request a human reviewer
 
 This action automates the review of post-release cleanup pull requests
-opened by the [post-release](/post-release) action, with titles of the
+opened by the [post-release](./post-release) action, with titles of the
 form `chore: post-release cleanup for <tag>`.
 
 The action verifies five conditions:
@@ -85,7 +85,7 @@ must allow `actions: write` (to approve pending workflow runs),
 for comments when auto-merge cannot be enabled. The GitHub App
 installation must have these repository permissions as well.
 
-### Basic example
+### Example
 
 ```yaml
 name: review-post-release-pr
@@ -107,8 +107,13 @@ jobs:
   review-post-release-pr:
     runs-on: ubuntu-latest
     container: nciccbr/ccbr_actions:latest
-    # Only run for post-release cleanup PRs
-    if: startsWith(github.event.pull_request.title, 'chore: post-release cleanup for')
+    # Only run for post-release cleanup PRs opened/pushed by the bot, or when ccbr-bot is requested as a reviewer
+    if: >
+      startsWith(github.event.pull_request.title, 'chore: post-release cleanup for') &&
+      (
+        github.event.sender.type == 'Bot' ||
+        (github.event.action == 'review_requested' && github.event.requested_reviewer.login == 'ccbr-bot[bot]')
+      )
     steps:
       - uses: actions/create-github-app-token@v3
         id: generate-token
@@ -121,7 +126,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also [pre-review-pr.yml](/examples/pre-review-pr.yml).
+See also [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 
