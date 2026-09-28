@@ -432,6 +432,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./actions/review-post-release-pr/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">review-post-release-pr</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">draft-release</span></a>
   </div>
@@ -650,6 +656,10 @@ ul.task-list li input[type="checkbox"] {
 <section id="actions-development-version" class="level2">
 <h2 class="anchored" data-anchor-id="actions-development-version">actions development version</h2>
 <ul>
+<li>New action: <code>review-post-release-pr</code> to automatically review post-release cleanup PRs and approve them (approving pending workflow runs and enabling auto-merge) when the version file was actually bumped and every changed file’s new content is a valid, field-specific bump matching an actual release tag, or request a human reviewer otherwise. Approvals are pinned to the validated commit and re-validated if the PR’s head changes afterward (e.g.&nbsp;after an <code>auto-format</code> push). (#227, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)
+<ul>
+<li>Require the PR’s <code>synchronize</code> event to come from the bot (not just any pusher) before re-running the automatic review, and pass action inputs to the embedded Python scripts via <code>env:</code> instead of splicing <code>${{ inputs.* }}</code> directly into the script text, in <code>review-pre-commit-pr</code> and <code>review-post-release-pr</code>. (#227, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
+</ul></li>
 <li>Fix <code>review-pre-commit-pr</code> to post a comment instead of requesting changes when a pre-commit.ci autoupdate PR needs human review. (#226, <span class="citation" data-cites="kelly-sovacool">@kelly-sovacool</span>, <span class="citation" data-cites="copilot">@copilot</span>)</li>
 </ul>
 </section>

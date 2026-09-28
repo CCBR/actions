@@ -12,6 +12,7 @@
       "/actions/maintain-milestones/index.html",
       "/actions/mkdocs-mike/index.html",
       "/actions/post-release/index.html",
+      "/actions/review-post-release-pr/index.html",
       "/actions/review-pre-commit-pr/index.html",
       "/actions/sync-copilot-instructions/index.html",
       "/actions/user-projects/index.html"
@@ -30,6 +31,7 @@
       "/actions/maintain-milestones/index.html",
       "/actions/mkdocs-mike/index.html",
       "/actions/post-release/index.html",
+      "/actions/review-post-release-pr/index.html",
       "/actions/review-pre-commit-pr/index.html",
       "/actions/sync-copilot-instructions/index.html",
       "/actions/user-projects/index.html"
