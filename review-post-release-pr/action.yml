@@ -68,17 +68,26 @@ runs:
 
         from ccbr_actions.post_release_pr import review_post_release_pr
         result = review_post_release_pr(
-          repo="${{ inputs.repo }}",
-          pr_number="${{ inputs.pr-number }}",
-          reviewer="${{ inputs.reviewer }}",
-          force_review="${{ inputs.force-review }}".lower() == "true",
-          version_filepath="${{ inputs.version-filepath }}",
-          citation_filepath="${{ inputs.citation-filepath }}",
-          changelog_filepath="${{ inputs.changelog-filepath }}",
-          description_filepath="${{ inputs.description-filepath }}",
-          dev_header="${{ inputs.dev-header }}",
+          repo=os.environ["REPO"],
+          pr_number=os.environ["PR_NUMBER"],
+          reviewer=os.environ["REVIEWER"],
+          force_review=os.environ["FORCE_REVIEW"].lower() == "true",
+          version_filepath=os.environ["VERSION_FILEPATH"],
+          citation_filepath=os.environ["CITATION_FILEPATH"],
+          changelog_filepath=os.environ["CHANGELOG_FILEPATH"],
+          description_filepath=os.environ["DESCRIPTION_FILEPATH"],
+          dev_header=os.environ["DEV_HEADER"],
           token=os.environ["GITHUB_TOKEN"],
         )
         print(f"Action completed with automatic_approval={result}")
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        REPO: ${{ inputs.repo }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+        REVIEWER: ${{ inputs.reviewer }}
+        FORCE_REVIEW: ${{ inputs.force-review }}
+        VERSION_FILEPATH: ${{ inputs.version-filepath }}
+        CITATION_FILEPATH: ${{ inputs.citation-filepath }}
+        CHANGELOG_FILEPATH: ${{ inputs.changelog-filepath }}
+        DESCRIPTION_FILEPATH: ${{ inputs.description-filepath }}
+        DEV_HEADER: ${{ inputs.dev-header }}
