@@ -72,6 +72,10 @@ Custom actions used in our github workflows.
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [review-post-release-pr](review-post-release-pr) - Review a
+  post-release cleanup PR: approve pending workflow runs, approve, and
+  enable auto-merge when only version/date bumps matching a real release
+  tag are present, otherwise request a human reviewer
 - [review-pre-commit-pr](review-pre-commit-pr) - Review a pre-commit.ci
   autoupdate PR: approve and attempt auto-merge when only rev: versions
   changed (or a rev alias tag points at the same commit), otherwise

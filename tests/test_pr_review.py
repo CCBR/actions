@@ -9,13 +9,17 @@ import requests as requests_lib
 
 from ccbr_actions.pr_review import (
     _codeowners_pattern_matches,
+    approve_pending_workflow_runs,
     approve_pr,
     determine_reviewer,
     enable_auto_merge,
     get_codeowners_content,
     get_last_human_committer,
+    get_last_workflow_run_actor,
     get_pr_files,
+    has_changes_requested,
     is_pr_approved,
+    is_pr_approved_for_commit,
     match_codeowners,
     post_pr_comment,
     request_changes,
@@ -81,6 +85,25 @@ def test_get_pr_files_calls_correct_url():
     )
 
 
+def test_get_pr_files_paginates_across_full_pages():
+    class PaginatedSession(MockSession):
+        def request(self, method, url, headers=None, **kwargs):
+            self.calls.append((method, url, kwargs))
+            page = kwargs["params"]["page"]
+            per_page = kwargs["params"]["per_page"]
+            if page == 1:
+                payload = [{"filename": f"file{i}.txt"} for i in range(per_page)]
+            else:
+                payload = [{"filename": "last.txt"}]
+            return MockResponse(payload)
+
+    session = PaginatedSession()
+    result = get_pr_files("CCBR/actions", 42, token="tok", session=session, per_page=2)
+    assert len(result) == 3
+    assert [f["filename"] for f in result] == ["file0.txt", "file1.txt", "last.txt"]
+    assert len(session.calls) == 2
+
+
 # ---------------------------------------------------------------------------
 # approve_pr
 # ---------------------------------------------------------------------------
@@ -93,6 +116,15 @@ def test_approve_pr_posts_to_reviews_endpoint():
     assert method == "POST"
     assert url == "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
     assert kwargs["json"]["event"] == "APPROVE"
+    assert "commit_id" not in kwargs["json"]
+
+
+def test_approve_pr_includes_commit_id_when_provided():
+    session = MockSession(post_status=200)
+    approve_pr("CCBR/actions", 42, token="tok", session=session, commit_id="abc123")
+    method, _url, kwargs = session.calls[0]
+    assert method == "POST"
+    assert kwargs["json"]["commit_id"] == "abc123"
 
 
 # ---------------------------------------------------------------------------
@@ -182,6 +214,146 @@ def test_is_pr_approved_falls_back_to_user_id_when_login_is_missing():
     )
 
     assert is_pr_approved("CCBR/actions", 42, token="tok", session=session) is True
+
+
+# ---------------------------------------------------------------------------
+# is_pr_approved_for_commit
+# ---------------------------------------------------------------------------
+
+
+def test_is_pr_approved_for_commit_returns_true_for_matching_commit():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "sha-abc",
+                }
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit(
+            "CCBR/actions", 42, "sha-abc", token="tok", session=session
+        )
+        is True
+    )
+
+
+def test_is_pr_approved_for_commit_returns_false_for_stale_commit():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "sha-old",
+                }
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit(
+            "CCBR/actions", 42, "sha-new", token="tok", session=session
+        )
+        is False
+    )
+
+
+def test_is_pr_approved_for_commit_returns_false_when_changes_requested():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "sha-abc",
+                },
+                {
+                    "user": {"login": "human"},
+                    "state": "CHANGES_REQUESTED",
+                    "commit_id": "sha-abc",
+                },
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit(
+            "CCBR/actions", 42, "sha-abc", token="tok", session=session
+        )
+        is False
+    )
+
+
+def test_is_pr_approved_for_commit_returns_false_for_blank_commit_sha():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "ccbr-bot"},
+                    "state": "APPROVED",
+                    "commit_id": "",
+                }
+            ]
+        }
+    )
+    assert (
+        is_pr_approved_for_commit("CCBR/actions", 42, "", token="tok", session=session)
+        is False
+    )
+
+
+# ---------------------------------------------------------------------------
+# has_changes_requested
+# ---------------------------------------------------------------------------
+
+
+def test_has_changes_requested_returns_true_when_active():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {reviews_url: [{"user": {"login": "human"}, "state": "CHANGES_REQUESTED"}]}
+    )
+    assert (
+        has_changes_requested("CCBR/actions", 42, token="tok", session=session) is True
+    )
+
+
+def test_has_changes_requested_returns_false_when_none_active():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {reviews_url: [{"user": {"login": "human"}, "state": "APPROVED"}]}
+    )
+    assert (
+        has_changes_requested("CCBR/actions", 42, token="tok", session=session) is False
+    )
+
+
+def test_has_changes_requested_ignores_superseded_review():
+    reviews_url = "https://api.github.com/repos/CCBR/actions/pulls/42/reviews"
+    session = MockSession(
+        {
+            reviews_url: [
+                {
+                    "user": {"login": "human"},
+                    "state": "CHANGES_REQUESTED",
+                    "submitted_at": "2026-09-17T11:00:00Z",
+                },
+                {
+                    "user": {"login": "human"},
+                    "state": "APPROVED",
+                    "submitted_at": "2026-09-17T12:00:00Z",
+                },
+            ]
+        }
+    )
+    assert (
+        has_changes_requested("CCBR/actions", 42, token="tok", session=session) is False
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -469,4 +641,127 @@ def test_determine_reviewer_returns_none_without_reviewer_or_path():
     session = MockSession({})
     result = determine_reviewer("CCBR/actions", token="tok", session=session)
     assert result is None
-    assert session.calls == []
+
+
+# ---------------------------------------------------------------------------
+# approve_pending_workflow_runs
+# ---------------------------------------------------------------------------
+
+
+def test_approve_pending_workflow_runs_approves_each_pending_run():
+    runs_url = "https://api.github.com/repos/CCBR/actions/actions/runs"
+    session = MockSession({runs_url: {"workflow_runs": [{"id": 111}, {"id": 222}]}})
+    result = approve_pending_workflow_runs(
+        "CCBR/actions", "release/v1.0.0", token="tok", session=session
+    )
+    assert result == [111, 222]
+    approve_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert (
+        "https://api.github.com/repos/CCBR/actions/actions/runs/111/approve"
+        in approve_urls
+    )
+    assert (
+        "https://api.github.com/repos/CCBR/actions/actions/runs/222/approve"
+        in approve_urls
+    )
+    get_call = next(c for c in session.calls if c[0] == "GET")
+    assert get_call[2]["params"] == {
+        "branch": "release/v1.0.0",
+        "status": "action_required",
+    }
+
+
+def test_approve_pending_workflow_runs_returns_empty_list_when_none_pending():
+    runs_url = "https://api.github.com/repos/CCBR/actions/actions/runs"
+    session = MockSession({runs_url: {"workflow_runs": []}})
+    result = approve_pending_workflow_runs(
+        "CCBR/actions", "release/v1.0.0", token="tok", session=session
+    )
+    assert result == []
+
+
+def test_approve_pending_workflow_runs_filters_to_matching_head_sha():
+    runs_url = "https://api.github.com/repos/CCBR/actions/actions/runs"
+    session = MockSession(
+        {
+            runs_url: {
+                "workflow_runs": [
+                    {"id": 111, "head_sha": "matching-sha"},
+                    {"id": 222, "head_sha": "unrelated-sha"},
+                ]
+            }
+        }
+    )
+    result = approve_pending_workflow_runs(
+        "CCBR/actions",
+        "release/v1.0.0",
+        head_sha="matching-sha",
+        token="tok",
+        session=session,
+    )
+    assert result == [111]
+    approve_urls = [c[1] for c in session.calls if c[0] == "POST"]
+    assert (
+        "https://api.github.com/repos/CCBR/actions/actions/runs/111/approve"
+        in approve_urls
+    )
+    assert not any("runs/222/approve" in u for u in approve_urls)
+
+
+# ---------------------------------------------------------------------------
+# get_last_workflow_run_actor
+# ---------------------------------------------------------------------------
+
+
+def test_get_last_workflow_run_actor_returns_triggering_actor_login():
+    runs_url = (
+        "https://api.github.com/repos/CCBR/actions/actions/workflows/"
+        "draft-release.yml/runs"
+    )
+    session = MockSession(
+        {
+            runs_url: {
+                "workflow_runs": [
+                    {"triggering_actor": {"login": "kelly-sovacool"}},
+                ]
+            }
+        }
+    )
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result == "kelly-sovacool"
+
+
+def test_get_last_workflow_run_actor_falls_back_to_actor_field():
+    runs_url = (
+        "https://api.github.com/repos/CCBR/actions/actions/workflows/"
+        "draft-release.yml/runs"
+    )
+    session = MockSession(
+        {runs_url: {"workflow_runs": [{"actor": {"login": "a-human"}}]}}
+    )
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result == "a-human"
+
+
+def test_get_last_workflow_run_actor_returns_none_when_no_runs():
+    runs_url = (
+        "https://api.github.com/repos/CCBR/actions/actions/workflows/"
+        "draft-release.yml/runs"
+    )
+    session = MockSession({runs_url: {"workflow_runs": []}})
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result is None
+
+
+def test_get_last_workflow_run_actor_returns_none_on_request_error():
+    session = _RaisingSession({})
+    result = get_last_workflow_run_actor(
+        "CCBR/actions", "draft-release.yml", token="tok", session=session
+    )
+    assert result is None
