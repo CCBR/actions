@@ -319,6 +319,11 @@ def get_last_workflow_run_actor(repo, workflow_file, token=None, session=None):
     """
     Return the triggering actor's login for the most recent run of a workflow.
 
+    This is a best-effort heuristic: it returns the actor for the single most
+    recent run of *workflow_file* across the whole repo, not necessarily the
+    run that produced the specific release/PR being reviewed (e.g. if another
+    run of *workflow_file* started afterward but before review happened).
+
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         workflow_file (str): Workflow filename (e.g. ``"draft-release.yml"``).
