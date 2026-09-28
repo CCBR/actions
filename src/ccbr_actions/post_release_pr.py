@@ -424,9 +424,11 @@ def _validate_codemeta_file(
             f"v{release_version}",
         )
         date_fields_ok = all(
-            new_data.get(k) is None
-            or new_data.get(k) == old_data.get(k)
-            or str(new_data.get(k))[:10] in release_dates
+            new_data.get(k) == old_data.get(k)
+            or (
+                new_data.get(k) is not None
+                and str(new_data.get(k))[:10] in release_dates
+            )
             for k in date_keys
         )
         result = fields_unchanged and version_ok and date_fields_ok

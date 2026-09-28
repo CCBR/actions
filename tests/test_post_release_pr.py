@@ -543,6 +543,18 @@ def test_validate_codemeta_file_rejects_unrelated_field_replacement():
     )
 
 
+def test_validate_codemeta_file_rejects_dropped_date_field():
+    # Removing a previously-present date field must not be treated as a no-op.
+    old_content = '{"version": "0.7.0", "dateModified": "2024-01-01"}'
+    new_content = '{"version": "0.7.1"}'
+    assert (
+        _validate_codemeta_file(
+            old_content, new_content, RELEASE_VERSION, RELEASE_TAG, RELEASE_DATES
+        )
+        is False
+    )
+
+
 # ---------------------------------------------------------------------------
 # _validate_changelog_file
 # ---------------------------------------------------------------------------
