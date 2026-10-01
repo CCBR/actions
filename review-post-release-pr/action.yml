@@ -52,7 +52,7 @@ runs:
       shell: bash
       # env vars baked into the container image are not visible to the `env` context in `if:` expressions
       run: echo "in-container=${CCBR_ACTIONS_DOCKER:-false}" >> "$GITHUB_OUTPUT"
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7
       if: ${{ steps.detect-container.outputs.in-container != 'true' }}
       with:
         python-version: "${{ inputs.python-version }}"
