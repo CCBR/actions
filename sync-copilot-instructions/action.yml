@@ -46,6 +46,17 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Validate GitHub App identifier
+      shell: bash
+      env:
+        CLIENT_ID: ${{ inputs.client-id }}
+        APP_ID: ${{ inputs.app-id }}
+      run: |
+        if [[ -z "$CLIENT_ID" && -z "$APP_ID" ]]; then
+          echo "::error::Either client-id or app-id must be provided."
+          exit 1
+        fi
+
     - name: Generate a token from client ID
       id: generate-token-client
       if: ${{ inputs.client-id != '' }}
