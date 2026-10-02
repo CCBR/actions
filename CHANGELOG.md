@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions 0.8.1
+
 - New action: `review-post-release-pr` to automatically review post-release cleanup PRs and approve them (approving pending workflow runs and enabling auto-merge) when the version file was actually bumped and every changed file's new content is a valid, field-specific bump matching an actual release tag, or request a human reviewer otherwise. Approvals are pinned to the validated commit and re-validated if the PR's head changes afterward (e.g. after an `auto-format` push). (#227, @kelly-sovacool, @copilot)
   - Require the PR's `synchronize` event to come from the bot (not just any pusher) before re-running the automatic review, and pass action inputs to the embedded Python scripts via `env:` instead of splicing `${{ inputs.* }}` directly into the script text, in `review-pre-commit-pr` and `review-post-release-pr`. (#227, @kelly-sovacool, @copilot)
 - Fix `review-pre-commit-pr` to post a comment instead of requesting changes when a pre-commit.ci autoupdate PR needs human review. (#226, @kelly-sovacool, @copilot)
