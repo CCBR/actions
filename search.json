@@ -15,7 +15,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.8.0). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {9},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.8.1). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {10},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
     "crumbs": [
       "Project information",
       "Citation"
@@ -198,8 +198,8 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
+    "objectID": "CHANGELOG.html#actions-0.8.1",
+    "href": "CHANGELOG.html#actions-0.8.1",
     "title": "CCBR actions",
     "section": "",
     "text": "New action: review-post-release-pr to automatically review post-release cleanup PRs and approve them (approving pending workflow runs and enabling auto-merge) when the version file was actually bumped and every changed file’s new content is a valid, field-specific bump matching an actual release tag, or request a human reviewer otherwise. Approvals are pinned to the validated commit and re-validated if the PR’s head changes afterward (e.g. after an auto-format push). (#227, @kelly-sovacool, @copilot)\n\nRequire the PR’s synchronize event to come from the bot (not just any pusher) before re-running the automatic review, and pass action inputs to the embedded Python scripts via env: instead of splicing ${{ inputs.* }} directly into the script text, in review-pre-commit-pr and review-post-release-pr. (#227, @kelly-sovacool, @copilot)\n\nFix review-pre-commit-pr to post a comment instead of requesting changes when a pre-commit.ci autoupdate PR needs human review. (#226, @kelly-sovacool, @copilot)",
