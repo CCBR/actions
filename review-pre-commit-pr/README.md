@@ -98,7 +98,7 @@ jobs:
       - uses: actions/create-github-app-token@v3
         id: generate-token
         with:
-          client-id: ${{ vars.CCBR_BOT_APP_ID }}
+          client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
       - uses: CCBR/actions/review-pre-commit-pr@main
         with:
