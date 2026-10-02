@@ -36,14 +36,14 @@ steps:
 ### Example with GitHub App authentication
 
 For enhanced security, you can use a GitHub App instead of a personal access token.
-Create a GitHub App with the necessary permissions and store the app ID and private key
+Create a GitHub App with the necessary permissions and store the Client ID and private key
 as organization variables or secrets.
 
 ```yaml
 steps:
   - uses: CCBR/actions/user-projects@main
     with:
-      app-id: ${{ vars.CCBR_BOT_APP_ID }}
+      client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
       app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
       token-owner: CCBR
 ```

@@ -9,9 +9,12 @@ inputs:
   repo:
     description: "Name of the target repository."
     required: true
+  client-id:
+    description: "GitHub App Client ID used to generate an installation token."
+    required: false
   app-id:
-    description: "GitHub App ID used to generate an installation token."
-    required: true
+    description: "Legacy GitHub App ID input. Prefer client-id."
+    required: false
   app-private-key:
     description: "GitHub App private key used to generate an installation token."
     required: true
@@ -43,8 +46,18 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Generate a token
-      id: generate-token
+    - name: Generate a token from client ID
+      id: generate-token-client
+      if: ${{ inputs.client-id != '' }}
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ inputs.client-id }}
+        private-key: ${{ inputs.app-private-key }}
+        owner: ${{ inputs.owner }}
+
+    - name: Generate a token from legacy app ID
+      id: generate-token-app
+      if: ${{ inputs.client-id == '' && inputs.app-id != '' }}
       uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.app-id }}
@@ -57,7 +70,7 @@ runs:
         fetch-depth: 0
         persist-credentials: true
         repository: ${{ inputs.owner }}/${{ inputs.repo }}
-        token: ${{ steps.generate-token.outputs.token }}
+        token: ${{ steps.generate-token-client.outputs.token || steps.generate-token-app.outputs.token }}
 
     - name: Update copilot instructions
       shell: bash
@@ -65,7 +78,7 @@ runs:
         SOURCE_URL: https://raw.githubusercontent.com/${{ inputs.source-repository }}/${{ inputs.source-ref }}/${{ inputs.source-file }}
         TARGET_FILE: ${{ inputs.target-file }}
         COMMIT_MESSAGE: ${{ inputs.commit-message }}
-        GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        GH_TOKEN: ${{ steps.generate-token-client.outputs.token || steps.generate-token-app.outputs.token }}
         BRANCH: ${{ inputs.branch }}
       run: |
         cd "$GITHUB_WORKSPACE"

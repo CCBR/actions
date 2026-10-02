@@ -12,19 +12,23 @@ inputs:
     description: "URL of a yaml file mapping usernames to project boards."
     default: https://raw.githubusercontent.com/CCBR/.github/main/assets/user-kanbans.yml
   github-token:
-    description: "GitHub Actions token with access to organization projects. Optional - set the app-id and app-private-key instead."
+    description: "GitHub Actions token with access to organization projects. Optional - set the client-id and app-private-key instead."
+    required: false
+    default: ""
+  client-id:
+    description: "GitHub App Client ID for authentication. Optional - use this instead of a token."
     required: false
     default: ""
   app-id:
-    description: "GitHub App ID for authentication. Optional - Use this instead of a token."
+    description: "Legacy GitHub App ID input. Prefer client-id."
     required: false
     default: ""
   app-private-key:
-    description: "Private key for the GitHub App used for authentication. Optional - Use this instead of a token. Must be set if app-id is set."
+    description: "Private key for the GitHub App used for authentication. Optional - must be set if client-id or app-id is set."
     required: false
     default: ""
   token-owner:
-    description: "Owner of the resources that the GitHub app will use for authentication. Optional - use this if using app-id and app-private-key."
+    description: "Owner of the resources that the GitHub app will use for authentication. Optional - use this if using client-id or app-id and app-private-key."
     required: false
     default: "CCBR"
 
@@ -46,9 +50,18 @@ runs:
       run: |
         echo ${{ inputs.username }} ${{ steps.metadata.outputs[inputs.username] }}
 
-    - name: Generate a token
-      id: generate-token
-      if: ${{ inputs.github-token == '' }}
+    - name: Generate a token from client ID
+      id: generate-token-client
+      if: ${{ inputs.github-token == '' && inputs.client-id != '' }}
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ inputs.client-id }}
+        private-key: ${{ inputs.app-private-key }}
+        owner: ${{ inputs.token-owner }}
+
+    - name: Generate a token from legacy app ID
+      id: generate-token-app
+      if: ${{ inputs.github-token == '' && inputs.client-id == '' && inputs.app-id != '' }}
       uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.app-id }}
@@ -59,7 +72,7 @@ runs:
       if: ${{ inputs.github-token == '' }}
       shell: bash
       run: |
-        echo "GITHUB_TOKEN=${{ steps.generate-token.outputs.token }}" >> $GITHUB_ENV
+        echo "GITHUB_TOKEN=${{ steps.generate-token-client.outputs.token || steps.generate-token-app.outputs.token }}" >> $GITHUB_ENV
 
     - name: Set GitHub token from input
       if: ${{ inputs.github-token != '' }}
