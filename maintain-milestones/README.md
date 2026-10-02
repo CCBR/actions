@@ -37,8 +37,8 @@ below for details.
   the target repository.
 - Authentication options:
   - Set `github-token` directly.
-  - Or set both `app-id` and `app-private-key` to mint a GitHub App
-    token.
+  - Or set both `client-id` and `app-private-key` to mint a GitHub App
+    token. The legacy `app-id` input is also supported.
 - If `target_repo` is omitted, the action defaults to the current
   repository name.
 - If `owner` is omitted, the action defaults to
@@ -140,9 +140,9 @@ steps:
 - `max_updates_per_run`: Maximum milestone
   updates/creates/closes/reopens per run. Default: `100`.
 - `github-token`: GitHub Actions token with access to organization
-  projects. Optional - set the app-id and app-private-key instead.
-- `app-id`: GitHub App ID for authentication. Optional - Use this
-  instead of a token.
+  projects. Optional - set the client-id and app-private-key instead.
+- `client-id`: GitHub App Client ID for authentication. Optional - use
+  this instead of a token.
+- `app-id`: Legacy GitHub App ID input. Prefer client-id.
 - `app-private-key`: Private key for the GitHub App used for
-  authentication. Optional - Use this instead of a token. Must be set if
-  app-id is set.
+  authentication. Optional - must be set if client-id or app-id is set.

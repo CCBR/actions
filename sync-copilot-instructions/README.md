@@ -78,8 +78,9 @@ jobs:
 
 - `owner`: Owner of the target repository. **Required.**
 - `repo`: Name of the target repository. **Required.**
-- `app-id`: GitHub App ID used to generate an installation token.
-  **Required.**
+- `client-id`: GitHub App Client ID used to generate an installation
+  token.
+- `app-id`: Legacy GitHub App ID input. Prefer client-id.
 - `app-private-key`: GitHub App private key used to generate an
   installation token. **Required.**
 - `source-repository`: Source repository containing canonical Copilot
