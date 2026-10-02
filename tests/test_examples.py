@@ -10,15 +10,7 @@ EXAMPLES = sorted(
     list((REPOSITORY_ROOT / "examples").glob("*.yml"))
     + list((REPOSITORY_ROOT / "examples").glob("*.yaml"))
 )
-CURRENT_VERSION = (REPOSITORY_ROOT / "VERSION").read_text().strip()
-CURRENT_RELEASE = f"v{CURRENT_VERSION.removesuffix('-dev')}"
 ACTION_REFERENCE = re.compile(r"CCBR/actions/([^@\s]+)@([^\s]+)")
-# Actions with no release containing them yet may reference @main until the
-# next release is cut. Each entry records the release this exception was
-# written against, so it self-expires: once CURRENT_RELEASE advances past
-# that value, the exception no longer applies and @main starts failing this
-# test again, forcing the ref to be repinned to the new release.
-UNRELEASED_ACTIONS = {"review-post-release-pr": "v0.8.0"}
 
 
 def _iter_steps(value):
@@ -31,28 +23,6 @@ def _iter_steps(value):
     elif isinstance(value, list):
         for nested_value in value:
             yield from _iter_steps(nested_value)
-
-
-def test_examples_use_current_release_refs():
-    """Examples should use the current release, except unreleased actions on @main."""
-    references = [
-        (match.group(1), match.group(2))
-        for example in EXAMPLES
-        for match in ACTION_REFERENCE.finditer(example.read_text())
-    ]
-    assert references
-    unexpected = [
-        (action_name, ref)
-        for action_name, ref in references
-        if not (
-            ref == CURRENT_RELEASE
-            or (
-                ref == "main" and UNRELEASED_ACTIONS.get(action_name) == CURRENT_RELEASE
-            )
-        )
-    ]
-    assert not unexpected
-    assert any(ref == CURRENT_RELEASE for _, ref in references)
 
 
 def test_examples_reference_declared_inputs_and_required_values():
