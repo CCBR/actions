@@ -75,7 +75,7 @@ relevant configuration:
 ```yaml
 inputs:
   github-token:
-    description: "Pre-generated GitHub token. Optional - use app-id and app-private-key instead."
+    description: "Pre-generated GitHub token. Optional - use client-id (or legacy app-id) and app-private-key instead."
     required: false
   client-id:
     description: "GitHub App Client ID for token generation."
