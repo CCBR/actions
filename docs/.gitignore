@@ -6,3 +6,5 @@
 /actions
 /objects.json
 /reference/
+
+**/*.quarto_ipynb
