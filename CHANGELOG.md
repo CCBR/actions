@@ -1,6 +1,6 @@
 ## actions development version
 
-fix: use client-id var for actions/create-github-app-token@v3. (#232, @kelly-sovacool, @copilot)
+- Use GitHub App Client IDs in workflows and composite actions, retaining legacy `app-id` support. (#232, @kelly-sovacool, @copilot)
 
 ## actions 0.8.1
 

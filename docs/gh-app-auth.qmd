@@ -17,17 +17,18 @@ An admin should [install the app](http://github.com/apps/CCBR-bot) in the
 organization, then store each of these in your organization's variables and
 secrets:
 
-- **`CCBR_BOT_APP_ID`** (variable): The GitHub App ID
+- **`CCBR_BOT_CLIENT_ID`** (variable): The GitHub App Client ID
 - **`CCBR_BOT_PRIVATE_KEY`** (secret): The GitHub App private key
 
 ## Using GitHub App Authentication in Workflows
 
-When using actions that support GitHub App authentication, pass the app ID and
-private key as inputs:
+When using actions that support GitHub App authentication, pass the Client ID
+and private key as inputs. CCBR composite actions also retain the legacy
+`app-id` input for compatibility.
 
 ```yaml
 with:
-  app-id: ${{ vars.CCBR_BOT_APP_ID }}
+  client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
   app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
 ```
 
@@ -60,23 +61,27 @@ jobs:
     steps:
       - uses: CCBR/actions/user-projects@latest
         with:
-          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
           app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
 ```
 
 ### Implementation Details
 
 The `user-projects` action supports **both authentication methods**: provide a
-`github-token` directly, or provide `app-id` and `app-private-key` for on-demand
-generation. Here's the relevant configuration:
+`github-token` directly, or provide `client-id` and `app-private-key` for
+on-demand generation. The legacy `app-id` input is also accepted. Here's the
+relevant configuration:
 
 ```yaml
 inputs:
   github-token:
     description: "Pre-generated GitHub token. Optional - use app-id and app-private-key instead."
     required: false
+  client-id:
+    description: "GitHub App Client ID for token generation."
+    required: false
   app-id:
-    description: "GitHub App ID for token generation."
+    description: "Legacy GitHub App ID input. Prefer client-id."
     required: false
   app-private-key:
     description: "GitHub App private key for token generation."
@@ -89,10 +94,19 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Generate token from app
-      if: ${{ inputs.github-token == '' }}
-      uses: actions/create-github-app-token@v2
-      id: generate-token
+    - name: Generate token from client ID
+      if: ${{ inputs.github-token == '' && inputs.client-id != '' }}
+      uses: actions/create-github-app-token@v3
+      id: generate-token-client
+      with:
+        client-id: ${{ inputs.client-id }}
+        private-key: ${{ inputs.app-private-key }}
+        owner: ${{ inputs.token-owner }}
+
+    - name: Generate token from legacy App ID
+      if: ${{ inputs.github-token == '' && inputs.client-id == '' && inputs.app-id != '' }}
+      uses: actions/create-github-app-token@v3
+      id: generate-token-app
       with:
         app-id: ${{ inputs.app-id }}
         private-key: ${{ inputs.app-private-key }}
@@ -101,13 +115,13 @@ runs:
     - name: Set GITHUB_TOKEN
       shell: bash
       run: |
-        TOKEN=${{ inputs.github-token || steps.generate-token.outputs.token }}
+        TOKEN=${{ inputs.github-token || steps.generate-token-client.outputs.token || steps.generate-token-app.outputs.token }}
         echo "GITHUB_TOKEN=$TOKEN" >> $GITHUB_ENV
 ```
 
 ## Troubleshooting
 
-- Verify app ID and private key are stored as organization variables/secrets
+- Verify Client ID and private key are stored as organization variables/secrets
 - Ensure the GitHub App has required permissions configured
 - Check that the app is installed on the target repository/organization
 - Review workflow logs for errors from `actions/create-github-app-token`

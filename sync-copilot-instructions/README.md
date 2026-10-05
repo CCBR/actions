@@ -5,9 +5,12 @@ source repository to a target repository and open a PR
 
 ## Usage
 
+Provide `client-id` and `app-private-key` to authenticate with a GitHub
+App. The legacy `app-id` input remains supported for existing workflows.
+
 ### Basic example
 
-[sync-copilot-instructions.yml](/examples/sync-copilot-instructions.yml)
+[sync-copilot-instructions.yml](./examples/sync-copilot-instructions.yml)
 
 ```yaml
 name: sync-copilot-instructions
@@ -61,11 +64,11 @@ jobs:
           - actions
           - Tools
     steps:
-      - uses: CCBR/actions/sync-copilot-instructions@v0.8.0
+      - uses: CCBR/actions/sync-copilot-instructions@main
         with:
           owner: ${{ matrix.OWNER }}
           repo: ${{ matrix.REPO }}
-          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
           app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
           source-repository: ${{ inputs.source_repository || github.event.inputs.source_repository || 'CCBR/.github' }}
           source-ref: ${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}

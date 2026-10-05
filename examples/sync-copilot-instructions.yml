@@ -49,11 +49,11 @@ jobs:
           - actions
           - Tools
     steps:
-      - uses: CCBR/actions/sync-copilot-instructions@v0.8.0
+      - uses: CCBR/actions/sync-copilot-instructions@main
         with:
           owner: ${{ matrix.OWNER }}
           repo: ${{ matrix.REPO }}
-          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
           app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
           source-repository: ${{ inputs.source_repository || github.event.inputs.source_repository || 'CCBR/.github' }}
           source-ref: ${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}

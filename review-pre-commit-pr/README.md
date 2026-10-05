@@ -61,12 +61,8 @@ check as one of the required checks. In your repo’s rulesets
 Consider also including other desired checks such as your build/test
 workflow, auto-format, etc.
 
-<figure>
-<img
-src="https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png"
-alt="Branch protection rule" />
-<figcaption aria-hidden="true">Branch protection rule</figcaption>
-</figure>
+![Branch protection
+rule](https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png)
 
 ### Example
 
@@ -106,7 +102,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also: [pre-review-pr.yml](/examples/pre-review-pr.yml).
+See also: [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 
