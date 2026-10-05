@@ -1,5 +1,6 @@
 ## actions development version
 
+- Approve pending Actions workflow runs for post-release cleanup PRs, scoped to the current PR head SHA. (#234, @kelly-sovacool, @copilot)
 - Use GitHub App Client IDs in workflows and composite actions, retaining legacy `app-id` support. (#232, @kelly-sovacool, @copilot)
 
 ## actions 0.8.1
