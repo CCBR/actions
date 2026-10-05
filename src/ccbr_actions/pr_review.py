@@ -315,6 +315,31 @@ def approve_pending_workflow_runs(
     return approved_run_ids
 
 
+def approve_pending_workflow_runs_for_pr(repo, pr_number, token=None, session=None):
+    """Approve pending workflow runs for the current head of a pull request.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        list[int]: IDs of workflow runs approved for the pull request head.
+    """
+    pull_request_url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}"
+    pull_request = github_api_get(url=pull_request_url, token=token, session=session)
+    head = pull_request["head"]
+    approved_run_ids = approve_pending_workflow_runs(
+        repo=repo,
+        branch=head["ref"],
+        head_sha=head["sha"],
+        token=token,
+        session=session,
+    )
+    return approved_run_ids
+
+
 def get_last_workflow_run_actor(repo, workflow_file, token=None, session=None):
     """
     Return the triggering actor's login for the most recent run of a workflow.

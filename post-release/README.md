@@ -10,6 +10,11 @@ changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
 
+The action also approves workflow runs awaiting approval for the cleanup
+PR, limited to the PR’s current head commit. The `github-token` input
+must have `actions: write` permission, in addition to the permissions
+needed to commit changes and open a pull request.
+
 > \[!WARNING\] If your repository contains a `DESCRIPTION` file
 > (i.e. it’s an R package), do **not** run this action via
 > `jobs.<job_id>.container: nciccbr/ccbr_actions:...`. This action
@@ -95,8 +100,8 @@ steps:
 
 ## Inputs
 
-- `github-token`: GitHub Actions token (e.g. github.token).
-  **Required.**
+- `github-token`: GitHub token with contents:write, pull-requests:write,
+  and actions:write permissions (e.g. github.token). **Required.**
 - `ccbr-actions-version`: The version of CCBR/actions to install when
   running outside the ccbr_actions container. **Required.** Default:
   `latest`.
