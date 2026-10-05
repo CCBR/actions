@@ -37,7 +37,7 @@ below for details.
   the target repository.
 - Authentication options:
   - Set `github-token` directly.
-  - Or set both `client-id` and `app-private-key` to mint a GitHub App
+  - Or set both `client-id` and `app-private-key` to create a GitHub App
     token. The legacy `app-id` input is also supported.
 - If `target_repo` is omitted, the action defaults to the current
   repository name.
@@ -71,7 +71,7 @@ after repeated runs. All date calculations are performed in UTC.
 
 ### Basic example
 
-[maintain-milestones.yml](/examples/maintain-milestones.yml)
+[maintain-milestones.yml](./examples/maintain-milestones.yml)
 
 ```yaml
 name: maintain-milestones
