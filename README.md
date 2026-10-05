@@ -157,7 +157,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.8.1). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.8.2). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
