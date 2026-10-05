@@ -187,22 +187,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Use GitHub App Client IDs in workflows and composite actions, retaining legacy app-id support. (#232, @kelly-sovacool, @copilot)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.8.2",
     "href": "CHANGELOG.html#actions-0.8.2",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Use GitHub App Client IDs in workflows and composite actions, retaining legacy app-id support. (#232, @kelly-sovacool, @copilot)",
+    "section": "actions 0.8.2",
+    "text": "actions 0.8.2\n\nUse GitHub App Client IDs in workflows and composite actions, retaining legacy app-id support. (#232, @kelly-sovacool, @copilot)",
     "crumbs": [
       "Project information",
       "Changelog"
