@@ -693,11 +693,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="example-with-github-app-authentication" class="level3">
 <h3 class="anchored" data-anchor-id="example-with-github-app-authentication">Example with GitHub App authentication</h3>
-<p>For enhanced security, you can use a GitHub App instead of a personal access token. Create a GitHub App with the necessary permissions and store the app ID and private key as organization variables or secrets.</p>
+<p>For enhanced security, you can use a GitHub App instead of a personal access token. Create a GitHub App with the necessary permissions and store the Client ID and private key as organization variables or secrets.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">steps</span><span class="kw">:</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/user-projects@main</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app-id</span><span class="kw">:</span><span class="at"> ${{ vars.CCBR_BOT_APP_ID }}</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">client-id</span><span class="kw">:</span><span class="at"> ${{ vars.CCBR_BOT_CLIENT_ID }}</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app-private-key</span><span class="kw">:</span><span class="at"> ${{ secrets.CCBR_BOT_PRIVATE_KEY }}</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">token-owner</span><span class="kw">:</span><span class="at"> CCBR</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For a complete example workflow, see <a href=".https://github.com/CCBR/actions/blob/main/examples/user-projects.yml">user-projects.yml</a>.</p>
@@ -708,10 +708,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><code>username</code>: GitHub username of the person assigned to the Issue or PR. Default: <code>${{ github.event.assignee.login }}</code>.</li>
 <li><code>user_projects</code>: URL of a yaml file mapping usernames to project boards. Default: <code>https://raw.githubusercontent.com/CCBR/.github/main/assets/user-kanbans.yml</code>.</li>
-<li><code>github-token</code>: GitHub Actions token with access to organization projects. Optional - set the app-id and app-private-key instead.</li>
-<li><code>app-id</code>: GitHub App ID for authentication. Optional - Use this instead of a token.</li>
-<li><code>app-private-key</code>: Private key for the GitHub App used for authentication. Optional - Use this instead of a token. Must be set if app-id is set.</li>
-<li><code>token-owner</code>: Owner of the resources that the GitHub app will use for authentication. Optional - use this if using app-id and app-private-key. Default: <code>CCBR</code>.</li>
+<li><code>github-token</code>: GitHub Actions token with access to organization projects. Optional - set the client-id and app-private-key instead.</li>
+<li><code>client-id</code>: GitHub App Client ID for authentication. Optional - use this instead of a token.</li>
+<li><code>app-id</code>: Legacy GitHub App ID input. Prefer client-id.</li>
+<li><code>app-private-key</code>: Private key for the GitHub App used for authentication. Optional - must be set if client-id or app-id is set.</li>
+<li><code>token-owner</code>: Owner of the resources that the GitHub app will use for authentication. Optional - use this if using client-id or app-id and app-private-key. Default: <code>CCBR</code>.</li>
 </ul>
 
 

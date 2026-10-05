@@ -681,6 +681,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong><code>sync-copilot-instructions</code></strong> - Sync Copilot instructions from a source repository to a target repository and open a PR</p>
 <section id="usage" class="level2">
 <h2 class="anchored" data-anchor-id="usage">Usage</h2>
+<p>Provide <code>client-id</code> and <code>app-private-key</code> to authenticate with a GitHub App. The legacy <code>app-id</code> input remains supported for existing workflows.</p>
 <section id="basic-example" class="level3">
 <h3 class="anchored" data-anchor-id="basic-example">Basic example</h3>
 <p><a href=".https://github.com/CCBR/actions/blob/main/examples/sync-copilot-instructions.yml">sync-copilot-instructions.yml</a></p>
@@ -735,11 +736,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> actions</span></span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> Tools</span></span>
 <span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/sync-copilot-instructions@v0.8.0</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> CCBR/actions/sync-copilot-instructions@main</span></span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">owner</span><span class="kw">:</span><span class="at"> ${{ matrix.OWNER }}</span></span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">repo</span><span class="kw">:</span><span class="at"> ${{ matrix.REPO }}</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">app-id</span><span class="kw">:</span><span class="at"> ${{ vars.CCBR_BOT_APP_ID }}</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">client-id</span><span class="kw">:</span><span class="at"> ${{ vars.CCBR_BOT_CLIENT_ID }}</span></span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">app-private-key</span><span class="kw">:</span><span class="at"> ${{ secrets.CCBR_BOT_PRIVATE_KEY }}</span></span>
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">source-repository</span><span class="kw">:</span><span class="at"> ${{ inputs.source_repository || github.event.inputs.source_repository || 'CCBR/.github' }}</span></span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">source-ref</span><span class="kw">:</span><span class="at"> ${{ inputs.source_ref || github.event.inputs.source_ref || 'main' }}</span></span>
@@ -753,7 +754,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><code>owner</code>: Owner of the target repository. <strong>Required.</strong></li>
 <li><code>repo</code>: Name of the target repository. <strong>Required.</strong></li>
-<li><code>app-id</code>: GitHub App ID used to generate an installation token. <strong>Required.</strong></li>
+<li><code>client-id</code>: GitHub App Client ID used to generate an installation token.</li>
+<li><code>app-id</code>: Legacy GitHub App ID input. Prefer client-id.</li>
 <li><code>app-private-key</code>: GitHub App private key used to generate an installation token. <strong>Required.</strong></li>
 <li><code>source-repository</code>: Source repository containing canonical Copilot instructions. <strong>Required.</strong> Default: <code>CCBR/.github</code>.</li>
 <li><code>source-ref</code>: Branch, tag, or SHA in source repository. <strong>Required.</strong> Default: <code>main</code>.</li>

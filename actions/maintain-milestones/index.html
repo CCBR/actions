@@ -716,7 +716,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Authentication options:
 <ul>
 <li>Set <code>github-token</code> directly.</li>
-<li>Or set both <code>app-id</code> and <code>app-private-key</code> to mint a GitHub App token.</li>
+<li>Or set both <code>client-id</code> and <code>app-private-key</code> to create a GitHub App token. The legacy <code>app-id</code> input is also supported.</li>
 </ul></li>
 <li>If <code>target_repo</code> is omitted, the action defaults to the current repository name.</li>
 <li>If <code>owner</code> is omitted, the action defaults to <code>${{ github.repository_owner }}</code>.</li>
@@ -804,9 +804,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>owner</code>: Owner of the repository. Defaults to the current repository owner.</li>
 <li><code>dry_run</code>: Toggle dry run mode. If true, report changes without applying them. Default: <code>false</code>.</li>
 <li><code>max_updates_per_run</code>: Maximum milestone updates/creates/closes/reopens per run. Default: <code>100</code>.</li>
-<li><code>github-token</code>: GitHub Actions token with access to organization projects. Optional - set the app-id and app-private-key instead.</li>
-<li><code>app-id</code>: GitHub App ID for authentication. Optional - Use this instead of a token.</li>
-<li><code>app-private-key</code>: Private key for the GitHub App used for authentication. Optional - Use this instead of a token. Must be set if app-id is set.</li>
+<li><code>github-token</code>: GitHub Actions token with access to organization projects. Optional - set the client-id and app-private-key instead.</li>
+<li><code>client-id</code>: GitHub App Client ID for authentication. Optional - use this instead of a token.</li>
+<li><code>app-id</code>: Legacy GitHub App ID input. Prefer client-id.</li>
+<li><code>app-private-key</code>: Private key for the GitHub App used for authentication. Optional - must be set if client-id or app-id is set.</li>
 </ul>
 
 
