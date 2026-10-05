@@ -10,7 +10,7 @@ App. The legacy `app-id` input remains supported for existing workflows.
 
 ### Basic example
 
-[sync-copilot-instructions.yml](./examples/sync-copilot-instructions.yml)
+[sync-copilot-instructions.yml](/examples/sync-copilot-instructions.yml)
 
 ```yaml
 name: sync-copilot-instructions
