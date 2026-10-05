@@ -113,3 +113,6 @@ docs = { features = ["docs"], solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
 
 [tool.pixi.tasks]
+
+[tool.pixi.dependencies]
+actionlint = ">=1.7.12,<2"
