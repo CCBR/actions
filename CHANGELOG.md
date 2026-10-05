@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions 0.8.2
+
 - Use GitHub App Client IDs in workflows and composite actions, retaining legacy `app-id` support. (#232, @kelly-sovacool, @copilot)
 
 ## actions 0.8.1
