@@ -10,6 +10,7 @@ import requests as requests_lib
 from ccbr_actions.pr_review import (
     _codeowners_pattern_matches,
     approve_pending_workflow_runs,
+    approve_pending_workflow_runs_for_pr,
     approve_pr,
     determine_reviewer,
     enable_auto_merge,
@@ -706,6 +707,32 @@ def test_approve_pending_workflow_runs_filters_to_matching_head_sha():
         in approve_urls
     )
     assert not any("runs/222/approve" in u for u in approve_urls)
+
+
+def test_approve_pending_workflow_runs_for_pr_uses_current_head_sha():
+    pull_request_url = "https://api.github.com/repos/CCBR/actions/pulls/42"
+    runs_url = "https://api.github.com/repos/CCBR/actions/actions/runs"
+    session = MockSession(
+        {
+            pull_request_url: {"head": {"ref": "release/v1.0.0", "sha": "current-sha"}},
+            runs_url: {
+                "workflow_runs": [
+                    {"id": 111, "head_sha": "current-sha"},
+                    {"id": 222, "head_sha": "previous-sha"},
+                ]
+            },
+        }
+    )
+
+    result = approve_pending_workflow_runs_for_pr(
+        "CCBR/actions", 42, token="tok", session=session
+    )
+
+    assert result == [111]
+    approve_urls = [call[1] for call in session.calls if call[0] == "POST"]
+    assert approve_urls == [
+        "https://api.github.com/repos/CCBR/actions/actions/runs/111/approve"
+    ]
 
 
 # ---------------------------------------------------------------------------
