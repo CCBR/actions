@@ -56,8 +56,14 @@ When all conditions are satisfied the action:
 - Approves the PR, pinned to the validated commit, as the token's actor
   (typically CCBR-bot).
 - Attempts to enable squash auto-merge so the PR merges automatically once all
-  required checks pass. If auto-merge is unavailable, the approval remains and
-  the action posts a comment containing the GitHub API error.
+  required checks pass. GitHub refuses auto-merge when the PR is already
+  mergeable, so in that case the action:
+  - squash-merges the validated commit directly if all checks have passed (`clean`).
+  - posts a comment explaining why if some checks that aren't required are
+    still pending or failing (`unstable`). Merge the PR manually once they pass.
+
+  For any other failure, the approval remains and the action posts a comment
+  containing the GitHub API error.
 
 When any condition is **not** satisfied the action:
 

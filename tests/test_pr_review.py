@@ -8,12 +8,14 @@ import pytest
 import requests as requests_lib
 
 from ccbr_actions.pr_review import (
+    AutoMergeUnavailableError,
     _codeowners_pattern_matches,
     approve_pending_workflow_runs,
     approve_pending_workflow_runs_for_pr,
     approve_pr,
     determine_reviewer,
     enable_auto_merge,
+    enable_auto_merge_or_merge,
     get_codeowners_content,
     get_last_human_committer,
     get_last_workflow_run_actor,
@@ -383,6 +385,68 @@ def test_enable_auto_merge_calls_rest_then_graphql():
     assert "POST" in methods
     graphql_call = next(c for c in session.calls if c[0] == "POST")
     assert graphql_call[2]["json"]["variables"]["mergeMethod"] == "SQUASH"
+
+
+def _auto_merge_rejected_session(mergeable_state):
+    return MockSession(
+        {
+            "https://api.github.com/repos/CCBR/actions/pulls/42": {
+                "node_id": "PR_NODE_ID_42",
+                "mergeable_state": mergeable_state,
+            },
+            "https://api.github.com/graphql": {
+                "errors": [
+                    {
+                        "type": "UNPROCESSABLE",
+                        "message": "Pull request Pull request is in "
+                        f"{mergeable_state} status",
+                    }
+                ]
+            },
+        }
+    )
+
+
+def test_enable_auto_merge_or_merge_returns_auto_merge_on_success():
+    session = MockSession(
+        {
+            "https://api.github.com/repos/CCBR/actions/pulls/42": {"node_id": "N"},
+            "https://api.github.com/graphql": {"data": {}},
+        }
+    )
+    assert (
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
+        == "auto-merge"
+    )
+    assert not any(c[0] == "PUT" for c in session.calls)
+
+
+def test_enable_auto_merge_or_merge_merges_clean_pr():
+    session = _auto_merge_rejected_session("clean")
+    assert (
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
+        == "merged"
+    )
+    put_calls = [c for c in session.calls if c[0] == "PUT"]
+    assert put_calls[0][1] == "https://api.github.com/repos/CCBR/actions/pulls/42/merge"
+    assert put_calls[0][2]["json"] == {
+        "merge_method": "squash",
+        "sha": "validated-sha",
+    }
+
+
+def test_enable_auto_merge_or_merge_raises_clear_error_for_unstable_pr():
+    session = _auto_merge_rejected_session("unstable")
+    with pytest.raises(AutoMergeUnavailableError, match="merge state `unstable`"):
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
+    assert not any(c[0] == "PUT" for c in session.calls)
+
+
+def test_enable_auto_merge_or_merge_reraises_other_errors():
+    session = _auto_merge_rejected_session("blocked")
+    with pytest.raises(RuntimeError, match="GraphQL errors"):
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
+    assert not any(c[0] == "PUT" for c in session.calls)
 
 
 # ---------------------------------------------------------------------------

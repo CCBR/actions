@@ -11,6 +11,7 @@ from .github import (
     GITHUB_API_URL,
     github_api_get,
     github_api_post,
+    github_api_request,
     github_graphql_post,
 )
 
@@ -269,6 +270,90 @@ def enable_auto_merge(repo, pr_number, token=None, session=None):
         token=token,
         session=session,
     )
+
+
+class AutoMergeUnavailableError(RuntimeError):
+    """Raised when GitHub refuses auto-merge because the PR is already mergeable."""
+
+
+def merge_pr(
+    repo, pr_number, head_sha, merge_method="squash", token=None, session=None
+):
+    """
+    Merge a pull request immediately via the GitHub REST API.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        head_sha (str): Validated pull request head commit SHA.
+        merge_method (str): One of ``"merge"``, ``"squash"``, or ``"rebase"``.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        requests.Response: Response from the GitHub merge API.
+    """
+    response = github_api_request(
+        method="PUT",
+        url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}/merge",
+        token=token,
+        session=session,
+        json={"merge_method": merge_method, "sha": head_sha},
+    )
+    response.raise_for_status()
+    return response
+
+
+def enable_auto_merge_or_merge(repo, pr_number, head_sha, token=None, session=None):
+    """
+    Enable squash auto-merge, falling back to an immediate merge when possible.
+
+    GitHub rejects auto-merge when nothing is left for it to wait on, i.e. the
+    PR's ``mergeable_state`` is ``clean`` or ``unstable``. A ``clean`` PR is
+    squash-merged right away. An ``unstable`` PR (mergeable, but non-required
+    checks are pending or failing) is left alone and
+    [](`~ccbr_actions.pr_review.AutoMergeUnavailableError`) is raised.
+
+    Args:
+        repo (str): Repository full name (e.g. ``"CCBR/actions"``).
+        pr_number (int | str): Pull request number.
+        head_sha (str): Validated pull request head commit SHA.
+        token (str, optional): GitHub API token.
+        session: Requests-compatible session object for dependency injection.
+
+    Returns:
+        str: ``"auto-merge"`` if auto-merge was enabled, ``"merged"`` if the
+        PR was merged directly.
+
+    Raises:
+        AutoMergeUnavailableError: If the PR is in the ``unstable`` state.
+        RuntimeError | requests.exceptions.RequestException: For other API errors.
+    """
+    outcome = None
+    try:
+        enable_auto_merge(repo, pr_number, token=token, session=session)
+        outcome = "auto-merge"
+    except (KeyError, requests.exceptions.RequestException, RuntimeError):
+        pr_data = github_api_get(
+            url=f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}",
+            token=token,
+            session=session,
+        )
+        mergeable_state = pr_data.get("mergeable_state")
+        if mergeable_state == "clean":
+            merge_pr(repo, pr_number, head_sha, token=token, session=session)
+            outcome = "merged"
+        elif mergeable_state == "unstable":
+            raise AutoMergeUnavailableError(
+                "the PR is already mergeable while some status checks are still "
+                "pending or failing (merge state `unstable`). GitHub only allows "
+                "auto-merge while a required review or status check is still "
+                "outstanding, and none of these checks are required by the branch "
+                "rules. Please merge manually once the checks pass."
+            ) from None
+        else:
+            raise
+    return outcome
 
 
 def approve_pending_workflow_runs(

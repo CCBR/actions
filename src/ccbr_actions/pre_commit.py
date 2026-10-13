@@ -10,9 +10,10 @@ from packaging.version import InvalidVersion, Version
 
 from .github import GITHUB_API_URL, github_api_get
 from .pr_review import (
+    AutoMergeUnavailableError,
     approve_pr,
     determine_reviewer,
-    enable_auto_merge,
+    enable_auto_merge_or_merge,
     get_pr_files,
     is_pr_approved,
     post_pr_comment,
@@ -266,8 +267,9 @@ def review_pre_commit_pr(
     - **Condition 2** – the only changes are ``rev:`` version bumps.
 
     When both conditions are met the function approves the PR, attempts to
-    enable squash auto-merge, and returns ``True``. If auto-merge cannot be
-    enabled, it leaves a separate comment with the GitHub API error. Otherwise
+    enable squash auto-merge (or squash-merges directly if the PR is already
+    cleanly mergeable), and returns ``True``. If auto-merge cannot be
+    enabled, it leaves a separate comment explaining why. Otherwise
     it posts a comment explaining why the PR needs manual review, requests a
     human reviewer, and returns ``False``. The reviewer is resolved via
     [](`~ccbr_actions.pr_review.determine_reviewer`): *reviewer* if given,
@@ -352,18 +354,31 @@ def review_pre_commit_pr(
 
         if was_auto_approved:
             try:
-                enable_auto_merge(repo, pr_number, token=token, session=session)
-                print("Squash auto-merge enabled successfully")
+                outcome = enable_auto_merge_or_merge(
+                    repo,
+                    pr_number,
+                    pr_data.get("head", {}).get("sha", ""),
+                    token=token,
+                    session=session,
+                )
+                if outcome == "merged":
+                    print("PR was already mergeable; squash-merged it directly")
+                else:
+                    print("Squash auto-merge enabled successfully")
             except (
                 KeyError,
                 requests.exceptions.RequestException,
                 RuntimeError,
             ) as exc:
+                reason = (
+                    str(exc)
+                    if isinstance(exc, AutoMergeUnavailableError)
+                    else f"of a GitHub API error: {exc}"
+                )
                 reviewer_mention = f"@{reviewer} " if reviewer else ""
                 comment = (
                     f"{reviewer_mention}CCBR-bot approved this pre-commit.ci "
-                    "autoupdate PR, but could not enable auto-merge because of "
-                    f"a GitHub API error: {exc}"
+                    f"autoupdate PR, but could not enable auto-merge because {reason}"
                 )
                 try:
                     post_pr_comment(

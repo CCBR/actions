@@ -655,6 +655,59 @@ def test_review_pre_commit_pr_keeps_approval_when_auto_merge_api_fails():
     assert "GraphQL errors" in comment_body
 
 
+def test_review_pre_commit_pr_explains_unstable_merge_state():
+    session = _make_review_session(
+        pr_node_payload={
+            "node_id": "PR_NODE_7",
+            "title": PRE_COMMIT_CI_TITLE,
+            "user": {"type": "Bot"},
+            "mergeable_state": "unstable",
+        },
+        graphql_payload={
+            "errors": [{"message": "Pull request Pull request is in unstable status"}]
+        },
+    )
+
+    result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
+
+    assert result is True
+    assert not any(c[0] == "PUT" for c in session.calls)
+    comment_calls = [
+        c for c in session.calls if c[0] == "POST" and "issues/7/comments" in c[1]
+    ]
+    comment_body = comment_calls[0][2]["json"]["body"]
+    assert "@erin" in comment_body
+    assert "merge state `unstable`" in comment_body
+    assert "GraphQL errors" not in comment_body
+
+
+def test_review_pre_commit_pr_directly_merges_clean_pr():
+    session = _make_review_session(
+        pr_node_payload={
+            "node_id": "PR_NODE_7",
+            "title": PRE_COMMIT_CI_TITLE,
+            "user": {"type": "Bot"},
+            "head": {"sha": "validated-sha"},
+            "mergeable_state": "clean",
+        },
+        graphql_payload={
+            "errors": [{"message": "Pull request Pull request is in clean status"}]
+        },
+    )
+
+    result = review_pre_commit_pr("CCBR/repo", 7, "erin", token="tok", session=session)
+
+    assert result is True
+    merge_calls = [
+        c for c in session.calls if c[0] == "PUT" and c[1].endswith("/merge")
+    ]
+    assert len(merge_calls) == 1
+    assert merge_calls[0][2]["json"] == {
+        "merge_method": "squash",
+        "sha": "validated-sha",
+    }
+
+
 def test_review_pre_commit_pr_comments_when_approval_fails(monkeypatch):
     session = _make_review_session()
 

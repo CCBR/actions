@@ -1,6 +1,7 @@
 ## actions development version
 
 - Approve pending Actions workflow runs for post-release cleanup PRs, scoped to the current PR head SHA. (#234, @kelly-sovacool, @copilot)
+- `review-pre-commit-pr` and `review-post-release-pr`: merge the validated commit directly, or explain why when auto-merge can't be enabled because the PR is already mergeable. (#239, @kelly-sovacool, @copilot)
 
 ## actions 0.8.2
 
