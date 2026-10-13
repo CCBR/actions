@@ -1380,6 +1380,35 @@ def test_review_post_release_pr_explains_unstable_merge_state():
     assert "GraphQL errors" not in comment_body
 
 
+def test_review_post_release_pr_directly_merges_clean_pr():
+    session = _make_review_session(
+        pr_node_payload={
+            "node_id": "PR_NODE_9",
+            "title": PR_TITLE,
+            "user": {"type": "Bot"},
+            "head": {"ref": "release/v0.7.1", "sha": "head-sha"},
+            "base": {"sha": "base-sha"},
+            "changed_files": len(_default_filenames()),
+            "mergeable_state": "clean",
+        },
+        graphql_payload={
+            "errors": [{"message": "Pull request Pull request is in clean status"}]
+        },
+    )
+
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+
+    assert result is True
+    merge_calls = [
+        c for c in session.calls if c[0] == "PUT" and c[1].endswith("/merge")
+    ]
+    assert len(merge_calls) == 1
+    assert merge_calls[0][2]["json"] == {
+        "merge_method": "squash",
+        "sha": "head-sha",
+    }
+
+
 def test_review_post_release_pr_comments_when_approval_fails(monkeypatch):
     session = _make_review_session()
 
