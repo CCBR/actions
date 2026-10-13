@@ -6,7 +6,7 @@ version/date bumps matching a real release tag are present, otherwise
 request a human reviewer
 
 This action automates the review of post-release cleanup pull requests
-opened by the [post-release](/post-release) action, with titles of the
+opened by the [post-release](./post-release) action, with titles of the
 form `chore: post-release cleanup for <tag>`.
 
 The action verifies five conditions:
@@ -51,9 +51,16 @@ When all conditions are satisfied the action:
 - Approves the PR, pinned to the validated commit, as the token’s actor
   (typically CCBR-bot).
 - Attempts to enable squash auto-merge so the PR merges automatically
-  once all required checks pass. If auto-merge is unavailable, the
-  approval remains and the action posts a comment containing the GitHub
-  API error.
+  once all required checks pass. GitHub refuses auto-merge when the PR
+  is already mergeable, so in that case the action:
+
+  - squash-merges the PR directly if all checks have passed (`clean`).
+  - posts a comment explaining why if some checks that aren’t required
+    are still pending or failing (`unstable`). Merge the PR manually
+    once they pass.
+
+  For any other failure, the approval remains and the action posts a
+  comment containing the GitHub API error.
 
 When any condition is **not** satisfied the action:
 
@@ -126,7 +133,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also [pre-review-pr.yml](/examples/pre-review-pr.yml).
+See also [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 

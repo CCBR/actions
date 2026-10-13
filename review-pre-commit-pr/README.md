@@ -22,9 +22,16 @@ When both conditions are satisfied the action:
 
 - Approves the PR as the token’s actor (typically CCBR-bot).
 - Attempts to enable squash auto-merge so the PR merges automatically
-  once all required checks pass. If auto-merge is unavailable, the
-  approval remains and the action posts a comment containing the GitHub
-  API error.
+  once all required checks pass. GitHub refuses auto-merge when the PR
+  is already mergeable, so in that case the action:
+
+  - squash-merges the PR directly if all checks have passed (`clean`).
+  - posts a comment explaining why if some checks that aren’t required
+    are still pending or failing (`unstable`). Merge the PR manually
+    once they pass.
+
+  For any other failure, the approval remains and the action posts a
+  comment containing the GitHub API error.
 
 When either condition is **not** satisfied the action:
 
@@ -61,12 +68,8 @@ check as one of the required checks. In your repo’s rulesets
 Consider also including other desired checks such as your build/test
 workflow, auto-format, etc.
 
-<figure>
-<img
-src="https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png"
-alt="Branch protection rule" />
-<figcaption aria-hidden="true">Branch protection rule</figcaption>
-</figure>
+![Branch protection
+rule](https://raw.githubusercontent.com/CCBR/actions/main/review-pre-commit-pr/img/branch-protection-rule.png)
 
 ### Example
 
@@ -106,7 +109,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
 ```
 
-See also: [pre-review-pr.yml](/examples/pre-review-pr.yml).
+See also: [pre-review-pr.yml](./examples/pre-review-pr.yml).
 
 ## Inputs
 
