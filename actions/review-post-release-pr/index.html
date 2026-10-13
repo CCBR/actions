@@ -693,7 +693,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Re-checks the PR’s head commit immediately before acting, aborting if it changed since validation (e.g.&nbsp;a concurrent push), to avoid approving unreviewed changes.</li>
 <li>Approves workflow runs pending approval on the PR’s head branch, filtered to the validated commit so an unrelated run sharing the branch name isn’t approved.</li>
 <li>Approves the PR, pinned to the validated commit, as the token’s actor (typically CCBR-bot).</li>
-<li>Attempts to enable squash auto-merge so the PR merges automatically once all required checks pass. If auto-merge is unavailable, the approval remains and the action posts a comment containing the GitHub API error.</li>
+<li>Attempts to enable squash auto-merge so the PR merges automatically once all required checks pass. GitHub refuses auto-merge when the PR is already mergeable, so in that case the action:
+<ul>
+<li>squash-merges the validated commit directly if all checks have passed (<code>clean</code>).</li>
+<li>posts a comment explaining why if some checks that aren’t required are still pending or failing (<code>unstable</code>). Merge the PR manually once they pass.</li>
+</ul>
+For any other failure, the approval remains and the action posts a comment containing the GitHub API error.</li>
 </ul>
 <p>When any condition is <strong>not</strong> satisfied the action:</p>
 <ul>
