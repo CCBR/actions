@@ -14,9 +14,10 @@ import yaml
 
 from .github import GITHUB_API_URL, github_api_get
 from .pr_review import (
+    AutoMergeUnavailableError,
     approve_pending_workflow_runs,
     approve_pr,
-    enable_auto_merge,
+    enable_auto_merge_or_merge,
     get_codeowners_content,
     get_last_workflow_run_actor,
     get_pr_comments,
@@ -769,14 +770,23 @@ def _enable_merge_or_comment(repo, pr_number, reviewer, token=None, session=None
         session: Requests-compatible session object for dependency injection.
     """
     try:
-        enable_auto_merge(repo, pr_number, token=token, session=session)
-        print("Squash auto-merge enabled successfully")
+        outcome = enable_auto_merge_or_merge(
+            repo, pr_number, token=token, session=session
+        )
+        if outcome == "merged":
+            print("PR was already mergeable; squash-merged it directly")
+        else:
+            print("Squash auto-merge enabled successfully")
     except (KeyError, requests.exceptions.RequestException, RuntimeError) as exc:
+        reason = (
+            str(exc)
+            if isinstance(exc, AutoMergeUnavailableError)
+            else f"of a GitHub API error: {exc}"
+        )
         reviewer_mention = f"@{reviewer} " if reviewer else ""
         comment = (
             f"{reviewer_mention}CCBR-bot approved this post-release cleanup "
-            "PR, but could not enable auto-merge because of a GitHub API "
-            f"error: {exc}"
+            f"PR, but could not enable auto-merge because {reason}"
         )
         try:
             post_pr_comment(repo, pr_number, comment, token=token, session=session)
@@ -1098,8 +1108,9 @@ def review_post_release_pr(
     immediately before acting (aborting if it changed since validation),
     approves any pending workflow runs tied to that exact commit on the PR's
     head branch, approves the PR pinned to that commit, and attempts to
-    enable squash auto-merge. If auto-merge cannot be enabled, it leaves a
-    comment with the GitHub API error. Otherwise it posts a comment
+    enable squash auto-merge (or squash-merges directly if the PR is already
+    cleanly mergeable). If auto-merge cannot be enabled, it leaves a comment
+    explaining why. Otherwise it posts a comment
     explaining why the PR needs manual review and requests a human reviewer,
     resolved via
     [](`~ccbr_actions.post_release_pr.determine_post_release_reviewer`).
