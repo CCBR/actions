@@ -28,7 +28,7 @@ repos:
   #     - id: panache-lint
   # Python formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.10
+    rev: v0.17.0
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -46,7 +46,7 @@ repos:
       - id: actionlint
         files: ^(\.github/workflows/.*\.ya?ml|examples/.*\.ya?ml)$
   - repo: https://github.com/CCBR/Tools
-    rev: c433f1c70cd9960d5d2855e50a0705962a14e019 # v0.7.1
+    rev: c433f1c70cd9960d5d2855e50a0705962a14e019 # frozen: v0.7.1
     hooks:
       - id: detect-absolute-paths
         exclude: |
