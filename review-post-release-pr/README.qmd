@@ -58,7 +58,7 @@ When all conditions are satisfied the action:
 - Attempts to enable squash auto-merge so the PR merges automatically once all
   required checks pass. GitHub refuses auto-merge when the PR is already
   mergeable, so in that case the action:
-  - squash-merges the PR directly if all checks have passed (`clean`).
+  - squash-merges the validated commit directly if all checks have passed (`clean`).
   - posts a comment explaining why if some checks that aren't required are
     still pending or failing (`unstable`). Merge the PR manually once they pass.
 

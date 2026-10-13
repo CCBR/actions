@@ -355,7 +355,11 @@ def review_pre_commit_pr(
         if was_auto_approved:
             try:
                 outcome = enable_auto_merge_or_merge(
-                    repo, pr_number, token=token, session=session
+                    repo,
+                    pr_number,
+                    pr_data.get("head", {}).get("sha", ""),
+                    token=token,
+                    session=session,
                 )
                 if outcome == "merged":
                     print("PR was already mergeable; squash-merged it directly")

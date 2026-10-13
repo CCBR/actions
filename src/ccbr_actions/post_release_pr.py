@@ -758,20 +758,23 @@ def _collect_failure_reasons(
     return reasons
 
 
-def _enable_merge_or_comment(repo, pr_number, reviewer, token=None, session=None):
+def _enable_merge_or_comment(
+    repo, pr_number, head_sha, reviewer, token=None, session=None
+):
     """
     Enable auto-merge, or post a comment explaining why it could not be enabled.
 
     Args:
         repo (str): Repository full name (e.g. ``"CCBR/actions"``).
         pr_number (int | str): Pull request number.
+        head_sha (str): Validated pull request head commit SHA.
         reviewer (str, optional): Reviewer to mention in the failure comment.
         token (str, optional): GitHub API token.
         session: Requests-compatible session object for dependency injection.
     """
     try:
         outcome = enable_auto_merge_or_merge(
-            repo, pr_number, token=token, session=session
+            repo, pr_number, head_sha, token=token, session=session
         )
         if outcome == "merged":
             print("PR was already mergeable; squash-merged it directly")
@@ -1018,7 +1021,7 @@ def _review_post_release_pr(
                 print(f"Approval failed: {exc}")
         if was_auto_approved:
             _enable_merge_or_comment(
-                repo, pr_number, reviewer, token=token, session=session
+                repo, pr_number, head_sha, reviewer, token=token, session=session
             )
 
     if not was_auto_approved:

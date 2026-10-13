@@ -415,30 +415,37 @@ def test_enable_auto_merge_or_merge_returns_auto_merge_on_success():
         }
     )
     assert (
-        enable_auto_merge_or_merge("CCBR/actions", 42, session=session) == "auto-merge"
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
+        == "auto-merge"
     )
     assert not any(c[0] == "PUT" for c in session.calls)
 
 
 def test_enable_auto_merge_or_merge_merges_clean_pr():
     session = _auto_merge_rejected_session("clean")
-    assert enable_auto_merge_or_merge("CCBR/actions", 42, session=session) == "merged"
+    assert (
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
+        == "merged"
+    )
     put_calls = [c for c in session.calls if c[0] == "PUT"]
     assert put_calls[0][1] == "https://api.github.com/repos/CCBR/actions/pulls/42/merge"
-    assert put_calls[0][2]["json"] == {"merge_method": "squash"}
+    assert put_calls[0][2]["json"] == {
+        "merge_method": "squash",
+        "sha": "validated-sha",
+    }
 
 
 def test_enable_auto_merge_or_merge_raises_clear_error_for_unstable_pr():
     session = _auto_merge_rejected_session("unstable")
     with pytest.raises(AutoMergeUnavailableError, match="merge state `unstable`"):
-        enable_auto_merge_or_merge("CCBR/actions", 42, session=session)
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
     assert not any(c[0] == "PUT" for c in session.calls)
 
 
 def test_enable_auto_merge_or_merge_reraises_other_errors():
     session = _auto_merge_rejected_session("blocked")
     with pytest.raises(RuntimeError, match="GraphQL errors"):
-        enable_auto_merge_or_merge("CCBR/actions", 42, session=session)
+        enable_auto_merge_or_merge("CCBR/actions", 42, "validated-sha", session=session)
     assert not any(c[0] == "PUT" for c in session.calls)
 
 
