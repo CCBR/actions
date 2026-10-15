@@ -103,7 +103,7 @@ def _file_roles(
 
     Returns:
         dict[str, str]: Basename to role (``"version"``, ``"citation"``,
-        ``"codemeta"``, ``"changelog"``, or ``"description"``). README files
+        ``"codemeta"``, ``"changelog"``, ``"nextflow"``, or ``"description"``). README files
         are matched separately by prefix and default to the ``"readme"``
         role.
     """
@@ -111,6 +111,7 @@ def _file_roles(
         os.path.basename(version_filepath): "version",
         os.path.basename(citation_filepath): "citation",
         "codemeta.json": "codemeta",
+        "nextflow.config": "nextflow",
         os.path.basename(changelog_filepath): "changelog",
         "NEWS.md": "changelog",
         "NEWS": "changelog",
@@ -351,6 +352,68 @@ def _validate_description_file(old_content, new_content, release_version):
     return result
 
 
+def _validate_nextflow_file(
+    old_content: str | None, new_content: str | None, release_version: str
+) -> bool:
+    """Check that only a top-level manifest's literal version was bumped.
+
+    Comments and strings are masked before locating the manifest block, so
+    similarly named fields in other scopes or quoted examples are not accepted.
+    Unrecognized or ambiguous layouts require human review.
+
+    Args:
+        old_content: Configuration at the PR's base.
+        new_content: Configuration at the PR's head.
+        release_version: Release version without the leading ``v``.
+
+    Returns:
+        Whether only the manifest version changed to the expected dev version.
+    """
+    result = False
+    if isinstance(old_content, str) and isinstance(new_content, str):
+        tokens = re.compile(
+            r"//[^\n]*|/\*[\s\S]*?\*/|"
+            r"'''[\s\S]*?'''|\"\"\"[\s\S]*?\"\"\"|"
+            r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\""
+        )
+        masked = tokens.sub(
+            lambda match: re.sub(r"[^\n]", " ", match.group()), old_content
+        )
+        blocks = list(
+            re.finditer(r"(?m)^[ \t]*manifest[ \t]*\{(?P<body>[^{}]*)\}", masked)
+        )
+        if len(blocks) == 1:
+            block = blocks[0]
+            prefix = masked[: block.start()]
+            body_start, body_end = block.span("body")
+            assignments = list(
+                re.finditer(r"(?m)^[ \t]*version[ \t]*=", block.group("body"))
+            )
+            if (
+                not re.search(r"[/\"']", masked)
+                and prefix.count("{") == prefix.count("}")
+                and len(assignments) == 1
+                and len(re.findall(r"\bversion\s*=", block.group("body"))) == 1
+            ):
+                assignment_start = body_start + assignments[0].start()
+                literal = re.match(
+                    r"(?P<prefix>[ \t]*version[ \t]*=[ \t]*)"
+                    r"(?P<quote>['\"])(?P<version>[0-9][0-9A-Za-z.+-]*)"
+                    r"(?P=quote)(?=[ \t]*(?://[^\n]*)?(?:\n|$))",
+                    old_content[assignment_start:body_end],
+                )
+                if literal is not None:
+                    start = assignment_start + literal.start("version")
+                    end = assignment_start + literal.end("version")
+                    expected = f"{release_version}-dev"
+                    result = (
+                        old_content[start:end] != expected
+                        and old_content[:start] + expected + old_content[end:]
+                        == new_content
+                    )
+    return result
+
+
 def _validate_citation_file(old_content, new_content, release_tag, release_dates):
     """
     Check that a ``CITATION.cff`` file's version/date fields were bumped.
@@ -534,7 +597,7 @@ def _validate_file_bump(
 
     Args:
         role (str): One of ``"version"``, ``"description"``, ``"citation"``,
-            ``"codemeta"``, ``"changelog"``, or ``"readme"``.
+            ``"codemeta"``, ``"changelog"``, ``"nextflow"``, or ``"readme"``.
         old_content (str | None): The file's content at the PR's base.
         new_content (str | None): The file's content at the PR's head.
         release_tag (str): The release tag (e.g. ``"v0.7.1"``).
@@ -551,6 +614,8 @@ def _validate_file_bump(
         result = _validate_version_file(new_content, release_version)
     elif role == "description":
         result = _validate_description_file(old_content, new_content, release_version)
+    elif role == "nextflow":
+        result = _validate_nextflow_file(old_content, new_content, release_version)
     elif role == "citation":
         result = _validate_citation_file(
             old_content, new_content, release_tag, release_dates
@@ -736,8 +801,9 @@ def _collect_failure_reasons(
         )
     if release is not None and files_complete and not only_allowed_files:
         reasons.append(
-            "only the version, citation, codemeta, changelog, news, and "
-            "readme files should be changed, but other files were modified"
+            "This PR changes files outside the automatic-review allowlist: "
+            "version, R DESCRIPTION, citation, codemeta, changelog/news, "
+            "readme, and nextflow.config files."
         )
     if release is not None and only_allowed_files and not only_valid_bumps:
         reasons.append(
@@ -863,8 +929,9 @@ def _request_human_review(
     reviewer_mention = f"@{resolved_reviewer} " if resolved_reviewer else ""
     comment = (
         f"{reviewer_mention}This post-release cleanup PR requires human "
-        "review. The changes were too complex for CCBR-bot to automatically "
-        f"approve because the following conditions were not met:\n{reasons_text}"
+        "review. CCBR-bot did not automatically approve it for the following "
+        f"reasons:\n{reasons_text}"
+        "\n\nPlease review these changes and approve or update the PR as appropriate."
         f"\n\n{_human_review_marker(head_sha)}"
     )
     try:
@@ -1088,7 +1155,7 @@ def review_post_release_pr(
     - **Condition 2** – the full list of changed files could be retrieved
       (fails closed if a pagination mismatch is detected), and only the
       version file, citation file, ``codemeta.json``, changelog file, news
-      file, and/or readme files were changed.
+      file, ``nextflow.config``, and/or readme files were changed.
     - **Condition 3** – the version file was actually changed, auditing that
       the ``post-release`` action did its job. For an R package where the
       version and description files are the same ``DESCRIPTION`` file, a
@@ -1098,7 +1165,9 @@ def review_post_release_pr(
       ``CITATION.cff`` and ``codemeta.json`` change only their version/date
       fields, matching the release tag and the release's actual
       published/created date exactly; the changelog/news file only gained
-      the expected release heading; and readme files only had existing
+      the expected release heading; ``nextflow.config`` only changes a literal
+      ``version`` in its top-level ``manifest`` block to the expected dev
+      version, with all other content unchanged; and readme files only had existing
       version/date tokens replaced in a recognized citation context (a
       "version" mention or a bibtex ``month``/``year`` field, with no
       inserted lines), matching a re-rendered citation snippet from the

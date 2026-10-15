@@ -22,6 +22,7 @@ from ccbr_actions.post_release_pr import (
     _validate_codemeta_file,
     _validate_description_file,
     _validate_file_bump,
+    _validate_nextflow_file,
     _validate_readme_file,
     _validate_version_file,
     check_files_are_valid_bumps,
@@ -165,6 +166,16 @@ README_NEW = (
 DESCRIPTION_OLD = "Package: pkg\nVersion: 0.7.0.9000\nTitle: Example\n"
 DESCRIPTION_NEW = "Package: pkg\nVersion: 0.7.1.9000\nTitle: Example\n"
 
+NEXTFLOW_OLD = (
+    'params.outdir = "results"\n'
+    "manifest {\n"
+    '    name = "CCBR/pipeline"\n'
+    '    version = "0.7.0-dev"\n'
+    "}\n"
+    "workflow.output.mode = params.publish_dir_mode\n"
+)
+NEXTFLOW_NEW = NEXTFLOW_OLD.replace("0.7.0-dev", "0.7.1-dev")
+
 
 def _default_roles():
     return _file_roles("VERSION", "CITATION.cff", "CHANGELOG.md", "DESCRIPTION")
@@ -245,6 +256,7 @@ def test_file_roles_assigns_expected_roles():
         "VERSION": "version",
         "CITATION.cff": "citation",
         "codemeta.json": "codemeta",
+        "nextflow.config": "nextflow",
         "CHANGELOG.md": "changelog",
         "NEWS.md": "changelog",
         "NEWS": "changelog",
@@ -654,6 +666,66 @@ def test_validate_readme_file_rejects_bump_outside_citation_context():
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.parametrize("quote", ['"', "'"])
+def test_validate_nextflow_file_accepts_only_manifest_version_bump(quote):
+    old = NEXTFLOW_OLD.replace('"', quote)
+    new = NEXTFLOW_NEW.replace('"', quote)
+    assert _validate_nextflow_file(old, new, RELEASE_VERSION) is True
+
+
+@pytest.mark.parametrize(
+    "old,new",
+    [
+        (None, NEXTFLOW_NEW),
+        (NEXTFLOW_OLD, None),
+        (NEXTFLOW_NEW, NEXTFLOW_NEW),
+        (NEXTFLOW_OLD, NEXTFLOW_NEW.replace("0.7.1-dev", "0.8.0-dev")),
+        (NEXTFLOW_OLD, NEXTFLOW_NEW.replace("0.7.1-dev", "0.7.1")),
+        (NEXTFLOW_OLD, NEXTFLOW_NEW.replace("0.7.1-dev", "v0.7.1-dev")),
+        (NEXTFLOW_OLD, NEXTFLOW_NEW.replace("results", "other")),
+        (NEXTFLOW_OLD, NEXTFLOW_NEW.replace("CCBR/pipeline", "other")),
+        (NEXTFLOW_OLD, NEXTFLOW_NEW + "params.extra = true\n"),
+        (NEXTFLOW_OLD, NEXTFLOW_NEW.replace('    name = "CCBR/pipeline"\n', "")),
+        (
+            NEXTFLOW_OLD.replace("manifest", "params"),
+            NEXTFLOW_NEW.replace("manifest", "params"),
+        ),
+        ("profiles {\n" + NEXTFLOW_OLD + "}\n", "profiles {\n" + NEXTFLOW_NEW + "}\n"),
+        ("/*\n" + NEXTFLOW_OLD + "*/\n", "/*\n" + NEXTFLOW_NEW + "*/\n"),
+        (
+            "text = '''\n" + NEXTFLOW_OLD + "'''\n",
+            "text = '''\n" + NEXTFLOW_NEW + "'''\n",
+        ),
+        (
+            "text = /" + chr(10) + NEXTFLOW_OLD + "/" + chr(10),
+            "text = /" + chr(10) + NEXTFLOW_NEW + "/" + chr(10),
+        ),
+        (
+            NEXTFLOW_OLD.replace("    version =", "    params.version ="),
+            NEXTFLOW_NEW.replace("    version =", "    params.version ="),
+        ),
+        (NEXTFLOW_OLD * 2, NEXTFLOW_NEW + NEXTFLOW_OLD),
+        (
+            NEXTFLOW_OLD.replace("manifest {", 'manifest {\n    version = "0.1-dev"'),
+            NEXTFLOW_NEW.replace("manifest {", 'manifest {\n    version = "0.1-dev"'),
+        ),
+        (
+            NEXTFLOW_OLD.replace('"0.7.0-dev"', '"0.7.0-dev" + params.extra'),
+            NEXTFLOW_NEW.replace('"0.7.1-dev"', '"0.7.1-dev" + params.extra'),
+        ),
+    ],
+)
+def test_validate_nextflow_file_rejects_unrelated_or_ambiguous_changes(old, new):
+    assert _validate_nextflow_file(old, new, RELEASE_VERSION) is False
+
+
+def test_validate_nextflow_file_preserves_comments_and_other_version_fields():
+    suffix = '\nparams.version = "0.7.0-dev"\n// manifest { version = "example" }\n'
+    old = NEXTFLOW_OLD.replace('"0.7.0-dev"', '"0.7.0-dev" // pipeline version')
+    new = NEXTFLOW_NEW.replace('"0.7.1-dev"', '"0.7.1-dev" // pipeline version')
+    assert _validate_nextflow_file(old + suffix, new + suffix, RELEASE_VERSION) is True
+
+
 def test_validate_file_bump_dispatches_to_version_validator():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
     assert (
@@ -1035,6 +1107,41 @@ def test_review_post_release_pr_approves_when_conditions_met():
     ]
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
     assert any(body.get("commit_id") == "head-sha" for body in review_bodies)
+
+
+@pytest.mark.parametrize("unrelated_change", [False, True])
+def test_review_post_release_pr_validates_nextflow_manifest(unrelated_change):
+    contents = _default_contents()
+    contents[("nextflow.config", "base-sha")] = NEXTFLOW_OLD
+    contents[("nextflow.config", "head-sha")] = (
+        NEXTFLOW_NEW.replace("results", "other") if unrelated_change else NEXTFLOW_NEW
+    )
+    filenames = ["VERSION", "CITATION.cff", "CHANGELOG.md", "nextflow.config"]
+    session = _make_review_session(
+        pr_files=[{"filename": name} for name in filenames], contents=contents
+    )
+    result = review_post_release_pr("CCBR/Tools", 9, token="tok", session=session)
+    assert result is (not unrelated_change)
+    if unrelated_change:
+        comments = [
+            call[2]["json"]["body"]
+            for call in session.calls
+            if call[0] == "POST" and "issues/9/comments" in call[1]
+        ]
+        assert "CCBR-bot did not automatically approve" in comments[0]
+        assert "too complex" not in comments[0]
+        assert "Please review these changes" in comments[0]
+
+
+def test_review_post_release_pr_requires_version_file_with_nextflow_bump():
+    session = _make_review_session(
+        pr_files=[{"filename": "nextflow.config"}],
+        contents={
+            ("nextflow.config", "base-sha"): NEXTFLOW_OLD,
+            ("nextflow.config", "head-sha"): NEXTFLOW_NEW,
+        },
+    )
+    assert review_post_release_pr("CCBR/Tools", 9, session=session) is False
 
 
 def test_review_post_release_pr_defers_to_active_changes_requested_review():

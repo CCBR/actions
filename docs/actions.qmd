@@ -12,3 +12,15 @@ listing:
 
 :::{#actions}
 :::
+
+## Post-release PR review
+
+`review-post-release-pr` can automatically approve `nextflow.config` changes
+when only the quoted `version` value in a top-level `manifest` block is updated
+to the release version followed by `-dev` (without the tag's leading `v`).
+All other configuration content must remain unchanged. Unrecognized or
+ambiguous manifest layouts require human review.
+
+The version file must still be bumped, and all other post-release checks must
+pass. If automatic approval is skipped, the bot comments with the reasons and
+requests a human reviewer to review and approve or update the PR.

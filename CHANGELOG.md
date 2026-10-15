@@ -1,5 +1,7 @@
 ## actions development version
 
+- Allow release-matching manifest version bumps in `nextflow.config` during post-release PR review, and clarify comments requesting human review. (@kelly-sovacool, @copilot)
+
 ## actions 0.8.3
 
 - Approve pending Actions workflow runs for post-release cleanup PRs, scoped to the current PR head SHA. (#234, @kelly-sovacool, @copilot)
