@@ -49,8 +49,8 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-1264561899751238a4e6ab59fdc6453a.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ee4ba32980c773f2a6afa85b67489f12.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-88b24d19891e91d036a65799b3a78cb7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-39e15de02f027ed57f34ed3e9721b0a5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-c9eb50ad7bed7b4d7d0eb53db3cd134d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -328,7 +328,7 @@ window.Quarto = {
         <li><hr class="dropdown-divider"></li>
         <li class="dropdown-header">GitHub Actions</li>
         <li>
-    <a class="dropdown-item" href="./actions/review-pre-commit-pr/index.html">
+    <a class="dropdown-item" href="./actions/sync-copilot-instructions/index.html">
  <span class="dropdown-text">Actions</span></a>
   </li>  
         <li>
@@ -432,8 +432,14 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/review-pre-commit-pr/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">review-pre-commit-pr</span></a>
+  <a href="./actions/sync-copilot-instructions/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">sync-copilot-instructions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/add-issue-label-list/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">add-issue-label-list</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -444,44 +450,8 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">build-docker</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./actions/changed-files/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Changed Files</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./actions/maintain-milestones/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">maintain-milestones</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./actions/user-projects/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">user-projects</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./actions/sync-copilot-instructions/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">sync-copilot-instructions</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./actions/install-r-pak/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Install R + pak</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./actions/add-issue-label-list/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">add-issue-label-list</span></a>
+  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mkdocs-mike</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -498,20 +468,50 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./actions/changed-files/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changed Files</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/maintain-milestones/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">maintain-milestones</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./actions/draft-release/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">draft-release</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./actions/mkdocs-mike/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">mkdocs-mike</span></a>
+  <a href="./actions/review-pre-commit-pr/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">review-pre-commit-pr</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/install-r-pak/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Install R + pak</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./actions/copy-ruleset/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Copy Ruleset</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/build-docker/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">build-docker</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./actions/user-projects/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">user-projects</span></a>
   </div>
 </li>
       </ul>
@@ -719,7 +719,7 @@ description
 </thead>
 <tbody class="list">
 
-<tr data-index="0" data-listing-file-modified-sort="1792442237703" data-listing-reading-time-sort="4" data-listing-word-count-sort="745" data-listing-title-sort="Changed Files" data-listing-filename-sort="index.qmd">
+<tr data-index="0" data-listing-file-modified-sort="1793046539220" data-listing-reading-time-sort="4" data-listing-word-count-sort="745" data-listing-title-sort="Changed Files" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/changed-files/index.html" class="title listing-title">Changed Files</a>
 </td>
@@ -729,7 +729,7 @@ description
 
 </tr>
 
-<tr data-index="1" data-listing-file-modified-sort="1792442237774" data-listing-reading-time-sort="4" data-listing-word-count-sort="619" data-listing-title-sort="Copy Ruleset" data-listing-filename-sort="index.qmd">
+<tr data-index="1" data-listing-file-modified-sort="1793046539243" data-listing-reading-time-sort="4" data-listing-word-count-sort="619" data-listing-title-sort="Copy Ruleset" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/copy-ruleset/index.html" class="title listing-title">Copy Ruleset</a>
 </td>
@@ -739,7 +739,7 @@ description
 
 </tr>
 
-<tr data-index="2" data-listing-file-modified-sort="1792442237733" data-listing-reading-time-sort="2" data-listing-word-count-sort="306" data-listing-title-sort="Install R + pak" data-listing-filename-sort="index.qmd">
+<tr data-index="2" data-listing-file-modified-sort="1793046539240" data-listing-reading-time-sort="2" data-listing-word-count-sort="306" data-listing-title-sort="Install R + pak" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/install-r-pak/index.html" class="title listing-title">Install R + pak</a>
 </td>
@@ -749,7 +749,7 @@ description
 
 </tr>
 
-<tr data-index="3" data-listing-file-modified-sort="1792442237735" data-listing-reading-time-sort="2" data-listing-word-count-sort="227" data-listing-title-sort="add-issue-label-list" data-listing-filename-sort="index.qmd">
+<tr data-index="3" data-listing-file-modified-sort="1793046539192" data-listing-reading-time-sort="2" data-listing-word-count-sort="227" data-listing-title-sort="add-issue-label-list" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/add-issue-label-list/index.html" class="title listing-title">add-issue-label-list</a>
 </td>
@@ -759,7 +759,7 @@ description
 
 </tr>
 
-<tr data-index="4" data-listing-file-modified-sort="1792442237695" data-listing-reading-time-sort="3" data-listing-word-count-sort="590" data-listing-title-sort="build-docker" data-listing-filename-sort="index.qmd">
+<tr data-index="4" data-listing-file-modified-sort="1793046539254" data-listing-reading-time-sort="3" data-listing-word-count-sort="590" data-listing-title-sort="build-docker" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/build-docker/index.html" class="title listing-title">build-docker</a>
 </td>
@@ -769,7 +769,7 @@ description
 
 </tr>
 
-<tr data-index="5" data-listing-file-modified-sort="1792442237763" data-listing-reading-time-sort="5" data-listing-word-count-sort="980" data-listing-title-sort="draft-release" data-listing-filename-sort="index.qmd">
+<tr data-index="5" data-listing-file-modified-sort="1793046539233" data-listing-reading-time-sort="5" data-listing-word-count-sort="980" data-listing-title-sort="draft-release" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/draft-release/index.html" class="title listing-title">draft-release</a>
 </td>
@@ -779,7 +779,7 @@ description
 
 </tr>
 
-<tr data-index="6" data-listing-file-modified-sort="1792442237676" data-listing-reading-time-sort="1" data-listing-word-count-sort="117" data-listing-title-sort="label-issue-repo-name" data-listing-filename-sort="index.qmd">
+<tr data-index="6" data-listing-file-modified-sort="1793046539194" data-listing-reading-time-sort="1" data-listing-word-count-sort="117" data-listing-title-sort="label-issue-repo-name" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/label-issue-repo-name/index.html" class="title listing-title">label-issue-repo-name</a>
 </td>
@@ -789,7 +789,7 @@ description
 
 </tr>
 
-<tr data-index="7" data-listing-file-modified-sort="1792442237712" data-listing-reading-time-sort="5" data-listing-word-count-sort="836" data-listing-title-sort="maintain-milestones" data-listing-filename-sort="index.qmd">
+<tr data-index="7" data-listing-file-modified-sort="1793046539226" data-listing-reading-time-sort="5" data-listing-word-count-sort="836" data-listing-title-sort="maintain-milestones" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/maintain-milestones/index.html" class="title listing-title">maintain-milestones</a>
 </td>
@@ -799,7 +799,7 @@ description
 
 </tr>
 
-<tr data-index="8" data-listing-file-modified-sort="1792442237771" data-listing-reading-time-sort="3" data-listing-word-count-sort="470" data-listing-title-sort="mkdocs-mike" data-listing-filename-sort="index.qmd">
+<tr data-index="8" data-listing-file-modified-sort="1793046539200" data-listing-reading-time-sort="3" data-listing-word-count-sort="470" data-listing-title-sort="mkdocs-mike" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/mkdocs-mike/index.html" class="title listing-title">mkdocs-mike</a>
 </td>
@@ -809,7 +809,7 @@ description
 
 </tr>
 
-<tr data-index="9" data-listing-file-modified-sort="1792442237746" data-listing-reading-time-sort="5" data-listing-word-count-sort="805" data-listing-title-sort="post-release" data-listing-filename-sort="index.qmd">
+<tr data-index="9" data-listing-file-modified-sort="1793046539208" data-listing-reading-time-sort="5" data-listing-word-count-sort="805" data-listing-title-sort="post-release" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/post-release/index.html" class="title listing-title">post-release</a>
 </td>
@@ -819,7 +819,7 @@ description
 
 </tr>
 
-<tr data-index="10" data-listing-file-modified-sort="1792442237754" data-listing-reading-time-sort="6" data-listing-word-count-sort="1182" data-listing-title-sort="review-post-release-pr" data-listing-filename-sort="index.qmd">
+<tr data-index="10" data-listing-file-modified-sort="1793046539213" data-listing-reading-time-sort="6" data-listing-word-count-sort="1182" data-listing-title-sort="review-post-release-pr" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/review-post-release-pr/index.html" class="title listing-title">review-post-release-pr</a>
 </td>
@@ -829,7 +829,7 @@ description
 
 </tr>
 
-<tr data-index="11" data-listing-file-modified-sort="1792442237674" data-listing-reading-time-sort="4" data-listing-word-count-sort="784" data-listing-title-sort="review-pre-commit-pr" data-listing-filename-sort="index.qmd">
+<tr data-index="11" data-listing-file-modified-sort="1793046539237" data-listing-reading-time-sort="4" data-listing-word-count-sort="784" data-listing-title-sort="review-pre-commit-pr" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/review-pre-commit-pr/index.html" class="title listing-title">review-pre-commit-pr</a>
 </td>
@@ -839,7 +839,7 @@ description
 
 </tr>
 
-<tr data-index="12" data-listing-file-modified-sort="1792442237729" data-listing-reading-time-sort="4" data-listing-word-count-sort="666" data-listing-title-sort="sync-copilot-instructions" data-listing-filename-sort="index.qmd">
+<tr data-index="12" data-listing-file-modified-sort="1793046539190" data-listing-reading-time-sort="4" data-listing-word-count-sort="666" data-listing-title-sort="sync-copilot-instructions" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/sync-copilot-instructions/index.html" class="title listing-title">sync-copilot-instructions</a>
 </td>
@@ -849,7 +849,7 @@ description
 
 </tr>
 
-<tr data-index="13" data-listing-file-modified-sort="1792442237720" data-listing-reading-time-sort="2" data-listing-word-count-sort="293" data-listing-title-sort="user-projects" data-listing-filename-sort="index.qmd">
+<tr data-index="13" data-listing-file-modified-sort="1793046539260" data-listing-reading-time-sort="2" data-listing-word-count-sort="293" data-listing-title-sort="user-projects" data-listing-filename-sort="index.qmd">
 <td>
 <a href="./actions/user-projects/index.html" class="title listing-title">user-projects</a>
 </td>
