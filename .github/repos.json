@@ -33,9 +33,6 @@
       "XAVIER"
     ],
     "NCI-RBL": ["Dockers"],
-    "abcsFrederick": [
-      "quiver",
-      "quiverctl"
-    ]
+    "abcsFrederick": ["quiver", "quiverctl"]
   }
 }
