@@ -234,15 +234,15 @@ runs:
       shell: bash
       env:
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
-        INPUT_PUSH_ENABLED: ${{ steps.resolve_push.outputs.push_enabled }}
-        INPUT_PUSH_DOCKERHUB: ${{ steps.resolve_push.outputs.push_dockerhub }}
+        INPUT_PUSH_GHCR: ${{ steps.resolve_push.outputs.push_ghcr }}
+        INPUT_PLATFORMS: ${{ inputs.platforms }}
         DOCKERFILE_PATH_INPUT: ${{ env.DOCKERFILE_PATH }}
         IMAGE_NAME_INPUT: ${{ env.IMAGENAME }}
         DOCKERHUB_NAMESPACE_INPUT: ${{ inputs.dockerhub-namespace }}
         REPO_NAME_INPUT: ${{ env.REPONAME }}
       run: |
         cd "$GITHUB_WORKSPACE"
-        if [[ "${INPUT_PUSH_ENABLED}" == "true" && "${INPUT_PUSH_DOCKERHUB}" != "true" ]]; then
+        if [[ "${INPUT_PUSH_GHCR}" == "true" || -n "${INPUT_PLATFORMS}" ]]; then
           INPUT_FORCE_BUILD=true
         fi
         export INPUT_FORCE_BUILD
