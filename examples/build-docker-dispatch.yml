@@ -74,6 +74,8 @@ jobs:
           private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
           owner: CCBR
           permission-packages: write
+          permission-contents: write
+          permission-pull-requests: write
       - uses: actions/checkout@v7
         name: Checkout Dockers2
         with:
