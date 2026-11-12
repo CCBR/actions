@@ -38,8 +38,9 @@ The action verifies five conditions:
     a recognized citation context (a “version” mention or a bibtex
     `month`/`year` field, with no inserted lines), matching a
     re-rendered citation snippet from the `auto-format` action.
-    Unrecognized or ambiguous `nextflow.config` manifest layouts require
-    human review.
+    Additional `manifest` references, additional `version` references
+    within the block, multiline version expressions, and unrecognized or
+    ambiguous layouts require human review.
 5.  **No reviewer currently has changes requested** – an active
     `CHANGES_REQUESTED` review blocks automatic approval even if the
     file checks above pass, so CCBR-bot never silently overrides a

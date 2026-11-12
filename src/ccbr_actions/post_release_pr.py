@@ -359,7 +359,8 @@ def _validate_nextflow_file(
 
     Comments and strings are masked before locating the manifest block, so
     similarly named fields in other scopes or quoted examples are not accepted.
-    Unrecognized or ambiguous layouts require human review.
+    Other manifest references and multiline version expressions are ambiguous
+    and require human review.
 
     Args:
         old_content: Configuration at the PR's base.
@@ -373,8 +374,10 @@ def _validate_nextflow_file(
     if isinstance(old_content, str) and isinstance(new_content, str):
         tokens = re.compile(
             r"//[^\n]*|/\*[\s\S]*?\*/|"
-            r"'''[\s\S]*?'''|\"\"\"[\s\S]*?\"\"\"|"
-            r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\""
+            r"'''(?:\\[\s\S]|(?!''')[^\\])*'''|"
+            r'"""(?:\\[\s\S]|(?!""")[^\\])*"""|'
+            r"'(?!'')(?:\\.|[^'\\])*'|"
+            r'"(?!"")(?:\\.|[^"\\])*"'
         )
         masked = tokens.sub(
             lambda match: re.sub(r"[^\n]", " ", match.group()), old_content
@@ -382,7 +385,7 @@ def _validate_nextflow_file(
         blocks = list(
             re.finditer(r"(?m)^[ \t]*manifest[ \t]*\{(?P<body>[^{}]*)\}", masked)
         )
-        if len(blocks) == 1:
+        if len(blocks) == 1 and len(re.findall(r"\bmanifest\b", masked)) == 1:
             block = blocks[0]
             prefix = masked[: block.start()]
             body_start, body_end = block.span("body")
@@ -393,7 +396,7 @@ def _validate_nextflow_file(
                 not re.search(r"[/\"']", masked)
                 and prefix.count("{") == prefix.count("}")
                 and len(assignments) == 1
-                and len(re.findall(r"\bversion\s*=", block.group("body"))) == 1
+                and len(re.findall(r"\bversion\b", block.group("body"))) == 1
             ):
                 assignment_start = body_start + assignments[0].start()
                 literal = re.match(
@@ -406,8 +409,16 @@ def _validate_nextflow_file(
                     start = assignment_start + literal.start("version")
                     end = assignment_start + literal.end("version")
                     expected = f"{release_version}-dev"
+                    # A following operator or method call can extend the expression.
+                    following = masked[assignment_start + literal.end() : body_end]
+                    following = following.lstrip()
                     result = (
-                        old_content[start:end] != expected
+                        (
+                            not following
+                            or re.match(r"[A-Za-z_]\w*[ \t]*=(?!=|~)", following)
+                            is not None
+                        )
+                        and old_content[start:end] != expected
                         and old_content[:start] + expected + old_content[end:]
                         == new_content
                     )

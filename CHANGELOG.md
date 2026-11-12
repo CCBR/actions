@@ -1,6 +1,6 @@
 ## actions development version
 
-- Allow release-matching manifest version bumps in `nextflow.config` during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)
+- Allow unambiguous release-matching manifest version bumps in `nextflow.config` during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)
 
 ## actions 0.8.3
 
