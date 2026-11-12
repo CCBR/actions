@@ -20,6 +20,20 @@ inputs:
     description: |
       dockerhub token with read & write permissions. Strongly recommend using secrets, e.g. secrets.DOCKERHUB_TOKEN.
     required: false
+  ghcr-namespace:
+    description: |
+      GitHub Container Registry owner or organization name. Defaults to the repository owner.
+    required: false
+  registries:
+    description: |
+      Comma-separated registries to push to (dockerhub, ghcr).
+    required: true
+    default: dockerhub,ghcr
+  platforms:
+    description: |
+      Comma-separated target platforms for a multi-platform build (e.g. linux/amd64,linux/arm64).
+    required: false
+    default: ""
   suffix:
     description: |
       Suffix to add to image tag eg. "dev" to add "-dev".
@@ -27,7 +41,7 @@ inputs:
     default: feat
   push:
     description: |
-      Push to DockerHub (if false, just build the container without pushing).
+      Push to selected registries (if false, just build the container without pushing).
     required: true
     default: "false"
   force_build:
@@ -48,12 +62,12 @@ inputs:
     default: "3.14"
   github-actor:
     description: |
-      Username of GitHub actor for the git commit when the README is updated.
+      GitHub username for README commits and GHCR authentication.
     required: true
     default: "258092125+CCBR-bot[bot]"
   github-token:
     description: |
-      GitHub Actions token (e.g. github.token).
+      GitHub Actions token used for GitHub API operations and GHCR authentication.
     required: true
   print-versions:
     description: |
@@ -91,26 +105,72 @@ runs:
       shell: bash
       env:
         INPUT_PUSH: ${{ inputs.push }}
+        INPUT_REGISTRIES: ${{ inputs.registries }}
         INPUT_DOCKERHUB_USERNAME: ${{ inputs.dockerhub-username }}
         INPUT_DOCKERHUB_TOKEN: ${{ inputs.dockerhub-token }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
       run: |
+        registries=$(printf '%s' "${INPUT_REGISTRIES}" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
+        if [[ -z "${registries}" ]]; then
+          echo "::error::At least one registry must be selected."
+          exit 1
+        fi
+
+        push_dockerhub=false
+        push_ghcr=false
+        IFS=',' read -r -a registry_list <<< "${registries}"
+        for registry in "${registry_list[@]}"; do
+          case "${registry}" in
+            dockerhub|ghcr) ;;
+            *)
+              echo "::error::Unsupported registry '${registry}'. Choose dockerhub and/or ghcr."
+              exit 1
+              ;;
+          esac
+        done
+
         push_enabled=false
         if [[ "${INPUT_PUSH}" == "true" ]]; then
-          if [[ -n "${INPUT_DOCKERHUB_USERNAME}" && -n "${INPUT_DOCKERHUB_TOKEN}" ]]; then
+          if [[ " ${registries//,/ } " == *" dockerhub "* ]]; then
+            if [[ -n "${INPUT_DOCKERHUB_USERNAME}" && -n "${INPUT_DOCKERHUB_TOKEN}" ]]; then
+              push_dockerhub=true
+            else
+              echo "::warning::DockerHub credentials are missing. Skipping DockerHub push."
+            fi
+          fi
+          if [[ " ${registries//,/ } " == *" ghcr "* ]]; then
+            if [[ -n "${INPUT_GITHUB_TOKEN}" ]]; then
+              push_ghcr=true
+            else
+              echo "::warning::GitHub token is missing. Skipping GHCR push."
+            fi
+          fi
+          if [[ "${push_dockerhub}" == "true" || "${push_ghcr}" == "true" ]]; then
             push_enabled=true
           else
-            echo "::warning::DockerHub credentials are missing. Building image without push."
+            echo "::warning::No selected registry has credentials. Building image without push."
           fi
         fi
         echo "push_enabled=${push_enabled}" >> "$GITHUB_OUTPUT"
+        echo "push_dockerhub=${push_dockerhub}" >> "$GITHUB_OUTPUT"
+        echo "push_ghcr=${push_ghcr}" >> "$GITHUB_OUTPUT"
 
     - name: Login to DockerHub
       id: login_dockerhub
-      if: ${{ steps.resolve_push.outputs.push_enabled == 'true' }}
+      if: ${{ steps.resolve_push.outputs.push_dockerhub == 'true' }}
       uses: docker/login-action@v4
       with:
         username: ${{ inputs.dockerhub-username }}
         password: ${{ inputs.dockerhub-token }}
+
+    - name: Login to GitHub Container Registry
+      id: login_ghcr
+      if: ${{ steps.resolve_push.outputs.push_ghcr == 'true' }}
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ inputs.github-actor }}
+        password: ${{ inputs.github-token }}
 
     - name: Prepare build-time variables
       shell: bash
@@ -145,21 +205,58 @@ runs:
         echo -ne "Base image: $BASEIMAGENAME \n\n" >> $MDFILE
         echo -ne "Dockerfile path in repo: $DOCKERFILE_PATH \n\n" >> $MDFILE
 
+    - name: Prepare image tags
+      id: prepare_image_tags
+      shell: bash
+      env:
+        PUSH_ENABLED: ${{ steps.resolve_push.outputs.push_enabled }}
+        PUSH_DOCKERHUB: ${{ steps.resolve_push.outputs.push_dockerhub }}
+        PUSH_GHCR: ${{ steps.resolve_push.outputs.push_ghcr }}
+        GHCR_NAMESPACE_INPUT: ${{ inputs.ghcr-namespace }}
+      run: |
+        tags=()
+        image_repo="${REPONAME:-${GITHUB_REPOSITORY#*/}}"
+        if [[ "${PUSH_ENABLED}" != "true" ]]; then
+          tags+=("${IMAGENAME}")
+        else
+          if [[ "${PUSH_DOCKERHUB}" == "true" ]]; then
+            tags+=("${IMAGENAME}")
+          fi
+          if [[ "${PUSH_GHCR}" == "true" ]]; then
+            ghcr_namespace="${GHCR_NAMESPACE_INPUT:-${GITHUB_REPOSITORY_OWNER}}"
+            tags+=("ghcr.io/${ghcr_namespace,,}/${image_repo,,}:${BUILD_TAG}")
+          fi
+        fi
+        printf 'tags<<EOF\n%s\nEOF\n' "$(printf '%s\n' "${tags[@]}")" >> "$GITHUB_OUTPUT"
+
     - name: Check whether image tag is stale
       id: check_tag_staleness
       shell: bash
       env:
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
+        INPUT_PUSH_ENABLED: ${{ steps.resolve_push.outputs.push_enabled }}
+        INPUT_PUSH_DOCKERHUB: ${{ steps.resolve_push.outputs.push_dockerhub }}
         DOCKERFILE_PATH_INPUT: ${{ env.DOCKERFILE_PATH }}
         IMAGE_NAME_INPUT: ${{ env.IMAGENAME }}
         DOCKERHUB_NAMESPACE_INPUT: ${{ inputs.dockerhub-namespace }}
         REPO_NAME_INPUT: ${{ env.REPONAME }}
       run: |
         cd "$GITHUB_WORKSPACE"
+        if [[ "${INPUT_PUSH_ENABLED}" == "true" && "${INPUT_PUSH_DOCKERHUB}" != "true" ]]; then
+          INPUT_FORCE_BUILD=true
+        fi
+        export INPUT_FORCE_BUILD
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         python "$GITHUB_ACTION_PATH/../scripts/check_docker_build_staleness.py" \
           "$DOCKERFILE_PATH_INPUT" "$IMAGE_NAME_INPUT" \
           "$DOCKERHUB_NAMESPACE_INPUT" "$REPO_NAME_INPUT"
+
+    - name: Set up QEMU
+      if: ${{ inputs.platforms != '' }}
+      uses: docker/setup-qemu-action@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
 
     - name: Build and push Docker image
       id: build_and_push
@@ -169,7 +266,9 @@ runs:
         file: ${{ env.DOCKERFILE_PATH }}
         context: ${{ env.CONTEXT }}
         push: ${{ steps.resolve_push.outputs.push_enabled }}
-        tags: ${{ env.IMAGENAME }}
+        load: ${{ steps.resolve_push.outputs.push_enabled != 'true' && inputs.platforms == '' }}
+        tags: ${{ steps.prepare_image_tags.outputs.tags }}
+        platforms: ${{ inputs.platforms }}
         build-args: |
           DOCKERFILE=${{ env.DOCKERFILE_BASENAME }}
           BUILD_DATE=${{ env.BUILD_DATE }}
@@ -181,9 +280,23 @@ runs:
     - name: Run print_versions.sh inside Docker container
       shell: bash
       id: run_script_in_container
-      if: ${{ (inputs.print-versions == 'true') && (steps.check_tag_staleness.outputs.should_build == 'true') }}
+      if: ${{ (inputs.print-versions == 'true') && (steps.check_tag_staleness.outputs.should_build == 'true') && (inputs.platforms == '' || steps.resolve_push.outputs.push_enabled == 'true') }}
+      env:
+        PUSH_ENABLED: ${{ steps.resolve_push.outputs.push_enabled }}
+        PUSH_GHCR: ${{ steps.resolve_push.outputs.push_ghcr }}
+        GHCR_NAMESPACE_INPUT: ${{ inputs.ghcr-namespace }}
+        IMAGE_NAME_INPUT: ${{ env.IMAGENAME }}
       run: |
         cd "$GITHUB_WORKSPACE"
+        image_to_run="${IMAGE_NAME_INPUT}"
+        if [[ "${PUSH_ENABLED}" == "true" ]]; then
+          if [[ "${PUSH_GHCR}" == "true" ]]; then
+            ghcr_namespace="${GHCR_NAMESPACE_INPUT:-${GITHUB_REPOSITORY_OWNER}}"
+            image_repo="${REPONAME:-${GITHUB_REPOSITORY#*/}}"
+            image_to_run="ghcr.io/${ghcr_namespace,,}/${image_repo,,}:${BUILD_TAG}"
+          fi
+          docker pull "${image_to_run}"
+        fi
         EXTRA_MOUNTS=""
         script_src=$(command -v print_versions.sh)
         if [ -f "${{ inputs.config-file }}" ]; then
@@ -197,12 +310,12 @@ runs:
           -v "${{ github.workspace }}:/ws" \
           -v "${script_src}:/ws/print_versions.sh:ro" \
           ${EXTRA_MOUNTS} \
-          "${{ env.IMAGENAME }}" -lc \
+          "${image_to_run}" -lc \
           "bash /ws/print_versions.sh --config ${CONFIG_FILE} --output /ws/${{ env.MDFILE }}"
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
-      if: ${{ (steps.check_tag_staleness.outputs.should_build == 'true') && (steps.resolve_push.outputs.push_enabled == 'true') && (steps.build_and_push.outcome == 'success') }}
+      if: ${{ (steps.check_tag_staleness.outputs.should_build == 'true') && (steps.resolve_push.outputs.push_dockerhub == 'true') && (steps.build_and_push.outcome == 'success') }}
       uses: peter-evans/dockerhub-description@v5
       with:
         username: ${{ inputs.dockerhub-username }}

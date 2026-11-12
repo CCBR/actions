@@ -22,6 +22,7 @@ name: build-docker-auto
 permissions:
   contents: write
   pull-requests: write
+  packages: write
 
 on:
   push:
@@ -96,6 +97,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      packages: write
     steps:
       - uses: actions/checkout@v7
         name: Checkout repository
@@ -109,6 +111,8 @@ jobs:
           dockerhub-namespace: nciccbr
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME_VK }}
           dockerhub-token: ${{ secrets.DOCKERHUBRW_TOKEN_VK }}
+          registries: dockerhub,ghcr
           suffix: ${{ env.suffix }}
           push: true
           github-token: ${{ github.token }}
+          github-actor: ${{ github.actor }}

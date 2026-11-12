@@ -1,5 +1,7 @@
 ## actions development version
 
+- Allow build-docker to push to Docker Hub, GHCR, or both, and build multi-platform images. (closes #217, #224, @kelly-sovacool)
+
 ## actions 0.8.3
 
 - Approve pending Actions workflow runs for post-release cleanup PRs, scoped to the current PR head SHA. (#234, @kelly-sovacool, @copilot)
