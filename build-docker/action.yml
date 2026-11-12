@@ -286,8 +286,13 @@ runs:
         PUSH_GHCR: ${{ steps.resolve_push.outputs.push_ghcr }}
         GHCR_NAMESPACE_INPUT: ${{ inputs.ghcr-namespace }}
         IMAGE_NAME_INPUT: ${{ env.IMAGENAME }}
+        INPUT_PLATFORMS: ${{ inputs.platforms }}
       run: |
         cd "$GITHUB_WORKSPACE"
+        if [[ -n "${INPUT_PLATFORMS}" ]]; then
+          reporting_platform="${INPUT_PLATFORMS%%,*}"
+          export DOCKER_DEFAULT_PLATFORM="${reporting_platform//[[:space:]]/}"
+        fi
         image_to_run="${IMAGE_NAME_INPUT}"
         if [[ "${PUSH_ENABLED}" == "true" ]]; then
           if [[ "${PUSH_GHCR}" == "true" ]]; then
