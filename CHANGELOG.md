@@ -1,6 +1,9 @@
 ## actions development version
 
 - Support publishing `build-docker` images to Docker Hub and GHCR, building multi-platform images, and handling root-level Dockerfiles. (#249, @kelly-sovacool, @Copilot)
+
+## actions 0.8.4
+
 - Allow unambiguous release-matching manifest version bumps in `nextflow.config` during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)
 
 ## actions 0.8.3
