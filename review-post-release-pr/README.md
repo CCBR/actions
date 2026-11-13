@@ -16,10 +16,10 @@ The action verifies five conditions:
     GitHub App (Bot), and `<tag>` corresponds to an actual GitHub
     release in the repo.
 2.  **Only allowed files were changed** – the version file, citation
-    file, `codemeta.json`, changelog file, news file, and/or readme
-    files. No other files should be modified, and the full list of
-    changed files must be retrievable (the action fails closed if a
-    pagination mismatch is detected).
+    file, `codemeta.json`, changelog file, news file, `nextflow.config`,
+    and/or readme files. No other files should be modified, and the full
+    list of changed files must be retrievable (the action fails closed
+    if a pagination mismatch is detected).
 3.  **The version file was actually bumped** – auditing that the
     `post-release` action did its job, not just that the changed files
     are individually allowed. For an R package where the version and
@@ -30,11 +30,17 @@ The action verifies five conditions:
     `CITATION.cff` and `codemeta.json` may only change their
     version/date fields, matching the release tag and the release’s
     actual published/created date exactly; the changelog/news file must
-    have gained only the expected release heading; and readme files may
-    only have existing version/date tokens replaced in a recognized
-    citation context (a “version” mention or a bibtex `month`/`year`
-    field, with no inserted lines), matching a re-rendered citation
-    snippet from the `auto-format` action.
+    have gained only the expected release heading; `nextflow.config` may
+    only update the quoted `version` value in a top-level `manifest`
+    block to the release version followed by `-dev` (without the tag’s
+    leading `v`), leaving all other configuration content unchanged; and
+    readme files may only have existing version/date tokens replaced in
+    a recognized citation context (a “version” mention or a bibtex
+    `month`/`year` field, with no inserted lines), matching a
+    re-rendered citation snippet from the `auto-format` action.
+    Additional `manifest` references, additional `version` references
+    within the block, multiline version expressions, and unrecognized or
+    ambiguous layouts require human review.
 5.  **No reviewer currently has changes requested** – an active
     `CHANGES_REQUESTED` review blocks automatic approval even if the
     file checks above pass, so CCBR-bot never silently overrides a
