@@ -201,7 +201,11 @@ def test_root_dockerfile_preparation_and_reporting(tmp_path, dockerfile):
     (bin_dir / "print_versions.sh").write_text("#!/bin/bash\n")
     (bin_dir / "print_versions.sh").chmod(0o755)
     executable_path = os.pathsep.join(
-        [str(bin_dir), str(pathlib.Path(sys.executable).parent), os.environ["PATH"]]
+        [
+            str(bin_dir),
+            str(pathlib.Path(sys.executable).parent),
+            os.environ["PATH"],
+        ]
     )
 
     result, _ = run_step(
