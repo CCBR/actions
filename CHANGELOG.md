@@ -1,7 +1,6 @@
 ## actions development version
 
-- Allow build-docker to push to Docker Hub, GHCR, or both, and build multi-platform images. (closes #217, #224, @kelly-sovacool)
-- Fix `build-docker` to build root-level Dockerfiles and create their README in the repository root. (#249, @Copilot)
+- Support publishing `build-docker` images to Docker Hub and GHCR, building multi-platform images, and handling root-level Dockerfiles. (#249, @kelly-sovacool, @Copilot)
 - Allow unambiguous release-matching manifest version bumps in `nextflow.config` during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)
 
 ## actions 0.8.3
