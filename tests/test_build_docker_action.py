@@ -201,7 +201,11 @@ def test_root_dockerfile_preparation_and_reporting(tmp_path, dockerfile):
     (bin_dir / "print_versions.sh").write_text("#!/bin/bash\n")
     (bin_dir / "print_versions.sh").chmod(0o755)
     executable_path = os.pathsep.join(
-        [str(bin_dir), str(pathlib.Path(sys.executable).parent), os.environ["PATH"]]
+        [
+            str(bin_dir),
+            str(pathlib.Path(sys.executable).parent),
+            os.environ["PATH"],
+        ]
     )
 
     result, _ = run_step(
@@ -296,14 +300,22 @@ def test_root_dockerfile_preparation_and_reporting(tmp_path, dockerfile):
 
 
 @pytest.mark.parametrize(
-    ("platforms", "docker_platform", "expected"),
+    ("platforms", "docker_default_platform", "docker_platform", "expected"),
     [
-        (" linux/amd64, linux/arm64 ", "linux/amd64", "linux/amd64, linux/arm64"),
-        ("", "linux/amd64", "linux/amd64"),
-        ("", "", "runner default"),
+        (
+            " linux/amd64, linux/arm64 ",
+            "linux/arm64",
+            "linux/amd64",
+            "linux/amd64, linux/arm64",
+        ),
+        ("", "linux/arm64", "linux/amd64", "linux/arm64"),
+        ("", "", "linux/amd64", "linux/amd64"),
+        ("", "", "", "runner default"),
     ],
 )
-def test_readme_lists_platforms(tmp_path, platforms, docker_platform, expected):
+def test_readme_lists_platforms(
+    tmp_path, platforms, docker_default_platform, docker_platform, expected
+):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     docker = bin_dir / "docker"
@@ -325,6 +337,7 @@ def test_readme_lists_platforms(tmp_path, platforms, docker_platform, expected):
         GITHUB_WORKSPACE=str(tmp_path),
         MDFILE="v1.README.md",
         INPUT_PLATFORMS=platforms,
+        DOCKER_DEFAULT_PLATFORM=docker_default_platform,
         PATH=os.pathsep.join([str(bin_dir), os.environ["PATH"]]),
     )
 

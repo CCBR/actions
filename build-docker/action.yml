@@ -194,6 +194,10 @@ runs:
         cd "$GITHUB_WORKSPACE"
         platforms="${INPUT_PLATFORMS//[[:space:]]/}"
         if [[ -z "$platforms" ]]; then
+          platforms="${DOCKER_DEFAULT_PLATFORM:-}"
+          platforms="${platforms//[[:space:]]/}"
+        fi
+        if [[ -z "$platforms" ]]; then
           platforms="$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}' 2>/dev/null || true)"
         fi
         platforms="${platforms:-runner default}"

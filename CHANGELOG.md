@@ -1,6 +1,6 @@
 ## actions development version
 
-- Support publishing `build-docker` images to Docker Hub and GHCR, building multi-platform images, and handling root-level Dockerfiles. (#249, @kelly-sovacool, @Copilot)
+- Support Docker Hub and GHCR publishing, multi-platform builds and platform reporting, and root-level Dockerfiles in `build-docker`. (#249, #253, @kelly-sovacool, @Copilot)
 
 ## actions 0.8.4
 
