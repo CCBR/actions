@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.9.0
 
 - Support Docker Hub and GHCR publishing, multi-platform builds and platform reporting, and root-level Dockerfiles in `build-docker`. (#249, #253, @kelly-sovacool, @Copilot)
 
