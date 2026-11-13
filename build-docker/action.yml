@@ -188,8 +188,16 @@ runs:
     - name: Check variables and create README
       shell: bash
       id: check_and_create_readme
+      env:
+        INPUT_PLATFORMS: ${{ inputs.platforms }}
       run: |
         cd "$GITHUB_WORKSPACE"
+        platforms="${INPUT_PLATFORMS//[[:space:]]/}"
+        if [[ -z "$platforms" ]]; then
+          platforms="$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}' 2>/dev/null || true)"
+        fi
+        platforms="${platforms:-runner default}"
+        platforms="${platforms//,/, }"
         echo "DOCKERFILE_PATH: $DOCKERFILE_PATH"
         echo "DOCKERFILE_BASENAME: $DOCKERFILE_BASENAME"
         echo "IMAGENAME: $IMAGENAME"
@@ -198,12 +206,14 @@ runs:
         echo "BUILD_TAG: $BUILD_TAG"
         echo "REPONAME: $REPONAME"
         echo "MDFILE: $MDFILE"
+        echo "PLATFORMS: $platforms"
         echo -ne "## ${{ github.repository }} $IMAGENAME\n\n" > "$MDFILE"
         echo "Dockerfile source: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/${{ inputs.dockerfile }}" >> "$MDFILE"
         echo -ne "\n\n" >> "$MDFILE"
         echo -ne "Built on: $BUILD_DATE \n\n" >> "$MDFILE"
         echo -ne "Build tag: $BUILD_TAG \n\n" >> "$MDFILE"
         echo -ne "Base image: $BASEIMAGENAME \n\n" >> "$MDFILE"
+        echo -ne "Platforms: $platforms \n\n" >> "$MDFILE"
         echo -ne "Dockerfile path in repo: $DOCKERFILE_PATH \n\n" >> "$MDFILE"
 
     - name: Prepare image tags

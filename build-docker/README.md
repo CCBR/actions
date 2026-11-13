@@ -29,8 +29,9 @@ This action:
   GHCR uses the GitHub token.
 - Logs in only to the selected registries that have credentials.
 - Prepares build-time variables by running a custom script.
-- Checks variables and creates a README file with build details in the
-  same directory as the dockerfile.
+- Checks variables and creates a README file with build details,
+  including the target platform(s), in the same directory as the
+  dockerfile.
 - Checks whether the Docker Hub tag is stale before building, unless
   GHCR is enabled for pushing or `platforms` is set.
 - Builds the Docker image only when a build is needed; pushes only when

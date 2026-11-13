@@ -254,12 +254,16 @@ def test_root_dockerfile_preparation_and_reporting(tmp_path, dockerfile):
         .replace("${{ inputs.dockerfile }}", dockerfile)
     )
     result, _ = run_step(
-        readme_step, tmp_path, **values, GITHUB_WORKSPACE=str(tmp_path)
+        readme_step,
+        tmp_path,
+        **values,
+        GITHUB_WORKSPACE=str(tmp_path),
+        INPUT_PLATFORMS="linux/arm64,linux/amd64",
     )
     assert result.returncode == 0, result.stderr
-    assert (
-        "nciccbr/my-example-repo:v1-dev" in (tmp_path / "v1-dev.README.md").read_text()
-    )
+    readme = (tmp_path / "v1-dev.README.md").read_text()
+    assert "nciccbr/my-example-repo:v1-dev" in readme
+    assert "Platforms: linux/arm64, linux/amd64" in readme
 
     report_step = find_step(action, "run_script_in_container").copy()
     report_step["run"] = (
@@ -289,6 +293,43 @@ def test_root_dockerfile_preparation_and_reporting(tmp_path, dockerfile):
     assert calls[1].startswith("linux/arm64|run ")
     assert "ghcr.io/ccbr/my-example-repo:v1-dev" in calls[1]
     assert f"--output {os.path.join(os.sep, 'ws', values['MDFILE'])}" in calls[1]
+
+
+@pytest.mark.parametrize(
+    ("platforms", "docker_platform", "expected"),
+    [
+        (" linux/amd64, linux/arm64 ", "linux/amd64", "linux/amd64, linux/arm64"),
+        ("", "linux/amd64", "linux/amd64"),
+        ("", "", "runner default"),
+    ],
+)
+def test_readme_lists_platforms(tmp_path, platforms, docker_platform, expected):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    docker = bin_dir / "docker"
+    docker.write_text(
+        f"#!/bin/bash\n[[ -n '{docker_platform}' ]] && echo '{docker_platform}'\n"
+    )
+    docker.chmod(0o755)
+    readme_step = find_step(load_action(), "check_and_create_readme").copy()
+    readme_step["run"] = (
+        readme_step["run"]
+        .replace("${{ github.repository }}", "CCBR/example")
+        .replace("${{ github.sha }}", "abc123")
+        .replace("${{ inputs.dockerfile }}", "Dockerfile.v1")
+    )
+
+    result, _ = run_step(
+        readme_step,
+        tmp_path,
+        GITHUB_WORKSPACE=str(tmp_path),
+        MDFILE="v1.README.md",
+        INPUT_PLATFORMS=platforms,
+        PATH=os.pathsep.join([str(bin_dir), os.environ["PATH"]]),
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert f"Platforms: {expected} \n" in (tmp_path / "v1.README.md").read_text()
 
 
 def test_resolve_push_rejects_unknown_registry(tmp_path):

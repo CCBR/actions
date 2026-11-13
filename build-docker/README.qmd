@@ -38,7 +38,7 @@ This action:
   - Pushes to Docker Hub, GHCR, or both. The default `registries` value is `dockerhub,ghcr`; Docker Hub uses its username/token inputs, while GHCR uses the GitHub token.
   - Logs in only to the selected registries that have credentials.
   - Prepares build-time variables by running a custom script.
-  - Checks variables and creates a README file with build details in the same directory as the dockerfile.
+  - Checks variables and creates a README file with build details, including the target platform(s), in the same directory as the dockerfile.
   - Checks whether the Docker Hub tag is stale before building, unless GHCR is enabled for pushing or `platforms` is set.
   - Builds the Docker image only when a build is needed; pushes only when effective push mode is enabled. Set `platforms` to build multi-platform images.
   - Updates the Docker Hub description with the contents of the README file only if the image was successfully pushed there.
