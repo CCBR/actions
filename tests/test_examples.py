@@ -59,3 +59,16 @@ def test_docs_examples_glob_both_workflow_extensions():
     docs_source = (REPOSITORY_ROOT / "docs/examples.qmd").read_text()
     assert 'glob("../examples/*.yml")' in docs_source
     assert 'glob("../examples/*.yaml")' in docs_source
+
+
+def test_build_docker_dispatch_app_token_has_required_permissions():
+    """The app token supports publishing and the workflow's repository writes."""
+    path = REPOSITORY_ROOT / "examples" / "build-docker-dispatch.yml"
+    workflow = yaml.safe_load(path.read_text())
+    token_step = next(
+        step
+        for step in _iter_steps(workflow)
+        if step.get("uses", "").startswith("actions/create-github-app-token@")
+    )
+    for permission in ("packages", "contents", "pull-requests"):
+        assert token_step["with"][f"permission-{permission}"] == "write"

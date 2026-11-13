@@ -40,9 +40,10 @@ def test_tag_from_dockerfile(dockerfile, expected_tag):
     assert tag_from_dockerfile(dockerfile) == expected_tag
 
 
-def test_tag_fail():
+@pytest.mark.parametrize("dockerfile", ["Dockerfile", "./Dockerfile"])
+def test_tag_fail(dockerfile):
     with pytest.raises(ValueError):
-        tag_from_dockerfile("Dockerfile")  # No dot in the filename
+        tag_from_dockerfile(dockerfile)
 
 
 @pytest.mark.parametrize("suffix", ["dev", "main", "", "feature"])
@@ -97,3 +98,15 @@ def test_prepare_docker_build_variables_empty_suffix_has_no_extra_suffix(tmp_pat
 
     assert values["BUILD_TAG"] == "v2"
     assert values["IMAGENAME"] == "nciccbr/myrepo:v2"
+
+
+@pytest.mark.parametrize("repository", ["", "owner/", f"{os.sep}name", "owner/---"])
+def test_root_dockerfile_requires_usable_github_repository(
+    tmp_path, monkeypatch, repository
+):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("GITHUB_REPOSITORY", repository)
+    (tmp_path / "Dockerfile.v1").write_text("FROM ubuntu:22.04\n")
+
+    with pytest.raises(ValueError, match="GITHUB_REPOSITORY"):
+        prepare_docker_build_variables("Dockerfile.v1", "main", "nciccbr")

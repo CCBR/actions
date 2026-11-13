@@ -15,6 +15,11 @@ The `ccbr-actions-version` input selects the version of `ccbr_actions`
 installed in the image being built. It is passed to the Dockerfile as
 the `CCBR_ACTIONS_VERSION` build argument.
 
+For a root-level Dockerfile such as `Dockerfile.v1` or
+`./Dockerfile.v1`, the image repository name is derived from the GitHub
+repository name, lowercased with non-alphanumeric characters replaced by
+hyphens. The generated README is written in the repository root.
+
 This action:
 
 - Resolves an effective push mode: pushing is enabled only when ‘push’
@@ -26,8 +31,8 @@ This action:
 - Prepares build-time variables by running a custom script.
 - Checks variables and creates a README file with build details in the
   same directory as the dockerfile.
-- Checks whether the Docker Hub tag is stale before building (GHCR-only
-  pushes always build).
+- Checks whether the Docker Hub tag is stale before building, unless
+  GHCR is enabled for pushing or `platforms` is set.
 - Builds the Docker image only when a build is needed; pushes only when
   effective push mode is enabled. Set `platforms` to build
   multi-platform images.

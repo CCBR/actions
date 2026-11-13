@@ -3,6 +3,7 @@
 import os
 import pathlib
 import subprocess
+import sys
 
 import pytest
 import yaml
@@ -179,6 +180,117 @@ def test_prepare_image_tags_uses_repository_name_for_root_dockerfile(tmp_path):
     assert tags == ["ghcr.io/ccbr/example:v1"]
 
 
+@pytest.mark.parametrize("dockerfile", ["Dockerfile.v1", "./Dockerfile.v1"])
+def test_root_dockerfile_preparation_and_reporting(tmp_path, dockerfile):
+    action = load_action()
+    (tmp_path / "Dockerfile.v1").write_text("FROM ubuntu:22.04\n")
+    (tmp_path / "tool_version_commands.txt").write_text("")
+    github_env = tmp_path / "github_env"
+
+    stale_package = tmp_path / "old-package" / "ccbr_actions"
+    stale_package.mkdir(parents=True)
+    (stale_package / "__init__.py").write_text('raise RuntimeError("stale package")\n')
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    docker_log = tmp_path / "docker.log"
+    docker = bin_dir / "docker"
+    docker.write_text(
+        '#!/bin/bash\nprintf "%s|%s\\n" "$DOCKER_DEFAULT_PLATFORM" "$*" >> "$DOCKER_LOG"\n'
+    )
+    docker.chmod(0o755)
+    (bin_dir / "print_versions.sh").write_text("#!/bin/bash\n")
+    (bin_dir / "print_versions.sh").chmod(0o755)
+    executable_path = os.pathsep.join(
+        [str(bin_dir), str(pathlib.Path(sys.executable).parent), os.environ["PATH"]]
+    )
+
+    result, _ = run_step(
+        find_step(action, "prepare_vars"),
+        tmp_path,
+        GITHUB_WORKSPACE=str(tmp_path),
+        GITHUB_ACTION_PATH=str(ACTION_PATH.parent),
+        GITHUB_REPOSITORY="CCBR/My.Example_Repo",
+        GITHUB_ENV=str(github_env),
+        DOCKERFILE_INPUT=dockerfile,
+        SUFFIX_INPUT="dev",
+        DOCKERHUB_NAMESPACE_INPUT="nciccbr",
+        PYTHONPATH=str(stale_package.parent),
+        PATH=executable_path,
+    )
+    assert result.returncode == 0, result.stderr
+    values = parse_outputs(github_env.read_text())
+    assert values["REPONAME"] == "my-example-repo"
+    assert values["IMAGENAME"] == "nciccbr/my-example-repo:v1-dev"
+    assert values["MDFILE"] == "v1-dev.README.md"
+    assert values["CONTEXT"] == "."
+    assert values["DOCKERFILE_PATH"] == "Dockerfile.v1"
+    subprocess.run(
+        ["git", "check-ref-format", "--branch", f"auto-pr/{values['DOCKERFILE_PATH']}"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    result, output = run_step(
+        find_step(action, "prepare_image_tags"),
+        tmp_path,
+        **values,
+        PUSH_ENABLED="true",
+        PUSH_DOCKERHUB="true",
+        PUSH_GHCR="true",
+        GHCR_NAMESPACE_INPUT="",
+        GITHUB_REPOSITORY_OWNER="CCBR",
+        GITHUB_REPOSITORY="CCBR/My.Example_Repo",
+    )
+    assert result.returncode == 0, result.stderr
+    assert "nciccbr/my-example-repo:v1-dev" in output
+    assert "ghcr.io/ccbr/my-example-repo:v1-dev" in output
+
+    readme_step = find_step(action, "check_and_create_readme").copy()
+    readme_step["run"] = (
+        readme_step["run"]
+        .replace("${{ github.repository }}", "CCBR/My.Example_Repo")
+        .replace("${{ github.sha }}", "abc123")
+        .replace("${{ inputs.dockerfile }}", dockerfile)
+    )
+    result, _ = run_step(
+        readme_step, tmp_path, **values, GITHUB_WORKSPACE=str(tmp_path)
+    )
+    assert result.returncode == 0, result.stderr
+    assert (
+        "nciccbr/my-example-repo:v1-dev" in (tmp_path / "v1-dev.README.md").read_text()
+    )
+
+    report_step = find_step(action, "run_script_in_container").copy()
+    report_step["run"] = (
+        report_step["run"]
+        .replace("${{ inputs.config-file }}", "tool_version_commands.txt")
+        .replace("${{ github.workspace }}", str(tmp_path))
+        .replace("${{ env.MDFILE }}", values["MDFILE"])
+    )
+    result, _ = run_step(
+        report_step,
+        tmp_path,
+        **values,
+        GITHUB_WORKSPACE=str(tmp_path),
+        GITHUB_REPOSITORY="CCBR/My.Example_Repo",
+        GITHUB_REPOSITORY_OWNER="CCBR",
+        GHCR_NAMESPACE_INPUT="",
+        IMAGE_NAME_INPUT=values["IMAGENAME"],
+        INPUT_PLATFORMS="linux/arm64,linux/amd64",
+        PUSH_ENABLED="true",
+        PUSH_GHCR="true",
+        PATH=executable_path,
+        DOCKER_LOG=str(docker_log),
+    )
+    assert result.returncode == 0, result.stderr
+    calls = docker_log.read_text().splitlines()
+    assert calls[0] == "linux/arm64|pull ghcr.io/ccbr/my-example-repo:v1-dev"
+    assert calls[1].startswith("linux/arm64|run ")
+    assert "ghcr.io/ccbr/my-example-repo:v1-dev" in calls[1]
+    assert f"--output {os.path.join(os.sep, 'ws', values['MDFILE'])}" in calls[1]
+
+
 def test_resolve_push_rejects_unknown_registry(tmp_path):
     step = find_step(load_action(), "resolve_push")
     result, _ = run_step(
@@ -192,3 +304,43 @@ def test_resolve_push_rejects_unknown_registry(tmp_path):
     )
 
     assert result.returncode != 0
+
+
+@pytest.mark.parametrize(
+    ("push_ghcr", "platforms", "force_build", "expected_force"),
+    [
+        ("true", "", "false", "true"),
+        ("false", "linux/arm64", "false", "true"),
+        ("true", "linux/arm64", "false", "true"),
+        ("false", "", "false", "false"),
+        ("false", "", "true", "true"),
+    ],
+)
+def test_staleness_check_bypasses_dockerhub_when_needed(
+    tmp_path, push_ghcr, platforms, force_build, expected_force
+):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    git = bin_dir / "git"
+    git.write_text("#!/bin/bash\nexit 0\n")
+    git.chmod(0o755)
+    python = bin_dir / "python"
+    python.write_text('#!/bin/bash\nprintf "force=%s\\n" "$INPUT_FORCE_BUILD"\n')
+    python.chmod(0o755)
+
+    result, _ = run_step(
+        find_step(load_action(), "check_tag_staleness"),
+        tmp_path,
+        GITHUB_WORKSPACE=str(tmp_path),
+        GITHUB_ACTION_PATH=str(ACTION_PATH.parent),
+        INPUT_FORCE_BUILD=force_build,
+        INPUT_PUSH_GHCR=push_ghcr,
+        INPUT_PLATFORMS=platforms,
+        DOCKERFILE_PATH_INPUT="Dockerfile.v1",
+        IMAGE_NAME_INPUT="nciccbr/example:v1",
+        DOCKERHUB_NAMESPACE_INPUT="nciccbr",
+        REPO_NAME_INPUT="example",
+        PATH=f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == f"force={expected_force}\n"

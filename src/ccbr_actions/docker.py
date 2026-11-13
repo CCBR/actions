@@ -7,6 +7,7 @@ from __future__ import annotations
 import datetime
 import os
 import pathlib
+import re
 import subprocess
 
 import requests
@@ -35,11 +36,11 @@ def tag_from_dockerfile(dockerfile: str) -> str:
 
     Mirrors bash ${bn_dockerfile##*.} behavior.
     """
-    if "." not in dockerfile:
+    bn_dockerfile = os.path.basename(dockerfile)
+    if "." not in bn_dockerfile:
         raise ValueError(
             f"The dockerfile {dockerfile} must contain a dot to separate the version tag, e.g. Dockerfile.v1"
         )
-    bn_dockerfile = os.path.basename(dockerfile)
     return bn_dockerfile.split(".", 1)[-1]
 
 
@@ -52,6 +53,9 @@ def prepare_docker_build_variables(
 ) -> dict[str, str]:
     """
     Prepare Docker build variables and optionally write them to GITHUB_ENV.
+
+    For a root-level Dockerfile, derive the image repository name from
+    GITHUB_REPOSITORY and write the README path relative to the workspace.
 
     Args:
             dockerfile (str): Path to the Dockerfile.
@@ -71,8 +75,19 @@ def prepare_docker_build_variables(
     )
     bn_dockerfile = os.path.basename(dockerfile)
     tag = tag_from_dockerfile(dockerfile)
-    dn_dockerfile = os.path.dirname(dockerfile)
-    reponame = os.path.basename(dn_dockerfile)
+    dn_dockerfile = os.path.dirname(os.path.normpath(dockerfile))
+    if not dn_dockerfile:
+        dockerfile = os.path.normpath(dockerfile)
+        repository = os.environ.get("GITHUB_REPOSITORY", "")
+        owner, separator, repo = repository.partition("/")
+        reponame = re.sub(r"[^a-z0-9]+", "-", repo.lower()).strip("-")
+        if not owner or not separator or not reponame:
+            raise ValueError(
+                "GITHUB_REPOSITORY must contain an owner and a valid repository "
+                "name when building a root-level Dockerfile"
+            )
+    else:
+        reponame = os.path.basename(dn_dockerfile)
     baseimagename = base_image_name(dockerfile)
 
     if suffix == "dev":
@@ -83,7 +98,7 @@ def prepare_docker_build_variables(
         tag = f"{tag}-feat"
 
     imagename = f"{dockerhub_account}/{reponame}:{tag}"
-    mdfile = f"{dn_dockerfile}/{tag}.README.md"
+    mdfile = os.path.join(dn_dockerfile, f"{tag}.README.md")
     artifact_name = mdfile.replace("/", "_")
 
     values = {

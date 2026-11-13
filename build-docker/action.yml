@@ -181,7 +181,8 @@ runs:
         DOCKERHUB_NAMESPACE_INPUT: ${{ inputs.dockerhub-namespace }}
       run: |
         cd "$GITHUB_WORKSPACE"
-        python "$GITHUB_ACTION_PATH/../scripts/prepare_docker_build_variables.py" \
+        PYTHONPATH="$GITHUB_ACTION_PATH/../src${PYTHONPATH:+:$PYTHONPATH}" \
+          python "$GITHUB_ACTION_PATH/../scripts/prepare_docker_build_variables.py" \
           "$DOCKERFILE_INPUT" "$SUFFIX_INPUT" "$DOCKERHUB_NAMESPACE_INPUT"
 
     - name: Check variables and create README
@@ -197,13 +198,13 @@ runs:
         echo "BUILD_TAG: $BUILD_TAG"
         echo "REPONAME: $REPONAME"
         echo "MDFILE: $MDFILE"
-        echo -ne "## ${{ github.repository }} $IMAGENAME\n\n" > $MDFILE
-        echo "Dockerfile source: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/${{ inputs.dockerfile }}" >> $MDFILE
-        echo -ne "\n\n" >> $MDFILE
-        echo -ne "Built on: $BUILD_DATE \n\n" >> $MDFILE
-        echo -ne "Build tag: $BUILD_TAG \n\n" >> $MDFILE
-        echo -ne "Base image: $BASEIMAGENAME \n\n" >> $MDFILE
-        echo -ne "Dockerfile path in repo: $DOCKERFILE_PATH \n\n" >> $MDFILE
+        echo -ne "## ${{ github.repository }} $IMAGENAME\n\n" > "$MDFILE"
+        echo "Dockerfile source: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/${{ inputs.dockerfile }}" >> "$MDFILE"
+        echo -ne "\n\n" >> "$MDFILE"
+        echo -ne "Built on: $BUILD_DATE \n\n" >> "$MDFILE"
+        echo -ne "Build tag: $BUILD_TAG \n\n" >> "$MDFILE"
+        echo -ne "Base image: $BASEIMAGENAME \n\n" >> "$MDFILE"
+        echo -ne "Dockerfile path in repo: $DOCKERFILE_PATH \n\n" >> "$MDFILE"
 
     - name: Prepare image tags
       id: prepare_image_tags
