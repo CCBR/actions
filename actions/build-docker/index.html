@@ -691,15 +691,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>[!WARNING] Do <strong>not</strong> run this action via <code>jobs.&lt;job_id&gt;.container: nciccbr/ccbr_actions:...</code>. This action builds/pushes Docker images, which would require Docker-in-Docker (mounting the host’s Docker socket into the container) – an ill-advised pattern. Run this action on a normal runner instead.</p>
 </blockquote>
 <p>The <code>ccbr-actions-version</code> input selects the version of <code>ccbr_actions</code> installed in the image being built. It is passed to the Dockerfile as the <code>CCBR_ACTIONS_VERSION</code> build argument.</p>
+<p>For a root-level Dockerfile such as <code>Dockerfile.v1</code> or <code>./Dockerfile.v1</code>, the image repository name is derived from the GitHub repository name, lowercased with non-alphanumeric characters replaced by hyphens. The generated README is written in the repository root.</p>
 <p>This action:</p>
 <ul>
-<li>Resolves an effective push mode: pushing is enabled only when ‘push’ is ‘true’ and both DockerHub credentials are provided.</li>
-<li>Logs in to DockerHub only when effective push mode is enabled.</li>
+<li>Resolves an effective push mode: pushing is enabled only when ‘push’ is ‘true’ and a selected registry has credentials.</li>
+<li>Pushes to Docker Hub, GHCR, or both. The default <code>registries</code> value is <code>dockerhub,ghcr</code>; Docker Hub uses its username/token inputs, while GHCR uses the GitHub token.</li>
+<li>Logs in only to the selected registries that have credentials.</li>
 <li>Prepares build-time variables by running a custom script.</li>
-<li>Checks variables and creates a README file with build details in the same directory as the dockerfile.</li>
-<li>Checks whether the DockerHub tag is stale before building.</li>
-<li>Builds the Docker image only when a build is needed; pushes only when effective push mode is enabled.</li>
-<li>Updates the DockerHub description with the contents of the README file only if the image was successfully pushed.</li>
+<li>Checks variables and creates a README file with build details, including the target platform(s), in the same directory as the dockerfile.</li>
+<li>Checks whether the Docker Hub tag is stale before building, unless GHCR is enabled for pushing or <code>platforms</code> is set.</li>
+<li>Builds the Docker image only when a build is needed; pushes only when effective push mode is enabled. Set <code>platforms</code> to build multi-platform images.</li>
+<li>Updates the Docker Hub description with the contents of the README file only if the image was successfully pushed there.</li>
 <li>Opens and merges a PR with the README updates only when the DockerHub description update step runs successfully.</li>
 </ul>
 <section id="usage" class="level2">
@@ -716,12 +718,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dockerhub-namespace</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_NAMESPACE }}</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dockerhub-username</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_USERNAME }}</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dockerhub-token</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_TOKEN }}</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">suffix</span><span class="kw">:</span><span class="at"> dev</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">push</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ccbr-actions-version</span><span class="kw">:</span><span class="at"> v0.2</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ github.token }}</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">github-actor</span><span class="kw">:</span><span class="at"> ${{ github.actor }}</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">config-file</span><span class="kw">:</span><span class="at"> </span><span class="st">"scripts/tool_version_commands.txt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">registries</span><span class="kw">:</span><span class="at"> dockerhub,ghcr</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">platforms</span><span class="kw">:</span><span class="at"> linux/amd64,linux/arm64</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">suffix</span><span class="kw">:</span><span class="at"> dev</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">push</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ccbr-actions-version</span><span class="kw">:</span><span class="at"> v0.2</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">github-token</span><span class="kw">:</span><span class="at"> ${{ github.token }}</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">github-actor</span><span class="kw">:</span><span class="at"> ${{ github.actor }}</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">config-file</span><span class="kw">:</span><span class="at"> </span><span class="st">"scripts/tool_version_commands.txt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>For GHCR pushes, grant the workflow <code>packages: write</code> permission. Omit <code>platforms</code> for the runner’s default platform, or provide a comma-separated list such as <code>linux/amd64,linux/arm64</code>. Multi-platform images must be pushed to a registry; builds with <code>platforms</code> set and <code>push: false</code> skip the optional container version-reporting step.</p>
 <p>For an example to manually trigger the workflow for a single docker container, see <a href=".https://github.com/CCBR/actions/blob/main/examples/build-docker-manual.yml">build-docker-manual.yml</a>.</p>
 <p>For an advanced example to automatically build docker containers when files change, see <a href=".https://github.com/CCBR/actions/blob/main/examples/build-docker-auto.yml">build-docker-auto.yml</a>.</p>
 <p>Suffix behavior: <code>dev</code> appends <code>-dev</code>, <code>main</code> or an empty value leaves the Dockerfile tag unchanged, and any other value appends <code>-feat</code>.</p>
@@ -734,13 +739,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>dockerhub-namespace</code>: dockerhub namespace or org name (e.g.&nbsp;nciccbr). <strong>Required.</strong> Default: <code>nciccbr</code>.</li>
 <li><code>dockerhub-username</code>: dockerhub username of a user with admin permissions for <code>dockerhub-namespace</code>. Recommend using secrets, e.g.&nbsp;secrets.DOCKERHUB_USERNAME.</li>
 <li><code>dockerhub-token</code>: dockerhub token with read &amp; write permissions. Strongly recommend using secrets, e.g.&nbsp;secrets.DOCKERHUB_TOKEN.</li>
+<li><code>ghcr-namespace</code>: GitHub Container Registry owner or organization name. Defaults to the repository owner.</li>
+<li><code>registries</code>: Comma-separated registries to push to (dockerhub, ghcr). <strong>Required.</strong> Default: <code>dockerhub,ghcr</code>.</li>
+<li><code>platforms</code>: Comma-separated target platforms for a multi-platform build (e.g.&nbsp;linux/amd64,linux/arm64).</li>
 <li><code>suffix</code>: Suffix to add to image tag eg. “dev” to add “-dev”. <strong>Required.</strong> Default: <code>feat</code>.</li>
-<li><code>push</code>: Push to DockerHub (if false, just build the container without pushing). <strong>Required.</strong> Default: <code>false</code>.</li>
+<li><code>push</code>: Push to selected registries (if false, just build the container without pushing). <strong>Required.</strong> Default: <code>false</code>.</li>
 <li><code>force_build</code>: Force docker image build even when the Docker Hub tag is up-to-date. <strong>Required.</strong> Default: <code>false</code>.</li>
 <li><code>ccbr-actions-version</code>: The version of ccbr_actions to install in the image. This value is passed to the Dockerfile as CCBR_ACTIONS_VERSION. <strong>Required.</strong> Default: <code>latest</code>.</li>
 <li><code>python-version</code>: The version of Python to install. <strong>Required.</strong> Default: <code>3.14</code>.</li>
-<li><code>github-actor</code>: Username of GitHub actor for the git commit when the README is updated. <strong>Required.</strong> Default: <code>258092125+CCBR-bot[bot]</code>.</li>
-<li><code>github-token</code>: GitHub Actions token (e.g.&nbsp;github.token). <strong>Required.</strong></li>
+<li><code>github-actor</code>: GitHub username for README commits and GHCR authentication. <strong>Required.</strong> Default: <code>258092125+CCBR-bot[bot]</code>.</li>
+<li><code>github-token</code>: GitHub Actions token used for GitHub API operations and GHCR authentication. <strong>Required.</strong></li>
 <li><code>print-versions</code>: Whether to print tool versions in the container for the README file using <code>config-file</code>. Default: <code>true</code>.</li>
 <li><code>config-file</code>: Relative path to config file for tool version commands (text format with :: delimiters). If not provided and print-versions is true, the default config file from ccbr_actions will be used. Default: <code>scripts/tool_version_commands.txt</code>.</li>
 <li><code>gh-merge-args</code>: arguments for <code>gh pr merge</code>. Default: <code>-ds --admin</code>.</li>
