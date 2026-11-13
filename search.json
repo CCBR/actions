@@ -624,22 +624,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Allow unambiguous release-matching manifest version bumps in nextflow.config during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.8.4",
     "href": "CHANGELOG.html#actions-0.8.4",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Allow unambiguous release-matching manifest version bumps in nextflow.config during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)",
+    "section": "actions 0.8.4",
+    "text": "actions 0.8.4\n\nAllow unambiguous release-matching manifest version bumps in nextflow.config during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)",
     "crumbs": [
       "Project information",
       "Changelog"
