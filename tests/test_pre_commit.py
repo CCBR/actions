@@ -103,6 +103,22 @@ COMMIT_HASH_PATCH = """\
 +  rev: def5678cafebabe
 """
 
+FROZEN_PATCH = """\
+@@ -28,7 +28,7 @@ repos:
+   - repo: https://github.com/astral-sh/ruff-pre-commit
+-    rev: v0.17.4
++    rev: v0.17.5
+     hooks:
+@@ -46,7 +46,7 @@ repos:
+   - repo: https://github.com/CCBR/Tools
+-    rev: c433f1c70cd9960d5d2855e50a0705962a14e019 # frozen: v0.7.1
++    rev: 72b9ecd1bc399f216713c566acd05926d13e577b # frozen: v0.7
+     hooks:
+"""
+
+OLD_SHA = "c433f1c70cd9960d5d2855e50a0705962a14e019"
+NEW_SHA = "72b9ecd1bc399f216713c566acd05926d13e577b"
+
 # A moving `vX.Y` alias tag replaces a more specific `vX.Y.Z` tag (e.g. CCBR/actions#218:
 # v0.7.1 -> v0.7). Looks like a downgrade by version string, but may point at the same commit.
 SLIDING_TAG_PATCH = """\
@@ -210,6 +226,80 @@ def test_check_only_version_bumps_returns_false_for_version_downgrade():
 
 def test_check_only_version_bumps_accepts_commit_hash_rev_change():
     assert check_only_version_bumps(COMMIT_HASH_PATCH) is True
+
+
+def test_check_only_version_bumps_accepts_frozen_autoupdate():
+    assert check_only_version_bumps(FROZEN_PATCH) is True
+    assert check_only_version_bumps_or_same_commit(FROZEN_PATCH) is True
+    assert _extract_rev_changes(FROZEN_PATCH) == [
+        ("https://github.com/astral-sh/ruff-pre-commit", "v0.17.4", "v0.17.5"),
+        ("https://github.com/CCBR/Tools", OLD_SHA, NEW_SHA),
+    ]
+
+
+@pytest.mark.parametrize("quote", ["", "'", '"'])
+@pytest.mark.parametrize("old_sha,new_sha", [(OLD_SHA, NEW_SHA), ("a" * 64, "b" * 64)])
+def test_check_only_version_bumps_accepts_quoted_frozen_hashes(quote, old_sha, new_sha):
+    patch = (
+        "@@ -1,2 +1,2 @@\n"
+        f"-  rev: {quote}{old_sha}{quote}  # frozen: v0.7.1\n"
+        f"+  rev: {quote}{new_sha}{quote}  # frozen: v0.7\n"
+    )
+    assert check_only_version_bumps(patch) is True
+
+
+@pytest.mark.parametrize("bad_sha", ["a" * 39, "a" * 41, "a" * 63, "a" * 65, "g" * 40])
+def test_check_only_version_bumps_rejects_invalid_frozen_hashes(bad_sha):
+    patch = (
+        "@@ -1,2 +1,2 @@\n"
+        f"-  rev: {OLD_SHA} # frozen: v0.7.1\n"
+        f"+  rev: {bad_sha} # frozen: v0.7\n"
+    )
+    assert check_only_version_bumps(patch) is False
+
+
+@pytest.mark.parametrize(
+    "old_line,new_line",
+    [
+        (f"  rev: {OLD_SHA} # frozen: v0.7.1", f"  rev: {NEW_SHA} # frozen: v0.7"),
+        ("  rev: v0.7.1", f"  rev: {NEW_SHA} # frozen: v0.7"),
+        (f"  rev: {OLD_SHA} # frozen: v0.7.1", "  rev: v0.7.2"),
+        (f"  rev: {OLD_SHA} # frozen: v0.7", f"  rev: {NEW_SHA} # frozen: v0.7"),
+    ],
+)
+def test_check_only_version_bumps_accepts_frozen_transitions(old_line, new_line):
+    patch = f"@@ -1,2 +1,2 @@\n-{old_line}\n+{new_line}\n"
+    assert check_only_version_bumps(patch) is True
+
+
+@pytest.mark.parametrize(
+    "old_line,new_line",
+    [
+        (f"  rev: {OLD_SHA} # frozen: v0.7.1", f"  rev: {OLD_SHA} # frozen: v0.7"),
+        (f"  rev: {OLD_SHA}", f"  rev: {OLD_SHA} # frozen: v0.7"),
+        (f"  rev: {OLD_SHA} # custom", f"  rev: {NEW_SHA} # custom"),
+        (f"  rev: {OLD_SHA} # frozen: v0.7.1", f"  rev: {NEW_SHA} # custom"),
+        (
+            f"  rev: {OLD_SHA} # frozen: v0.7.1",
+            f"  rev: {NEW_SHA} # frozen: v0.7 # extra",
+        ),
+        ("  rev: v0.7.1 # frozen: v0.7.1", "  rev: v0.7.2 # frozen: v0.7.2"),
+        (f"  rev: {OLD_SHA} # frozen: v0.7.1", f"  rev: \"{NEW_SHA}' # frozen: v0.7"),
+    ],
+)
+def test_check_only_version_bumps_rejects_non_autoupdate_comments(old_line, new_line):
+    patch = f"@@ -1,2 +1,2 @@\n - repo: https://github.com/CCBR/Tools\n-{old_line}\n+{new_line}\n"
+    session = MockSession(
+        {f"https://api.github.com/repos/CCBR/Tools/commits/{OLD_SHA}": {"sha": OLD_SHA}}
+    )
+    assert check_only_version_bumps(patch) is False
+    assert check_only_version_bumps_or_same_commit(patch, session=session) is False
+
+
+def test_check_only_version_bumps_rejects_frozen_update_with_hook_change():
+    patch = FROZEN_PATCH + "-      - id: existing-hook\n+      - id: other-hook\n"
+    assert check_only_version_bumps(patch) is False
+    assert check_only_version_bumps_or_same_commit(patch) is False
 
 
 def test_check_only_version_bumps_returns_false_for_mismatched_rev_count():
@@ -495,6 +585,27 @@ def test_review_pre_commit_pr_approves_when_conditions_met():
         c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
     ]
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
+
+
+def test_review_pre_commit_pr_approves_frozen_autoupdate():
+    session = _make_review_session(patch=FROZEN_PATCH)
+    assert review_pre_commit_pr("CCBR/repo", 7, "alice", session=session) is True
+    review_bodies = [
+        c[2]["json"] for c in session.calls if c[0] == "POST" and "reviews" in c[1]
+    ]
+    assert any(body.get("event") == "APPROVE" for body in review_bodies)
+
+
+def test_review_pre_commit_pr_requests_review_for_frozen_comment_only_change():
+    patch = (
+        "@@ -1,2 +1,2 @@\n"
+        " - repo: https://github.com/CCBR/Tools\n"
+        f"-  rev: {OLD_SHA} # frozen: v0.7.1\n"
+        f"+  rev: {OLD_SHA} # frozen: v0.7\n"
+    )
+    session = _make_review_session(patch=patch)
+    assert review_pre_commit_pr("CCBR/repo", 7, "alice", session=session) is False
+    assert not [c for c in session.calls if c[0] == "POST" and "reviews" in c[1]]
 
 
 def test_review_pre_commit_pr_approves_sliding_tag_pointing_at_same_commit():
