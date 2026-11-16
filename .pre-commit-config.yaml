@@ -46,7 +46,7 @@ repos:
       - id: actionlint
         files: ^(\.github/workflows/.*\.ya?ml|examples/.*\.ya?ml)$
   - repo: https://github.com/CCBR/Tools
-    rev: 72b9ecd1bc399f216713c566acd05926d13e577b  # frozen: v0.7
+    rev: 72b9ecd1bc399f216713c566acd05926d13e577b # frozen: v0.7
     hooks:
       - id: detect-absolute-paths
         exclude: |
