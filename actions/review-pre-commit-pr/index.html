@@ -689,7 +689,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The action verifies two conditions:</p>
 <ol type="1">
 <li><strong>Only <code>.pre-commit-config.yaml</code> was changed</strong> – no other files should be modified by a routine autoupdate.</li>
-<li><strong>The only changes are <code>rev:</code> version bumps</strong> – no repos are added or removed and no fields other than <code>rev:</code> are changed. A <code>rev:</code> change that isn’t a version bump is still accepted if the old and new revs resolve to the same commit (e.g.&nbsp;a moving <code>vX.Y</code> alias tag replacing a more specific <code>vX.Y.Z</code> tag).</li>
+<li><strong>The only changes are <code>rev:</code> version bumps</strong> – no repos are added or removed and no fields other than <code>rev:</code> are changed. A <code>rev:</code> change that isn’t a version bump is still accepted if the old and new revs resolve to the same commit (e.g.&nbsp;a moving <code>vX.Y</code> alias tag replacing a more specific <code>vX.Y.Z</code> tag). Pre-commit <code># frozen: &lt;tag&gt;</code> annotations are allowed on full commit hashes when the revision changes. As with other hash updates, the validator accepts different hashes without checking their ancestry or whether the annotation matches the commit.</li>
 </ol>
 <p>When both conditions are satisfied the action:</p>
 <ul>
