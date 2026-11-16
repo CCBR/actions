@@ -1,6 +1,9 @@
 ## actions development version
 
 - Fix `review-post-release-pr` to accept release-matching install references for the repository under review. (#255, @kelly-sovacool)
+
+## actions 0.9.0
+
 - Support Docker Hub and GHCR publishing, multi-platform builds and platform reporting, and root-level Dockerfiles in `build-docker`. (#249, #253, @kelly-sovacool, @Copilot)
 
 ## actions 0.8.4
