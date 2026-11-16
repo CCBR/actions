@@ -32,8 +32,11 @@ This action:
 - Checks variables and creates a README file with build details,
   including the target platform(s), in the same directory as the
   dockerfile.
-- Checks whether the Docker Hub tag is stale before building, unless
-  GHCR is enabled for pushing or `platforms` is set.
+- Checks whether the tag is stale in each target registry (the
+  registries being pushed to, or `registries` when push is disabled)
+  before building. A build is needed if the tag is missing from any
+  registry, is older than the latest dockerfile commit, or lacks any
+  platform in `platforms`.
 - Builds the Docker image only when a build is needed; pushes only when
   effective push mode is enabled. Set `platforms` to build
   multi-platform images.
@@ -105,8 +108,8 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
   **Required.** Default: `feat`.
 - `push`: Push to selected registries (if false, just build the
   container without pushing). **Required.** Default: `false`.
-- `force_build`: Force docker image build even when the Docker Hub tag
-  is up-to-date. **Required.** Default: `false`.
+- `force_build`: Force docker image build even when the registry tags
+  are up-to-date. **Required.** Default: `false`.
 - `ccbr-actions-version`: The version of ccbr_actions to install in the
   image. This value is passed to the Dockerfile as CCBR_ACTIONS_VERSION.
   **Required.** Default: `latest`.

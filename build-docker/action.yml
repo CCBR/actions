@@ -46,7 +46,7 @@ inputs:
     default: "false"
   force_build:
     description: |
-      Force docker image build even when the Docker Hub tag is up-to-date.
+      Force docker image build even when the registry tags are up-to-date.
     required: true
     default: "false"
   ccbr-actions-version:
@@ -249,22 +249,36 @@ runs:
       shell: bash
       env:
         INPUT_FORCE_BUILD: ${{ inputs.force_build }}
-        INPUT_PUSH_GHCR: ${{ steps.resolve_push.outputs.push_ghcr }}
+        INPUT_REGISTRIES: ${{ inputs.registries }}
         INPUT_PLATFORMS: ${{ inputs.platforms }}
+        PUSH_ENABLED: ${{ steps.resolve_push.outputs.push_enabled }}
+        PUSH_DOCKERHUB: ${{ steps.resolve_push.outputs.push_dockerhub }}
+        PUSH_GHCR: ${{ steps.resolve_push.outputs.push_ghcr }}
+        GHCR_NAMESPACE_INPUT: ${{ inputs.ghcr-namespace }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
         DOCKERFILE_PATH_INPUT: ${{ env.DOCKERFILE_PATH }}
         IMAGE_NAME_INPUT: ${{ env.IMAGENAME }}
         DOCKERHUB_NAMESPACE_INPUT: ${{ inputs.dockerhub-namespace }}
         REPO_NAME_INPUT: ${{ env.REPONAME }}
       run: |
         cd "$GITHUB_WORKSPACE"
-        if [[ "${INPUT_PUSH_GHCR}" == "true" || -n "${INPUT_PLATFORMS}" ]]; then
-          INPUT_FORCE_BUILD=true
+        # Check the registries this run pushes to, or the selected ones for build-only runs.
+        if [[ "${PUSH_ENABLED}" == "true" ]]; then
+          registries=""
+          if [[ "${PUSH_DOCKERHUB}" == "true" ]]; then registries+="dockerhub,"; fi
+          if [[ "${PUSH_GHCR}" == "true" ]]; then registries+="ghcr,"; fi
+          registries="${registries%,}"
+        else
+          registries="${INPUT_REGISTRIES}"
         fi
-        export INPUT_FORCE_BUILD
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
-        python "$GITHUB_ACTION_PATH/../scripts/check_docker_build_staleness.py" \
+        PYTHONPATH="$GITHUB_ACTION_PATH/../src${PYTHONPATH:+:$PYTHONPATH}" \
+          python "$GITHUB_ACTION_PATH/../scripts/check_docker_build_staleness.py" \
           "$DOCKERFILE_PATH_INPUT" "$IMAGE_NAME_INPUT" \
-          "$DOCKERHUB_NAMESPACE_INPUT" "$REPO_NAME_INPUT"
+          "$DOCKERHUB_NAMESPACE_INPUT" "$REPO_NAME_INPUT" \
+          --registries "$registries" \
+          --ghcr-namespace "$GHCR_NAMESPACE_INPUT" \
+          --platforms "$INPUT_PLATFORMS"
 
     - name: Set up QEMU
       if: ${{ inputs.platforms != '' }}
