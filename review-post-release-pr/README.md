@@ -37,7 +37,11 @@ The action verifies five conditions:
     readme files may only have existing version/date tokens replaced in
     a recognized citation context (a “version” mention or a bibtex
     `month`/`year` field, with no inserted lines), matching a
-    re-rendered citation snippet from the `auto-format` action.
+    re-rendered citation snippet from the `auto-format` action. A
+    `pip install git+https://github.com/<repo>@<ref>` line for the
+    repository being reviewed may also update only its ref to the release
+    version or its major/minor alias (for example, `v0.9` for `v0.9.0`).
+    Changes to other repositories’ install references require human review.
     Additional `manifest` references, additional `version` references
     within the block, multiline version expressions, and unrecognized or
     ambiguous layouts require human review.
