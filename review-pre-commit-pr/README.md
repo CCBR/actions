@@ -18,9 +18,9 @@ The action verifies two conditions:
     new revs resolve to the same commit (e.g. a moving `vX.Y` alias tag
     replacing a more specific `vX.Y.Z` tag). Pre-commit
     `# frozen: <tag>` annotations are allowed on full commit hashes when
-    the revision changes. As with other hash updates, the validator accepts
-    different hashes without checking their ancestry or whether the
-    annotation matches the commit.
+    the revision changes. As with other hash updates, the validator
+    accepts different hashes without checking their ancestry or whether
+    the annotation matches the commit.
 
 When both conditions are satisfied the action:
 
