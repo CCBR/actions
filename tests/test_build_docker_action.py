@@ -361,17 +361,17 @@ def test_resolve_push_rejects_unknown_registry(tmp_path):
 
 
 @pytest.mark.parametrize(
-    ("push_ghcr", "platforms", "force_build", "expected_force"),
+    ("push_enabled", "push_dockerhub", "push_ghcr", "registries", "expected"),
     [
-        ("true", "", "false", "true"),
-        ("false", "linux/arm64", "false", "true"),
-        ("true", "linux/arm64", "false", "true"),
-        ("false", "", "false", "false"),
-        ("false", "", "true", "true"),
+        ("true", "true", "true", "dockerhub,ghcr", "dockerhub,ghcr"),
+        ("true", "true", "false", "dockerhub,ghcr", "dockerhub"),
+        ("true", "false", "true", "dockerhub,ghcr", "ghcr"),
+        ("false", "false", "false", "dockerhub,ghcr", "dockerhub,ghcr"),
+        ("false", "false", "false", "ghcr", "ghcr"),
     ],
 )
-def test_staleness_check_bypasses_dockerhub_when_needed(
-    tmp_path, push_ghcr, platforms, force_build, expected_force
+def test_staleness_check_uses_target_registries_and_platforms(
+    tmp_path, push_enabled, push_dockerhub, push_ghcr, registries, expected
 ):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
@@ -379,7 +379,10 @@ def test_staleness_check_bypasses_dockerhub_when_needed(
     git.write_text("#!/bin/bash\nexit 0\n")
     git.chmod(0o755)
     python = bin_dir / "python"
-    python.write_text('#!/bin/bash\nprintf "force=%s\\n" "$INPUT_FORCE_BUILD"\n')
+    python.write_text(
+        '#!/bin/bash\nprintf "force=%s pythonpath=%s args=%s\\n" '
+        '"$INPUT_FORCE_BUILD" "$PYTHONPATH" "${*:2}"\n'
+    )
     python.chmod(0o755)
 
     result, _ = run_step(
@@ -387,14 +390,24 @@ def test_staleness_check_bypasses_dockerhub_when_needed(
         tmp_path,
         GITHUB_WORKSPACE=str(tmp_path),
         GITHUB_ACTION_PATH=str(ACTION_PATH.parent),
-        INPUT_FORCE_BUILD=force_build,
-        INPUT_PUSH_GHCR=push_ghcr,
-        INPUT_PLATFORMS=platforms,
+        INPUT_FORCE_BUILD="false",
+        INPUT_REGISTRIES=registries,
+        INPUT_PLATFORMS="linux/amd64,linux/arm64",
+        PUSH_ENABLED=push_enabled,
+        PUSH_DOCKERHUB=push_dockerhub,
+        PUSH_GHCR=push_ghcr,
+        GHCR_NAMESPACE_INPUT="CCBR",
         DOCKERFILE_PATH_INPUT="Dockerfile.v1",
         IMAGE_NAME_INPUT="nciccbr/example:v1",
         DOCKERHUB_NAMESPACE_INPUT="nciccbr",
         REPO_NAME_INPUT="example",
+        PYTHONPATH="",
         PATH=f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
     )
     assert result.returncode == 0, result.stderr
-    assert result.stdout == f"force={expected_force}\n"
+    assert result.stdout == (
+        f"force=false pythonpath={ACTION_PATH.parent}/../src "
+        "args=Dockerfile.v1 nciccbr/example:v1 nciccbr example "
+        f"--registries {expected} --ghcr-namespace CCBR "
+        "--platforms linux/amd64,linux/arm64\n"
+    )
