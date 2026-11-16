@@ -647,16 +647,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#ccbr_actions.docker" id="toc-ccbr_actions.docker" class="nav-link active" data-scroll-target="#ccbr_actions.docker">docker</a>
   <ul class="collapse">
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul class="collapse">
+  <li><a href="#ccbr_actions.docker.RegistryTag" id="toc-ccbr_actions.docker.RegistryTag" class="nav-link" data-scroll-target="#ccbr_actions.docker.RegistryTag">RegistryTag</a></li>
+  </ul></li>
   <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
   <li><a href="#ccbr_actions.docker.base_image_name" id="toc-ccbr_actions.docker.base_image_name" class="nav-link" data-scroll-target="#ccbr_actions.docker.base_image_name">base_image_name</a></li>
   <li><a href="#ccbr_actions.docker.dockerfile_last_commit_iso" id="toc-ccbr_actions.docker.dockerfile_last_commit_iso" class="nav-link" data-scroll-target="#ccbr_actions.docker.dockerfile_last_commit_iso">dockerfile_last_commit_iso</a></li>
+  <li><a href="#ccbr_actions.docker.dockerhub_tag_info" id="toc-ccbr_actions.docker.dockerhub_tag_info" class="nav-link" data-scroll-target="#ccbr_actions.docker.dockerhub_tag_info">dockerhub_tag_info</a></li>
   <li><a href="#ccbr_actions.docker.dockerhub_tag_last_updated" id="toc-ccbr_actions.docker.dockerhub_tag_last_updated" class="nav-link" data-scroll-target="#ccbr_actions.docker.dockerhub_tag_last_updated">dockerhub_tag_last_updated</a></li>
   <li><a href="#ccbr_actions.docker.evaluate_docker_build_staleness" id="toc-ccbr_actions.docker.evaluate_docker_build_staleness" class="nav-link" data-scroll-target="#ccbr_actions.docker.evaluate_docker_build_staleness">evaluate_docker_build_staleness</a></li>
   <li><a href="#ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs" id="toc-ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs" class="nav-link" data-scroll-target="#ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs">evaluate_docker_build_staleness_and_set_outputs</a></li>
+  <li><a href="#ccbr_actions.docker.format_platform" id="toc-ccbr_actions.docker.format_platform" class="nav-link" data-scroll-target="#ccbr_actions.docker.format_platform">format_platform</a></li>
+  <li><a href="#ccbr_actions.docker.ghcr_tag_info" id="toc-ccbr_actions.docker.ghcr_tag_info" class="nav-link" data-scroll-target="#ccbr_actions.docker.ghcr_tag_info">ghcr_tag_info</a></li>
   <li><a href="#ccbr_actions.docker.image_tag_from_image_name" id="toc-ccbr_actions.docker.image_tag_from_image_name" class="nav-link" data-scroll-target="#ccbr_actions.docker.image_tag_from_image_name">image_tag_from_image_name</a></li>
   <li><a href="#ccbr_actions.docker.parse_iso_timestamp" id="toc-ccbr_actions.docker.parse_iso_timestamp" class="nav-link" data-scroll-target="#ccbr_actions.docker.parse_iso_timestamp">parse_iso_timestamp</a></li>
+  <li><a href="#ccbr_actions.docker.platform_is_published" id="toc-ccbr_actions.docker.platform_is_published" class="nav-link" data-scroll-target="#ccbr_actions.docker.platform_is_published">platform_is_published</a></li>
   <li><a href="#ccbr_actions.docker.prepare_docker_build_variables" id="toc-ccbr_actions.docker.prepare_docker_build_variables" class="nav-link" data-scroll-target="#ccbr_actions.docker.prepare_docker_build_variables">prepare_docker_build_variables</a></li>
+  <li><a href="#ccbr_actions.docker.registry_build_reason" id="toc-ccbr_actions.docker.registry_build_reason" class="nav-link" data-scroll-target="#ccbr_actions.docker.registry_build_reason">registry_build_reason</a></li>
   <li><a href="#ccbr_actions.docker.tag_from_dockerfile" id="toc-ccbr_actions.docker.tag_from_dockerfile" class="nav-link" data-scroll-target="#ccbr_actions.docker.tag_from_dockerfile">tag_from_dockerfile</a></li>
   </ul></li>
   </ul></li>
@@ -674,6 +683,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>docker</h1>
 <p><code>docker</code></p>
 <p>Prepare Docker build variables to match the legacy bash script.</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#ccbr_actions.docker.RegistryTag">RegistryTag</a></td>
+<td>Published state of an image tag in a registry.</td>
+</tr>
+</tbody>
+</table>
+<section id="ccbr_actions.docker.RegistryTag" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.RegistryTag">RegistryTag</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>docker.RegistryTag(last_updated, platforms)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Published state of an image tag in a registry.</p>
+<section id="attributes" class="level4 doc-section doc-section-attributes">
+<h4 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>last_updated</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>ISO8601 time the tag was last published, or an empty string when the registry does not report it.</td>
+</tr>
+<tr class="even">
+<td>platforms</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#set">set</a>[<a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>]</td>
+<td>Published <code>os/arch[/variant]</code> platforms.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
 <section id="functions" class="level2">
 <h2 class="anchored" data-anchor-id="functions">Functions</h2>
 <table class="caption-top table">
@@ -693,30 +748,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Get the last git commit timestamp for the Dockerfile.</td>
 </tr>
 <tr class="odd">
+<td><a href="#ccbr_actions.docker.dockerhub_tag_info">dockerhub_tag_info</a></td>
+<td>Get the published state of a Docker Hub tag.</td>
+</tr>
+<tr class="even">
 <td><a href="#ccbr_actions.docker.dockerhub_tag_last_updated">dockerhub_tag_last_updated</a></td>
 <td>Get Docker Hub tag <code>last_updated</code> timestamp.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#ccbr_actions.docker.evaluate_docker_build_staleness">evaluate_docker_build_staleness</a></td>
 <td>Decide whether to build a Docker image based on Dockerfile git history and tag freshness.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs">evaluate_docker_build_staleness_and_set_outputs</a></td>
 <td>Evaluate Docker build staleness and set step outputs.</td>
 </tr>
+<tr class="odd">
+<td><a href="#ccbr_actions.docker.format_platform">format_platform</a></td>
+<td>Format a platform as <code>os/arch[/variant]</code>.</td>
+</tr>
 <tr class="even">
+<td><a href="#ccbr_actions.docker.ghcr_tag_info">ghcr_tag_info</a></td>
+<td>Get the published state of a GitHub Container Registry tag.</td>
+</tr>
+<tr class="odd">
 <td><a href="#ccbr_actions.docker.image_tag_from_image_name">image_tag_from_image_name</a></td>
 <td>Extract the tag suffix from a Docker image name.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#ccbr_actions.docker.parse_iso_timestamp">parse_iso_timestamp</a></td>
 <td>Parse an ISO timestamp and normalize it to UTC.</td>
+</tr>
+<tr class="odd">
+<td><a href="#ccbr_actions.docker.platform_is_published">platform_is_published</a></td>
+<td>Check whether a requested platform is among the published platforms.</td>
 </tr>
 <tr class="even">
 <td><a href="#ccbr_actions.docker.prepare_docker_build_variables">prepare_docker_build_variables</a></td>
 <td>Prepare Docker build variables and optionally write them to GITHUB_ENV.</td>
 </tr>
 <tr class="odd">
+<td><a href="#ccbr_actions.docker.registry_build_reason">registry_build_reason</a></td>
+<td>Explain why a registry tag needs rebuilding.</td>
+</tr>
+<tr class="even">
 <td><a href="#ccbr_actions.docker.tag_from_dockerfile">tag_from_dockerfile</a></td>
 <td>Extract the tag from the Dockerfile name (last extension).</td>
 </tr>
@@ -724,13 +799,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="ccbr_actions.docker.base_image_name" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docker.base_image_name">base_image_name</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>docker.base_image_name(dockerfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>docker.base_image_name(dockerfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Get base image names from a Dockerfile.</p>
 <p>Matches the bash behavior: only lines starting with “FROM” are used and the literal “FROM” substring is removed everywhere on that line.</p>
 </section>
 <section id="ccbr_actions.docker.dockerfile_last_commit_iso" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docker.dockerfile_last_commit_iso">dockerfile_last_commit_iso</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>docker.dockerfile_last_commit_iso(dockerfile_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>docker.dockerfile_last_commit_iso(dockerfile_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Get the last git commit timestamp for the Dockerfile.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
@@ -778,16 +853,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </section>
 </section>
-<section id="ccbr_actions.docker.dockerhub_tag_last_updated" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.docker.dockerhub_tag_last_updated">dockerhub_tag_last_updated</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>docker.dockerhub_tag_last_updated(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    dockerhub_namespace,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    image_tag,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">20</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    session<span class="op">=</span>requests,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Get Docker Hub tag <code>last_updated</code> timestamp.</p>
+<section id="ccbr_actions.docker.dockerhub_tag_info" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.dockerhub_tag_info">dockerhub_tag_info</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>docker.dockerhub_tag_info(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    dockerhub_namespace,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    image_tag,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    session<span class="op">=</span>requests,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Get the published state of a Docker Hub tag.</p>
 <section id="parameters-1" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
 <table class="caption-top table">
@@ -846,22 +921,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> | None</td>
-<td>str or None: ISO8601 <code>last_updated</code> value, or <code>None</code> when tag is absent.</td>
+<td><a href="../reference/docker.html#ccbr_actions.docker.RegistryTag">RegistryTag</a> | None</td>
+<td>RegistryTag or None: Tag state, or <code>None</code> when the tag is absent.</td>
 </tr>
 </tbody>
 </table>
 </section>
 </section>
-<section id="ccbr_actions.docker.evaluate_docker_build_staleness" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.docker.evaluate_docker_build_staleness">evaluate_docker_build_staleness</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>docker.evaluate_docker_build_staleness(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    dockerfile_path,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    image_name,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    dockerhub_namespace,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Decide whether to build a Docker image based on Dockerfile git history and tag freshness.</p>
+<section id="ccbr_actions.docker.dockerhub_tag_last_updated" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.dockerhub_tag_last_updated">dockerhub_tag_last_updated</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>docker.dockerhub_tag_last_updated(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    dockerhub_namespace,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    image_tag,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    session<span class="op">=</span>requests,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Get Docker Hub tag <code>last_updated</code> timestamp.</p>
 <section id="parameters-2" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
 <table class="caption-top table">
@@ -875,18 +951,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>dockerfile_path</td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
-<td>Path to Dockerfile in repository.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td>image_name</td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
-<td>Target image name, including tag.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="odd">
 <td>dockerhub_namespace</td>
 <td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
 <td>Docker Hub namespace/org.</td>
@@ -897,6 +961,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
 <td>Docker Hub repository name.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>image_tag</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Docker image tag.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>timeout</td>
+<td><a href="https://docs.python.org/3/builtins/functions.html#int">int</a></td>
+<td>HTTP timeout in seconds.</td>
+<td><code>20</code></td>
+</tr>
+<tr class="odd">
+<td>session</td>
+<td></td>
+<td>Object with a requests-compatible <code>get</code> method.</td>
+<td><code>requests</code></td>
 </tr>
 </tbody>
 </table>
@@ -913,23 +995,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>dict</td>
-<td><a href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>]</td>
-<td>Build decision fields suitable for GitHub Action outputs.</td>
+<td></td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> | None</td>
+<td>str or None: ISO8601 <code>last_updated</code> value, or <code>None</code> when tag is absent.</td>
 </tr>
 </tbody>
 </table>
 </section>
 </section>
-<section id="ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs" class="level3">
-<h3 class="anchored" data-anchor-id="ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs">evaluate_docker_build_staleness_and_set_outputs</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>docker.evaluate_docker_build_staleness_and_set_outputs(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    dockerfile_path,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    image_name,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    dockerhub_namespace,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Evaluate Docker build staleness and set step outputs.</p>
+<section id="ccbr_actions.docker.evaluate_docker_build_staleness" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.evaluate_docker_build_staleness">evaluate_docker_build_staleness</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>docker.evaluate_docker_build_staleness(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dockerfile_path,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    image_name,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    dockerhub_namespace,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    registries<span class="op">=</span><span class="st">'dockerhub'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    ghcr_namespace<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    platforms<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    github_token<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Decide whether to build a Docker image based on Dockerfile git history and tag freshness.</p>
+<p>The build is skipped only when every selected registry already has the tag, the tag is at least as new as the Dockerfile’s last commit, and it includes every requested platform.</p>
 <section id="parameters-3" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
 <table class="caption-top table">
@@ -963,8 +1050,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td>repo_name</td>
 <td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
-<td>Docker Hub repository name.</td>
+<td>Image repository name.</td>
 <td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>registries</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Comma-separated registries to check (dockerhub, ghcr).</td>
+<td><code>'dockerhub'</code></td>
+</tr>
+<tr class="even">
+<td>ghcr_namespace</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>GHCR owner or organization.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="odd">
+<td>platforms</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Comma-separated requested platforms; empty to skip platform checks.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="even">
+<td>github_token</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Token for reading private GHCR packages.</td>
+<td><code>''</code></td>
 </tr>
 </tbody>
 </table>
@@ -983,7 +1094,243 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>dict</td>
 <td><a href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>]</td>
+<td>Build decision fields suitable for GitHub Action outputs.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.evaluate_docker_build_staleness_and_set_outputs">evaluate_docker_build_staleness_and_set_outputs</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>docker.evaluate_docker_build_staleness_and_set_outputs(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    dockerfile_path,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    image_name,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    dockerhub_namespace,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    registries<span class="op">=</span><span class="st">'dockerhub'</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    ghcr_namespace<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    platforms<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    github_token<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Evaluate Docker build staleness and set step outputs.</p>
+<section id="parameters-4" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dockerfile_path</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Path to Dockerfile in repository.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>image_name</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Target image name, including tag.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>dockerhub_namespace</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Docker Hub namespace/org.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>repo_name</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Image repository name.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>registries</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Comma-separated registries to check (dockerhub, ghcr).</td>
+<td><code>'dockerhub'</code></td>
+</tr>
+<tr class="even">
+<td>ghcr_namespace</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>GHCR owner or organization.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="odd">
+<td>platforms</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Comma-separated requested platforms.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="even">
+<td>github_token</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Token for reading private GHCR packages.</td>
+<td><code>''</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-4" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-4">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dict</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>]</td>
 <td>Build decision fields written to GitHub Action outputs.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="ccbr_actions.docker.format_platform" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.format_platform">format_platform</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>docker.format_platform(os_name, architecture, variant<span class="op">=</span><span class="st">''</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Format a platform as <code>os/arch[/variant]</code>.</p>
+<section id="parameters-5" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>os_name</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Operating system, e.g.&nbsp;<code>linux</code>.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>architecture</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>CPU architecture, e.g.&nbsp;<code>arm64</code>.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>variant</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>CPU variant, e.g.&nbsp;<code>v7</code>.</td>
+<td><code>''</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-5" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-5">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>str</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Platform string.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="ccbr_actions.docker.ghcr_tag_info" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.ghcr_tag_info">ghcr_tag_info</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>docker.ghcr_tag_info(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    ghcr_namespace,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    repo_name,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    image_tag,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    github_token<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    timeout<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    session<span class="op">=</span>requests,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Get the published state of a GitHub Container Registry tag.</p>
+<p>The publish time is the oldest image config <code>created</code> time among the tag’s platform images, which buildx sets to the build time.</p>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ghcr_namespace</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>GHCR owner or organization.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>repo_name</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>GHCR image repository name.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>image_tag</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Docker image tag.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>github_token</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Token for private packages; public packages are read anonymously when empty.</td>
+<td><code>''</code></td>
+</tr>
+<tr class="odd">
+<td>timeout</td>
+<td><a href="https://docs.python.org/3/builtins/functions.html#int">int</a></td>
+<td>HTTP timeout in seconds.</td>
+<td><code>20</code></td>
+</tr>
+<tr class="even">
+<td>session</td>
+<td></td>
+<td>Object with a requests-compatible <code>get</code> method.</td>
+<td><code>requests</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-6" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-6">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="../reference/docker.html#ccbr_actions.docker.RegistryTag">RegistryTag</a> | None</td>
+<td>RegistryTag or None: Tag state, or <code>None</code> when the tag is absent.</td>
 </tr>
 </tbody>
 </table>
@@ -991,10 +1338,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ccbr_actions.docker.image_tag_from_image_name" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docker.image_tag_from_image_name">image_tag_from_image_name</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>docker.image_tag_from_image_name(image_name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>docker.image_tag_from_image_name(image_name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Extract the tag suffix from a Docker image name.</p>
-<section id="parameters-4" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
+<section id="parameters-7" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1014,8 +1361,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="returns-4" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-4">Returns</h4>
+<section id="returns-7" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-7">Returns</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1036,10 +1383,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="ccbr_actions.docker.parse_iso_timestamp" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docker.parse_iso_timestamp">parse_iso_timestamp</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>docker.parse_iso_timestamp(raw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>docker.parse_iso_timestamp(raw)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Parse an ISO timestamp and normalize it to UTC.</p>
-<section id="parameters-5" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<section id="parameters-8" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-8">Parameters</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1059,8 +1406,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="returns-5" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-5">Returns</h4>
+<section id="returns-8" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-8">Returns</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1079,19 +1426,71 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </section>
 </section>
+<section id="ccbr_actions.docker.platform_is_published" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.platform_is_published">platform_is_published</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>docker.platform_is_published(requested, published)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Check whether a requested platform is among the published platforms.</p>
+<p>A requested platform without a variant matches any published variant of the same OS and architecture (e.g.&nbsp;<code>linux/arm64</code> matches <code>linux/arm64/v8</code>).</p>
+<section id="parameters-9" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-9">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>requested</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Requested <code>os/arch[/variant]</code> platform.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>published</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#set">set</a>[<a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>]</td>
+<td>Published platforms.</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-9" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-9">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>bool</td>
+<td><a href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></td>
+<td>Whether the requested platform is published.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="ccbr_actions.docker.prepare_docker_build_variables" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docker.prepare_docker_build_variables">prepare_docker_build_variables</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>docker.prepare_docker_build_variables(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    dockerfile,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    suffix,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    dockerhub_account,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    github_env<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    now<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>docker.prepare_docker_build_variables(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    dockerfile,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    suffix,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    dockerhub_account,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    github_env<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    now<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Prepare Docker build variables and optionally write them to GITHUB_ENV.</p>
 <p>For a root-level Dockerfile, derive the image repository name from GITHUB_REPOSITORY and write the README path relative to the workspace.</p>
-<section id="parameters-6" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<section id="parameters-10" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-10">Parameters</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1135,8 +1534,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="returns-6" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-6">Returns</h4>
+<section id="returns-10" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-10">Returns</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1155,9 +1554,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </section>
 </section>
+<section id="ccbr_actions.docker.registry_build_reason" class="level3">
+<h3 class="anchored" data-anchor-id="ccbr_actions.docker.registry_build_reason">registry_build_reason</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>docker.registry_build_reason(tag, dockerfile_last_commit, platforms)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Explain why a registry tag needs rebuilding.</p>
+<section id="parameters-11" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-11">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>tag</td>
+<td><a href="../reference/docker.html#ccbr_actions.docker.RegistryTag">RegistryTag</a> or None</td>
+<td>Published tag state, or <code>None</code> when absent.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>dockerfile_last_commit</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>ISO8601 time of the Dockerfile’s last commit.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>platforms</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>]</td>
+<td>Requested platforms; empty to skip platform checks.</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-11" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-11">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>str</td>
+<td><a href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></td>
+<td>Build reason, or an empty string when the tag is up-to-date.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="ccbr_actions.docker.tag_from_dockerfile" class="level3">
 <h3 class="anchored" data-anchor-id="ccbr_actions.docker.tag_from_dockerfile">tag_from_dockerfile</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>docker.tag_from_dockerfile(dockerfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>docker.tag_from_dockerfile(dockerfile)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Extract the tag from the Dockerfile name (last extension).</p>
 <p>Mirrors bash ${bn_dockerfile##*.} behavior.</p>
 
