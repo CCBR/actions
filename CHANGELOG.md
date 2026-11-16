@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.9.1
 
 - Check `build-docker` image freshness and requested platforms across Docker Hub and GHCR before rebuilding. (#257, @kelly-sovacool)
 - Fix `review-pre-commit-pr` to accept pre-commit autoupdates with frozen revision annotations. (#258, @kelly-sovacool)
