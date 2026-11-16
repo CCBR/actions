@@ -39,7 +39,7 @@ This action:
   - Logs in only to the selected registries that have credentials.
   - Prepares build-time variables by running a custom script.
   - Checks variables and creates a README file with build details, including the target platform(s), in the same directory as the dockerfile.
-  - Checks whether the Docker Hub tag is stale before building, unless GHCR is enabled for pushing or `platforms` is set.
+  - Checks whether the tag is stale in each target registry (the registries being pushed to, or `registries` when push is disabled) before building. A build is needed if the tag is missing from any registry, is older than the latest dockerfile commit, or lacks any platform in `platforms`.
   - Builds the Docker image only when a build is needed; pushes only when effective push mode is enabled. Set `platforms` to build multi-platform images.
   - Updates the Docker Hub description with the contents of the README file only if the image was successfully pushed there.
   - Opens and merges a PR with the README updates only when the DockerHub description update step runs successfully.
