@@ -104,7 +104,7 @@ github actions runners): <https://github.com/cli/cli#installation>
 Then install the `ccbr_actions` package with pip:
 
 ```bash
-pip install git+https://github.com/CCBR/actions@v0.8
+pip install git+https://github.com/CCBR/actions@v0.9
 ```
 
 Or use the provided [docker
@@ -157,7 +157,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.8.4). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.9.0). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
