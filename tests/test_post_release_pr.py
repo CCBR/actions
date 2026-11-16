@@ -695,6 +695,60 @@ def test_validate_readme_file_accepts_token_bumps():
     assert _validate_readme_file(README_OLD, README_NEW, values) is True
 
 
+@pytest.mark.parametrize(
+    "old_ref,new_ref",
+    [
+        ("v0.8", "v0.9"),
+        ("v0", "v0"),
+        ("v0.8.4", "v0.9.0"),
+        ("0.8", "0.9"),
+    ],
+)
+def test_validate_readme_file_accepts_own_install_reference(old_ref, new_ref):
+    values = _release_bump_values("v0.9.0", RELEASE)
+    prefix = "pip install git+https://github.com/CCBR/actions@"
+    assert (
+        _validate_readme_file(
+            prefix + old_ref, prefix + new_ref, values, repo="CCBR/actions"
+        )
+        is True
+    )
+
+
+@pytest.mark.parametrize(
+    "old_line,new_line",
+    [
+        (
+            "pip install git+https://github.com/CCBR/actions@v0.8",
+            "pip install git+https://github.com/CCBR/actions@v0.10",
+        ),
+        (
+            "pip install git+https://github.com/CCBR/Tools@v0.8",
+            "pip install git+https://github.com/CCBR/Tools@v0.9",
+        ),
+        (
+            "pip install git+https://github.com/CCBR/actions@v0.8",
+            "pip install git+https://github.com/other/actions@v0.9",
+        ),
+        (
+            "pip install git+https://github.com/CCBR/actions@v0.8",
+            "pip install git+https://github.com/CCBR/actions@v0.9 && echo extra",
+        ),
+        (
+            "pip install git+https://github.com/CCBR/actions@v0.8",
+            "pip install git+https://github.com/CCBR/actions@v9",
+        ),
+        ("version v0.8", "version v0.9"),
+        ("Fixes #8", "Fixes #9"),
+    ],
+)
+def test_validate_readme_file_rejects_unrelated_install_changes(old_line, new_line):
+    values = _release_bump_values("v0.9.0", RELEASE)
+    assert (
+        _validate_readme_file(old_line, new_line, values, repo="CCBR/actions") is False
+    )
+
+
 def test_validate_readme_file_rejects_inserted_lines():
     values = _release_bump_values(RELEASE_TAG, RELEASE)
     tampered = README_NEW + "Imports: unsafe-package (>= 0.7.1)\n"
@@ -940,6 +994,32 @@ def test_check_files_are_valid_bumps_returns_true_for_valid_pr():
         session=session,
     )
     assert result is True
+
+
+def test_check_files_are_valid_bumps_accepts_actions_254_install_bump():
+    contents = {
+        key: content.replace("0.7.0", "0.8.4").replace("0.7.1", "0.9.0")
+        for key, content in _default_contents().items()
+    }
+    prefix = "pip install git+https://github.com/CCBR/actions@"
+    contents[("README.md", "base-sha")] += prefix + "v0.8\n"
+    contents[("README.md", "head-sha")] += prefix + "v0.9\n"
+    assert (
+        check_files_are_valid_bumps(
+            "CCBR/actions",
+            _default_filenames(),
+            _default_roles(),
+            "v0.9.0",
+            {**RELEASE, "tag_name": "v0.9.0"},
+            "development version",
+            "base-sha",
+            "head-sha",
+            "VERSION",
+            "DESCRIPTION",
+            session=ContentSession(contents=contents),
+        )
+        is True
+    )
 
 
 def test_check_files_are_valid_bumps_returns_false_when_version_file_not_changed():

@@ -246,7 +246,37 @@ _README_BUMP_CONTEXT_PATTERN = re.compile(
 )
 
 
-def _is_valid_readme_bump_line(old_line, new_line, valid_values):
+def _is_valid_install_bump_line(
+    old_line: str, new_line: str, valid_values: set[str], repo: str | None
+) -> bool:
+    """Allow only this repository's pip Git ref to change to a release alias."""
+    result = False
+    if repo:
+        pattern = re.compile(
+            r"[ \t]*pip install git\+https://github\.com/"
+            + re.escape(repo)
+            + r"(?:\.git)?@(?P<ref>v?\d+(?:\.\d+){0,2})[ \t]*"
+        )
+        old_match = pattern.fullmatch(old_line)
+        new_match = pattern.fullmatch(new_line)
+        if old_match and new_match:
+            release_refs = set()
+            for value in valid_values:
+                if re.fullmatch(r"\d+\.\d+\.\d+", value):
+                    components = value.split(".")
+                    for length in range(1, 4):
+                        alias = ".".join(components[:length])
+                        release_refs.update({alias, f"v{alias}"})
+            start, end = old_match.span("ref")
+            new_ref = new_match.group("ref")
+            result = (
+                new_ref in release_refs
+                and old_line[:start] + new_ref + old_line[end:] == new_line
+            )
+    return result
+
+
+def _is_valid_readme_bump_line(old_line, new_line, valid_values, repo=None):
     """
     Check whether a readme line is a valid, citation-context version/date bump.
 
@@ -255,15 +285,21 @@ def _is_valid_readme_bump_line(old_line, new_line, valid_values):
         new_line (str): The line's new content.
         valid_values (set[str]): Acceptable new token values, from
             [](`~ccbr_actions.post_release_pr._release_bump_values`).
+        repo (str | None): Repository whose pip install reference may be bumped.
 
     Returns:
         bool: ``True`` if the line is an unchanged line, or a valid bump
         occurring in a recognized citation context (a "version" mention or a
-        bibtex ``month``/``year`` field).
+        bibtex ``month``/``year`` field), or this repository's pip install
+        reference changing to a full release version or major/minor alias.
     """
-    return old_line == new_line or (
-        bool(_README_BUMP_CONTEXT_PATTERN.search(new_line))
-        and _is_valid_bump_line(old_line, new_line, valid_values)
+    return (
+        old_line == new_line
+        or (
+            bool(_README_BUMP_CONTEXT_PATTERN.search(new_line))
+            and _is_valid_bump_line(old_line, new_line, valid_values)
+        )
+        or _is_valid_install_bump_line(old_line, new_line, valid_values, repo)
     )
 
 
@@ -562,7 +598,7 @@ def _validate_changelog_file(old_content, new_content, release_version, dev_head
     return result
 
 
-def _validate_readme_file(old_content, new_content, valid_values):
+def _validate_readme_file(old_content, new_content, valid_values, repo=None):
     """
     Check that a readme file's changes are only version/date token bumps.
 
@@ -570,13 +606,16 @@ def _validate_readme_file(old_content, new_content, valid_values):
     its previous content only in numeric/version-like tokens, and only within
     a recognized citation context (a "version" mention or a bibtex
     ``month``/``year`` field), so an unrelated number that happens to match a
-    release token (e.g. an issue reference) is not accepted.
+    release token (e.g. an issue reference) is not accepted. The repository's
+    own ``pip install git+https://github.com/<repo>@<ref>`` line may also
+    update only its ref to the release version or its major/minor alias.
 
     Args:
         old_content (str | None): The file's content at the PR's base.
         new_content (str | None): The file's content at the PR's head.
         valid_values (set[str]): Acceptable new token values, from
             [](`~ccbr_actions.post_release_pr._release_bump_values`).
+        repo (str | None): Repository whose pip install reference may be bumped.
 
     Returns:
         bool: ``True`` if every line is unchanged or a valid contextual bump.
@@ -587,7 +626,7 @@ def _validate_readme_file(old_content, new_content, valid_values):
         old_lines = old_content.splitlines()
         new_lines = new_content.splitlines()
         result = len(old_lines) == len(new_lines) and all(
-            _is_valid_readme_bump_line(old_line, new_line, valid_values)
+            _is_valid_readme_bump_line(old_line, new_line, valid_values, repo)
             for old_line, new_line in zip(old_lines, new_lines)
         )
     return result
@@ -602,6 +641,7 @@ def _validate_file_bump(
     release_dates,
     dev_header,
     valid_values,
+    repo=None,
 ):
     """
     Dispatch to the validator for an allowed file's role.
@@ -617,6 +657,7 @@ def _validate_file_bump(
             [](`~ccbr_actions.post_release_pr._release_dates`).
         dev_header (str): Development-version header text for changelog files.
         valid_values (set[str]): Acceptable new token values for readme files.
+        repo (str | None): Repository whose pip install reference may be bumped.
 
     Returns:
         bool: ``True`` if the file's change is a valid bump for its role.
@@ -640,7 +681,7 @@ def _validate_file_bump(
             old_content, new_content, release_version, dev_header
         )
     else:
-        result = _validate_readme_file(old_content, new_content, valid_values)
+        result = _validate_readme_file(old_content, new_content, valid_values, repo)
     return result
 
 
@@ -717,6 +758,7 @@ def check_files_are_valid_bumps(
                 release_dates,
                 dev_header,
                 valid_values,
+                repo=repo,
             )
             and files_valid
         )
@@ -1182,7 +1224,8 @@ def review_post_release_pr(
       version/date tokens replaced in a recognized citation context (a
       "version" mention or a bibtex ``month``/``year`` field, with no
       inserted lines), matching a re-rendered citation snippet from the
-      ``auto-format`` action.
+      ``auto-format`` action, or updated only this repository's pip Git
+      install ref to the release version or its major/minor alias.
     - **Condition 5** – no reviewer currently has an active CHANGES_REQUESTED
       review; automatic approval is skipped until that review is resolved,
       even if the file-level checks above would otherwise pass.

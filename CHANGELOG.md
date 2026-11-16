@@ -1,5 +1,6 @@
 ## actions development version
 
+- Fix `review-post-release-pr` to accept release-matching install references for the repository under review. (#255, @kelly-sovacool)
 - Check `build-docker` image freshness and requested platforms across Docker Hub and GHCR before rebuilding. (#257, @kelly-sovacool)
 
 ## actions 0.9.0
