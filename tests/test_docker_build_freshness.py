@@ -481,6 +481,36 @@ def test_ghcr_tag_info_reads_index_platforms_and_oldest_build_time(monkeypatch):
     assert not any("sha256:att" in url for url, _ in calls)
 
 
+def test_ghcr_tag_info_preserves_descriptor_variant_when_config_omits_it(monkeypatch):
+    documents = {
+        "manifests/v1": {
+            "manifests": [
+                {
+                    "digest": "sha256:arm",
+                    "platform": {
+                        "os": "linux",
+                        "architecture": "arm",
+                        "variant": "v7",
+                    },
+                }
+            ]
+        },
+        "manifests/sha256:arm": {"config": {"digest": "sha256:armcfg"}},
+        "blobs/sha256:armcfg": {
+            "os": "linux",
+            "architecture": "arm",
+            "created": "2026-01-02T00:00:00Z",
+        },
+    }
+
+    monkeypatch.setattr(
+        docker_module.requests, "get", fake_registry_get(ghcr=documents)
+    )
+    tag = docker_module.ghcr_tag_info("ccbr", "example", "v1")
+
+    assert tag.platforms == {"linux/arm/v7"}
+
+
 def test_ghcr_tag_info_single_platform_manifest(monkeypatch):
     documents = {
         "manifests/v1": {"config": {"digest": "sha256:cfg"}},
@@ -556,6 +586,59 @@ def test_staleness_skips_when_all_registries_current(monkeypatch):
     assert result["tag_exists"] == "true"
     assert result["reason"] == "tag_is_newer_or_equal_to_dockerfile"
     assert result["tag_last_updated"] == "2026-01-02T00:00:00Z"
+
+
+def test_staleness_skips_when_ghcr_descriptor_has_requested_variant(monkeypatch):
+    documents = {
+        "manifests/v1": {
+            "manifests": [
+                {
+                    "digest": "sha256:arm",
+                    "platform": {
+                        "os": "linux",
+                        "architecture": "arm",
+                        "variant": "v7",
+                    },
+                }
+            ]
+        },
+        "manifests/sha256:arm": {"config": {"digest": "sha256:armcfg"}},
+        "blobs/sha256:armcfg": {
+            "os": "linux",
+            "architecture": "arm",
+            "created": "2026-01-02T00:00:00Z",
+        },
+    }
+    result = evaluate(
+        monkeypatch,
+        fake_registry_get(ghcr=documents),
+        registries="ghcr",
+        ghcr_namespace="ccbr",
+        platforms="linux/arm/v7",
+    )
+
+    assert result["should_build"] == "false"
+    assert result["reason"] == "tag_is_newer_or_equal_to_dockerfile"
+
+
+def test_staleness_builds_when_dockerhub_timestamp_is_invalid(monkeypatch):
+    result = evaluate(
+        monkeypatch,
+        fake_registry_get(
+            dockerhub=FakeResponse(
+                payload={
+                    "last_updated": "not-a-timestamp",
+                    "images": [{"os": "linux", "architecture": "amd64"}],
+                }
+            )
+        ),
+        registries="dockerhub",
+    )
+
+    assert result["should_build"] == "true"
+    assert result["tag_exists"] == "false"
+    assert result["reason"] == "dockerhub:lookup_failed_ValueError"
+    assert result["tag_last_updated"] == ""
 
 
 def test_staleness_builds_when_ghcr_tag_missing(monkeypatch):

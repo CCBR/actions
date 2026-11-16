@@ -371,22 +371,26 @@ def ghcr_tag_info(
 
     if "manifests" in manifest:
         image_manifests = [
-            get_json(f"manifests/{entry['digest']}")
+            (
+                get_json(f"manifests/{entry['digest']}"),
+                entry.get("platform") or {},
+            )
             for entry in manifest["manifests"]
             if (entry.get("platform") or {}).get("os", "unknown") != "unknown"
         ]
     else:
-        image_manifests = [manifest]
+        image_manifests = [(manifest, {})]
 
     platforms = set()
     created_times = []
-    for image_manifest in image_manifests:
+    for image_manifest, descriptor_platform in image_manifests:
         config = get_json(f"blobs/{image_manifest['config']['digest']}")
-        platforms.add(
-            format_platform(
-                config.get("os"), config.get("architecture"), config.get("variant")
-            )
+        os_name = descriptor_platform.get("os") or config.get("os")
+        architecture = descriptor_platform.get("architecture") or config.get(
+            "architecture"
         )
+        variant = descriptor_platform.get("variant") or config.get("variant")
+        platforms.add(format_platform(os_name, architecture, variant))
         if config.get("created"):
             created_times.append(config["created"])
 
@@ -483,10 +487,10 @@ def evaluate_docker_build_staleness(
                     )
                 else:
                     raise ValueError(f"Unsupported registry '{registry}'")
-                tags.append(tag)
                 registry_reason = registry_build_reason(
                     tag, dockerfile_last_commit, platform_list
                 )
+                tags.append(tag)
             except requests.HTTPError as exc:
                 tags.append(None)
                 status_code = getattr(exc.response, "status_code", "unknown")
