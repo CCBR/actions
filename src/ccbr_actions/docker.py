@@ -4,6 +4,7 @@ Prepare Docker build variables to match the legacy bash script.
 
 from __future__ import annotations
 
+import dataclasses
 import datetime
 import os
 import pathlib
@@ -178,6 +179,110 @@ def dockerfile_last_commit_iso(dockerfile_path: str) -> str:
     return last_commit_iso
 
 
+REGISTRY_MANIFEST_MEDIA_TYPES = (
+    "application/vnd.oci.image.index.v1+json, "
+    "application/vnd.docker.distribution.manifest.list.v2+json, "
+    "application/vnd.oci.image.manifest.v1+json, "
+    "application/vnd.docker.distribution.manifest.v2+json"
+)
+
+
+@dataclasses.dataclass
+class RegistryTag:
+    """
+    Published state of an image tag in a registry.
+
+    Attributes:
+        last_updated (str): ISO8601 time the tag was last published, or an
+            empty string when the registry does not report it.
+        platforms (set[str]): Published ``os/arch[/variant]`` platforms.
+    """
+
+    last_updated: str
+    platforms: set[str]
+
+
+def format_platform(os_name: str, architecture: str, variant: str | None = "") -> str:
+    """
+    Format a platform as ``os/arch[/variant]``.
+
+    Args:
+        os_name (str): Operating system, e.g. ``linux``.
+        architecture (str): CPU architecture, e.g. ``arm64``.
+        variant (str, optional): CPU variant, e.g. ``v7``.
+
+    Returns:
+        str: Platform string.
+    """
+    return pathlib.PurePosixPath(os_name, architecture, variant or "").as_posix()
+
+
+def platform_is_published(requested: str, published: set[str]) -> bool:
+    """
+    Check whether a requested platform is among the published platforms.
+
+    A requested platform without a variant matches any published variant of
+    the same OS and architecture (e.g. ``linux/arm64`` matches ``linux/arm64/v8``).
+
+    Args:
+        requested (str): Requested ``os/arch[/variant]`` platform.
+        published (set[str]): Published platforms.
+
+    Returns:
+        bool: Whether the requested platform is published.
+    """
+    requested_parts = requested.strip().lower().split("/")
+    for platform in published:
+        parts = platform.lower().split("/")
+        if parts[:2] == requested_parts[:2] and (
+            len(requested_parts) < 3 or parts[2:3] == requested_parts[2:3]
+        ):
+            return True
+    return False
+
+
+def dockerhub_tag_info(
+    dockerhub_namespace: str,
+    repo_name: str,
+    image_tag: str,
+    timeout: int = 20,
+    session=requests,
+) -> RegistryTag | None:
+    """
+    Get the published state of a Docker Hub tag.
+
+    Args:
+        dockerhub_namespace (str): Docker Hub namespace/org.
+        repo_name (str): Docker Hub repository name.
+        image_tag (str): Docker image tag.
+        timeout (int): HTTP timeout in seconds.
+        session: Object with a requests-compatible ``get`` method.
+
+    Returns:
+        RegistryTag or None: Tag state, or ``None`` when the tag is absent.
+    """
+    tag_url = (
+        f"https://hub.docker.com/v2/namespaces/{dockerhub_namespace}/"
+        f"repositories/{repo_name}/tags/{image_tag}"
+    )
+    response = session.get(tag_url, timeout=timeout)
+    if response.status_code == 404:
+        return None
+    response.raise_for_status()
+    payload = response.json()
+    platforms = {
+        format_platform(
+            image.get("os"), image.get("architecture"), image.get("variant")
+        )
+        for image in payload.get("images") or []
+        if image.get("os") and image.get("os") != "unknown"
+    }
+    return RegistryTag(
+        last_updated=(payload.get("last_updated") or "").strip(),
+        platforms=platforms,
+    )
+
+
 def dockerhub_tag_last_updated(
     dockerhub_namespace: str,
     repo_name: str,
@@ -198,17 +303,125 @@ def dockerhub_tag_last_updated(
     Returns:
         str or None: ISO8601 ``last_updated`` value, or ``None`` when tag is absent.
     """
-    tag_url = (
-        f"https://hub.docker.com/v2/namespaces/{dockerhub_namespace}/"
-        f"repositories/{repo_name}/tags/{image_tag}"
+    tag = dockerhub_tag_info(
+        dockerhub_namespace=dockerhub_namespace,
+        repo_name=repo_name,
+        image_tag=image_tag,
+        timeout=timeout,
+        session=session,
     )
-    last_updated = None
-    response = session.get(tag_url, timeout=timeout)
-    if response.status_code != 404:
+    return None if tag is None else tag.last_updated
+
+
+def ghcr_tag_info(
+    ghcr_namespace: str,
+    repo_name: str,
+    image_tag: str,
+    github_token: str = "",
+    timeout: int = 20,
+    session=requests,
+) -> RegistryTag | None:
+    """
+    Get the published state of a GitHub Container Registry tag.
+
+    The publish time is the oldest image config ``created`` time among the
+    tag's platform images, which buildx sets to the build time.
+
+    Args:
+        ghcr_namespace (str): GHCR owner or organization.
+        repo_name (str): GHCR image repository name.
+        image_tag (str): Docker image tag.
+        github_token (str): Token for private packages; public packages are
+            read anonymously when empty.
+        timeout (int): HTTP timeout in seconds.
+        session: Object with a requests-compatible ``get`` method.
+
+    Returns:
+        RegistryTag or None: Tag state, or ``None`` when the tag is absent.
+    """
+    repository = f"{ghcr_namespace.lower()}/{repo_name.lower()}"
+    token_response = session.get(
+        "https://ghcr.io/token",
+        params={"scope": f"repository:{repository}:pull", "service": "ghcr.io"},
+        auth=("token", github_token) if github_token else None,
+        timeout=timeout,
+    )
+    token_response.raise_for_status()
+    headers = {
+        "Authorization": f"Bearer {token_response.json()['token']}",
+        "Accept": REGISTRY_MANIFEST_MEDIA_TYPES,
+    }
+
+    def get_json(path: str) -> dict:
+        response = session.get(
+            f"https://ghcr.io/v2/{repository}/{path}", headers=headers, timeout=timeout
+        )
         response.raise_for_status()
-        payload = response.json()
-        last_updated = (payload.get("last_updated") or "").strip()
-    return last_updated
+        return response.json()
+
+    response = session.get(
+        f"https://ghcr.io/v2/{repository}/manifests/{image_tag}",
+        headers=headers,
+        timeout=timeout,
+    )
+    if response.status_code == 404:
+        return None
+    response.raise_for_status()
+    manifest = response.json()
+
+    if "manifests" in manifest:
+        image_manifests = [
+            get_json(f"manifests/{entry['digest']}")
+            for entry in manifest["manifests"]
+            if (entry.get("platform") or {}).get("os", "unknown") != "unknown"
+        ]
+    else:
+        image_manifests = [manifest]
+
+    platforms = set()
+    created_times = []
+    for image_manifest in image_manifests:
+        config = get_json(f"blobs/{image_manifest['config']['digest']}")
+        platforms.add(
+            format_platform(
+                config.get("os"), config.get("architecture"), config.get("variant")
+            )
+        )
+        if config.get("created"):
+            created_times.append(config["created"])
+
+    last_updated = min(created_times, key=parse_iso_timestamp) if created_times else ""
+    return RegistryTag(last_updated=last_updated, platforms=platforms)
+
+
+def registry_build_reason(
+    tag: RegistryTag | None,
+    dockerfile_last_commit: str,
+    platforms: list[str],
+) -> str:
+    """
+    Explain why a registry tag needs rebuilding.
+
+    Args:
+        tag (RegistryTag or None): Published tag state, or ``None`` when absent.
+        dockerfile_last_commit (str): ISO8601 time of the Dockerfile's last commit.
+        platforms (list[str]): Requested platforms; empty to skip platform checks.
+
+    Returns:
+        str: Build reason, or an empty string when the tag is up-to-date.
+    """
+    if tag is None:
+        return "tag_not_found"
+    if not tag.last_updated:
+        return "tag_missing_last_updated"
+    if parse_iso_timestamp(dockerfile_last_commit) > parse_iso_timestamp(
+        tag.last_updated
+    ):
+        return "dockerfile_changed_after_tag"
+    missing = [p for p in platforms if not platform_is_published(p, tag.platforms)]
+    if missing:
+        return f"missing_platforms_{','.join(missing)}"
+    return ""
 
 
 def evaluate_docker_build_staleness(
@@ -216,15 +429,28 @@ def evaluate_docker_build_staleness(
     image_name: str,
     dockerhub_namespace: str,
     repo_name: str,
+    registries: str = "dockerhub",
+    ghcr_namespace: str = "",
+    platforms: str = "",
+    github_token: str = "",
 ) -> dict[str, str]:
     """
     Decide whether to build a Docker image based on Dockerfile git history and tag freshness.
+
+    The build is skipped only when every selected registry already has the tag,
+    the tag is at least as new as the Dockerfile's last commit, and it includes
+    every requested platform.
 
     Args:
         dockerfile_path (str): Path to Dockerfile in repository.
         image_name (str): Target image name, including tag.
         dockerhub_namespace (str): Docker Hub namespace/org.
-        repo_name (str): Docker Hub repository name.
+        repo_name (str): Image repository name.
+        registries (str): Comma-separated registries to check (dockerhub, ghcr).
+        ghcr_namespace (str): GHCR owner or organization.
+        platforms (str): Comma-separated requested platforms; empty to skip
+            platform checks.
+        github_token (str): Token for reading private GHCR packages.
 
     Returns:
         dict: Build decision fields suitable for GitHub Action outputs.
@@ -233,41 +459,50 @@ def evaluate_docker_build_staleness(
     tag_exists = False
     tag_last_updated = ""
     reason = "default_build"
+    registry_list = [r.strip().lower() for r in registries.split(",") if r.strip()]
+    platform_list = [p.strip() for p in platforms.split(",") if p.strip()]
 
     dockerfile_last_commit = dockerfile_last_commit_iso(dockerfile_path)
+    image_tag = image_tag_from_image_name(image_name)
     if not dockerfile_last_commit:
         reason = "no_git_history_for_dockerfile"
+    elif not image_tag:
+        reason = "missing_image_tag"
+    elif not registry_list:
+        reason = "no_registries_selected"
     else:
-        image_tag = image_tag_from_image_name(image_name)
-        if not image_tag:
-            reason = "missing_image_tag"
-        else:
+        reasons = []
+        tags = []
+        for registry in registry_list:
             try:
-                tag_last_updated_value = dockerhub_tag_last_updated(
-                    dockerhub_namespace=dockerhub_namespace,
-                    repo_name=repo_name,
-                    image_tag=image_tag,
-                )
-                if tag_last_updated_value is None:
-                    reason = "tag_not_found"
+                if registry == "dockerhub":
+                    tag = dockerhub_tag_info(dockerhub_namespace, repo_name, image_tag)
+                elif registry == "ghcr":
+                    tag = ghcr_tag_info(
+                        ghcr_namespace, repo_name, image_tag, github_token
+                    )
                 else:
-                    tag_exists = True
-                    tag_last_updated = tag_last_updated_value
-                    if tag_last_updated:
-                        dockerfile_dt = parse_iso_timestamp(dockerfile_last_commit)
-                        tag_dt = parse_iso_timestamp(tag_last_updated)
-                        should_build = dockerfile_dt > tag_dt
-                        if should_build:
-                            reason = "dockerfile_changed_after_tag"
-                        else:
-                            reason = "tag_is_newer_or_equal_to_dockerfile"
-                    else:
-                        reason = "tag_missing_last_updated"
+                    raise ValueError(f"Unsupported registry '{registry}'")
+                tags.append(tag)
+                registry_reason = registry_build_reason(
+                    tag, dockerfile_last_commit, platform_list
+                )
             except requests.HTTPError as exc:
+                tags.append(None)
                 status_code = getattr(exc.response, "status_code", "unknown")
-                reason = f"dockerhub_http_{status_code}"
-            except (requests.RequestException, ValueError, TypeError) as exc:
-                reason = f"dockerhub_lookup_failed_{type(exc).__name__}"
+                registry_reason = f"http_{status_code}"
+            except (requests.RequestException, ValueError, TypeError, KeyError) as exc:
+                tags.append(None)
+                registry_reason = f"lookup_failed_{type(exc).__name__}"
+            if registry_reason:
+                reasons.append(f"{registry}:{registry_reason}")
+
+        tag_exists = all(tag is not None for tag in tags)
+        published_times = [tag.last_updated for tag in tags if tag and tag.last_updated]
+        if published_times:
+            tag_last_updated = min(published_times, key=parse_iso_timestamp)
+        should_build = bool(reasons)
+        reason = ";".join(reasons) if reasons else "tag_is_newer_or_equal_to_dockerfile"
 
     return {
         "should_build": "true" if should_build else "false",
@@ -283,6 +518,10 @@ def evaluate_docker_build_staleness_and_set_outputs(
     image_name: str,
     dockerhub_namespace: str,
     repo_name: str,
+    registries: str = "dockerhub",
+    ghcr_namespace: str = "",
+    platforms: str = "",
+    github_token: str = "",
 ) -> dict[str, str]:
     """
     Evaluate Docker build staleness and set step outputs.
@@ -291,7 +530,11 @@ def evaluate_docker_build_staleness_and_set_outputs(
         dockerfile_path (str): Path to Dockerfile in repository.
         image_name (str): Target image name, including tag.
         dockerhub_namespace (str): Docker Hub namespace/org.
-        repo_name (str): Docker Hub repository name.
+        repo_name (str): Image repository name.
+        registries (str): Comma-separated registries to check (dockerhub, ghcr).
+        ghcr_namespace (str): GHCR owner or organization.
+        platforms (str): Comma-separated requested platforms.
+        github_token (str): Token for reading private GHCR packages.
 
     Returns:
         dict: Build decision fields written to GitHub Action outputs.
@@ -301,6 +544,10 @@ def evaluate_docker_build_staleness_and_set_outputs(
         image_name=image_name,
         dockerhub_namespace=dockerhub_namespace,
         repo_name=repo_name,
+        registries=registries,
+        ghcr_namespace=ghcr_namespace,
+        platforms=platforms,
+        github_token=github_token,
     )
     for name, value in result.items():
         set_output(name, value)
@@ -309,8 +556,8 @@ def evaluate_docker_build_staleness_and_set_outputs(
         print(f"::notice::Will build image. reason={result['reason']}")
     else:
         print(
-            "::notice::Skipping docker build because Docker Hub tag is up-to-date "
-            f"(dockerfile_last_commit={result['dockerfile_last_commit']}, "
+            f"::notice::Skipping docker build because the {registries} tag is "
+            f"up-to-date (dockerfile_last_commit={result['dockerfile_last_commit']}, "
             f"tag_last_updated={result['tag_last_updated']})."
         )
 

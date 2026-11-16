@@ -203,7 +203,7 @@ def test_evaluate_docker_build_staleness_build_when_tag_missing(monkeypatch):
 
     assert result["should_build"] == "true"
     assert result["tag_exists"] == "false"
-    assert result["reason"] == "tag_not_found"
+    assert result["reason"] == "dockerhub:tag_not_found"
     assert result["tag_last_updated"] == ""
 
 
@@ -231,7 +231,7 @@ def test_evaluate_docker_build_staleness_build_when_dockerfile_newer(monkeypatch
 
     assert result["should_build"] == "true"
     assert result["tag_exists"] == "true"
-    assert result["reason"] == "dockerfile_changed_after_tag"
+    assert result["reason"] == "dockerhub:dockerfile_changed_after_tag"
     assert result["dockerfile_last_commit"] == "2026-01-03T00:00:00+00:00"
 
 
@@ -294,7 +294,7 @@ def test_evaluate_docker_build_staleness_missing_last_updated(monkeypatch):
     )
 
     assert result["should_build"] == "true"
-    assert result["reason"] == "tag_missing_last_updated"
+    assert result["reason"] == "dockerhub:tag_missing_last_updated"
 
 
 def test_evaluate_docker_build_staleness_http_error(monkeypatch):
@@ -318,7 +318,7 @@ def test_evaluate_docker_build_staleness_http_error(monkeypatch):
     )
 
     assert result["should_build"] == "true"
-    assert "dockerhub_http_500" in result["reason"]
+    assert result["reason"] == "dockerhub:http_500"
 
 
 def test_evaluate_docker_build_staleness_generic_exception(monkeypatch):
@@ -341,7 +341,7 @@ def test_evaluate_docker_build_staleness_generic_exception(monkeypatch):
     )
 
     assert result["should_build"] == "true"
-    assert "dockerhub_lookup_failed_ValueError" in result["reason"]
+    assert result["reason"] == "dockerhub:lookup_failed_ValueError"
 
 
 def test_evaluate_docker_build_staleness_and_set_outputs(
@@ -403,3 +403,221 @@ def test_evaluate_docker_build_staleness_and_set_outputs_build_true(
     assert "should_build<<" in output_text
     assert "reason<<" in output_text
     assert "tag_not_found" in output_text
+
+
+GHCR_INDEX = {
+    "manifests": [
+        {"digest": "sha256:amd", "platform": {"os": "linux", "architecture": "amd64"}},
+        {"digest": "sha256:arm", "platform": {"os": "linux", "architecture": "arm64"}},
+        {
+            "digest": "sha256:att",
+            "platform": {"os": "unknown", "architecture": "unknown"},
+        },
+    ]
+}
+GHCR_DOCUMENTS = {
+    "manifests/v1": GHCR_INDEX,
+    "manifests/sha256:amd": {"config": {"digest": "sha256:amdcfg"}},
+    "manifests/sha256:arm": {"config": {"digest": "sha256:armcfg"}},
+    "blobs/sha256:amdcfg": {
+        "os": "linux",
+        "architecture": "amd64",
+        "created": "2026-01-02T00:05:00Z",
+    },
+    "blobs/sha256:armcfg": {
+        "os": "linux",
+        "architecture": "arm64",
+        "variant": "v8",
+        "created": "2026-01-02T00:00:00Z",
+    },
+}
+
+
+def fake_registry_get(dockerhub=None, ghcr=None, calls=None):
+    """Build a fake ``requests.get`` serving Docker Hub and GHCR documents."""
+
+    def fake_get(url, **kwargs):
+        if calls is not None:
+            calls.append((url, kwargs))
+        if url.startswith("https://hub.docker.com/"):
+            return dockerhub or FakeResponse(status_code=404)
+        if url == "https://ghcr.io/token":
+            return FakeResponse(payload={"token": "registry-token"})
+        path = url.split("/ccbr/example/", 1)[1]
+        documents = GHCR_DOCUMENTS if ghcr is None else ghcr
+        if path not in documents:
+            return FakeResponse(status_code=404)
+        return FakeResponse(payload=documents[path])
+
+    return fake_get
+
+
+def evaluate(monkeypatch, fake_get, last_commit="2026-01-01T00:00:00+00:00", **kwargs):
+    monkeypatch.setattr(
+        docker_module.subprocess, "check_output", lambda *a, **k: last_commit + "\n"
+    )
+    monkeypatch.setattr(docker_module.requests, "get", fake_get)
+    return docker_module.evaluate_docker_build_staleness(
+        dockerfile_path="example/Dockerfile.v1",
+        image_name="nciccbr/example:v1",
+        dockerhub_namespace="nciccbr",
+        repo_name="example",
+        **kwargs,
+    )
+
+
+def test_ghcr_tag_info_reads_index_platforms_and_oldest_build_time(monkeypatch):
+    calls = []
+    monkeypatch.setattr(docker_module.requests, "get", fake_registry_get(calls=calls))
+
+    tag = docker_module.ghcr_tag_info("CCBR", "Example", "v1", github_token="secret")
+
+    assert tag.platforms == {"linux/amd64", "linux/arm64/v8"}
+    assert tag.last_updated == "2026-01-02T00:00:00Z"
+    token_url, token_kwargs = calls[0]
+    assert token_url == "https://ghcr.io/token"
+    assert token_kwargs["params"]["scope"] == "repository:ccbr/example:pull"
+    assert token_kwargs["auth"] == ("token", "secret")
+    assert not any("sha256:att" in url for url, _ in calls)
+
+
+def test_ghcr_tag_info_single_platform_manifest(monkeypatch):
+    documents = {
+        "manifests/v1": {"config": {"digest": "sha256:cfg"}},
+        "blobs/sha256:cfg": {
+            "os": "linux",
+            "architecture": "amd64",
+            "created": "2026-01-02T00:00:00Z",
+        },
+    }
+    calls = []
+    monkeypatch.setattr(
+        docker_module.requests, "get", fake_registry_get(ghcr=documents, calls=calls)
+    )
+
+    tag = docker_module.ghcr_tag_info("ccbr", "example", "v1")
+
+    assert tag == docker_module.RegistryTag("2026-01-02T00:00:00Z", {"linux/amd64"})
+    assert calls[0][1]["auth"] is None
+
+
+def test_ghcr_tag_info_missing_tag(monkeypatch):
+    monkeypatch.setattr(docker_module.requests, "get", fake_registry_get(ghcr={}))
+    assert docker_module.ghcr_tag_info("ccbr", "example", "v1") is None
+
+
+def test_dockerhub_tag_info_reads_platforms(monkeypatch):
+    payload = {
+        "last_updated": "2026-01-02T00:00:00Z",
+        "images": [
+            {"os": "linux", "architecture": "amd64"},
+            {"os": "linux", "architecture": "arm", "variant": "v7"},
+            {"os": "unknown", "architecture": "unknown"},
+        ],
+    }
+    monkeypatch.setattr(
+        docker_module.requests, "get", lambda *a, **k: FakeResponse(payload=payload)
+    )
+
+    tag = docker_module.dockerhub_tag_info("nciccbr", "example", "v1")
+
+    assert tag.platforms == {"linux/amd64", "linux/arm/v7"}
+
+
+def test_platform_is_published_matches_variants():
+    published = {"linux/amd64", "linux/arm64/v8", "linux/arm/v7"}
+    assert docker_module.platform_is_published("linux/arm64", published)
+    assert docker_module.platform_is_published("linux/arm/v7", published)
+    assert not docker_module.platform_is_published("linux/arm/v6", published)
+    assert not docker_module.platform_is_published("linux/ppc64le", published)
+
+
+DOCKERHUB_CURRENT = FakeResponse(
+    payload={
+        "last_updated": "2026-01-03T00:00:00Z",
+        "images": [
+            {"os": "linux", "architecture": "amd64"},
+            {"os": "linux", "architecture": "arm64"},
+        ],
+    }
+)
+
+
+def test_staleness_skips_when_all_registries_current(monkeypatch):
+    result = evaluate(
+        monkeypatch,
+        fake_registry_get(dockerhub=DOCKERHUB_CURRENT),
+        registries="dockerhub,ghcr",
+        ghcr_namespace="CCBR",
+        platforms="linux/amd64,linux/arm64",
+    )
+
+    assert result["should_build"] == "false"
+    assert result["tag_exists"] == "true"
+    assert result["reason"] == "tag_is_newer_or_equal_to_dockerfile"
+    assert result["tag_last_updated"] == "2026-01-02T00:00:00Z"
+
+
+def test_staleness_builds_when_ghcr_tag_missing(monkeypatch):
+    result = evaluate(
+        monkeypatch,
+        fake_registry_get(dockerhub=DOCKERHUB_CURRENT, ghcr={}),
+        registries="dockerhub,ghcr",
+        ghcr_namespace="ccbr",
+    )
+
+    assert result["should_build"] == "true"
+    assert result["tag_exists"] == "false"
+    assert result["reason"] == "ghcr:tag_not_found"
+
+
+def test_staleness_builds_when_ghcr_older_than_dockerfile(monkeypatch):
+    result = evaluate(
+        monkeypatch,
+        fake_registry_get(dockerhub=DOCKERHUB_CURRENT),
+        last_commit="2026-01-02T00:01:00+00:00",
+        registries="dockerhub,ghcr",
+        ghcr_namespace="ccbr",
+    )
+
+    assert result["should_build"] == "true"
+    assert result["reason"] == "ghcr:dockerfile_changed_after_tag"
+
+
+def test_staleness_builds_when_platform_missing(monkeypatch):
+    result = evaluate(
+        monkeypatch,
+        fake_registry_get(dockerhub=DOCKERHUB_CURRENT),
+        registries="dockerhub,ghcr",
+        ghcr_namespace="ccbr",
+        platforms="linux/amd64,linux/ppc64le",
+    )
+
+    assert result["should_build"] == "true"
+    assert result["reason"] == (
+        "dockerhub:missing_platforms_linux/ppc64le;ghcr:missing_platforms_linux/ppc64le"
+    )
+
+
+def test_staleness_builds_when_ghcr_inaccessible(monkeypatch):
+    def fake_get(url, **kwargs):
+        if url.startswith("https://ghcr.io/v2/"):
+            return FakeResponse(status_code=403)
+        return fake_registry_get(dockerhub=DOCKERHUB_CURRENT)(url, **kwargs)
+
+    result = evaluate(monkeypatch, fake_get, registries="ghcr", ghcr_namespace="ccbr")
+
+    assert result["should_build"] == "true"
+    assert result["reason"] == "ghcr:http_403"
+
+
+def test_staleness_checks_only_selected_registries(monkeypatch):
+    calls = []
+    result = evaluate(
+        monkeypatch,
+        fake_registry_get(dockerhub=DOCKERHUB_CURRENT, calls=calls),
+        registries="dockerhub",
+    )
+
+    assert result["should_build"] == "false"
+    assert all(url.startswith("https://hub.docker.com/") for url, _ in calls)
