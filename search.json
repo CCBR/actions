@@ -624,22 +624,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Support Docker Hub and GHCR publishing, multi-platform builds and platform reporting, and root-level Dockerfiles in build-docker. (#249, #253, @kelly-sovacool, @Copilot)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.9.0",
     "href": "CHANGELOG.html#actions-0.9.0",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Support Docker Hub and GHCR publishing, multi-platform builds and platform reporting, and root-level Dockerfiles in build-docker. (#249, #253, @kelly-sovacool, @Copilot)",
+    "section": "actions 0.9.0",
+    "text": "actions 0.9.0\n\nSupport Docker Hub and GHCR publishing, multi-platform builds and platform reporting, and root-level Dockerfiles in build-docker. (#249, #253, @kelly-sovacool, @Copilot)",
     "crumbs": [
       "Project information",
       "Changelog"
