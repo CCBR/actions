@@ -69,6 +69,16 @@ inputs:
     description: |
       GitHub Actions token used for GitHub API operations and GHCR authentication.
     required: true
+  merge-app-client-id:
+    description: |
+      GitHub App client ID used to merge the generated README pull request.
+      Must be provided together with merge-app-private-key.
+    required: false
+  merge-app-private-key:
+    description: |
+      GitHub App private key used to merge the generated README pull request.
+      Must be provided together with merge-app-client-id.
+    required: false
   print-versions:
     description: |
       Whether to print tool versions in the container for the README file using `config-file`.
@@ -90,6 +100,19 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Validate merge app credentials
+      id: validate_merge_app
+      shell: bash
+      env:
+        MERGE_APP_CLIENT_ID: ${{ inputs.merge-app-client-id }}
+        MERGE_APP_PRIVATE_KEY: ${{ inputs.merge-app-private-key }}
+      run: |
+        if [[ -n "$MERGE_APP_CLIENT_ID" && -z "$MERGE_APP_PRIVATE_KEY" ]] ||
+           [[ -z "$MERGE_APP_CLIENT_ID" && -n "$MERGE_APP_PRIVATE_KEY" ]]; then
+          echo "::error::Provide both merge-app-client-id and merge-app-private-key, or neither."
+          exit 1
+        fi
+
     - name: Set up Python
       uses: actions/setup-python@v7
       with:
@@ -370,14 +393,35 @@ runs:
         branch: "auto-pr/${{ env.DOCKERFILE_PATH }}"
         title: "docs: 🤖 update readme for ${{ env.IMAGENAME }}"
 
+    - name: Generate README merge token
+      id: merge-token
+      if: ${{ inputs.merge-app-client-id != '' && steps.create-pr.outputs.pull-request-number != '' && (steps.create-pr.outputs.pull-request-operation == 'created' || steps.create-pr.outputs.pull-request-operation == 'updated') }}
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ inputs.merge-app-client-id }}
+        private-key: ${{ inputs.merge-app-private-key }}
+        owner: ${{ github.repository_owner }}
+        repositories: ${{ github.event.repository.name }}
+        permission-contents: write
+        permission-pull-requests: write
+
     - name: Approve PR
       shell: bash
       id: approve-pr
-      if: ${{ (steps.create-pr.outputs.pull-request-number != '') && (steps.create-pr.outputs.pull-request-operation == 'created') || (steps.create-pr.outputs.pull-request-operation == 'updated') }}
+      if: ${{ steps.create-pr.outputs.pull-request-number != '' && (steps.create-pr.outputs.pull-request-operation == 'created' || steps.create-pr.outputs.pull-request-operation == 'updated') }}
       run: |
+        if [[ -n "$MERGE_APP_CLIENT_ID" ]]; then
+          if [[ -z "$MERGE_APP_TOKEN" ]]; then
+            echo "::error::GitHub App merge token is missing."
+            exit 1
+          fi
+          export GH_TOKEN="$MERGE_APP_TOKEN"
+        fi
         gh pr merge ${args} ${PR}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        MERGE_APP_CLIENT_ID: ${{ inputs.merge-app-client-id }}
+        MERGE_APP_TOKEN: ${{ steps.merge-token.outputs.token }}
         args: ${{ inputs.gh-merge-args }}
         PR: ${{ steps.create-pr.outputs.pull-request-number }}
 

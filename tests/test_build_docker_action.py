@@ -70,6 +70,92 @@ def test_build_docker_defaults_to_both_registries_and_supports_platforms():
 
 
 @pytest.mark.parametrize(
+    ("client_id", "private_key", "valid"),
+    [
+        ("", "", True),
+        ("client-id", "private-key", True),
+        ("client-id", "", False),
+        ("", "private-key", False),
+    ],
+)
+def test_merge_app_credentials_must_be_provided_together(
+    tmp_path, client_id, private_key, valid
+):
+    step = find_step(load_action(), "validate_merge_app")
+    result, _ = run_step(
+        step,
+        tmp_path,
+        MERGE_APP_CLIENT_ID=client_id,
+        MERGE_APP_PRIVATE_KEY=private_key,
+    )
+    assert (result.returncode == 0) == valid
+    if not valid:
+        assert "::error::" in result.stdout
+
+
+def test_merge_app_token_is_created_just_before_merge():
+    action = load_action()
+    steps = action["runs"]["steps"]
+    create_pr = find_step(action, "create-pr")
+    token = find_step(action, "merge-token")
+    merge = find_step(action, "approve-pr")
+
+    assert steps.index(create_pr) < steps.index(token) < steps.index(merge)
+    assert token["uses"] == "actions/create-github-app-token@v3"
+    assert token["with"] == {
+        "client-id": "${{ inputs.merge-app-client-id }}",
+        "private-key": "${{ inputs.merge-app-private-key }}",
+        "owner": "${{ github.repository_owner }}",
+        "repositories": "${{ github.event.repository.name }}",
+        "permission-contents": "write",
+        "permission-pull-requests": "write",
+    }
+    assert "inputs.merge-app-client-id != ''" in token["if"]
+    assert "steps.create-pr.outputs.pull-request-number != ''" in token["if"]
+    assert "steps.create-pr.outputs.pull-request-operation == 'created'" in token["if"]
+    assert "steps.create-pr.outputs.pull-request-operation == 'updated'" in token["if"]
+    assert merge["env"]["MERGE_APP_TOKEN"] == "${{ steps.merge-token.outputs.token }}"
+    assert create_pr["with"]["token"] == "${{ inputs.github-token }}"
+    ghcr = next(step for step in steps if step.get("id") == "login_ghcr")
+    assert ghcr["with"]["password"] == "${{ inputs.github-token }}"
+
+
+@pytest.mark.parametrize(
+    ("client_id", "app_token", "inherited_token", "expected_token", "succeeds"),
+    [
+        ("", "", "", "github-token", True),
+        ("", "", "inherited-token", "inherited-token", True),
+        ("client-id", "app-token", "inherited-token", "app-token", True),
+        ("client-id", "", "", "", False),
+    ],
+)
+def test_merge_uses_app_token_only_when_configured(
+    tmp_path, client_id, app_token, inherited_token, expected_token, succeeds
+):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    gh = bin_dir / "gh"
+    gh.write_text('#!/bin/bash\nprintf "%s|%s\\n" "${GH_TOKEN:-$GITHUB_TOKEN}" "$*"\n')
+    gh.chmod(0o755)
+    result, _ = run_step(
+        find_step(load_action(), "approve-pr"),
+        tmp_path,
+        PATH=f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+        GH_TOKEN=inherited_token,
+        GITHUB_TOKEN="github-token",
+        MERGE_APP_CLIENT_ID=client_id,
+        MERGE_APP_TOKEN=app_token,
+        args="-ds --admin",
+        PR="123",
+    )
+    assert (result.returncode == 0) == succeeds
+    if succeeds:
+        assert result.stdout == f"{expected_token}|pr merge -ds --admin 123\n"
+    else:
+        assert "::error::GitHub App merge token is missing." in result.stdout
+
+
+@pytest.mark.parametrize(
     ("registries", "dockerhub_username", "dockerhub_token", "github_token", "expected"),
     [
         (
