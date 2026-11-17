@@ -636,22 +636,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Allow build-docker to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.9.2",
     "href": "CHANGELOG.html#actions-0.9.2",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Allow build-docker to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)",
+    "section": "actions 0.9.2",
+    "text": "actions 0.9.2\n\nAllow build-docker to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
