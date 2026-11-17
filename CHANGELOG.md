@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.9.2
 
 - Allow `build-docker` to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)
 
