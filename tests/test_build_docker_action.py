@@ -69,6 +69,29 @@ def test_build_docker_defaults_to_both_registries_and_supports_platforms():
     )
 
 
+def test_source_tag_promotion_preserves_stable_build_followups():
+    action = load_action()
+    steps = action["runs"]["steps"]
+    check_source = find_step(action, "check_source_tag")
+    check_staleness = find_step(action, "check_tag_staleness")
+    promote = find_step(action, "promote_source")
+    build = find_step(action, "build_and_push")
+    update_description = find_step(action, "update_dockerhub_description")
+
+    assert steps.index(check_source) < steps.index(check_staleness)
+    assert steps.index(check_staleness) < steps.index(promote) < steps.index(build)
+    assert (
+        "steps.check_source_tag.outputs.available != 'true'"
+        in (check_staleness["env"]["INPUT_FORCE_BUILD"])
+    )
+    assert "steps.promote_source.outputs.promoted != 'true'" in build["if"]
+    assert "steps.promote_source.outputs.promoted == 'true'" in update_description["if"]
+    assert (
+        "steps.promote_source.outputs.promoted == 'true'"
+        in action["outputs"]["push_success"]["value"]
+    )
+
+
 @pytest.mark.parametrize(
     ("client_id", "private_key", "valid"),
     [
@@ -244,6 +267,57 @@ def test_prepare_image_tags_includes_selected_registries(tmp_path):
 
     tags = output_text.split("tags<<EOF\n", 1)[1].split("\nEOF", 1)[0].splitlines()
     assert tags == ["nciccbr/tool:v1", "ghcr.io/ccbr/tool:v1"]
+
+
+def test_prepare_image_tags_adds_source_tag_atomically(tmp_path):
+    step = find_step(load_action(), "prepare_image_tags")
+    _, output_text = run_step(
+        step,
+        tmp_path,
+        PUSH_ENABLED="true",
+        PUSH_DOCKERHUB="true",
+        PUSH_GHCR="true",
+        GHCR_NAMESPACE_INPUT="",
+        GITHUB_REPOSITORY_OWNER="CCBR",
+        IMAGENAME="nciccbr/tool:v1-dev",
+        REPONAME="Tool",
+        BUILD_TAG="v1-dev",
+        SOURCE_TAG_INPUT="context-0123456789abcdef",
+    )
+
+    tags = output_text.split("tags<<EOF\n", 1)[1].split("\nEOF", 1)[0].splitlines()
+    assert tags == [
+        "nciccbr/tool:v1-dev",
+        "nciccbr/tool:context-0123456789abcdef",
+        "ghcr.io/ccbr/tool:v1-dev",
+        "ghcr.io/ccbr/tool:context-0123456789abcdef",
+    ]
+    assert "source_refs<<EOF\n" in output_text
+    assert (
+        "nciccbr/tool:context-0123456789abcdef\n"
+        "ghcr.io/ccbr/tool:context-0123456789abcdef"
+    ) in output_text
+    assert ("nciccbr/tool:v1-dev\nghcr.io/ccbr/tool:v1-dev") in output_text
+
+
+def test_prepare_image_tags_rejects_invalid_source_tag(tmp_path):
+    step = find_step(load_action(), "prepare_image_tags")
+    result, _ = run_step(
+        step,
+        tmp_path,
+        PUSH_ENABLED="true",
+        PUSH_DOCKERHUB="true",
+        PUSH_GHCR="true",
+        GHCR_NAMESPACE_INPUT="",
+        GITHUB_REPOSITORY_OWNER="CCBR",
+        IMAGENAME="nciccbr/tool:v1-dev",
+        REPONAME="Tool",
+        BUILD_TAG="v1-dev",
+        SOURCE_TAG_INPUT="not/a/tag",
+    )
+
+    assert result.returncode != 0
+    assert "::error::Invalid source-tag" in result.stdout
 
 
 def test_prepare_image_tags_uses_repository_name_for_root_dockerfile(tmp_path):

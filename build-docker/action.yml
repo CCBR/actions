@@ -49,6 +49,10 @@ inputs:
       Force docker image build even when the registry tags are up-to-date.
     required: true
     default: "false"
+  source-tag:
+    description: |
+      Optional additional image tag to publish atomically with the built image.
+    required: false
   ccbr-actions-version:
     description: |
       The version of ccbr_actions to install in the image.
@@ -95,7 +99,7 @@ inputs:
 outputs:
   push_success:
     description: "Whether Docker succeeded for this run"
-    value: ${{ steps.resolve_push.outputs.push_enabled == 'true' && steps.build_and_push.outcome == 'success' }}
+    value: ${{ steps.resolve_push.outputs.push_enabled == 'true' && (steps.build_and_push.outcome == 'success' || steps.promote_source.outputs.promoted == 'true') }}
 
 runs:
   using: "composite"
@@ -251,27 +255,65 @@ runs:
         PUSH_DOCKERHUB: ${{ steps.resolve_push.outputs.push_dockerhub }}
         PUSH_GHCR: ${{ steps.resolve_push.outputs.push_ghcr }}
         GHCR_NAMESPACE_INPUT: ${{ inputs.ghcr-namespace }}
+        SOURCE_TAG_INPUT: ${{ inputs.source-tag }}
       run: |
         tags=()
+        source_refs=()
+        target_refs=()
         image_repo="${REPONAME:-${GITHUB_REPOSITORY#*/}}"
+        source_tag="${SOURCE_TAG_INPUT:-}"
+        if [[ -n "${source_tag}" && ! "${source_tag}" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
+          echo "::error::Invalid source-tag '${source_tag}'."
+          exit 1
+        fi
         if [[ "${PUSH_ENABLED}" != "true" ]]; then
           tags+=("${IMAGENAME}")
         else
           if [[ "${PUSH_DOCKERHUB}" == "true" ]]; then
             tags+=("${IMAGENAME}")
+            if [[ -n "${source_tag}" ]]; then
+              source_ref="${IMAGENAME%:*}:${source_tag}"
+              tags+=("${source_ref}")
+              source_refs+=("${source_ref}")
+              target_refs+=("${IMAGENAME}")
+            fi
           fi
           if [[ "${PUSH_GHCR}" == "true" ]]; then
             ghcr_namespace="${GHCR_NAMESPACE_INPUT:-${GITHUB_REPOSITORY_OWNER}}"
-            tags+=("ghcr.io/${ghcr_namespace,,}/${image_repo,,}:${BUILD_TAG}")
+            ghcr_namespace="$(printf '%s' "${ghcr_namespace}" | tr '[:upper:]' '[:lower:]')"
+            image_repo="$(printf '%s' "${image_repo}" | tr '[:upper:]' '[:lower:]')"
+            ghcr_image="ghcr.io/${ghcr_namespace}/${image_repo}"
+            tags+=("${ghcr_image}:${BUILD_TAG}")
+            if [[ -n "${source_tag}" ]]; then
+              source_ref="${ghcr_image}:${source_tag}"
+              tags+=("${source_ref}")
+              source_refs+=("${source_ref}")
+              target_refs+=("${ghcr_image}:${BUILD_TAG}")
+            fi
           fi
         fi
         printf 'tags<<EOF\n%s\nEOF\n' "$(printf '%s\n' "${tags[@]}")" >> "$GITHUB_OUTPUT"
+        printf 'source_refs<<EOF\n%s\nEOF\n' "$(printf '%s\n' "${source_refs[@]}")" >> "$GITHUB_OUTPUT"
+        printf 'target_refs<<EOF\n%s\nEOF\n' "$(printf '%s\n' "${target_refs[@]}")" >> "$GITHUB_OUTPUT"
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Check source image tag
+      id: check_source_tag
+      if: ${{ inputs.source-tag != '' && steps.resolve_push.outputs.push_enabled == 'true' }}
+      shell: bash
+      env:
+        SOURCE_REFS: ${{ steps.prepare_image_tags.outputs.source_refs }}
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        python "$GITHUB_ACTION_PATH/../scripts/promote_docker_image.py" check
 
     - name: Check whether image tag is stale
       id: check_tag_staleness
       shell: bash
       env:
-        INPUT_FORCE_BUILD: ${{ inputs.force_build }}
+        INPUT_FORCE_BUILD: ${{ inputs.force_build == 'true' || (steps.resolve_push.outputs.push_enabled == 'true' && inputs.source-tag != '' && steps.check_source_tag.outputs.available != 'true') }}
         INPUT_REGISTRIES: ${{ inputs.registries }}
         INPUT_PLATFORMS: ${{ inputs.platforms }}
         PUSH_ENABLED: ${{ steps.resolve_push.outputs.push_enabled }}
@@ -303,16 +345,24 @@ runs:
           --ghcr-namespace "$GHCR_NAMESPACE_INPUT" \
           --platforms "$INPUT_PLATFORMS"
 
+    - name: Promote source-matched image
+      id: promote_source
+      if: ${{ inputs.suffix == 'main' && inputs.source-tag != '' && steps.resolve_push.outputs.push_enabled == 'true' && steps.check_source_tag.outputs.available == 'true' }}
+      shell: bash
+      env:
+        SOURCE_REFS: ${{ steps.prepare_image_tags.outputs.source_refs }}
+        TARGET_REFS: ${{ steps.prepare_image_tags.outputs.target_refs }}
+      run: |
+        cd "$GITHUB_WORKSPACE"
+        python "$GITHUB_ACTION_PATH/../scripts/promote_docker_image.py" promote
+
     - name: Set up QEMU
       if: ${{ inputs.platforms != '' }}
       uses: docker/setup-qemu-action@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v4
-
     - name: Build and push Docker image
       id: build_and_push
-      if: ${{ steps.check_tag_staleness.outputs.should_build == 'true' }}
+      if: ${{ steps.check_tag_staleness.outputs.should_build == 'true' && steps.promote_source.outputs.promoted != 'true' }}
       uses: docker/build-push-action@v7
       with:
         file: ${{ env.DOCKERFILE_PATH }}
@@ -372,7 +422,7 @@ runs:
 
     - name: Update Docker Hub Description
       id: update_dockerhub_description
-      if: ${{ (steps.check_tag_staleness.outputs.should_build == 'true') && (steps.resolve_push.outputs.push_dockerhub == 'true') && (steps.build_and_push.outcome == 'success') }}
+      if: ${{ (steps.check_tag_staleness.outputs.should_build == 'true') && (steps.resolve_push.outputs.push_dockerhub == 'true') && (steps.build_and_push.outcome == 'success' || steps.promote_source.outputs.promoted == 'true') }}
       uses: peter-evans/dockerhub-description@v5
       with:
         username: ${{ inputs.dockerhub-username }}
