@@ -78,13 +78,14 @@ images must be pushed to a registry; builds with `platforms` set and
 
 To merge the generated README PR using a GitHub App instead of
 `github-token`, provide both `merge-app-client-id` and
-`merge-app-private-key`. The app must be installed on the repository with
-contents and pull requests write permissions and, if needed, permission to
-bypass its branch rules. The action creates a repository-scoped token
-immediately before merging; registry authentication and PR creation
-continue to use `github-token`. Omit both inputs to retain the default
-merge behavior. Only provide the private key to trusted workflows.
-For fork PRs, leave both inputs empty; secrets are unavailable to fork PRs.
+`merge-app-private-key`. The app must be installed on the repository
+with contents and pull requests write permissions and, if needed,
+permission to bypass its branch rules. The action creates a
+repository-scoped token immediately before merging; registry
+authentication and PR creation continue to use `github-token`. Omit both
+inputs to retain the default merge behavior. Only provide the private
+key to trusted workflows. For fork PRs, leave both inputs empty; secrets
+are unavailable to fork PRs.
 
 For an example to manually trigger the workflow for a single docker
 container, see
@@ -129,10 +130,12 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
   authentication. **Required.** Default: `258092125+CCBR-bot[bot]`.
 - `github-token`: GitHub Actions token used for GitHub API operations
   and GHCR authentication. **Required.**
-- `merge-app-client-id`: GitHub App client ID used to merge the generated
-  README pull request. Must be provided together with `merge-app-private-key`.
-- `merge-app-private-key`: GitHub App private key used to merge the generated
-  README pull request. Must be provided together with `merge-app-client-id`.
+- `merge-app-client-id`: GitHub App client ID used to merge the
+  generated README pull request. Must be provided together with
+  merge-app-private-key.
+- `merge-app-private-key`: GitHub App private key used to merge the
+  generated README pull request. Must be provided together with
+  merge-app-client-id.
 - `print-versions`: Whether to print tool versions in the container for
   the README file using `config-file`. Default: `true`.
 - `config-file`: Relative path to config file for tool version commands
