@@ -1,5 +1,7 @@
 ## actions development version
 
+- Allow `build-docker` to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)
+
 ## actions 0.9.1
 
 - Check `build-docker` image freshness and requested platforms across Docker Hub and GHCR before rebuilding. (#257, @kelly-sovacool)
