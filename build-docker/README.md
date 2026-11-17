@@ -40,11 +40,6 @@ This action:
 - Builds the Docker image only when a build is needed; pushes only when
   effective push mode is enabled. Set `platforms` to build
   multi-platform images.
-- Optionally pushes an additional `source-tag` with the image in the same
-  build, so callers can refer to that build output directly.
-- On stable builds, promotes the `source-tag` to the stable tags when it is
-  available in every selected registry; otherwise, builds the stable image
-  normally. Reporting and README updates still run after promotion.
 - Updates the Docker Hub description with the contents of the README
   file only if the image was successfully pushed there.
 - Opens and merges a PR with the README updates only when the DockerHub
@@ -126,10 +121,8 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
   container without pushing). **Required.** Default: `false`.
 - `force_build`: Force docker image build even when the registry tags
   are up-to-date. **Required.** Default: `false`.
-- `source-tag`: Optional additional image tag to push atomically with the
-  built image to each selected registry. On stable builds, the action
-  promotes this tag to the stable image tags instead of rebuilding when the
-  source tag exists in every selected registry.
+- `source-tag`: Optional additional image tag to publish atomically with
+  the built image.
 - `ccbr-actions-version`: The version of ccbr_actions to install in the
   image. This value is passed to the Dockerfile as CCBR_ACTIONS_VERSION.
   **Required.** Default: `latest`.
