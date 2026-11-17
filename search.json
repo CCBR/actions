@@ -636,22 +636,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Check build-docker image freshness and requested platforms across Docker Hub and GHCR before rebuilding. (#257, @kelly-sovacool)\nFix review-pre-commit-pr to accept pre-commit autoupdates with frozen revision annotations. (#258, @kelly-sovacool)\nFix review-post-release-pr to accept release-matching install references for the repository under review. (#255, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
     "objectID": "CHANGELOG.html#actions-0.9.1",
     "href": "CHANGELOG.html#actions-0.9.1",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Check build-docker image freshness and requested platforms across Docker Hub and GHCR before rebuilding. (#257, @kelly-sovacool)\nFix review-pre-commit-pr to accept pre-commit autoupdates with frozen revision annotations. (#258, @kelly-sovacool)\nFix review-post-release-pr to accept release-matching install references for the repository under review. (#255, @kelly-sovacool)",
+    "section": "actions 0.9.1",
+    "text": "actions 0.9.1\n\nCheck build-docker image freshness and requested platforms across Docker Hub and GHCR before rebuilding. (#257, @kelly-sovacool)\nFix review-pre-commit-pr to accept pre-commit autoupdates with frozen revision annotations. (#258, @kelly-sovacool)\nFix review-post-release-pr to accept release-matching install references for the repository under review. (#255, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
