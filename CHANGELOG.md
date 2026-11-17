@@ -1,5 +1,7 @@
 ## actions development version
 
+- Promote matching `build-docker` source images to stable tags without rebuilding. (#262, @kelly-sovacool)
+
 ## actions 0.9.2
 
 - Allow `build-docker` to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)
