@@ -1,5 +1,7 @@
 ## actions development version
 
+- Retry `build-docker` README PR merges that fail transiently, approve them with the merge app, and fall back to auto-merge. (#263, @kelly-sovacool)
+
 ## actions 0.9.2
 
 - Allow `build-docker` to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)
