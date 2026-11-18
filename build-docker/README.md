@@ -44,7 +44,7 @@ This action:
   file only if the image was successfully pushed there.
 - Opens and merges a PR with the README updates only when the DockerHub
   description update step runs successfully. When a GitHub App is
-  provided, the app approves the PR first. Failed merges (e.g. when the
+  provided, the app approves the PR first. Failed merges (e.g. when the
   base branch changes during parallel builds) are retried up to
   `merge-max-attempts` times unless the PR has merge conflicts; if the
   PR still is not merged, auto-merge is enabled instead.
