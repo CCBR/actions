@@ -1,4 +1,4 @@
-"""Tests for the build-docker composite action's registry and platform inputs."""
+"""Tests for the build-docker composite action."""
 
 import os
 import pathlib
@@ -115,6 +115,8 @@ def test_merge_app_token_is_created_just_before_merge():
     assert "steps.create-pr.outputs.pull-request-operation == 'created'" in token["if"]
     assert "steps.create-pr.outputs.pull-request-operation == 'updated'" in token["if"]
     assert merge["env"]["MERGE_APP_TOKEN"] == "${{ steps.merge-token.outputs.token }}"
+    assert merge["env"]["MAX_ATTEMPTS"] == "${{ inputs.merge-max-attempts }}"
+    assert action["inputs"]["merge-max-attempts"]["default"] == "5"
     assert create_pr["with"]["token"] == "${{ inputs.github-token }}"
     ghcr = next(step for step in steps if step.get("id") == "login_ghcr")
     assert ghcr["with"]["password"] == "${{ inputs.github-token }}"
@@ -132,27 +134,183 @@ def test_merge_app_token_is_created_just_before_merge():
 def test_merge_uses_app_token_only_when_configured(
     tmp_path, client_id, app_token, inherited_token, expected_token, succeeds
 ):
+    action = load_action()
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     gh = bin_dir / "gh"
     gh.write_text('#!/bin/bash\nprintf "%s|%s\\n" "${GH_TOKEN:-$GITHUB_TOKEN}" "$*"\n')
     gh.chmod(0o755)
     result, _ = run_step(
-        find_step(load_action(), "approve-pr"),
+        find_step(action, "approve-pr"),
         tmp_path,
         PATH=f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
         GH_TOKEN=inherited_token,
         GITHUB_TOKEN="github-token",
         MERGE_APP_CLIENT_ID=client_id,
         MERGE_APP_TOKEN=app_token,
+        MAX_ATTEMPTS=action["inputs"]["merge-max-attempts"]["default"],
         args="-ds --admin",
         PR="123",
     )
     assert (result.returncode == 0) == succeeds
     if succeeds:
-        assert result.stdout == f"{expected_token}|pr merge -ds --admin 123\n"
+        expected = []
+        if client_id:
+            expected.append(
+                f"{expected_token}|pr review 123 --approve --body "
+                "Automated approval of README update."
+            )
+        expected.append(f"{expected_token}|pr merge -ds --admin 123")
+        assert result.stdout.splitlines() == expected
     else:
         assert "::error::GitHub App merge token is missing." in result.stdout
+
+
+@pytest.fixture
+def merge_runner(tmp_path):
+    """Run the merge step with stubbed GitHub CLI and sleep commands."""
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    gh = bin_dir / "gh"
+    gh.write_text(
+        """#!/bin/bash
+printf '%s\\n' "$*" >> "$GH_CALLS"
+case "$1 $2" in
+  "pr review") exit "$REVIEW_RC" ;;
+  "pr view")
+    case "$5" in
+      state) printf '%s\\n' "$PR_STATE" ;;
+      mergeable) printf '%s\\n' "$PR_MERGEABLE" ;;
+      *) echo "Unexpected PR field: $5" >&2; exit 2 ;;
+    esac
+    ;;
+  "pr merge")
+    if [[ " $* " == *" --auto "* ]]; then
+      exit "$AUTO_RC"
+    fi
+    printf '1\\n' >> "$MERGE_COUNT"
+    attempts=$(wc -l < "$MERGE_COUNT")
+    if (( attempts <= FAILURES )); then
+      echo 'GraphQL: Base branch was modified.' >&2
+      exit 1
+    fi
+    ;;
+  *) echo "Unexpected gh command: $*" >&2; exit 2 ;;
+esac
+"""
+    )
+    gh.chmod(0o755)
+    sleep = bin_dir / "sleep"
+    sleep.write_text('#!/bin/bash\nprintf "sleep %s\\n" "$*" >> "$GH_CALLS"\n')
+    sleep.chmod(0o755)
+    calls_path = tmp_path / "gh_calls"
+
+    def run(**overrides):
+        env = {
+            "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}",
+            "GH_CALLS": str(calls_path),
+            "MERGE_COUNT": str(tmp_path / "merge_count"),
+            "GH_TOKEN": "",
+            "GITHUB_TOKEN": "github-token",
+            "MERGE_APP_CLIENT_ID": "",
+            "MERGE_APP_TOKEN": "",
+            "MAX_ATTEMPTS": "3",
+            "args": "-ds --admin",
+            "PR": "123",
+            "FAILURES": "0",
+            "PR_STATE": "OPEN",
+            "PR_MERGEABLE": "MERGEABLE",
+            "AUTO_RC": "0",
+            "REVIEW_RC": "0",
+        }
+        env.update(overrides)
+        result, _ = run_step(find_step(load_action(), "approve-pr"), tmp_path, **env)
+        calls = calls_path.read_text().splitlines() if calls_path.exists() else []
+        return result, calls
+
+    return run
+
+
+def test_merge_retries_after_base_branch_changes(merge_runner):
+    result, calls = merge_runner(FAILURES="1")
+
+    assert result.returncode == 0, result.stderr
+    assert calls[:3] == [
+        "pr merge -ds --admin 123",
+        "pr view 123 --json state --jq .state",
+        "pr view 123 --json mergeable --jq .mergeable",
+    ]
+    assert 10 <= int(calls[3].removeprefix("sleep ")) <= 19
+    assert calls[4:] == ["pr merge -ds --admin 123"]
+
+
+def test_merge_accepts_pr_already_merged_by_another_process(merge_runner):
+    result, calls = merge_runner(FAILURES="1", PR_STATE="MERGED")
+
+    assert result.returncode == 0, result.stderr
+    assert calls == [
+        "pr merge -ds --admin 123",
+        "pr view 123 --json state --jq .state",
+    ]
+
+
+def test_merge_stops_when_pr_has_conflicts(merge_runner):
+    result, calls = merge_runner(FAILURES="1", PR_MERGEABLE="CONFLICTING")
+
+    assert result.returncode != 0
+    assert "::error::PR #123 has merge conflicts with its base branch." in result.stdout
+    assert calls == [
+        "pr merge -ds --admin 123",
+        "pr view 123 --json state --jq .state",
+        "pr view 123 --json mergeable --jq .mergeable",
+    ]
+
+
+def test_merge_falls_back_to_auto_merge_after_retries(merge_runner):
+    result, calls = merge_runner(FAILURES="3")
+
+    assert result.returncode == 0, result.stderr
+    assert calls.count("pr merge -ds --admin 123") == 3
+    assert calls[-1] == "pr merge -ds --auto 123"
+    sleeps = [
+        int(call.removeprefix("sleep ")) for call in calls if call.startswith("sleep ")
+    ]
+    assert len(sleeps) == 2
+    assert 10 <= sleeps[0] <= 19
+    assert 20 <= sleeps[1] <= 29
+    assert "enabled auto-merge instead" in result.stdout
+
+
+def test_merge_fails_if_auto_merge_cannot_be_enabled(merge_runner):
+    result, calls = merge_runner(FAILURES="3", AUTO_RC="1")
+
+    assert result.returncode != 0
+    assert calls[-1] == "pr merge -ds --auto 123"
+    assert "::error::Could not merge PR #123 or enable auto-merge." in result.stdout
+
+
+@pytest.mark.parametrize("max_attempts", ["", "0", "-1", "01", "abc"])
+def test_merge_rejects_invalid_max_attempts(merge_runner, max_attempts):
+    result, calls = merge_runner(MAX_ATTEMPTS=max_attempts)
+
+    assert result.returncode != 0
+    assert "merge-max-attempts must be a positive integer" in result.stdout
+    assert calls == []
+
+
+def test_failed_app_approval_warns_before_merge(merge_runner):
+    result, calls = merge_runner(
+        MERGE_APP_CLIENT_ID="client-id",
+        MERGE_APP_TOKEN="app-token",
+        REVIEW_RC="1",
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "::warning::Could not approve PR #123." in result.stdout
+    assert calls == [
+        "pr review 123 --approve --body Automated approval of README update.",
+        "pr merge -ds --admin 123",
+    ]
 
 
 @pytest.mark.parametrize(
