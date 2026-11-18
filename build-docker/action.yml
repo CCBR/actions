@@ -92,6 +92,10 @@ inputs:
     description: |
       arguments for `gh pr merge`.
     default: "-ds --admin"
+  merge-max-attempts:
+    description: |
+      Maximum attempts to merge the README PR before enabling auto-merge instead.
+    default: "5"
 outputs:
   push_success:
     description: "Whether Docker succeeded for this run"
@@ -405,7 +409,7 @@ runs:
         permission-contents: write
         permission-pull-requests: write
 
-    - name: Approve PR
+    - name: Approve and merge PR
       shell: bash
       id: approve-pr
       if: ${{ steps.create-pr.outputs.pull-request-number != '' && (steps.create-pr.outputs.pull-request-operation == 'created' || steps.create-pr.outputs.pull-request-operation == 'updated') }}
@@ -416,13 +420,55 @@ runs:
             exit 1
           fi
           export GH_TOKEN="$MERGE_APP_TOKEN"
+          gh pr review "$PR" --approve --body "Automated approval of README update." ||
+            echo "::warning::Could not approve PR #${PR}."
         fi
-        gh pr merge ${args} ${PR}
+
+        if ! [[ "$MAX_ATTEMPTS" =~ ^[1-9][0-9]*$ ]]; then
+          echo "::error::merge-max-attempts must be a positive integer, got '${MAX_ATTEMPTS}'."
+          exit 1
+        fi
+
+        read -r -a merge_args <<< "$args"
+        pr_field() { gh pr view "$PR" --json "$1" --jq ".$1"; }
+
+        # Merges can fail transiently, e.g. "Base branch was modified" when
+        # parallel builds merge README PRs at the same time.
+        for ((attempt = 1; attempt <= MAX_ATTEMPTS; attempt++)); do
+          if gh pr merge "${merge_args[@]}" "$PR"; then
+            exit 0
+          fi
+          if [[ "$(pr_field state)" == "MERGED" ]]; then
+            exit 0
+          fi
+          if [[ "$(pr_field mergeable)" == "CONFLICTING" ]]; then
+            echo "::error::PR #${PR} has merge conflicts with its base branch."
+            exit 1
+          fi
+          if (( attempt < MAX_ATTEMPTS )); then
+            delay=$(( attempt * 10 + RANDOM % 10 ))
+            echo "Merge attempt ${attempt}/${MAX_ATTEMPTS} failed; retrying in ${delay}s."
+            sleep "$delay"
+          fi
+        done
+
+        # --admin cannot be combined with --auto.
+        auto_args=()
+        for arg in "${merge_args[@]}"; do
+          [[ "$arg" == "--admin" ]] || auto_args+=("$arg")
+        done
+        if gh pr merge "${auto_args[@]}" --auto "$PR"; then
+          echo "::warning::Could not merge PR #${PR} after ${MAX_ATTEMPTS} attempts; enabled auto-merge instead."
+          exit 0
+        fi
+        echo "::error::Could not merge PR #${PR} or enable auto-merge."
+        exit 1
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         MERGE_APP_CLIENT_ID: ${{ inputs.merge-app-client-id }}
         MERGE_APP_TOKEN: ${{ steps.merge-token.outputs.token }}
         args: ${{ inputs.gh-merge-args }}
+        MAX_ATTEMPTS: ${{ inputs.merge-max-attempts }}
         PR: ${{ steps.create-pr.outputs.pull-request-number }}
 
     - name: upload readme file

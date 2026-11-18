@@ -43,7 +43,11 @@ This action:
 - Updates the Docker Hub description with the contents of the README
   file only if the image was successfully pushed there.
 - Opens and merges a PR with the README updates only when the DockerHub
-  description update step runs successfully.
+  description update step runs successfully. When a GitHub App is
+  provided, the app approves the PR first. Failed merges (e.g. when the
+  base branch changes during parallel builds) are retried up to
+  `merge-max-attempts` times unless the PR has merge conflicts; if the
+  PR still is not merged, auto-merge is enabled instead.
 
 ## Usage
 
@@ -143,6 +147,8 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
   is true, the default config file from ccbr_actions will be used.
   Default: `scripts/tool_version_commands.txt`.
 - `gh-merge-args`: arguments for `gh pr merge`. Default: `-ds --admin`.
+- `merge-max-attempts`: Maximum attempts to merge the README PR before
+  enabling auto-merge instead. Default: `5`.
 
 ## Outputs
 
