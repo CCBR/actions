@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.9.3
 
 - Retry `build-docker` README PR merges that fail transiently, approve them with the merge app, and fall back to auto-merge. (#263, @kelly-sovacool)
 
