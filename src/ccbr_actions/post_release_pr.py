@@ -513,7 +513,9 @@ def _validate_extension_file(
     return result
 
 
-def _validate_citation_file(old_content, new_content, release_tag, release_dates):
+def _validate_citation_file(
+    old_content, new_content, release_tag, release_dates, r_dev_version=None
+):
     """
     Check that a ``CITATION.cff`` file's version/date fields were bumped.
 
@@ -523,10 +525,13 @@ def _validate_citation_file(old_content, new_content, release_tag, release_dates
         release_tag (str): The release tag (e.g. ``"v0.7.1"``).
         release_dates (set[str]): Acceptable ``date-released`` values, from
             [](`~ccbr_actions.post_release_pr._release_dates`).
+        r_dev_version (str | None): Expected R development version, when a
+            DESCRIPTION bump is also being validated.
 
     Returns:
         bool: ``True`` if only ``version``/``date-released`` changed, the new
-        version equals *release_tag*, and the new date matches the release.
+        version matches the release or R development version, and the date
+        matches the release or is unchanged for an R development version.
     """
     try:
         old_data = yaml.safe_load(old_content) if old_content else {}
@@ -541,14 +546,29 @@ def _validate_citation_file(old_content, new_content, release_tag, release_dates
         fields_unchanged = all(
             old_data.get(k) == new_data.get(k) for k in unchanged_keys
         )
-        version_ok = new_data.get("version") == release_tag
+        is_r_dev = (
+            r_dev_version is not None
+            and old_data.get("version") is not None
+            and new_data.get("version") == r_dev_version
+        )
+        version_ok = new_data.get("version") == release_tag or is_r_dev
         date_ok = str(new_data.get("date-released")) in release_dates
+        if is_r_dev:
+            date_ok = date_ok or (
+                ("date-released" in old_data) == ("date-released" in new_data)
+                and old_data.get("date-released") == new_data.get("date-released")
+            )
         result = fields_unchanged and version_ok and date_ok
     return result
 
 
 def _validate_codemeta_file(
-    old_content, new_content, release_version, release_tag, release_dates
+    old_content,
+    new_content,
+    release_version,
+    release_tag,
+    release_dates,
+    r_dev_version=None,
 ):
     """
     Check that ``codemeta.json``'s version/date fields were bumped to the release.
@@ -560,6 +580,8 @@ def _validate_codemeta_file(
         release_tag (str): The release tag (e.g. ``"v0.7.1"``).
         release_dates (set[str]): Acceptable date field values, from
             [](`~ccbr_actions.post_release_pr._release_dates`).
+        r_dev_version (str | None): Expected R development version, when a
+            DESCRIPTION bump is also being validated.
 
     Returns:
         bool: ``True`` if only version/date-like fields changed between
@@ -581,10 +603,14 @@ def _validate_codemeta_file(
             old_data.get(k) == new_data.get(k) for k in unchanged_keys
         )
         new_version = new_data.get("version")
-        version_ok = new_version is None or new_version in (
-            release_version,
-            release_tag,
-            f"v{release_version}",
+        version_ok = (
+            new_version is None
+            or new_version in (release_version, release_tag, f"v{release_version}")
+            or (
+                r_dev_version is not None
+                and old_data.get("version") is not None
+                and new_version == r_dev_version
+            )
         )
         date_fields_ok = all(
             new_data.get(k) == old_data.get(k)
@@ -694,6 +720,7 @@ def _validate_file_bump(
     dev_header,
     valid_values,
     repo=None,
+    r_dev_version=None,
 ):
     """
     Dispatch to the validator for an allowed file's role.
@@ -711,6 +738,8 @@ def _validate_file_bump(
         dev_header (str): Development-version header text for changelog files.
         valid_values (set[str]): Acceptable new token values for readme files.
         repo (str | None): Repository whose pip install reference may be bumped.
+        r_dev_version (str | None): Expected R development version, when a
+            DESCRIPTION bump is also being validated.
 
     Returns:
         bool: ``True`` if the file's change is a valid bump for its role.
@@ -725,11 +754,16 @@ def _validate_file_bump(
         result = _validate_extension_file(old_content, new_content, release_version)
     elif role == "citation":
         result = _validate_citation_file(
-            old_content, new_content, release_tag, release_dates
+            old_content, new_content, release_tag, release_dates, r_dev_version
         )
     elif role == "codemeta":
         result = _validate_codemeta_file(
-            old_content, new_content, release_version, release_tag, release_dates
+            old_content,
+            new_content,
+            release_version,
+            release_tag,
+            release_dates,
+            r_dev_version,
         )
     elif role == "changelog":
         result = _validate_changelog_file(
@@ -794,6 +828,14 @@ def check_files_are_valid_bumps(
     version_bumped = any(
         os.path.basename(filename) in version_basenames for filename in filenames
     )
+    r_dev_version = None
+    if any(
+        roles.get(os.path.basename(filename)) == "description" for filename in filenames
+    ):
+        try:
+            r_dev_version = get_r_dev_version(release_version)
+        except ValueError:
+            r_dev_version = None
     files_valid = True
     for filename in filenames:
         role = roles.get(os.path.basename(filename), "readme")
@@ -814,6 +856,7 @@ def check_files_are_valid_bumps(
                 dev_header,
                 valid_values,
                 repo=repo,
+                r_dev_version=r_dev_version,
             )
             and files_valid
         )
@@ -1273,8 +1316,10 @@ def review_post_release_pr(
       its role: the version file matches the expected dev version exactly;
       ``CITATION.cff`` and ``codemeta.json`` change only their version/date
       fields, matching the release tag and the release's actual
-      published/created date exactly; the changelog/news file only gained
-      the expected release heading; ``nextflow.config`` only changes a literal
+      published/created date exactly. When a validated R ``DESCRIPTION``
+      bump is present, their versions may instead match its development
+      version, and an unchanged citation date is permitted; the changelog/news
+      file only gained the expected release heading; ``nextflow.config`` only changes a literal
       ``version`` in its top-level ``manifest`` block to the expected dev
       version, with all other content unchanged; Quarto extension manifests
       only change their literal top-level ``version`` to the expected dev
