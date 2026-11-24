@@ -32,7 +32,7 @@ The action verifies five conditions:
     version/date fields, matching the release tag and the release’s
     actual published/created date exactly. When the PR includes a valid
     R `DESCRIPTION` bump, those files may instead use its development
-    version (e.g. `0.5.1.9000` for `v0.5.1`), and the citation date may
+    version (e.g. `0.5.1.9000` for `v0.5.1`), and the citation date may
     remain unchanged or absent. Any changed date must match the release;
     the changelog/news file must have gained only the expected release
     heading; `nextflow.config` may only update the quoted `version`
