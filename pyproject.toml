@@ -46,7 +46,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff >=0.16.1,<0.17",
+    "ruff >=0.16.1,<0.18",
     "jupyter",
     "pyyaml"
 ]
@@ -113,3 +113,6 @@ docs = { features = ["docs"], solve-group = "default" }
 test = { features = ["test"], solve-group = "default" }
 
 [tool.pixi.tasks]
+
+[tool.pixi.dependencies]
+actionlint = ">=1.7.12,<2"

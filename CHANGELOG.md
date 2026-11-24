@@ -1,5 +1,42 @@
 ## actions development version
 
+- Allow `review-post-release-pr` to approve release-matching Quarto extension version updates. (#267, @kelly-sovacool)
+
+## actions 0.9.3
+
+- Retry `build-docker` README PR merges that fail transiently, approve them with the merge app, and fall back to auto-merge. (#263, @kelly-sovacool)
+
+## actions 0.9.2
+
+- Allow `build-docker` to merge README pull requests using a GitHub App. (#260, @kelly-sovacool)
+
+## actions 0.9.1
+
+- Check `build-docker` image freshness and requested platforms across Docker Hub and GHCR before rebuilding. (#257, @kelly-sovacool)
+- Fix `review-pre-commit-pr` to accept pre-commit autoupdates with frozen revision annotations. (#258, @kelly-sovacool)
+- Fix `review-post-release-pr` to accept release-matching install references for the repository under review. (#255, @kelly-sovacool)
+
+## actions 0.9.0
+
+- Support Docker Hub and GHCR publishing, multi-platform builds and platform reporting, and root-level Dockerfiles in `build-docker`. (#249, #253, @kelly-sovacool, @Copilot)
+
+## actions 0.8.4
+
+- Allow unambiguous release-matching manifest version bumps in `nextflow.config` during post-release PR review, and clarify comments requesting human review. (#250, @kelly-sovacool, @copilot)
+
+## actions 0.8.3
+
+- Approve pending Actions workflow runs for post-release cleanup PRs, scoped to the current PR head SHA. (#234, @kelly-sovacool, @copilot)
+- `review-pre-commit-pr` and `review-post-release-pr`: merge the validated commit directly, or explain why when auto-merge can't be enabled because the PR is already mergeable. (#239, @kelly-sovacool, @copilot)
+
+## actions 0.8.2
+
+- Use GitHub App Client IDs in workflows and composite actions, retaining legacy `app-id` support. (#232, @kelly-sovacool, @copilot)
+
+## actions 0.8.1
+
+- New action: `review-post-release-pr` to automatically review post-release cleanup PRs and approve them (approving pending workflow runs and enabling auto-merge) when the version file was actually bumped and every changed file's new content is a valid, field-specific bump matching an actual release tag, or request a human reviewer otherwise. Approvals are pinned to the validated commit and re-validated if the PR's head changes afterward (e.g. after an `auto-format` push). (#227, @kelly-sovacool, @copilot)
+  - Require the PR's `synchronize` event to come from the bot (not just any pusher) before re-running the automatic review, and pass action inputs to the embedded Python scripts via `env:` instead of splicing `${{ inputs.* }}` directly into the script text, in `review-pre-commit-pr` and `review-post-release-pr`. (#227, @kelly-sovacool, @copilot)
 - Fix `review-pre-commit-pr` to post a comment instead of requesting changes when a pre-commit.ci autoupdate PR needs human review. (#226, @kelly-sovacool, @copilot)
 
 ## actions 0.8.0

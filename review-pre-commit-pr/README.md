@@ -16,15 +16,26 @@ The action verifies two conditions:
     or removed and no fields other than `rev:` are changed. A `rev:`
     change that isn’t a version bump is still accepted if the old and
     new revs resolve to the same commit (e.g. a moving `vX.Y` alias tag
-    replacing a more specific `vX.Y.Z` tag).
+    replacing a more specific `vX.Y.Z` tag). Pre-commit
+    `# frozen: <tag>` annotations are allowed on full commit hashes when
+    the revision changes. As with other hash updates, the validator
+    accepts different hashes without checking their ancestry or whether
+    the annotation matches the commit.
 
 When both conditions are satisfied the action:
 
 - Approves the PR as the token’s actor (typically CCBR-bot).
 - Attempts to enable squash auto-merge so the PR merges automatically
-  once all required checks pass. If auto-merge is unavailable, the
-  approval remains and the action posts a comment containing the GitHub
-  API error.
+  once all required checks pass. GitHub refuses auto-merge when the PR
+  is already mergeable, so in that case the action:
+
+  - squash-merges the PR directly if all checks have passed (`clean`).
+  - posts a comment explaining why if some checks that aren’t required
+    are still pending or failing (`unstable`). Merge the PR manually
+    once they pass.
+
+  For any other failure, the approval remains and the action posts a
+  comment containing the GitHub API error.
 
 When either condition is **not** satisfied the action:
 
@@ -70,97 +81,43 @@ alt="Branch protection rule" />
 
 ### Example
 
-[pre-review-pr.yml](/examples/pre-review-pr.yml)
-
 ```yaml
-name: pre-review-pr
-
+name: review-pre-commit-pr
 on:
   pull_request:
     types:
       - opened
       - review_requested
-  # Manually re-scan open PRs for any that meet the pre-commit.ci autoupdate criteria
-  workflow_dispatch:
-    inputs:
-      force-review:
-        description: Re-submit reviews for PRs that already have an approval
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: write
   issues: write
   pull-requests: write
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  find-prec-prs:
-    # Only needed when manually dispatched; the pull_request event already has a single PR to act on
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    outputs:
-      pr-numbers: ${{ steps.search.outputs.pr-numbers }}
-    steps:
-      - name: Search for open pre-commit.ci autoupdate PRs
-        id: search
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          pr_numbers=$(gh pr list \
-            --repo "${{ github.repository }}" \
-            --state open \
-            --json number,title,author \
-            --jq '[.[] | select(.title == "[pre-commit.ci] pre-commit autoupdate" and .author.is_bot)] | map(.number)')
-          echo "pr-numbers=${pr_numbers}" >> "$GITHUB_OUTPUT"
-
   review-pre-commit-pr:
-    needs: [find-prec-prs]
     runs-on: ubuntu-latest
     container: nciccbr/ccbr_actions:latest
-    # Only run for pre-commit.ci autoupdate PRs or when ccbr-bot[bot] is requested as a reviewer
+    # Only run for pre-commit.ci autoupdate PRs opened by the bot, or when ccbr-bot is requested as a reviewer
     if: >
-      always() &&
+      github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate' &&
       (
-        (
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.title == '[pre-commit.ci] pre-commit autoupdate' &&
-          (
-            (github.event.action == 'opened' && github.event.sender.type == 'Bot') ||
-            (github.event.action == 'review_requested' && github.event.requested_reviewer.login == 'ccbr-bot[bot]')
-          )
-        )
-        || (github.event_name == 'workflow_dispatch' && needs.find-prec-prs.outputs.pr-numbers != '[]')
+        github.event.sender.type == 'Bot' ||
+        (github.event.action == 'review_requested' && github.event.requested_reviewer.login == 'ccbr-bot[bot]')
       )
-    strategy:
-      fail-fast: false
-      matrix:
-        pr-number: ${{ github.event_name == 'workflow_dispatch' && fromJson(needs.find-prec-prs.outputs.pr-numbers) || fromJson(format('[{0}]', github.event.pull_request.number)) }}
-
     steps:
-      - uses: actions/checkout@v7
-      - name: Generate CCBR-bot token
+      - uses: actions/create-github-app-token@v3
         id: generate-token
-        uses: actions/create-github-app-token@v3
         with:
-          client-id: ${{ vars.CCBR_BOT_APP_ID }}
+          client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
           private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          permission-contents: write
-          permission-issues: write
-          permission-pull-requests: write
-      - uses: CCBR/actions/review-pre-commit-pr@latest
+      - uses: CCBR/actions/review-pre-commit-pr@main
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
-          pr-number: ${{ matrix.pr-number }}
-          repo: ${{ github.repository }}
-          reviewer: CCBR/adminteam
-          force-review: ${{ github.event.action == 'review_requested' || inputs.force-review || false }}
+          pr-number: ${{ github.event.pull_request.number }}
 ```
+
+See also: [pre-review-pr.yml](/examples/pre-review-pr.yml).
 
 ## Inputs
 

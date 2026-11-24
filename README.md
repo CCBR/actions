@@ -72,6 +72,10 @@ Custom actions used in our github workflows.
   using mkdocs + mike
 - [post-release](post-release) - Post-release cleanup chores, intended
   to be triggered by publishing a release
+- [review-post-release-pr](review-post-release-pr) - Review a
+  post-release cleanup PR: approve pending workflow runs, approve, and
+  enable auto-merge when only version/date bumps matching a real release
+  tag are present, otherwise request a human reviewer
 - [review-pre-commit-pr](review-pre-commit-pr) - Review a pre-commit.ci
   autoupdate PR: approve and attempt auto-merge when only rev: versions
   changed (or a rev alias tag points at the same commit), otherwise
@@ -100,7 +104,7 @@ github actions runners): <https://github.com/cli/cli#installation>
 Then install the `ccbr_actions` package with pip:
 
 ```bash
-pip install git+https://github.com/CCBR/actions@v0.8
+pip install git+https://github.com/CCBR/actions@v0.9
 ```
 
 Or use the provided [docker
@@ -153,7 +157,7 @@ guidelines](https://CCBR.github.io/actions/CONTRIBUTING).
 Please cite this software if you use it in a publication:
 
 > Sovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for
-> CCBR repos (version v0.8.0). DOI: 10.5281/zenodo.13761059 URL:
+> CCBR repos (version v0.9.3). DOI: 10.5281/zenodo.13761059 URL:
 > https://ccbr.github.io/actions/
 
 ### Bibtex entry
@@ -162,7 +166,7 @@ Please cite this software if you use it in a publication:
 @misc{YourReferenceHere,
 author = {Sovacool, Kelly and Koparde, Vishal},
 doi = {10.5281/zenodo.13761059},
-month = {9},
+month = {11},
 title = {CCBR actions: GitHub Actions for CCBR repos},
 url = {https://ccbr.github.io/actions/},
 year = {2026}

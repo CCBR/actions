@@ -4,7 +4,7 @@ author: "Kelly Sovacool"
 
 inputs:
   github-token:
-    description: "GitHub Actions token (e.g. github.token)."
+    description: "GitHub token with contents:write, pull-requests:write, and actions:write permissions (e.g. github.token)."
     required: true
   ccbr-actions-version:
     description: "The version of CCBR/actions to install when running outside the ccbr_actions container."
@@ -112,6 +112,14 @@ runs:
         )
       env:
         GH_TOKEN: ${{ inputs.github-token }}
+    - name: Approve workflow runs for post-release PR
+      if: ${{ inputs.dry-run != 'true' && steps.post-release.outputs.PR_URL != '' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        PR_URL: ${{ steps.post-release.outputs.PR_URL }}
+        REPO: ${{ github.repository }}
+      run: python -m ccbr_actions.post_release_approval
     - name: get major-minor version
       id: sliding-tag
       if: ${{ inputs.dry-run != 'true' }}

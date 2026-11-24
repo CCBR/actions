@@ -20,15 +20,19 @@ inputs:
     required: false
     default: "100"
   github-token:
-    description: "GitHub Actions token with access to organization projects. Optional - set the app-id and app-private-key instead."
+    description: "GitHub Actions token with access to organization projects. Optional - set the client-id and app-private-key instead."
+    required: false
+    default: ""
+  client-id:
+    description: "GitHub App Client ID for authentication. Optional - use this instead of a token."
     required: false
     default: ""
   app-id:
-    description: "GitHub App ID for authentication. Optional - Use this instead of a token."
+    description: "Legacy GitHub App ID input. Prefer client-id."
     required: false
     default: ""
   app-private-key:
-    description: "Private key for the GitHub App used for authentication. Optional - Use this instead of a token. Must be set if app-id is set."
+    description: "Private key for the GitHub App used for authentication. Optional - must be set if client-id or app-id is set."
     required: false
     default: ""
 
@@ -52,9 +56,18 @@ runs:
         echo "TARGET_REPO=$TARGET_REPO" >> $GITHUB_ENV
         echo "OWNER=$OWNER" >> $GITHUB_ENV
 
-    - name: Generate a token
-      id: generate-token
-      if: ${{ inputs.github-token == '' }}
+    - name: Generate a token from client ID
+      id: generate-token-client
+      if: ${{ inputs.github-token == '' && inputs.client-id != '' }}
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ inputs.client-id }}
+        private-key: ${{ inputs.app-private-key }}
+        owner: ${{ env.OWNER }}
+
+    - name: Generate a token from legacy app ID
+      id: generate-token-app
+      if: ${{ inputs.github-token == '' && inputs.client-id == '' && inputs.app-id != '' }}
       uses: actions/create-github-app-token@v3
       with:
         app-id: ${{ inputs.app-id }}
@@ -69,7 +82,7 @@ runs:
         DRY_RUN: ${{ inputs.dry_run }}
         MAX_UPDATES: ${{ inputs.max_updates_per_run }}
       with:
-        github-token: ${{ inputs.github-token != '' && inputs.github-token || steps.generate-token.outputs.token }}
+        github-token: ${{ inputs.github-token != '' && inputs.github-token || steps.generate-token-client.outputs.token || steps.generate-token-app.outputs.token }}
         script: |
           const owner = (process.env.OWNER || context.repo.owner).trim();
           const repo = (process.env.TARGET_REPO || context.repo.repo).trim();

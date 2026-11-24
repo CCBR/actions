@@ -26,13 +26,14 @@ steps:
 
 For enhanced security, you can use a GitHub App instead of a personal
 access token. Create a GitHub App with the necessary permissions and
-store the app ID and private key as organization variables or secrets.
+store the Client ID and private key as organization variables or
+secrets.
 
 ```yaml
 steps:
   - uses: CCBR/actions/user-projects@main
     with:
-      app-id: ${{ vars.CCBR_BOT_APP_ID }}
+      client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
       app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
       token-owner: CCBR
 ```
@@ -48,12 +49,12 @@ For a complete example workflow, see
   boards. Default:
   `https://raw.githubusercontent.com/CCBR/.github/main/assets/user-kanbans.yml`.
 - `github-token`: GitHub Actions token with access to organization
-  projects. Optional - set the app-id and app-private-key instead.
-- `app-id`: GitHub App ID for authentication. Optional - Use this
-  instead of a token.
+  projects. Optional - set the client-id and app-private-key instead.
+- `client-id`: GitHub App Client ID for authentication. Optional - use
+  this instead of a token.
+- `app-id`: Legacy GitHub App ID input. Prefer client-id.
 - `app-private-key`: Private key for the GitHub App used for
-  authentication. Optional - Use this instead of a token. Must be set if
-  app-id is set.
+  authentication. Optional - must be set if client-id or app-id is set.
 - `token-owner`: Owner of the resources that the GitHub app will use for
-  authentication. Optional - use this if using app-id and
+  authentication. Optional - use this if using client-id or app-id and
   app-private-key. Default: `CCBR`.

@@ -16,6 +16,9 @@ print(ccbr_actions.docs.action_markdown_desc(action))
 
 ## Usage
 
+Provide `client-id` and `app-private-key` to authenticate with a GitHub App.
+The legacy `app-id` input remains supported for existing workflows.
+
 ### Basic example
 
 [sync-copilot-instructions.yml](/examples/sync-copilot-instructions.yml)

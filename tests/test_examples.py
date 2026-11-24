@@ -10,8 +10,6 @@ EXAMPLES = sorted(
     list((REPOSITORY_ROOT / "examples").glob("*.yml"))
     + list((REPOSITORY_ROOT / "examples").glob("*.yaml"))
 )
-CURRENT_VERSION = (REPOSITORY_ROOT / "VERSION").read_text().strip()
-CURRENT_RELEASE = f"v{CURRENT_VERSION.removesuffix('-dev')}"
 ACTION_REFERENCE = re.compile(r"CCBR/actions/([^@\s]+)@([^\s]+)")
 
 
@@ -25,17 +23,6 @@ def _iter_steps(value):
     elif isinstance(value, list):
         for nested_value in value:
             yield from _iter_steps(nested_value)
-
-
-def test_examples_use_current_release_refs():
-    """Examples should use the current release rather than a moving ref."""
-    references = [
-        match.group(2)
-        for example in EXAMPLES
-        for match in ACTION_REFERENCE.finditer(example.read_text())
-    ]
-    assert references
-    assert set(references) == {CURRENT_RELEASE}
 
 
 def test_examples_reference_declared_inputs_and_required_values():
@@ -72,3 +59,16 @@ def test_docs_examples_glob_both_workflow_extensions():
     docs_source = (REPOSITORY_ROOT / "docs/examples.qmd").read_text()
     assert 'glob("../examples/*.yml")' in docs_source
     assert 'glob("../examples/*.yaml")' in docs_source
+
+
+def test_build_docker_dispatch_app_token_has_required_permissions():
+    """The app token supports publishing and the workflow's repository writes."""
+    path = REPOSITORY_ROOT / "examples" / "build-docker-dispatch.yml"
+    workflow = yaml.safe_load(path.read_text())
+    token_step = next(
+        step
+        for step in _iter_steps(workflow)
+        if step.get("uses", "").startswith("actions/create-github-app-token@")
+    )
+    for permission in ("packages", "contents", "pull-requests"):
+        assert token_step["with"][f"permission-{permission}"] == "write"

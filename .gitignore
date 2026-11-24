@@ -177,6 +177,9 @@ cython_debug/
 .pixi/*
 !.pixi/config.toml
 
+# uv
+uv.lock
+
 # genAI
 .github/prompts/
 .github/plans/

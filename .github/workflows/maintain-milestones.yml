@@ -53,5 +53,5 @@ jobs:
           target_repo: ${{ matrix.REPO }}
           dry_run: ${{ inputs.dry_run && 'true' || 'false' }}
           max_updates_per_run: ${{ inputs.max_updates_per_run || '100' }}
-          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
           app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}

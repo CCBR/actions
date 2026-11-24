@@ -20,6 +20,7 @@ SEARCHED_FILES = (
 UNTESTED_ACTIONS = {
     # Pure API callers with no workspace dependency (see plan Decisions).
     "review-pre-commit-pr": "pure API caller; no workspace dependency",
+    "review-post-release-pr": "pure API caller; no workspace dependency",
     "copy-ruleset": "pure API caller; no workspace dependency",
     "user-projects": "pure API caller; no workspace dependency",
     "add-issue-label-list": "pure API caller; no workspace dependency",

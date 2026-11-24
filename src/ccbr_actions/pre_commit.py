@@ -10,9 +10,10 @@ from packaging.version import InvalidVersion, Version
 
 from .github import GITHUB_API_URL, github_api_get
 from .pr_review import (
+    AutoMergeUnavailableError,
     approve_pr,
     determine_reviewer,
-    enable_auto_merge,
+    enable_auto_merge_or_merge,
     get_pr_files,
     is_pr_approved,
     post_pr_comment,
@@ -21,7 +22,14 @@ from .pr_review import (
 
 PRE_COMMIT_CI_TITLE = "[pre-commit.ci] pre-commit autoupdate"
 PRE_COMMIT_CONFIG_FILE = ".pre-commit-config.yaml"
-_REV_PATTERN = re.compile(r"^\s+rev:\s+\S+\s*$")
+_REV_PATTERN = re.compile(
+    r"^[ \t]+rev:[ \t]+(?P<rev>\S+)"
+    r"(?:[ \t]+#[ \t]+frozen:[ \t]+(?P<frozen>[^\s#]+))?[ \t]*$"
+)
+_FROZEN_SHA_PATTERN = re.compile(
+    r"""(?P<quote>['"]?)(?P<sha>[0-9a-f]{40}|[0-9a-f]{64})(?P=quote)""",
+    re.IGNORECASE,
+)
 _REPO_PATTERN = re.compile(r"repo:\s+(\S+)")
 _GITHUB_REPO_URL_PATTERN = re.compile(r"^https://github\.com/([^/\s]+/[^/\s]+?)/?$")
 
@@ -67,8 +75,9 @@ def check_only_version_bumps(patch):
     This is *condition 2* from the pre-commit.ci review policy.  The function
     checks two things:
 
-    1. Every added or removed line in the patch is a ``rev:`` line – no new
-       repos, removed repos, or other field changes are present.
+    1. Every added or removed line in the patch is a ``rev:`` line, optionally
+       with a pre-commit ``# frozen:`` annotation on a full commit hash –
+       no new repos, removed repos, or other field changes are present.
     2. Each changed ``rev:`` value is either a newer semantic version or at
        least a different tag/hash than the original.
 
@@ -94,11 +103,13 @@ def _extract_rev_changes(patch):
     Returns:
         list[tuple[str | None, str, str]] | None: A list of
         ``(repo_url, old_rev, new_rev)`` tuples in the order they appear, or
-        ``None`` if the patch contains changes other than ``rev:`` lines, or
-        the number of removed and added ``rev:`` lines doesn't match.
+        ``None`` if the patch contains changes other than ``rev:`` lines
+        (including supported ``# frozen:`` annotations), an annotation changes
+        without a revision change, or the numbers of removed and added
+        ``rev:`` lines don't match.
     """
-    removed = []  # list of (repo_url, rev)
-    added = []  # list of (repo_url, rev)
+    removed = []  # list of (repo_url, rev, frozen)
+    added = []  # list of (repo_url, rev, frozen)
     current_repo = None
     is_valid = True
 
@@ -112,25 +123,43 @@ def _extract_rev_changes(patch):
             pass
         elif line.startswith(("-", "+")):
             content = line[1:]
-            if not _REV_PATTERN.match(content):
+            rev_match = _REV_PATTERN.fullmatch(content)
+            sha_match = (
+                _FROZEN_SHA_PATTERN.fullmatch(rev_match.group("rev"))
+                if rev_match
+                else None
+            )
+            if not rev_match or (rev_match.group("frozen") and not sha_match):
                 is_valid = False
             else:
-                rev_value = content.strip().removeprefix("rev:").strip()
+                rev_value = (
+                    sha_match.group("sha") if sha_match else rev_match.group("rev")
+                )
+                change = (current_repo, rev_value, rev_match.group("frozen"))
                 if line.startswith("-"):
-                    removed.append((current_repo, rev_value))
+                    removed.append(change)
                 else:
-                    added.append((current_repo, rev_value))
+                    added.append(change)
         else:
             repo_match = _REPO_PATTERN.search(line)
             if repo_match:
                 current_repo = repo_match.group(1)
 
-    if not is_valid or len(removed) != len(added):
+    if (
+        not is_valid
+        or len(removed) != len(added)
+        or any(
+            old_rev == new_rev and old_frozen != new_frozen
+            for (_, old_rev, old_frozen), (_, new_rev, new_frozen) in zip(
+                removed, added
+            )
+        )
+    ):
         changes = None
     else:
         changes = [
             (repo_url, old_rev, new_rev)
-            for (repo_url, old_rev), (_, new_rev) in zip(removed, added)
+            for (repo_url, old_rev, _), (_, new_rev, _) in zip(removed, added)
         ]
     return changes
 
@@ -263,11 +292,13 @@ def review_pre_commit_pr(
     Checks whether the PR satisfies two conditions:
 
     - **Condition 1** – only ``.pre-commit-config.yaml`` was changed.
-    - **Condition 2** – the only changes are ``rev:`` version bumps.
+    - **Condition 2** – the only changes are ``rev:`` version bumps, optionally
+      with updated pre-commit ``# frozen:`` annotations on full commit hashes.
 
     When both conditions are met the function approves the PR, attempts to
-    enable squash auto-merge, and returns ``True``. If auto-merge cannot be
-    enabled, it leaves a separate comment with the GitHub API error. Otherwise
+    enable squash auto-merge (or squash-merges directly if the PR is already
+    cleanly mergeable), and returns ``True``. If auto-merge cannot be
+    enabled, it leaves a separate comment explaining why. Otherwise
     it posts a comment explaining why the PR needs manual review, requests a
     human reviewer, and returns ``False``. The reviewer is resolved via
     [](`~ccbr_actions.pr_review.determine_reviewer`): *reviewer* if given,
@@ -352,18 +383,31 @@ def review_pre_commit_pr(
 
         if was_auto_approved:
             try:
-                enable_auto_merge(repo, pr_number, token=token, session=session)
-                print("Squash auto-merge enabled successfully")
+                outcome = enable_auto_merge_or_merge(
+                    repo,
+                    pr_number,
+                    pr_data.get("head", {}).get("sha", ""),
+                    token=token,
+                    session=session,
+                )
+                if outcome == "merged":
+                    print("PR was already mergeable; squash-merged it directly")
+                else:
+                    print("Squash auto-merge enabled successfully")
             except (
                 KeyError,
                 requests.exceptions.RequestException,
                 RuntimeError,
             ) as exc:
+                reason = (
+                    str(exc)
+                    if isinstance(exc, AutoMergeUnavailableError)
+                    else f"of a GitHub API error: {exc}"
+                )
                 reviewer_mention = f"@{reviewer} " if reviewer else ""
                 comment = (
                     f"{reviewer_mention}CCBR-bot approved this pre-commit.ci "
-                    "autoupdate PR, but could not enable auto-merge because of "
-                    f"a GitHub API error: {exc}"
+                    f"autoupdate PR, but could not enable auto-merge because {reason}"
                 )
                 try:
                     post_pr_comment(
@@ -396,8 +440,8 @@ def review_pre_commit_pr(
         )
     if only_config_changed and not only_rev_bumps:
         failed.append(
-            "the only changes in `.pre-commit-config.yaml` should be "
-            "`rev:` version bumps, but other modifications were found"
+            "changes in `.pre-commit-config.yaml` must be valid `rev:` "
+            "version bumps (including frozen hashes), but validation failed"
         )
     if approval_error is not None:
         failed.append(

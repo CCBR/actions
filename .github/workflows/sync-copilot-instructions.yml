@@ -45,7 +45,7 @@ jobs:
         with:
           owner: ${{ matrix.OWNER }}
           repo: ${{ matrix.REPO }}
-          app-id: ${{ vars.CCBR_BOT_APP_ID }}
+          client-id: ${{ vars.CCBR_BOT_CLIENT_ID }}
           app-private-key: ${{ secrets.CCBR_BOT_PRIVATE_KEY }}
           source-repository: "CCBR/.github"
           source-ref: "main"

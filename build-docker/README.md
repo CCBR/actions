@@ -15,21 +15,39 @@ The `ccbr-actions-version` input selects the version of `ccbr_actions`
 installed in the image being built. It is passed to the Dockerfile as
 the `CCBR_ACTIONS_VERSION` build argument.
 
+For a root-level Dockerfile such as `Dockerfile.v1` or
+`./Dockerfile.v1`, the image repository name is derived from the GitHub
+repository name, lowercased with non-alphanumeric characters replaced by
+hyphens. The generated README is written in the repository root.
+
 This action:
 
 - Resolves an effective push mode: pushing is enabled only when ‘push’
-  is ‘true’ and both DockerHub credentials are provided.
-- Logs in to DockerHub only when effective push mode is enabled.
+  is ‘true’ and a selected registry has credentials.
+- Pushes to Docker Hub, GHCR, or both. The default `registries` value is
+  `dockerhub,ghcr`; Docker Hub uses its username/token inputs, while
+  GHCR uses the GitHub token.
+- Logs in only to the selected registries that have credentials.
 - Prepares build-time variables by running a custom script.
-- Checks variables and creates a README file with build details in the
-  same directory as the dockerfile.
-- Checks whether the DockerHub tag is stale before building.
+- Checks variables and creates a README file with build details,
+  including the target platform(s), in the same directory as the
+  dockerfile.
+- Checks whether the tag is stale in each target registry (the
+  registries being pushed to, or `registries` when push is disabled)
+  before building. A build is needed if the tag is missing from any
+  registry, is older than the latest dockerfile commit, or lacks any
+  platform in `platforms`.
 - Builds the Docker image only when a build is needed; pushes only when
-  effective push mode is enabled.
-- Updates the DockerHub description with the contents of the README file
-  only if the image was successfully pushed.
+  effective push mode is enabled. Set `platforms` to build
+  multi-platform images.
+- Updates the Docker Hub description with the contents of the README
+  file only if the image was successfully pushed there.
 - Opens and merges a PR with the README updates only when the DockerHub
-  description update step runs successfully.
+  description update step runs successfully. When a GitHub App is
+  provided, the app approves the PR first. Failed merges (e.g. when the
+  base branch changes during parallel builds) are retried up to
+  `merge-max-attempts` times unless the PR has merge conflicts; if the
+  PR still is not merged, auto-merge is enabled instead.
 
 ## Usage
 
@@ -46,6 +64,8 @@ steps:
       dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+      registries: dockerhub,ghcr
+      platforms: linux/amd64,linux/arm64
       suffix: dev
       push: true
       ccbr-actions-version: v0.2
@@ -53,6 +73,23 @@ steps:
       github-actor: ${{ github.actor }}
       config-file: "scripts/tool_version_commands.txt"
 ```
+
+For GHCR pushes, grant the workflow `packages: write` permission. Omit
+`platforms` for the runner’s default platform, or provide a
+comma-separated list such as `linux/amd64,linux/arm64`. Multi-platform
+images must be pushed to a registry; builds with `platforms` set and
+`push: false` skip the optional container version-reporting step.
+
+To merge the generated README PR using a GitHub App instead of
+`github-token`, provide both `merge-app-client-id` and
+`merge-app-private-key`. The app must be installed on the repository
+with contents and pull requests write permissions and, if needed,
+permission to bypass its branch rules. The action creates a
+repository-scoped token immediately before merging; registry
+authentication and PR creation continue to use `github-token`. Omit both
+inputs to retain the default merge behavior. Only provide the private
+key to trusted workflows. For fork PRs, leave both inputs empty; secrets
+are unavailable to fork PRs.
 
 For an example to manually trigger the workflow for a single docker
 container, see
@@ -76,21 +113,33 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
   e.g. secrets.DOCKERHUB_USERNAME.
 - `dockerhub-token`: dockerhub token with read & write permissions.
   Strongly recommend using secrets, e.g. secrets.DOCKERHUB_TOKEN.
+- `ghcr-namespace`: GitHub Container Registry owner or organization
+  name. Defaults to the repository owner.
+- `registries`: Comma-separated registries to push to (dockerhub, ghcr).
+  **Required.** Default: `dockerhub,ghcr`.
+- `platforms`: Comma-separated target platforms for a multi-platform
+  build (e.g. linux/amd64,linux/arm64).
 - `suffix`: Suffix to add to image tag eg. “dev” to add “-dev”.
   **Required.** Default: `feat`.
-- `push`: Push to DockerHub (if false, just build the container without
-  pushing). **Required.** Default: `false`.
-- `force_build`: Force docker image build even when the Docker Hub tag
-  is up-to-date. **Required.** Default: `false`.
+- `push`: Push to selected registries (if false, just build the
+  container without pushing). **Required.** Default: `false`.
+- `force_build`: Force docker image build even when the registry tags
+  are up-to-date. **Required.** Default: `false`.
 - `ccbr-actions-version`: The version of ccbr_actions to install in the
   image. This value is passed to the Dockerfile as CCBR_ACTIONS_VERSION.
   **Required.** Default: `latest`.
 - `python-version`: The version of Python to install. **Required.**
   Default: `3.14`.
-- `github-actor`: Username of GitHub actor for the git commit when the
-  README is updated. **Required.** Default: `258092125+CCBR-bot[bot]`.
-- `github-token`: GitHub Actions token (e.g. github.token).
-  **Required.**
+- `github-actor`: GitHub username for README commits and GHCR
+  authentication. **Required.** Default: `258092125+CCBR-bot[bot]`.
+- `github-token`: GitHub Actions token used for GitHub API operations
+  and GHCR authentication. **Required.**
+- `merge-app-client-id`: GitHub App client ID used to merge the
+  generated README pull request. Must be provided together with
+  merge-app-private-key.
+- `merge-app-private-key`: GitHub App private key used to merge the
+  generated README pull request. Must be provided together with
+  merge-app-client-id.
 - `print-versions`: Whether to print tool versions in the container for
   the README file using `config-file`. Default: `true`.
 - `config-file`: Relative path to config file for tool version commands
@@ -98,6 +147,8 @@ the Dockerfile tag unchanged, and any other value appends `-feat`.
   is true, the default config file from ccbr_actions will be used.
   Default: `scripts/tool_version_commands.txt`.
 - `gh-merge-args`: arguments for `gh pr merge`. Default: `-ds --admin`.
+- `merge-max-attempts`: Maximum attempts to merge the README PR before
+  enabling auto-merge instead. Default: `5`.
 
 ## Outputs
 

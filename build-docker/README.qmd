@@ -27,16 +27,22 @@ The `ccbr-actions-version` input selects the version of `ccbr_actions` installed
 the image being built. It is passed to the Dockerfile as the
 `CCBR_ACTIONS_VERSION` build argument.
 
+For a root-level Dockerfile such as `Dockerfile.v1` or `./Dockerfile.v1`,
+the image repository name is derived from the GitHub repository name,
+lowercased with non-alphanumeric characters replaced by hyphens. The
+generated README is written in the repository root.
+
 This action:
 
-  - Resolves an effective push mode: pushing is enabled only when 'push' is 'true' and both DockerHub credentials are provided.
-  - Logs in to DockerHub only when effective push mode is enabled.
+  - Resolves an effective push mode: pushing is enabled only when 'push' is 'true' and a selected registry has credentials.
+  - Pushes to Docker Hub, GHCR, or both. The default `registries` value is `dockerhub,ghcr`; Docker Hub uses its username/token inputs, while GHCR uses the GitHub token.
+  - Logs in only to the selected registries that have credentials.
   - Prepares build-time variables by running a custom script.
-  - Checks variables and creates a README file with build details in the same directory as the dockerfile.
-  - Checks whether the DockerHub tag is stale before building.
-  - Builds the Docker image only when a build is needed; pushes only when effective push mode is enabled.
-  - Updates the DockerHub description with the contents of the README file only if the image was successfully pushed.
-  - Opens and merges a PR with the README updates only when the DockerHub description update step runs successfully.
+  - Checks variables and creates a README file with build details, including the target platform(s), in the same directory as the dockerfile.
+  - Checks whether the tag is stale in each target registry (the registries being pushed to, or `registries` when push is disabled) before building. A build is needed if the tag is missing from any registry, is older than the latest dockerfile commit, or lacks any platform in `platforms`.
+  - Builds the Docker image only when a build is needed; pushes only when effective push mode is enabled. Set `platforms` to build multi-platform images.
+  - Updates the Docker Hub description with the contents of the README file only if the image was successfully pushed there.
+  - Opens and merges a PR with the README updates only when the DockerHub description update step runs successfully. When a GitHub App is provided, the app approves the PR first. Failed merges (e.g. when the base branch changes during parallel builds) are retried up to `merge-max-attempts` times unless the PR has merge conflicts; if the PR still is not merged, auto-merge is enabled instead.
 
 ## Usage
 
@@ -53,6 +59,8 @@ steps:
       dockerhub-namespace: ${{ secrets.DOCKERHUB_NAMESPACE }}
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+      registries: dockerhub,ghcr
+      platforms: linux/amd64,linux/arm64
       suffix: dev
       push: true
       ccbr-actions-version: v0.2
@@ -60,6 +68,21 @@ steps:
       github-actor: ${{ github.actor }}
       config-file: "scripts/tool_version_commands.txt"
 ```
+
+For GHCR pushes, grant the workflow `packages: write` permission. Omit
+`platforms` for the runner's default platform, or provide a comma-separated
+list such as `linux/amd64,linux/arm64`. Multi-platform images must be pushed
+to a registry; builds with `platforms` set and `push: false` skip the optional
+container version-reporting step.
+
+To merge the generated README PR using a GitHub App instead of `github-token`,
+provide both `merge-app-client-id` and `merge-app-private-key`. The app must be
+installed on the repository with contents and pull requests write permissions
+and, if needed, permission to bypass its branch rules. The action creates a
+repository-scoped token immediately before merging; registry authentication and
+PR creation continue to use `github-token`. Omit both inputs to retain the
+default merge behavior. Only provide the private key to trusted workflows.
+For fork PRs, leave both inputs empty; secrets are unavailable to fork PRs.
 
 For an example to manually trigger the workflow for a single docker container,
 see [build-docker-manual.yml](/examples/build-docker-manual.yml).
