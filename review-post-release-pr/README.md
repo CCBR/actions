@@ -17,9 +17,8 @@ The action verifies five conditions:
     release in the repo.
 2.  **Only allowed files were changed** – the version file, citation
     file, `codemeta.json`, changelog file, news file, `nextflow.config`,
-    Quarto `_extension.yml`/`_extension.yaml` manifests, and/or readme
-    files. No other files should be modified, and the full list of
-    changed files must be retrievable (the action fails closed
+    and/or readme files. No other files should be modified, and the full
+    list of changed files must be retrievable (the action fails closed
     if a pagination mismatch is detected).
 3.  **The version file was actually bumped** – auditing that the
     `post-release` action did its job, not just that the changed files
@@ -34,13 +33,9 @@ The action verifies five conditions:
     have gained only the expected release heading; `nextflow.config` may
     only update the quoted `version` value in a top-level `manifest`
     block to the release version followed by `-dev` (without the tag’s
-    leading `v`), leaving all other configuration content unchanged;
-    Quarto extension manifests may only update their literal top-level
-    `version` to that same development version, preserving all other
-    content, including comments and formatting. Duplicate version keys
-    and anchored or aliased versions require human review. Readme files
-    may only have existing version/date tokens replaced in a recognized
-    citation context (a “version” mention or a bibtex
+    leading `v`), leaving all other configuration content unchanged; and
+    readme files may only have existing version/date tokens replaced in
+    a recognized citation context (a “version” mention or a bibtex
     `month`/`year` field, with no inserted lines), matching a
     re-rendered citation snippet from the `auto-format` action. A
     `pip install git+https://github.com/<repo>@<ref>` line for the
