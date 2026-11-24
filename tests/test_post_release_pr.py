@@ -1362,6 +1362,129 @@ def test_review_post_release_pr_approves_when_conditions_met():
     assert any(body.get("commit_id") == "head-sha" for body in review_bodies)
 
 
+@pytest.mark.parametrize("citation_date", ["", 'date-released: "2020-01-01"\n'])
+@pytest.mark.parametrize("with_codemeta", [False, True])
+def test_review_post_release_pr_approves_r_development_metadata(
+    citation_date, with_codemeta
+):
+    citation_old = f"title: Example\nversion: 0.7.0.9000\n{citation_date}"
+    citation_new = citation_old.replace("0.7.0.9000", "0.7.1.9000")
+    filenames = ["DESCRIPTION", "NEWS.md", "CITATION.cff"]
+    contents = {
+        ("DESCRIPTION", "base-sha"): DESCRIPTION_OLD,
+        ("DESCRIPTION", "head-sha"): DESCRIPTION_NEW,
+        ("NEWS.md", "base-sha"): CHANGELOG_OLD,
+        ("NEWS.md", "head-sha"): CHANGELOG_NEW,
+        ("CITATION.cff", "base-sha"): citation_old,
+        ("CITATION.cff", "head-sha"): citation_new,
+        ("codemeta.json", "base-sha"): '{"version": "0.7.0.9000"}',
+        ("codemeta.json", "head-sha"): '{"version": "0.7.1.9000"}',
+    }
+    if with_codemeta:
+        filenames.append("codemeta.json")
+    session = _make_review_session(
+        pr_files=[{"filename": name} for name in filenames], contents=contents
+    )
+    assert review_post_release_pr("CCBR/Tools", 9, session=session) is True
+    assert any(
+        url.endswith("/reviews")
+        and payload["json"]["event"] == "APPROVE"
+        and payload["json"]["commit_id"] == "head-sha"
+        for method, url, payload in session.calls
+        if method == "POST"
+    )
+
+
+@pytest.mark.parametrize(
+    ("filename", "new_content"),
+    [
+        ("DESCRIPTION", "Package: pkg\nVersion: 0.7.2.9000\nTitle: Example\n"),
+        ("CITATION.cff", "title: Other\nversion: 0.7.1.9000\n"),
+        ("CITATION.cff", "title: Example\nversion: 0.7.2.9000\n"),
+        (
+            "CITATION.cff",
+            'title: Example\nversion: 0.7.1.9000\ndate-released: "2099-01-01"\n',
+        ),
+        ("codemeta.json", '{"version": "0.7.2.9000"}'),
+        ("codemeta.json", '{"version": "0.7.1.9000", "name": "Other"}'),
+    ],
+)
+def test_review_post_release_pr_rejects_invalid_r_metadata(filename, new_content):
+    contents = {
+        ("DESCRIPTION", "base-sha"): DESCRIPTION_OLD,
+        ("DESCRIPTION", "head-sha"): DESCRIPTION_NEW,
+        ("CITATION.cff", "base-sha"): "title: Example\nversion: 0.7.0.9000\n",
+        ("CITATION.cff", "head-sha"): "title: Example\nversion: 0.7.1.9000\n",
+        ("codemeta.json", "base-sha"): '{"version": "0.7.0.9000"}',
+        ("codemeta.json", "head-sha"): '{"version": "0.7.1.9000"}',
+    }
+    contents[(filename, "head-sha")] = new_content
+    session = _make_review_session(
+        pr_files=[
+            {"filename": name}
+            for name in ("DESCRIPTION", "CITATION.cff", "codemeta.json")
+        ],
+        contents=contents,
+    )
+    assert (
+        review_post_release_pr("CCBR/Tools", 9, reviewer="human", session=session)
+        is False
+    )
+    assert any(
+        method == "POST" and "requested_reviewers" in url
+        for method, url, _ in session.calls
+    )
+    assert not any(
+        method == "POST" and url.endswith("/reviews")
+        for method, url, _ in session.calls
+    )
+
+
+@pytest.mark.parametrize("filename", ["CITATION.cff", "codemeta.json"])
+def test_review_post_release_pr_rejects_r_metadata_without_description_bump(filename):
+    contents = _default_contents()
+    if filename == "CITATION.cff":
+        contents[(filename, "base-sha")] = "title: Example\nversion: 0.7.0.9000\n"
+        contents[(filename, "head-sha")] = "title: Example\nversion: 0.7.1.9000\n"
+    else:
+        contents[(filename, "base-sha")] = '{"version": "0.7.0.9000"}'
+        contents[(filename, "head-sha")] = '{"version": "0.7.1.9000"}'
+    session = _make_review_session(contents=contents)
+    assert review_post_release_pr("CCBR/Tools", 9, session=session) is False
+
+
+def test_r_development_citation_date_can_match_release_but_not_be_removed():
+    old = 'version: 0.7.0.9000\ndate-released: "2020-01-01"\n'
+    new = 'version: 0.7.1.9000\ndate-released: "2026-09-17"\n'
+    assert (
+        _validate_citation_file(old, new, RELEASE_TAG, RELEASE_DATES, "0.7.1.9000")
+        is True
+    )
+    assert (
+        _validate_citation_file(
+            old, "version: 0.7.1.9000\n", RELEASE_TAG, RELEASE_DATES, "0.7.1.9000"
+        )
+        is False
+    )
+    assert (
+        _validate_citation_file(
+            None, "version: 0.7.1.9000\n", RELEASE_TAG, RELEASE_DATES, "0.7.1.9000"
+        )
+        is False
+    )
+    assert (
+        _validate_codemeta_file(
+            None,
+            '{"version": "0.7.1.9000"}',
+            RELEASE_VERSION,
+            RELEASE_TAG,
+            RELEASE_DATES,
+            "0.7.1.9000",
+        )
+        is False
+    )
+
+
 @pytest.mark.parametrize("suffix", ["yml", "yaml"])
 @pytest.mark.parametrize("unrelated_change", [False, True])
 def test_review_post_release_pr_validates_quarto_extension_bumps(
