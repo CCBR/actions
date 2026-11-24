@@ -1,5 +1,7 @@
 ## actions development version
 
+- Allow `review-post-release-pr` to approve release-matching Quarto extension version updates. (#267, @kelly-sovacool)
+
 ## actions 0.9.3
 
 - Retry `build-docker` README PR merges that fail transiently, approve them with the merge app, and fall back to auto-merge. (#263, @kelly-sovacool)
