@@ -166,6 +166,17 @@ README_NEW = (
 DESCRIPTION_OLD = "Package: pkg\nVersion: 0.7.0.9000\nTitle: Example\n"
 DESCRIPTION_NEW = "Package: pkg\nVersion: 0.7.1.9000\nTitle: Example\n"
 
+EXTENSION_OLD = (
+    "title: fnl\n"
+    "version: 0.7.0-dev\n"
+    'quarto-required: ">=1.5.0"\n'
+    "contributes:\n"
+    "  formats:\n"
+    "    html:\n"
+    "      theme: theme.scss\n"
+)
+EXTENSION_NEW = EXTENSION_OLD.replace("0.7.0-dev", "0.7.1-dev")
+
 NEXTFLOW_OLD = (
     'params.outdir = "results"\n'
     "manifest {\n"
@@ -318,6 +329,8 @@ def test_file_roles_assigns_expected_roles():
         "CITATION.cff": "citation",
         "codemeta.json": "codemeta",
         "nextflow.config": "nextflow",
+        "_extension.yml": "extension",
+        "_extension.yaml": "extension",
         "CHANGELOG.md": "changelog",
         "NEWS.md": "changelog",
         "NEWS": "changelog",
@@ -498,6 +511,75 @@ def test_validate_description_file_rejects_line_count_mismatch():
     assert (
         _validate_description_file(
             DESCRIPTION_OLD, new_with_extra_line, RELEASE_VERSION
+        )
+        is False
+    )
+
+
+# ---------------------------------------------------------------------------
+# Quarto extension validation
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("quote", ["", "'", '"'])
+def test_validate_extension_bump_accepts_only_release_matching_version(quote):
+    old = EXTENSION_OLD.replace(
+        "0.7.0-dev", f"{quote}0.7.0-dev{quote} # development version"
+    )
+    old += "metadata:\n  version: 0.7.0-dev\n"
+    new = old.replace("0.7.0-dev", "0.7.1-dev", 1)
+    assert (
+        _validate_file_bump(
+            "extension",
+            old,
+            new,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            RELEASE_DATES,
+            "development version",
+            set(),
+        )
+        is True
+    )
+
+
+@pytest.mark.parametrize(
+    ("old", "new"),
+    [
+        (EXTENSION_OLD, EXTENSION_NEW.replace("0.7.1-dev", "0.7.2-dev")),
+        (EXTENSION_OLD, EXTENSION_NEW.replace("0.7.1-dev", "0.7.1")),
+        (EXTENSION_OLD, EXTENSION_NEW.replace("theme.scss", "other.scss")),
+        (EXTENSION_OLD, EXTENSION_NEW + "author: Someone else\n"),
+        (EXTENSION_NEW, EXTENSION_NEW),
+        (
+            EXTENSION_OLD + "version: 0.7.0-dev\n",
+            EXTENSION_NEW + "version: 0.7.1-dev\n",
+        ),
+        (
+            "contributes:\n  version: 0.7.0-dev\n",
+            "contributes:\n  version: 0.7.1-dev\n",
+        ),
+        ("version: [0.7.0-dev\n", "version: [0.7.1-dev\n"),
+        ("version: &version 0.7.0-dev\n", "version: &version 0.7.1-dev\n"),
+        (
+            "default-version: &default 0.7.0-dev\nversion: *default\n",
+            "default-version: &default 0.7.1-dev\nversion: *default\n",
+        ),
+        (None, EXTENSION_NEW),
+        (EXTENSION_OLD, None),
+    ],
+)
+def test_validate_extension_bump_rejects_unrelated_or_ambiguous_changes(old, new):
+    assert (
+        _validate_file_bump(
+            "extension",
+            old,
+            new,
+            RELEASE_TAG,
+            RELEASE_VERSION,
+            RELEASE_DATES,
+            "development version",
+            set(),
         )
         is False
     )
@@ -1278,6 +1360,62 @@ def test_review_post_release_pr_approves_when_conditions_met():
     ]
     assert any(body.get("event") == "APPROVE" for body in review_bodies)
     assert any(body.get("commit_id") == "head-sha" for body in review_bodies)
+
+
+@pytest.mark.parametrize("suffix", ["yml", "yaml"])
+@pytest.mark.parametrize("unrelated_change", [False, True])
+def test_review_post_release_pr_validates_quarto_extension_bumps(
+    suffix, unrelated_change
+):
+    contents = {
+        ("DESCRIPTION", "base-sha"): DESCRIPTION_OLD,
+        ("DESCRIPTION", "head-sha"): DESCRIPTION_NEW,
+        ("CHANGELOG.md", "base-sha"): CHANGELOG_OLD,
+        ("CHANGELOG.md", "head-sha"): CHANGELOG_NEW,
+    }
+    filenames = ["DESCRIPTION", "CHANGELOG.md"]
+    for name in ("fnl", "fnl-report"):
+        filename = f"_extensions/{name}/_extension.{suffix}"
+        filenames.append(filename)
+        contents[(filename, "base-sha")] = EXTENSION_OLD
+        contents[(filename, "head-sha")] = (
+            EXTENSION_NEW.replace("theme.scss", "other.scss")
+            if unrelated_change and name == "fnl-report"
+            else EXTENSION_NEW
+        )
+    session = _make_review_session(
+        pr_files=[{"filename": name} for name in filenames], contents=contents
+    )
+    result = review_post_release_pr(
+        "CCBR/Tools",
+        9,
+        reviewer="human-reviewer",
+        session=session,
+    )
+    assert result is (not unrelated_change)
+    posts = [call for call in session.calls if call[0] == "POST"]
+    if unrelated_change:
+        assert any("requested_reviewers" in url for _, url, _ in posts)
+        assert not any(url.endswith("/reviews") for _, url, _ in posts)
+    else:
+        assert any(
+            url.endswith("/reviews")
+            and payload["json"]["event"] == "APPROVE"
+            and payload["json"]["commit_id"] == "head-sha"
+            for _, url, payload in posts
+        )
+
+
+def test_review_post_release_pr_requires_package_version_with_extension_bump():
+    filename = "_extensions/fnl/_extension.yml"
+    session = _make_review_session(
+        pr_files=[{"filename": filename}],
+        contents={
+            (filename, "base-sha"): EXTENSION_OLD,
+            (filename, "head-sha"): EXTENSION_NEW,
+        },
+    )
+    assert review_post_release_pr("CCBR/Tools", 9, session=session) is False
 
 
 @pytest.mark.parametrize("unrelated_change", [False, True])
