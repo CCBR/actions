@@ -2113,7 +2113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a>          github.event_name == 'pull_request' &amp;&amp;</span>
 <span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a>          startsWith(github.event.pull_request.title, 'chore: post-release cleanup for') &amp;&amp;</span>
 <span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a>          (</span>
-<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>            ((github.event.action == 'opened' || github.event.action == 'synchronize') &amp;&amp; github.event.sender.type == 'Bot') ||</span>
+<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>            ((github.event.action == 'opened' || github.event.action == 'synchronize') &amp;&amp; github.event.pull_request.user.type == 'Bot') ||</span>
 <span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a>            (github.event.action == 'review_requested' &amp;&amp; github.event.requested_reviewer.login == 'ccbr-bot[bot]')</span>
 <span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>          )</span>
 <span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>        )</span>
