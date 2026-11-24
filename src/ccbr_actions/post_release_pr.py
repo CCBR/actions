@@ -103,15 +103,17 @@ def _file_roles(
 
     Returns:
         dict[str, str]: Basename to role (``"version"``, ``"citation"``,
-        ``"codemeta"``, ``"changelog"``, ``"nextflow"``, or ``"description"``). README files
-        are matched separately by prefix and default to the ``"readme"``
-        role.
+        ``"codemeta"``, ``"changelog"``, ``"nextflow"``, ``"extension"``, or
+        ``"description"``). README files are matched separately by prefix
+        and default to the ``"readme"`` role.
     """
     return {
         os.path.basename(version_filepath): "version",
         os.path.basename(citation_filepath): "citation",
         "codemeta.json": "codemeta",
         "nextflow.config": "nextflow",
+        "_extension.yml": "extension",
+        "_extension.yaml": "extension",
         os.path.basename(changelog_filepath): "changelog",
         "NEWS.md": "changelog",
         "NEWS": "changelog",
@@ -461,6 +463,56 @@ def _validate_nextflow_file(
     return result
 
 
+def _validate_extension_file(
+    old_content: str | None, new_content: str | None, release_version: str
+) -> bool:
+    """Check that only a Quarto extension's literal top-level version was bumped.
+
+    YAML source spans preserve all other content, including comments and
+    formatting. Duplicate version keys and anchored or aliased versions require
+    human review.
+
+    Args:
+        old_content: Extension manifest at the PR's base.
+        new_content: Extension manifest at the PR's head.
+        release_version: Release version without the leading ``v``.
+
+    Returns:
+        Whether only the version changed to the expected dev version.
+    """
+    result = False
+    if isinstance(old_content, str) and isinstance(new_content, str):
+        try:
+            document = yaml.compose(old_content, Loader=yaml.SafeLoader)
+        except yaml.YAMLError:
+            document = None
+        if isinstance(document, yaml.MappingNode):
+            versions = [
+                value
+                for key, value in document.value
+                if isinstance(key, yaml.ScalarNode) and key.value == "version"
+            ]
+            if len(versions) == 1 and isinstance(versions[0], yaml.ScalarNode):
+                version = versions[0]
+                start, end = version.start_mark.index, version.end_mark.index
+                literal = re.fullmatch(
+                    r"(?P<quote>['\"]?)[0-9][0-9A-Za-z.+-]*(?P=quote)",
+                    old_content[start:end],
+                )
+                if literal is not None and re.fullmatch(
+                    r"[0-9][0-9A-Za-z.+-]*", release_version
+                ):
+                    expected = f"{release_version}-dev"
+                    quote = literal.group("quote")
+                    replacement = f"{quote}{expected}{quote}"
+                    result = (
+                        version.value != expected
+                        and old_content[:start] + replacement + old_content[end:]
+                        == new_content
+                    )
+    return result
+
+
 def _validate_citation_file(old_content, new_content, release_tag, release_dates):
     """
     Check that a ``CITATION.cff`` file's version/date fields were bumped.
@@ -648,7 +700,8 @@ def _validate_file_bump(
 
     Args:
         role (str): One of ``"version"``, ``"description"``, ``"citation"``,
-            ``"codemeta"``, ``"changelog"``, ``"nextflow"``, or ``"readme"``.
+            ``"codemeta"``, ``"changelog"``, ``"nextflow"``, ``"extension"``,
+            or ``"readme"``.
         old_content (str | None): The file's content at the PR's base.
         new_content (str | None): The file's content at the PR's head.
         release_tag (str): The release tag (e.g. ``"v0.7.1"``).
@@ -668,6 +721,8 @@ def _validate_file_bump(
         result = _validate_description_file(old_content, new_content, release_version)
     elif role == "nextflow":
         result = _validate_nextflow_file(old_content, new_content, release_version)
+    elif role == "extension":
+        result = _validate_extension_file(old_content, new_content, release_version)
     elif role == "citation":
         result = _validate_citation_file(
             old_content, new_content, release_tag, release_dates
@@ -856,7 +911,7 @@ def _collect_failure_reasons(
         reasons.append(
             "This PR changes files outside the automatic-review allowlist: "
             "version, R DESCRIPTION, citation, codemeta, changelog/news, "
-            "readme, and nextflow.config files."
+            "readme, nextflow.config, and Quarto _extension.yml/_extension.yaml files."
         )
     if release is not None and only_allowed_files and not only_valid_bumps:
         reasons.append(
@@ -1208,7 +1263,8 @@ def review_post_release_pr(
     - **Condition 2** – the full list of changed files could be retrieved
       (fails closed if a pagination mismatch is detected), and only the
       version file, citation file, ``codemeta.json``, changelog file, news
-      file, ``nextflow.config``, and/or readme files were changed.
+      file, ``nextflow.config``, Quarto ``_extension.yml``/``_extension.yaml``
+      files, and/or readme files were changed.
     - **Condition 3** – the version file was actually changed, auditing that
       the ``post-release`` action did its job. For an R package where the
       version and description files are the same ``DESCRIPTION`` file, a
@@ -1220,6 +1276,8 @@ def review_post_release_pr(
       published/created date exactly; the changelog/news file only gained
       the expected release heading; ``nextflow.config`` only changes a literal
       ``version`` in its top-level ``manifest`` block to the expected dev
+      version, with all other content unchanged; Quarto extension manifests
+      only change their literal top-level ``version`` to the expected dev
       version, with all other content unchanged; and readme files only had existing
       version/date tokens replaced in a recognized citation context (a
       "version" mention or a bibtex ``month``/``year`` field, with no
