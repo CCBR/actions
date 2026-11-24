@@ -1072,7 +1072,7 @@
     "href": "CHANGELOG.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Allow review-post-release-pr to approve release-matching Quarto extension version updates. (#267, @kelly-sovacool)",
+    "text": "Fixes to review-post-release-pr:\n\nApprove release-matching Quarto extension version updates. (#267, @kelly-sovacool)\nApprove R development version updates in citation metadata. (#268, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
@@ -1083,7 +1083,7 @@
     "href": "CHANGELOG.html#actions-development-version",
     "title": "CCBR actions",
     "section": "",
-    "text": "Allow review-post-release-pr to approve release-matching Quarto extension version updates. (#267, @kelly-sovacool)",
+    "text": "Fixes to review-post-release-pr:\n\nApprove release-matching Quarto extension version updates. (#267, @kelly-sovacool)\nApprove R development version updates in citation metadata. (#268, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
