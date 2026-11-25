@@ -1,5 +1,7 @@
 ## actions development version
 
+- Fix automatic formatting dispatch during release preparation. (#271, @kelly-sovacool)
+
 ## actions 0.9.4
 
 - Fixes to `review-post-release-pr`:
