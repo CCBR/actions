@@ -1,5 +1,8 @@
 ## actions development version
 
+- Prevent a draft release from using a pre-existing tag that points to a different commit. (#270, @kelly-sovacool)
+- Prevent post-release cleanup from proceeding when published release metadata is inconsistent. (#270, @kelly-sovacool)
+
 ## actions 0.9.4
 
 - Fixes to `review-post-release-pr`:

@@ -1,7 +1,11 @@
 import os
+import subprocess
+import sys
 import warnings
+from pathlib import Path
 
 import pytest
+import yaml
 from ccbr_tools.shell import exec_in_context, shell_run
 
 from ccbr_actions.data import get_file_path
@@ -18,6 +22,7 @@ from ccbr_actions.release import (
     push_release_draft_branch,
     regenerate_citation_from_description,
     set_release_version,
+    validate_post_release_files,
     write_description_version,
     write_lines,
 )
@@ -155,6 +160,53 @@ def test_create_release_draft(data_dir_rel):
     ).startswith(
         f"gh release create v1 --draft --notes-file {data_dir_rel / 'example_changelog.md'} --title 'actions 1' --repo CCBR/actions --target HEAD\n"
     )
+
+
+@pytest.mark.parametrize("existing_hash", [None, "abc123"])
+def test_create_release_draft_allows_missing_or_matching_tag(
+    monkeypatch, existing_hash
+):
+    expected_hash = "abc123"
+    tag_ref = "refs/tags/v1.2.3"
+    calls = []
+
+    def fake_shell_run(command):
+        calls.append(command)
+        if command.startswith("git ls-remote"):
+            if existing_hash is None:
+                return ""
+            return f"{existing_hash}\t{tag_ref}\n"
+        return "https://github.com/CCBR/actions/releases/tag/v1.2.3"
+
+    monkeypatch.setattr("ccbr_actions.release.shell_run", fake_shell_run)
+    result = create_release_draft(
+        next_version="v1.2.3",
+        release_target=expected_hash,
+        repo="CCBR/actions",
+    )
+
+    assert result == "https://github.com/CCBR/actions/releases/tag/v1.2.3"
+    assert len(calls) == 2
+    assert calls[0].startswith("git ls-remote")
+    assert calls[1].startswith("gh release create v1.2.3")
+
+
+def test_create_release_draft_rejects_stale_tag(monkeypatch):
+    calls = []
+
+    def fake_shell_run(command):
+        calls.append(command)
+        return "deadbeef\trefs/tags/v1.2.3\n"
+
+    monkeypatch.setattr("ccbr_actions.release.shell_run", fake_shell_run)
+    with pytest.raises(ValueError, match="already points to deadbeef"):
+        create_release_draft(
+            next_version="v1.2.3",
+            release_target="abc123",
+            repo="CCBR/actions",
+        )
+
+    assert len(calls) == 1
 
 
 def test_push_release_draft_branch(data_dir_rel):
@@ -727,6 +779,213 @@ def test_post_release_cleanup_non_r_writes_dev_suffix(
     assert any("git commit -m" in cmd for cmd in commands)
 
 
+@pytest.mark.parametrize(
+    ("version", "changelog", "citation", "reason"),
+    [
+        (
+            "0.9.3-dev",
+            "## actions development version\n\nnotes\n\n## actions 0.9.3\n",
+            None,
+            "version file",
+        ),
+        (
+            "0.9.4",
+            "## actions Development Version\n\nnotes\n",
+            None,
+            "development heading",
+        ),
+        (
+            "0.9.4",
+            "## actions 0.9.3\n\nnotes\n",
+            None,
+            "release heading",
+        ),
+        (
+            "0.9.4",
+            "## actions 0.9.40\n\nnotes\n\n## actions 0.9.4\n",
+            None,
+            "release heading",
+        ),
+        (
+            "0.9.4",
+            "## actions 0.9.4.9000\n\nnotes\n\n## actions 0.9.4\n",
+            None,
+            "release heading",
+        ),
+        (
+            "0.9.4",
+            "## actions 0.9.4-rc.1\n\nnotes\n",
+            None,
+            "release heading",
+        ),
+        (
+            "0.9.4",
+            "## actions 0.9.4\n\nnotes\n",
+            "version: v0.9.3\n",
+            "citation version",
+        ),
+    ],
+)
+def test_post_release_cleanup_rejects_unprepared_release(
+    github_output_file, tmp_path, monkeypatch, version, changelog, citation, reason
+):
+    changelog_file = tmp_path / "CHANGELOG.md"
+    version_file = tmp_path / "VERSION"
+    citation_file = tmp_path / "CITATION.cff"
+    changelog_file.write_text(changelog)
+    version_file.write_text(f"{version}\n")
+    if citation is not None:
+        citation_file.write_text(citation)
+
+    commands = []
+    monkeypatch.setattr("ccbr_actions.release.shell_run", commands.append)
+    monkeypatch.setattr("ccbr_actions.release.precommit_run", commands.append)
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match=reason):
+        post_release_cleanup(
+            repo="CCBR/actions",
+            release_tag="v0.9.4",
+            pr_branch="release/v0.9.4",
+            pr_reviewer="reviewer",
+        )
+
+    assert changelog_file.read_text() == changelog
+    assert version_file.read_text() == f"{version}\n"
+    if citation is not None:
+        assert citation_file.read_text() == citation
+    assert commands == []
+
+
+def test_post_release_cleanup_rejects_unprepared_r_release(
+    github_output_file, tmp_path, monkeypatch
+):
+    news_file = tmp_path / "NEWS.md"
+    description_file = tmp_path / "DESCRIPTION"
+    news = "## mypkg development version\n\nnotes\n"
+    description = "Package: mypkg\nVersion: 0.9.3.9000\n"
+    news_file.write_text(news)
+    description_file.write_text(description)
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="version file"):
+        post_release_cleanup(repo="CCBR/mypkg", release_tag="v0.9.4")
+
+    assert news_file.read_text() == news
+    assert description_file.read_text() == description
+
+
+def test_validate_post_release_files_rejects_invalid_tag():
+    with pytest.raises(ValueError, match="not a semantic version"):
+        validate_post_release_files(release_tag="latest")
+
+
+def test_validate_post_release_files_rejects_empty_development_header(
+    tmp_path, monkeypatch
+):
+    (tmp_path / "CHANGELOG.md").write_text("## actions 0.9.4\n")
+    (tmp_path / "VERSION").write_text("0.9.4\n")
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="development header must not be empty"):
+        validate_post_release_files(release_tag="v0.9.4", dev_header="")
+
+
+def test_validate_post_release_files_rejects_non_mapping_citation(
+    tmp_path, monkeypatch
+):
+    (tmp_path / "CHANGELOG.md").write_text("## actions 0.9.4\n")
+    (tmp_path / "VERSION").write_text("0.9.4\n")
+    (tmp_path / "CITATION.cff").write_text("[]\n")
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="must be a YAML mapping"):
+        validate_post_release_files(release_tag="v0.9.4")
+
+
+def test_validate_post_release_files_uses_r_package_paths(tmp_path, monkeypatch):
+    (tmp_path / "DESCRIPTION").write_text("Package: mypkg\nVersion: 0.9.4\n")
+    (tmp_path / "NEWS.md").write_text("## mypkg 0.9.4\n")
+    monkeypatch.chdir(tmp_path)
+
+    assert validate_post_release_files(release_tag="v0.9.4") == "0.9.4"
+
+
+@pytest.mark.parametrize(
+    ("release_tag", "version", "heading", "expected"),
+    [
+        ("v0.9.4", "v0.9.4", "[0.9.4] - 2026-11-25", "0.9.4-dev"),
+        ("v0.9.4", "0.9.4", "actions 0.9.4.", "0.9.4-dev"),
+        ("v0.9.4-rc.1", "0.9.4-rc.1", "[0.9.4-rc.1]", "0.9.4-rc.1-dev"),
+    ],
+)
+def test_post_release_cleanup_accepts_prepared_release(
+    github_output_file, tmp_path, monkeypatch, release_tag, version, heading, expected
+):
+    changelog_file = tmp_path / "CHANGELOG.md"
+    version_file = tmp_path / "VERSION"
+    citation_file = tmp_path / "CITATION.cff"
+    changelog_file.write_text(f"# Changelog\n\n## {heading}\n\nnotes\n")
+    version_file.write_text(f"{version}\n")
+    citation_file.write_text(f"version: {release_tag}\n")
+    monkeypatch.setattr("ccbr_actions.release.shell_run", lambda *_: "")
+    monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *_: None)
+    monkeypatch.chdir(tmp_path)
+
+    post_release_cleanup(repo="CCBR/actions", release_tag=release_tag)
+
+    assert version_file.read_text() == f"{expected}\n"
+    assert changelog_file.read_text().startswith(
+        f"## actions development version\n\n# Changelog\n\n## {heading}"
+    )
+
+
+def test_post_release_action_checks_metadata_before_replacing_branch(tmp_path):
+    action_file = Path(__file__).resolve().parents[1] / "post-release" / "action.yml"
+    action = yaml.safe_load(action_file.read_text())
+    steps = action["runs"]["steps"]
+    validation_index = next(
+        index
+        for index, step in enumerate(steps)
+        if "validate_post_release_files" in step.get("run", "")
+    )
+    delete_index = next(
+        index
+        for index, step in enumerate(steps)
+        if "git push origin --delete" in step.get("run", "")
+    )
+
+    assert validation_index < delete_index
+
+    (tmp_path / "VERSION").write_text("0.9.3-dev\n")
+    (tmp_path / "CHANGELOG.md").write_text("## actions 0.9.4\n\nnotes\n")
+    env = os.environ.copy()
+    env.update(
+        {
+            "GITHUB_WORKSPACE": str(tmp_path),
+            "RELEASE_TAG": "v0.9.4",
+            "CHANGELOG_FILEPATH": "CHANGELOG.md",
+            "VERSION_FILEPATH": "VERSION",
+            "CITATION_FILEPATH": "CITATION.cff",
+            "DESCRIPTION_FILEPATH": "DESCRIPTION",
+            "DEV_HEADER": "development version",
+            "PYTHONPATH": str(action_file.parents[1] / "src"),
+        }
+    )
+    command = [sys.executable, "-c", steps[validation_index]["run"]]
+    invalid = subprocess.run(
+        command, env=env, capture_output=True, text=True, check=False
+    )
+    assert invalid.returncode != 0
+    assert "version file" in invalid.stderr
+
+    (tmp_path / "VERSION").write_text("0.9.4\n")
+    valid = subprocess.run(
+        command, env=env, capture_output=True, text=True, check=False
+    )
+    assert valid.returncode == 0, valid.stderr
+
+
 def test_post_release_cleanup_no_citation(github_output_file, data_dir_rel):
     output = exec_in_context(
         post_release_cleanup,
@@ -759,9 +1018,15 @@ def test_push_release_draft_branch_non_debug(monkeypatch):
 
 
 def test_create_release_draft_non_debug(monkeypatch):
-    monkeypatch.setattr(
-        "ccbr_actions.release.shell_run", lambda *_: "https://example.com/release"
-    )
+    commands = []
+
+    def fake_shell_run(command):
+        commands.append(command)
+        if command.startswith("git ls-remote"):
+            return "abc123\trefs/tags/v0.2.0\n"
+        return "https://example.com/release"
+
+    monkeypatch.setattr("ccbr_actions.release.shell_run", fake_shell_run)
     release_url = create_release_draft(
         release_branch="release-draft",
         next_version="v0.2.0",
@@ -771,6 +1036,7 @@ def test_create_release_draft_non_debug(monkeypatch):
         debug=False,
     )
     assert release_url == "https://example.com/release"
+    assert len(commands) == 2
 
 
 def test_set_release_version(github_output_file):

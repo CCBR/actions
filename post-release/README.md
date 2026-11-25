@@ -10,6 +10,13 @@ changelog. It works best when used in conjunction with
 [`draft-release`](/draft-release) to help automate parts of the release
 process.
 
+Before replacing a cleanup branch or changing files, the action checks
+that the published tag matches the version file, the newest release
+heading, and any version in `CITATION.cff`. It also rejects a changelog
+that still has a development heading. If validation fails, review the
+release’s target before retrying; the action does not change the
+published tag.
+
 The action also approves workflow runs awaiting approval for the cleanup
 PR, limited to the PR’s current head commit. The `github-token` input
 must have `actions: write` permission, in addition to the permissions
@@ -35,10 +42,14 @@ override it.
 Required files:
 
 - `CHANGELOG.md` - a changelog or news file with entries in reverse
-  chronological order. The newest entry should contain “development
-  header”.
-- `VERSION` - a single-source version file.
+  chronological order. Its newest release heading must match the
+  published tag.
+- `VERSION` - a single-source version file matching the published tag.
 - `CITATION.cff` - a citation file. (optional)
+
+For R packages, `NEWS.md` (or `NEWS`) and `DESCRIPTION` are used
+instead. Dry-run mode prints commands without validating release
+metadata.
 
 ### Basic example
 
