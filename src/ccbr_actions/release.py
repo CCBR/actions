@@ -6,7 +6,9 @@ import os
 import re
 import shlex
 import warnings
+from pathlib import Path
 
+import yaml
 from ccbr_tools.shell import shell_run
 
 from .actions import set_output, trigger_workflow
@@ -345,6 +347,123 @@ def write_lines(filepath, lines, debug=False):
         return "\n".join(lines)
 
 
+def _read_post_release_version(version_filepath: Path, is_r_package: bool) -> str:
+    """Read the released version from a version file or R DESCRIPTION."""
+    contents = version_filepath.read_text()
+    if is_r_package:
+        version = next(
+            (
+                line.removeprefix("Version:").strip()
+                for line in contents.splitlines()
+                if line.startswith("Version:")
+            ),
+            "",
+        )
+        if not version:
+            raise ValueError(
+                f"No Version field found in DESCRIPTION file: {version_filepath}"
+            )
+    else:
+        version = contents.strip()
+    return version
+
+
+def validate_post_release_files(
+    release_tag: str,
+    changelog_filepath: str | os.PathLike[str] = "CHANGELOG.md",
+    version_filepath: str | os.PathLike[str] = "VERSION",
+    citation_filepath: str | os.PathLike[str] = "CITATION.cff",
+    description_filepath: str | os.PathLike[str] = "DESCRIPTION",
+    dev_header: str = "development version",
+) -> str:
+    """Validate release metadata before preparing post-release changes.
+
+    The version file, latest versioned changelog heading, and any citation
+    version must match the published tag. An existing development heading
+    indicates that the tag does not contain a prepared release.
+
+    Args:
+        release_tag: The published release tag.
+        changelog_filepath: Path to the changelog or news file.
+        version_filepath: Path to the version file.
+        citation_filepath: Path to the optional citation file.
+        description_filepath: Path to the R DESCRIPTION file.
+        dev_header: Text identifying the development changelog heading.
+
+    Returns:
+        str: The release version without a leading ``v``.
+
+    Raises:
+        ValueError: If the release tag or its metadata does not match.
+    """
+    use_r_package_structure = is_r_package(description_filepath=description_filepath)
+    if use_r_package_structure:
+        if os.fspath(changelog_filepath) == "CHANGELOG.md":
+            changelog_filepath = get_news_filepath()
+        if os.fspath(version_filepath) == "VERSION":
+            version_filepath = description_filepath
+
+    changelog_filepath = path_resolve(changelog_filepath)
+    version_filepath = path_resolve(version_filepath)
+    citation_filepath = path_resolve(citation_filepath)
+    release_version = release_tag.removeprefix("v")
+    if not is_strict_semver(release_version):
+        raise ValueError(f"Release tag {release_tag!r} is not a semantic version.")
+
+    version = _read_post_release_version(version_filepath, use_r_package_structure)
+    if version.removeprefix("v") != release_version:
+        raise ValueError(
+            f"The version file {version_filepath} contains {version!r}, but release "
+            f"{release_tag!r} requires {release_version!r}. Check that the published "
+            "tag points to the prepared release commit."
+        )
+
+    if not dev_header:
+        raise ValueError("The development header must not be empty.")
+    headings = [
+        line
+        for line in changelog_filepath.read_text().splitlines()
+        if line.lstrip().startswith("#")
+    ]
+    if any(dev_header.casefold() in heading.casefold() for heading in headings):
+        raise ValueError(
+            f"The changelog {changelog_filepath} still contains a development heading. "
+            f"Check that release {release_tag!r} points to the prepared release commit."
+        )
+    version_pattern = re.compile(
+        r"(?<![\w.])v?(\d+\.\d+\.\d+(?:\.[0-9A-Za-z-]+)*"
+        r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+        r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?)(?![\w+-]|\.\w)"
+    )
+    release_heading = next(
+        (match for heading in headings if (match := version_pattern.search(heading))),
+        None,
+    )
+    if not release_heading or release_heading.group(1) != release_version:
+        raise ValueError(
+            f"The latest release heading in {changelog_filepath} does not match "
+            f"{release_tag!r}. Check that the tag points to the prepared release commit."
+        )
+
+    if citation_filepath.is_file():
+        citation = yaml.safe_load(citation_filepath.read_text())
+        if not isinstance(citation, dict):
+            raise ValueError(
+                f"Citation file {citation_filepath} must be a YAML mapping."
+            )
+        citation_version = citation.get("version")
+        if (
+            citation_version is not None
+            and str(citation_version).removeprefix("v") != release_version
+        ):
+            raise ValueError(
+                f"The citation version in {citation_filepath} is {citation_version!r}, "
+                f"but release {release_tag!r} requires {release_version!r}."
+            )
+
+    return release_version
+
+
 def post_release_cleanup(
     changelog_filepath="CHANGELOG.md",
     repo="${{ github.repository }}",
@@ -392,24 +511,21 @@ def post_release_cleanup(
     version_filepath = path_resolve(version_filepath)
     citation_filepath = path_resolve(citation_filepath)
 
+    if debug:
+        _read_post_release_version(version_filepath, use_r_package_structure)
+    else:
+        version = validate_post_release_files(
+            release_tag=release_tag,
+            changelog_filepath=changelog_filepath,
+            version_filepath=version_filepath,
+            citation_filepath=citation_filepath,
+            description_filepath=description_filepath,
+            dev_header=dev_header,
+        )
+
     with open(changelog_filepath, "r") as infile:
         lines = infile.readlines()
     lines.insert(0, f"## {os.path.basename(repo)} {dev_header}\n\n")
-
-    if use_r_package_structure:
-        version = ""
-        with version_filepath.open("r") as infile:
-            for line in infile:
-                if line.startswith("Version:"):
-                    version = line.removeprefix("Version:").strip()
-                    break
-        if not version:
-            raise ValueError(
-                f"No Version field found in DESCRIPTION file: {version_filepath}"
-            )
-    else:
-        with open(version_filepath, "r") as infile:
-            version = infile.read().strip()
 
     changed_files = " ".join(
         [

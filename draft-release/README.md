@@ -13,8 +13,9 @@ workflow from, updates files (including `CHANGELOG.md`, `VERSION`,
 with the new version and changelog entry.
 
 After the workflow completes, navigate to the Releases page on GitHub
-and ensure everything looks correct, then publish the release when
-you’re ready.
+and ensure everything looks correct. Before publishing, confirm that the
+release target is the prepared commit on the configured draft branch,
+not the original source branch.
 
 > \[!WARNING\] If your repository contains a `DESCRIPTION` file
 > (i.e. it’s an R package), do **not** run this action via

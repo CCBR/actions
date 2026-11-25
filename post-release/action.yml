@@ -60,9 +60,7 @@ runs:
         git config --local user.email "${{ inputs.github-actor }}@users.noreply.github.com"
         git config --local user.name "${{ inputs.github-actor }}"
         git config --global --add --bool push.autoSetupRemote true
-        git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
         git checkout ${{ github.event.release.tag_name }}
-        git switch -c ${{ inputs.pr-branch }}
     - name: Detect ccbr_actions container
       id: detect-container
       shell: bash
@@ -87,6 +85,37 @@ runs:
       if: ${{ steps.detect-container.outputs.in-container != 'true' }}
       shell: bash
       run: pip install --upgrade pip git+https://github.com/CCBR/actions.git@${{ inputs.ccbr-actions-version }}
+
+    - name: Validate release metadata
+      if: ${{ inputs.dry-run != 'true' }}
+      shell: python {0}
+      env:
+        RELEASE_TAG: ${{ github.event.release.tag_name }}
+        CHANGELOG_FILEPATH: ${{ inputs.changelog-filepath }}
+        VERSION_FILEPATH: ${{ inputs.version-filepath }}
+        CITATION_FILEPATH: ${{ inputs.citation-filepath }}
+        DESCRIPTION_FILEPATH: ${{ inputs.description-filepath }}
+        DEV_HEADER: ${{ inputs.dev-header }}
+      run: |
+        import os
+
+        from ccbr_actions.release import validate_post_release_files
+
+        os.chdir(os.environ["GITHUB_WORKSPACE"])
+        validate_post_release_files(
+          release_tag=os.environ["RELEASE_TAG"],
+          changelog_filepath=os.environ["CHANGELOG_FILEPATH"],
+          version_filepath=os.environ["VERSION_FILEPATH"],
+          citation_filepath=os.environ["CITATION_FILEPATH"],
+          description_filepath=os.environ["DESCRIPTION_FILEPATH"],
+          dev_header=os.environ["DEV_HEADER"],
+        )
+    - name: Create post-release branch
+      if: ${{ inputs.dry-run != 'true' }}
+      shell: bash
+      run: |
+        git push origin --delete ${{ inputs.pr-branch }} || echo "No ${{ inputs.pr-branch }} branch to delete"
+        git switch -c ${{ inputs.pr-branch }}
 
     - name: Bump changelog & version, open PR
       shell: python {0}
