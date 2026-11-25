@@ -159,6 +159,31 @@ def test_trigger_workflow_raises_if_new_run_fails(monkeypatch):
         )
 
 
+def test_trigger_workflow_raises_if_dispatch_is_rejected(monkeypatch):
+    monkeypatch.setenv("GH_TOKEN", "action-token")
+    monkeypatch.setattr(
+        "ccbr_actions.actions.github_api_get",
+        lambda **_: {"workflow_runs": []},
+    )
+    monkeypatch.setattr(
+        "ccbr_actions.actions.github_api_post",
+        lambda **_: type(
+            "Response", (), {"status_code": 401, "text": "Requires authentication"}
+        )(),
+    )
+
+    with (
+        pytest.warns(UserWarning, match="Requires authentication"),
+        pytest.raises(RuntimeError, match="HTTP 401"),
+    ):
+        trigger_workflow(
+            workflow_name="auto-format.yml",
+            branch="release-draft",
+            repo="CCBR/actions",
+            wait_for_completion=True,
+        )
+
+
 @pytest.mark.skipif(
     "GITHUB_TOKEN" not in os.environ,
     reason="this will fail when GITHUB_TOKEN is not an envvar",
