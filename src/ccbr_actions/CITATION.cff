@@ -23,5 +23,5 @@ identifiers:
     type: doi
     value: 10.5281/zenodo.13761059
 doi: 10.5281/zenodo.13761059
-version: v0.9.3
-date-released: "2026-11-19"
+version: v0.9.4
+date-released: "2026-11-25"
