@@ -1,4 +1,4 @@
-## actions development version
+## actions 0.9.4
 
 - Fixes to `review-post-release-pr`:
   - Approve release-matching Quarto extension version updates. (#267, @kelly-sovacool)
