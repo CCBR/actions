@@ -542,8 +542,15 @@ def test_prepare_draft_release_r_package_first_release(
     assert "Version: 0.1.0" in output
 
 
-def test_prepare_draft_release_fails_on_autoformat_trigger_failure(
-    github_output_file, tmp_path, monkeypatch, data_dir
+@pytest.mark.parametrize(
+    ("failure", "message"),
+    [
+        ("dispatch", "boom"),
+        ("missing_branch", "missing after auto-format"),
+    ],
+)
+def test_prepare_draft_release_fails_if_autoformat_not_ready(
+    github_output_file, tmp_path, monkeypatch, data_dir, failure, message
 ):
     changelog_file = tmp_path / "CHANGELOG.md"
     version_file = tmp_path / "VERSION"
@@ -566,14 +573,21 @@ def test_prepare_draft_release_fails_on_autoformat_trigger_failure(
     )
     monkeypatch.setattr("ccbr_actions.release.set_output", lambda *_: None)
 
-    def _trigger_workflow_raises(**_):
-        raise RuntimeError("boom")
+    if failure == "dispatch":
 
-    monkeypatch.setattr(
-        "ccbr_actions.release.trigger_workflow", _trigger_workflow_raises
-    )
+        def _trigger_workflow_raises(**_):
+            raise RuntimeError("boom")
 
-    with pytest.raises(RuntimeError, match="boom"):
+        monkeypatch.setattr(
+            "ccbr_actions.release.trigger_workflow", _trigger_workflow_raises
+        )
+    else:
+        monkeypatch.setattr("ccbr_actions.release.trigger_workflow", lambda **_: None)
+        monkeypatch.setattr(
+            "ccbr_actions.release._get_remote_branch_hash", lambda _: None
+        )
+
+    with pytest.raises(RuntimeError, match=message):
         prepare_draft_release(
             next_version_manual="v0.2.0",
             next_version_convco="v0.2.0",

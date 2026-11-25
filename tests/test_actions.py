@@ -3,7 +3,12 @@ import os
 import pytest
 from ccbr_tools.shell import exec_in_context
 
-from ccbr_actions.actions import set_output, trigger_workflow, use_github_action
+from ccbr_actions.actions import (
+    _wait_for_workflow_run,
+    set_output,
+    trigger_workflow,
+    use_github_action,
+)
 
 
 def test_use_github_action(tmp_path):
@@ -181,6 +186,18 @@ def test_trigger_workflow_raises_if_dispatch_is_rejected(monkeypatch):
             branch="release-draft",
             repo="CCBR/actions",
             wait_for_completion=True,
+        )
+
+
+def test_wait_for_workflow_run_times_out():
+    with pytest.raises(TimeoutError, match="Timed out waiting"):
+        _wait_for_workflow_run(
+            workflow_name="auto-format.yml",
+            branch="release-draft",
+            repo="CCBR/actions",
+            previous_run_ids=set(),
+            token="action-token",
+            timeout_seconds=0,
         )
 
 
