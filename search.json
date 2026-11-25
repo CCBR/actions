@@ -4,7 +4,7 @@
     "href": "cite.html",
     "title": "CCBR actions",
     "section": "",
-    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.9.3). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {11},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
+    "text": "Please cite this software if you use it in a publication:\n\nSovacool K. and Koparde V. (2026). CCBR actions: GitHub Actions for CCBR repos (version v0.9.4). DOI: 10.5281/zenodo.13761059 URL: https://ccbr.github.io/actions/\n\n\nBibtex entry\n@misc{YourReferenceHere,\nauthor = {Sovacool, Kelly and Koparde, Vishal},\ndoi = {10.5281/zenodo.13761059},\nmonth = {11},\ntitle = {CCBR actions: GitHub Actions for CCBR repos},\nurl = {https://ccbr.github.io/actions/},\nyear = {2026}\n}",
     "crumbs": [
       "Project information",
       "Citation"
@@ -1068,22 +1068,11 @@
     ]
   },
   {
-    "objectID": "CHANGELOG.html",
-    "href": "CHANGELOG.html",
+    "objectID": "CHANGELOG.html#actions-0.9.4",
+    "href": "CHANGELOG.html#actions-0.9.4",
     "title": "CCBR actions",
-    "section": "",
-    "text": "Fixes to review-post-release-pr:\n\nApprove release-matching Quarto extension version updates. (#267, @kelly-sovacool)\nApprove R development version updates in citation metadata. (#268, @kelly-sovacool)",
-    "crumbs": [
-      "Project information",
-      "Changelog"
-    ]
-  },
-  {
-    "objectID": "CHANGELOG.html#actions-development-version",
-    "href": "CHANGELOG.html#actions-development-version",
-    "title": "CCBR actions",
-    "section": "",
-    "text": "Fixes to review-post-release-pr:\n\nApprove release-matching Quarto extension version updates. (#267, @kelly-sovacool)\nApprove R development version updates in citation metadata. (#268, @kelly-sovacool)",
+    "section": "actions 0.9.4",
+    "text": "actions 0.9.4\n\nFixes to review-post-release-pr:\n\nApprove release-matching Quarto extension version updates. (#267, @kelly-sovacool)\nApprove R development version updates in citation metadata. (#268, @kelly-sovacool)",
     "crumbs": [
       "Project information",
       "Changelog"
