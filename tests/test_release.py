@@ -22,6 +22,7 @@ from ccbr_actions.release import (
     push_release_draft_branch,
     regenerate_citation_from_description,
     set_release_version,
+    validate_post_release_files,
     write_description_version,
     write_lines,
 )
@@ -872,6 +873,42 @@ def test_post_release_cleanup_rejects_unprepared_r_release(
 
     assert news_file.read_text() == news
     assert description_file.read_text() == description
+
+
+def test_validate_post_release_files_rejects_invalid_tag():
+    with pytest.raises(ValueError, match="not a semantic version"):
+        validate_post_release_files(release_tag="latest")
+
+
+def test_validate_post_release_files_rejects_empty_development_header(
+    tmp_path, monkeypatch
+):
+    (tmp_path / "CHANGELOG.md").write_text("## actions 0.9.4\n")
+    (tmp_path / "VERSION").write_text("0.9.4\n")
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="development header must not be empty"):
+        validate_post_release_files(release_tag="v0.9.4", dev_header="")
+
+
+def test_validate_post_release_files_rejects_non_mapping_citation(
+    tmp_path, monkeypatch
+):
+    (tmp_path / "CHANGELOG.md").write_text("## actions 0.9.4\n")
+    (tmp_path / "VERSION").write_text("0.9.4\n")
+    (tmp_path / "CITATION.cff").write_text("[]\n")
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(ValueError, match="must be a YAML mapping"):
+        validate_post_release_files(release_tag="v0.9.4")
+
+
+def test_validate_post_release_files_uses_r_package_paths(tmp_path, monkeypatch):
+    (tmp_path / "DESCRIPTION").write_text("Package: mypkg\nVersion: 0.9.4\n")
+    (tmp_path / "NEWS.md").write_text("## mypkg 0.9.4\n")
+    monkeypatch.chdir(tmp_path)
+
+    assert validate_post_release_files(release_tag="v0.9.4") == "0.9.4"
 
 
 @pytest.mark.parametrize(
