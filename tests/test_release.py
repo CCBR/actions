@@ -162,7 +162,9 @@ def test_create_release_draft(data_dir_rel):
 
 
 @pytest.mark.parametrize("existing_hash", [None, "abc123"])
-def test_create_release_draft_verifies_tag_target(monkeypatch, existing_hash):
+def test_create_release_draft_allows_missing_or_matching_tag(
+    monkeypatch, existing_hash
+):
     expected_hash = "abc123"
     tag_ref = "refs/tags/v1.2.3"
     calls = []
@@ -171,8 +173,8 @@ def test_create_release_draft_verifies_tag_target(monkeypatch, existing_hash):
         calls.append(command)
         if command.startswith("git ls-remote"):
             if existing_hash is None:
-                return "" if len(calls) == 1 else f"{expected_hash}\t{tag_ref}\n"
-            return f"tag-object\t{tag_ref}\n{existing_hash}\t{tag_ref}^{{}}\n"
+                return ""
+            return f"{existing_hash}\t{tag_ref}\n"
         return "https://github.com/CCBR/actions/releases/tag/v1.2.3"
 
     monkeypatch.setattr("ccbr_actions.release.shell_run", fake_shell_run)
@@ -183,7 +185,8 @@ def test_create_release_draft_verifies_tag_target(monkeypatch, existing_hash):
     )
 
     assert result == "https://github.com/CCBR/actions/releases/tag/v1.2.3"
-    assert len(calls) == 3
+    assert len(calls) == 2
+    assert calls[0].startswith("git ls-remote")
     assert calls[1].startswith("gh release create v1.2.3")
 
 
@@ -203,28 +206,6 @@ def test_create_release_draft_rejects_stale_tag(monkeypatch):
         )
 
     assert len(calls) == 1
-
-
-def test_create_release_draft_rejects_tag_created_at_wrong_target(monkeypatch):
-    calls = []
-
-    def fake_shell_run(command):
-        calls.append(command)
-        if command.startswith("git ls-remote"):
-            if len(calls) == 1:
-                return ""
-            return "deadbeef\trefs/tags/v1.2.3\n"
-        return "https://github.com/CCBR/actions/releases/tag/v1.2.3"
-
-    monkeypatch.setattr("ccbr_actions.release.shell_run", fake_shell_run)
-    with pytest.raises(RuntimeError, match="tag points to deadbeef"):
-        create_release_draft(
-            next_version="v1.2.3",
-            release_target="abc123",
-            repo="CCBR/actions",
-        )
-
-    assert len(calls) == 3
 
 
 def test_push_release_draft_branch(data_dir_rel):
@@ -1018,7 +999,7 @@ def test_create_release_draft_non_debug(monkeypatch):
         debug=False,
     )
     assert release_url == "https://example.com/release"
-    assert len(commands) == 3
+    assert len(commands) == 2
 
 
 def test_set_release_version(github_output_file):

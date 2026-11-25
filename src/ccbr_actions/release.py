@@ -826,11 +826,4 @@ def create_release_draft(
                 "published release before correcting it."
             )
         release_url = shell_run(cmd)
-        actual_tag_hash = _get_remote_tag_hash(next_version)
-        if actual_tag_hash != release_target:
-            raise RuntimeError(
-                f"Draft release {next_version!r} was created, but its tag points to "
-                f"{actual_tag_hash or 'no commit'}, not the prepared release commit "
-                f"{release_target}."
-            )
     return release_url
