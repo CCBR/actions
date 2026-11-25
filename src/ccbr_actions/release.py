@@ -299,17 +299,25 @@ def prepare_draft_release(
         debug=debug,
     )
     if not debug:
-        try:
-            trigger_workflow(
-                workflow_name="auto-format.yml", branch=release_branch, repo=repo
+        trigger_workflow(
+            workflow_name="auto-format.yml",
+            branch=release_branch,
+            repo=repo,
+            wait_for_completion=True,
+        )
+        release_target = _get_remote_branch_hash(release_branch)
+        if not release_target:
+            raise RuntimeError(
+                f"Release branch {release_branch!r} is missing after auto-format "
+                "completed."
             )
-        except (ValueError, RuntimeError, OSError) as e:
-            warnings.warn(f"Failed to trigger workflow:\n{e}")
+    else:
+        release_target = get_current_hash()
     release_url = create_release_draft(
         release_branch=release_branch,
         next_version=next_version,
         release_notes_filepath=release_notes_filepath,
-        release_target=get_current_hash(),
+        release_target=release_target,
         repo=repo,
         debug=debug,
     )
@@ -652,6 +660,17 @@ git push --set-upstream origin {release_branch}
         print(cmd)
     else:
         shell_run(cmd)
+
+
+def _get_remote_branch_hash(branch_name: str) -> str | None:
+    """Return the commit a remote branch points to."""
+    branch_ref = f"refs/heads/{branch_name}"
+    output = shell_run(f"git ls-remote origin {shlex.quote(branch_ref)}")
+    for line in output.splitlines():
+        parts = line.split(maxsplit=1)
+        if len(parts) == 2 and parts[1] == branch_ref:
+            return parts[0]
+    return None
 
 
 def create_release_draft(

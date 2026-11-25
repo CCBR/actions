@@ -19,7 +19,9 @@ It is designed to be used in a manually triggered workflow to draft a release.
 
 This action checks out the latest commit in the branch you run the workflow from,
 updates files (including `CHANGELOG.md`, `VERSION`, `CITATION.cff`, and `codemeta.json`),
-and then creates a draft release with the new version and changelog entry.
+then runs the auto-format workflow to completion and creates a draft release
+targeting the final formatted commit. The provided token needs the `actions: write`
+permission to dispatch and monitor the formatter.
 
 After the workflow completes, navigate to the Releases page on GitHub and ensure
 everything looks correct, then publish the release when you're ready.

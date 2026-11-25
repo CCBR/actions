@@ -1,5 +1,7 @@
 ## actions development version
 
+- Wait for automatic formatting to finish before creating release drafts. (#271, @kelly-sovacool)
+
 ## actions 0.9.4
 
 - Fixes to `review-post-release-pr`:
