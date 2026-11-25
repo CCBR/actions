@@ -15,7 +15,11 @@ with the new version and changelog entry.
 After the workflow completes, navigate to the Releases page on GitHub
 and ensure everything looks correct. Before publishing, confirm that the
 release target is the prepared commit on the configured draft branch,
-not the original source branch.
+not the original source branch. The action refuses to create a draft if
+its version tag already points to another commit, and verifies the tag
+target after creating the draft. It never moves an existing tag
+automatically; check whether it has a published release before
+correcting a stale tag.
 
 > \[!WARNING\] If your repository contains a `DESCRIPTION` file
 > (i.e. it’s an R package), do **not** run this action via

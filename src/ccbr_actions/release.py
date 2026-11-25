@@ -770,6 +770,22 @@ git push --set-upstream origin {release_branch}
         shell_run(cmd)
 
 
+def _get_remote_tag_hash(tag_name: str) -> str | None:
+    """Return the commit a remote tag resolves to, including annotated tags."""
+    tag_ref = f"refs/tags/{tag_name}"
+    peeled_ref = f"{tag_ref}^{{}}"
+    output = shell_run(
+        f"git ls-remote origin {shlex.quote(tag_ref)} {shlex.quote(peeled_ref)}"
+    )
+    refs = {}
+    for line in output.splitlines():
+        parts = line.split(maxsplit=1)
+        if len(parts) == 2:
+            sha, ref = parts
+            refs[ref] = sha
+    return refs.get(peeled_ref, refs.get(tag_ref))
+
+
 def create_release_draft(
     release_branch="release-draft",
     next_version="${{ steps.release.outputs.NEXT_VERSION }}",
@@ -801,5 +817,20 @@ def create_release_draft(
         print(cmd)
         release_url = ""
     else:
+        existing_tag_hash = _get_remote_tag_hash(next_version)
+        if existing_tag_hash and existing_tag_hash != release_target:
+            raise ValueError(
+                f"Release tag {next_version!r} already points to {existing_tag_hash}, "
+                f"not the prepared release commit {release_target}. Refusing to create "
+                "a draft release with a stale tag. Verify whether the tag has a "
+                "published release before correcting it."
+            )
         release_url = shell_run(cmd)
+        actual_tag_hash = _get_remote_tag_hash(next_version)
+        if actual_tag_hash != release_target:
+            raise RuntimeError(
+                f"Draft release {next_version!r} was created, but its tag points to "
+                f"{actual_tag_hash or 'no commit'}, not the prepared release commit "
+                f"{release_target}."
+            )
     return release_url
