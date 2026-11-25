@@ -4,12 +4,14 @@ Download and use GitHub Actions workflow files.
 
 import os
 import pathlib
+import time
+import urllib.parse
 import uuid
 import warnings
 
 import requests
 
-from .github import GITHUB_API_URL, github_api_headers, github_api_post
+from .github import GITHUB_API_URL, github_api_get, github_api_headers, github_api_post
 from .util import path_resolve
 from .versions import get_latest_release_tag
 
@@ -101,7 +103,14 @@ def use_github_action(name, ref=None, url=None, save_as=None, repo="CCBR/actions
         )
 
 
-def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
+def trigger_workflow(
+    workflow_name,
+    branch,
+    repo,
+    inputs=None,
+    debug=False,
+    wait_for_completion=False,
+):
     """
     Trigger a GitHub Actions workflow.
 
@@ -118,10 +127,81 @@ def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
         data.update(inputs)
     result = None
     if not debug:
+        previous_run_ids = set()
+        if wait_for_completion:
+            previous_run_ids = _get_workflow_run_ids(
+                workflow_name=workflow_name,
+                branch=branch,
+                repo=repo,
+                token=token,
+            )
         response = github_api_post(url=url, token=token, json=data)
         if response.status_code != 204:
             warnings.warn(f"Failed to trigger workflow:\n{response.text}")
+            if wait_for_completion:
+                raise RuntimeError(
+                    f"Failed to trigger workflow {workflow_name!r}: "
+                    f"HTTP {response.status_code}"
+                )
+        elif wait_for_completion:
+            _wait_for_workflow_run(
+                workflow_name=workflow_name,
+                branch=branch,
+                repo=repo,
+                previous_run_ids=previous_run_ids,
+                token=token,
+            )
         result = response
     else:
         result = url, headers, data
     return result
+
+
+def _workflow_runs_url(workflow_name, branch, repo):
+    query = urllib.parse.urlencode(
+        {"branch": branch, "event": "workflow_dispatch", "per_page": 20}
+    )
+    return (
+        f"{GITHUB_API_URL}/repos/{repo}/actions/workflows/{workflow_name}/runs?{query}"
+    )
+
+
+def _get_workflow_run_ids(workflow_name, branch, repo, token):
+    response = github_api_get(
+        url=_workflow_runs_url(workflow_name, branch, repo), token=token
+    )
+    return {run["id"] for run in response.get("workflow_runs", [])}
+
+
+def _wait_for_workflow_run(
+    workflow_name,
+    branch,
+    repo,
+    previous_run_ids,
+    token,
+    timeout_seconds=600,
+):
+    url = _workflow_runs_url(workflow_name, branch, repo)
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        response = github_api_get(url=url, token=token)
+        run = next(
+            (
+                item
+                for item in response.get("workflow_runs", [])
+                if item["id"] not in previous_run_ids
+            ),
+            None,
+        )
+        if run and run.get("status") == "completed":
+            if run.get("conclusion") != "success":
+                raise RuntimeError(
+                    f"Workflow {workflow_name!r} failed for branch {branch!r}: "
+                    f"{run.get('html_url', 'run URL unavailable')}"
+                )
+            return run
+        time.sleep(5)
+
+    raise TimeoutError(
+        f"Timed out waiting for workflow {workflow_name!r} on branch {branch!r}"
+    )

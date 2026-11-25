@@ -11,7 +11,7 @@ inputs:
     required: false
     default: ""
   github-token:
-    description: "GitHub Actions token (e.g. github.token)."
+    description: "GitHub Actions token (e.g. github.token) with actions: write permission."
     required: true
   ccbr-actions-version:
     description: "The version of ccbr_actions to install when running outside the ccbr_actions container."

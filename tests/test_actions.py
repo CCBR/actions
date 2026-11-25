@@ -77,6 +77,88 @@ def test_trigger_workflow_uses_gh_token(monkeypatch):
     ]
 
 
+def test_trigger_workflow_waits_for_new_run(monkeypatch):
+    monkeypatch.setenv("GH_TOKEN", "action-token")
+    responses = iter(
+        [
+            {"workflow_runs": [{"id": 10}]},
+            {
+                "workflow_runs": [
+                    {"id": 11, "status": "in_progress"},
+                    {"id": 10, "status": "completed", "conclusion": "success"},
+                ]
+            },
+            {
+                "workflow_runs": [
+                    {"id": 11, "status": "completed", "conclusion": "success"}
+                ]
+            },
+        ]
+    )
+    get_calls = []
+
+    def fake_github_api_get(url, token):
+        get_calls.append((url, token))
+        return next(responses)
+
+    monkeypatch.setattr("ccbr_actions.actions.github_api_get", fake_github_api_get)
+    monkeypatch.setattr(
+        "ccbr_actions.actions.github_api_post",
+        lambda **_: type("Response", (), {"status_code": 204})(),
+    )
+    monkeypatch.setattr("ccbr_actions.actions.time.sleep", lambda _: None)
+
+    response = trigger_workflow(
+        workflow_name="auto-format.yml",
+        branch="release/draft",
+        repo="CCBR/actions",
+        wait_for_completion=True,
+    )
+
+    assert response.status_code == 204
+    assert len(get_calls) == 3
+    assert all(
+        url.endswith("/runs?branch=release%2Fdraft&event=workflow_dispatch&per_page=20")
+        for url, _ in get_calls
+    )
+    assert all(token == "action-token" for _, token in get_calls)
+
+
+def test_trigger_workflow_raises_if_new_run_fails(monkeypatch):
+    monkeypatch.setenv("GH_TOKEN", "action-token")
+    responses = iter(
+        [
+            {"workflow_runs": []},
+            {
+                "workflow_runs": [
+                    {
+                        "id": 11,
+                        "status": "completed",
+                        "conclusion": "failure",
+                        "html_url": "https://github.com/CCBR/actions/actions/runs/11",
+                    }
+                ]
+            },
+        ]
+    )
+    monkeypatch.setattr(
+        "ccbr_actions.actions.github_api_get",
+        lambda **_: next(responses),
+    )
+    monkeypatch.setattr(
+        "ccbr_actions.actions.github_api_post",
+        lambda **_: type("Response", (), {"status_code": 204})(),
+    )
+
+    with pytest.raises(RuntimeError, match="failed for branch 'release-draft'"):
+        trigger_workflow(
+            workflow_name="auto-format.yml",
+            branch="release-draft",
+            repo="CCBR/actions",
+            wait_for_completion=True,
+        )
+
+
 @pytest.mark.skipif(
     "GITHUB_TOKEN" not in os.environ,
     reason="this will fail when GITHUB_TOKEN is not an envvar",

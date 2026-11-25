@@ -9,8 +9,10 @@ triggered workflow to draft a release.
 
 This action checks out the latest commit in the branch you run the
 workflow from, updates files (including `CHANGELOG.md`, `VERSION`,
-`CITATION.cff`, and `codemeta.json`), and then creates a draft release
-with the new version and changelog entry.
+`CITATION.cff`, and `codemeta.json`), then runs the auto-format workflow to
+completion and creates a draft release targeting the final formatted commit.
+The provided token needs the `actions: write` permission to dispatch and
+monitor the formatter.
 
 After the workflow completes, navigate to the Releases page on GitHub
 and ensure everything looks correct, then publish the release when
@@ -131,8 +133,8 @@ steps:
 - `version-tag`: Semantic version tag for next release. If not provided,
   it will be determined based on conventional commit history. Example:
   v2.5.11.
-- `github-token`: GitHub Actions token (e.g. github.token).
-  **Required.**
+- `github-token`: GitHub Actions token (e.g. github.token) with `actions: write`
+  permission. **Required.**
 - `ccbr-actions-version`: The version of ccbr_actions to install when
   running outside the ccbr_actions container. **Required.** Default:
   `latest`.

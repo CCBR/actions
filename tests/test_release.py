@@ -6,6 +6,7 @@ from ccbr_tools.shell import exec_in_context, shell_run
 
 from ccbr_actions.data import get_file_path
 from ccbr_actions.release import (
+    _get_remote_branch_hash,
     create_release_draft,
     get_changelog_lines,
     get_news_filepath,
@@ -541,7 +542,7 @@ def test_prepare_draft_release_r_package_first_release(
     assert "Version: 0.1.0" in output
 
 
-def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
+def test_prepare_draft_release_fails_on_autoformat_trigger_failure(
     github_output_file, tmp_path, monkeypatch, data_dir
 ):
     changelog_file = tmp_path / "CHANGELOG.md"
@@ -558,10 +559,10 @@ def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
     monkeypatch.setattr(
         "ccbr_actions.release.push_release_draft_branch", lambda **_: None
     )
-    monkeypatch.setattr("ccbr_actions.release.get_current_hash", lambda: "abc123")
+    create_release_calls = []
     monkeypatch.setattr(
         "ccbr_actions.release.create_release_draft",
-        lambda **_: "https://example.com/release",
+        lambda **kwargs: create_release_calls.append(kwargs),
     )
     monkeypatch.setattr("ccbr_actions.release.set_output", lambda *_: None)
 
@@ -572,8 +573,8 @@ def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
         "ccbr_actions.release.trigger_workflow", _trigger_workflow_raises
     )
 
-    with pytest.warns(UserWarning, match="Failed to trigger workflow"):
-        release_url = prepare_draft_release(
+    with pytest.raises(RuntimeError, match="boom"):
+        prepare_draft_release(
             next_version_manual="v0.2.0",
             next_version_convco="v0.2.0",
             current_version="v0.1.0",
@@ -588,7 +589,74 @@ def test_prepare_draft_release_warns_on_autoformat_trigger_failure(
             debug=False,
         )
 
+    assert create_release_calls == []
+
+
+def test_prepare_draft_release_targets_formatted_branch(
+    github_output_file, tmp_path, monkeypatch, data_dir
+):
+    changelog_file = tmp_path / "CHANGELOG.md"
+    version_file = tmp_path / "VERSION"
+    citation_file = tmp_path / "CITATION.cff"
+    notes_file = tmp_path / "latest-release.md"
+    changelog_file.write_text(
+        "## actions development version\n\nnotes\n\n## actions 0.1.0\n"
+    )
+    version_file.write_text("0.1.0\n")
+    citation_file.write_text((data_dir / "CITATION.cff").read_text())
+
+    monkeypatch.setattr("ccbr_actions.release.precommit_run", lambda *_: None)
+    monkeypatch.setattr(
+        "ccbr_actions.release.push_release_draft_branch", lambda **_: None
+    )
+    trigger_calls = []
+    monkeypatch.setattr(
+        "ccbr_actions.release.trigger_workflow",
+        lambda **kwargs: trigger_calls.append(kwargs),
+    )
+    monkeypatch.setattr(
+        "ccbr_actions.release._get_remote_branch_hash", lambda _: "formatted123"
+    )
+    create_release_calls = []
+    monkeypatch.setattr(
+        "ccbr_actions.release.create_release_draft",
+        lambda **kwargs: (
+            create_release_calls.append(kwargs) or "https://example.com/release"
+        ),
+    )
+    monkeypatch.setattr("ccbr_actions.release.set_output", lambda *_: None)
+
+    release_url = prepare_draft_release(
+        next_version_manual="v0.2.0",
+        next_version_convco="v0.2.0",
+        current_version="v0.1.0",
+        gh_event_name="push",
+        changelog_filepath=str(changelog_file),
+        release_notes_filepath=str(notes_file),
+        version_filepath=str(version_file),
+        citation_filepath=str(citation_file),
+        release_branch="release-draft",
+        pr_ref_name="feature/branch",
+        repo="CCBR/actions",
+        debug=False,
+    )
+
     assert release_url == "https://example.com/release"
+    assert trigger_calls[0]["wait_for_completion"] is True
+    assert create_release_calls[0]["release_target"] == "formatted123"
+
+
+@pytest.mark.parametrize(
+    ("remote_output", "expected_hash"),
+    [
+        ("abc123\trefs/heads/release-draft\n", "abc123"),
+        ("", None),
+    ],
+)
+def test_get_remote_branch_hash(monkeypatch, remote_output, expected_hash):
+    monkeypatch.setattr("ccbr_actions.release.shell_run", lambda _: remote_output)
+
+    assert _get_remote_branch_hash("release-draft") == expected_hash
 
 
 def test_post_release_cleanup(github_output_file, data_dir_rel):

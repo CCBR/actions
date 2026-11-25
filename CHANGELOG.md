@@ -1,6 +1,6 @@
 ## actions development version
 
-- Fix automatic formatting dispatch during release preparation. (#271, @kelly-sovacool)
+- Wait for automatic formatting to finish before creating release drafts. (#271, @kelly-sovacool)
 
 ## actions 0.9.4
 
