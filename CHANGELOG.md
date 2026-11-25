@@ -1,5 +1,7 @@
 ## actions development version
 
+## actions development version
+
 - Fixes to `review-post-release-pr`:
   - Approve release-matching Quarto extension version updates. (#267, @kelly-sovacool)
   - Approve R development version updates in citation metadata. (#268, @kelly-sovacool)
