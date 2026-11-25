@@ -50,6 +50,33 @@ def test_trigger_workflow_debug():
     )
 
 
+def test_trigger_workflow_uses_gh_token(monkeypatch):
+    monkeypatch.setenv("GH_TOKEN", "action-token")
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    calls = []
+
+    def fake_github_api_post(url, token, json):
+        calls.append((url, token, json))
+        return type("Response", (), {"status_code": 204})()
+
+    monkeypatch.setattr("ccbr_actions.actions.github_api_post", fake_github_api_post)
+
+    response = trigger_workflow(
+        workflow_name="auto-format.yml",
+        branch="release-draft",
+        repo="CCBR/actions",
+    )
+
+    assert response.status_code == 204
+    assert calls == [
+        (
+            "https://api.github.com/repos/CCBR/actions/actions/workflows/auto-format.yml/dispatches",
+            "action-token",
+            {"ref": "release-draft"},
+        )
+    ]
+
+
 @pytest.mark.skipif(
     "GITHUB_TOKEN" not in os.environ,
     reason="this will fail when GITHUB_TOKEN is not an envvar",

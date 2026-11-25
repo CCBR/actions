@@ -111,7 +111,7 @@ def trigger_workflow(workflow_name, branch, repo, inputs=None, debug=False):
         repo (str): The GitHub repository to trigger the workflow in.
     """
     url = f"{GITHUB_API_URL}/repos/{repo}/actions/workflows/{workflow_name}/dispatches"
-    token = os.environ.get("GITHUB_TOKEN")
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     headers = github_api_headers(token=token)
     data = {"ref": branch}
     if inputs and isinstance(inputs, dict):
